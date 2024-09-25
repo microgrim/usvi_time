@@ -189,6 +189,19 @@ usvi_qc_summary <- dada2::filterAndTrim(fwd = usvi_list$read1,
 ##when first running filterAndTrim in a new directory, it will automatically make the directory for output:
 ## Creating output directory: /vortexfs1/home/sharon.grim/scratch/projects/apprill/usvi/filtered
 
+usvi_qc_summary_df <- usvi_qc_summary %>%
+  tibble::as_tibble(., rownames = "read1") %>%
+  dplyr::mutate(sample_name = gsub("((^[[:alnum:]_]*){1,})((_[A-Z]{6,8})(-)([A-Z]{6,8}.*))", "\\1", read1)) %>%
+  dplyr::select(-read1) %>%
+  dplyr::left_join(., control_rename_lookup, by = join_by("sample_name")) %>%
+  dplyr::left_join(., sample_metadata %>%
+                     dplyr::select(sample_ID, original_ID),
+                   by = join_by(sample_name == original_ID)) %>%
+  dplyr::mutate(sample_ID = dplyr::case_when(is.na(sample_ID) & !is.na(relabel) ~ relabel,
+                                             is.na(sample_ID) & is.na(relabel) ~ sample_name,
+                                             .default = sample_ID)) %>%
+  dplyr::select(sample_ID, sample_name, reads.in, reads.out) %>%
+  droplevels
 
 #error learning
 
@@ -248,6 +261,7 @@ usvi_dada_list <- usvi_dada_list %>%
 
 
 #intermediate saving:
+
 {
   temp_list <- list(usvi_list, usvi_qc_err_list,usvi_qc_list, usvi_dada_list, usvi_qc_summary, usvi_temporal_import) %>%
     setNames(., c("usvi_list", "usvi_qc_err_list","usvi_qc_list", "usvi_dada_list", "usvi_qc_summary", "usvi_temporal_import"))
@@ -273,8 +287,18 @@ if(!file.exists(paste0(projectpath, "/", "usvi_dada_merged", ".rds"))){
 
 usvi_asvs <- usvi_dada_merged %>%
   dada2::makeSequenceTable(., orderBy = "abundance")
-#if you want to check the length distribution of the ASVs:
 
+# 
+# temp_df <- tibble::enframe(rowSums(usvi_asvs), value = "reads.merged", name = "sample_name") %>%
+#   dplyr::mutate(sample_ID = dplyr::case_when(grepl("_", sample_name) ~ sample_name,
+#                                              # grepl("bowhead", sample_name) ~ stringr::str_to_title(sample_name),
+#                                              .default = paste0("Metab_", sample_name))) %>%
+#   dplyr::select(sample_ID, reads.merged)
+
+
+
+
+#if you want to check the length distribution of the ASVs:
 table(nchar(dada2::getSequences(usvi_asvs)))
 #a majority of ASVs are 253bp in length.
 #a small handful are <247bp, and >258bp
@@ -283,28 +307,66 @@ table(nchar(dada2::getSequences(usvi_asvs)))
 usvi_asvs <- usvi_asvs[,nchar(colnames(usvi_asvs)) %in% 247:258]
 table(nchar(dada2::getSequences(usvi_asvs)))
 
-#chimera checking
-
-
-usvi_asvs.nochim <- usvi_asvs %>%
-  dada2::removeBimeraDenovo(., method = "consensus", multithread = nthreads, verbose = TRUE)
-# Identified 318 bimeras out of 14300 input sequences.
-
-sum(usvi_asvs.nochim)/sum(usvi_asvs)
-#99% of sequences retained
-
-#13982 ASVs
-usvi_asv_key <- usvi_asvs.nochim %>%
+usvi_asvs_key <- usvi_asvs %>%
   t() %>%
   as.data.frame() %>%
   tibble::rownames_to_column(., var = "sequence") %>%
   tibble::rowid_to_column(var = "rowid") %>%
+  dplyr::mutate(rowid = sprintf("%05.f", rowid)) %>%
   dplyr::mutate(asv_id = paste0("ASV_", rowid)) %>%
   dplyr::select(asv_id, sequence) %>%
   droplevels
+#chimera checking
 
-usvi_dada_nochim <- list(usvi_asvs, usvi_asvs.nochim, usvi_asv_key) %>%
-  setNames(., c("usvi_asvs", "usvi_asvs.nochim", "usvi_asv_key"))
+
+usvi_nochim_asvs <- usvi_asvs %>%
+  dada2::removeBimeraDenovo(., method = "consensus", multithread = nthreads, verbose = TRUE)
+# Identified 318 bimeras out of 14300 input sequences.
+
+sum(usvi_nochim_asvs)/sum(usvi_asvs)
+#99% of sequences retained
+# 
+# temp_df <- tibble::enframe(rowSums(usvi_nochim_asvs), value = "reads.nochim", name = "sample_name") %>%
+#     dplyr::mutate(sample_ID = dplyr::case_when(grepl("_", sample_name) ~ sample_name,
+#                                                # grepl("bowhead", sample_name) ~ stringr::str_to_title(sample_name),
+#                                                .default = paste0("Metab_", sample_name))) %>%
+#     dplyr::select(sample_ID, reads.nochim)
+# temp_df <- usvi_qc_summary_df %>%
+usvi_qc_summary_df <- usvi_qc_summary_df %>%
+  dplyr::left_join(., tibble::enframe(rowSums(usvi_asvs), value = "reads.merged", name = "sample_name") %>%
+                     dplyr::mutate(sample_ID = dplyr::case_when(grepl("_", sample_name) ~ sample_name,
+                                                                # grepl("bowhead", sample_name) ~ stringr::str_to_title(sample_name),
+                                                                .default = paste0("Metab_", sample_name))) %>%
+                     dplyr::select(sample_ID, reads.merged),
+                   by = join_by(sample_ID)) %>%
+  dplyr::left_join(., tibble::enframe(rowSums(usvi_nochim_asvs), value = "reads.nochim", name = "sample_name") %>%
+                     dplyr::mutate(sample_ID = dplyr::case_when(grepl("_", sample_name) ~ sample_name,
+                                                                # grepl("bowhead", sample_name) ~ stringr::str_to_title(sample_name),
+                                                                .default = paste0("Metab_", sample_name))) %>%
+                     dplyr::select(sample_ID, reads.nochim),
+                   by = join_by(sample_ID))
+
+#13982 ASVs
+usvi_nochim_asvs_key <- usvi_nochim_asvs %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(., var = "sequence") %>%
+  dplyr::left_join(., usvi_asvs_key, by = join_by(sequence)) %>% #since we already assigned ASV identifiers before chimera checking...
+  # tibble::rowid_to_column(var = "rowid") %>%
+  # dplyr::mutate(rowid = sprintf("%05.f", rowid)) %>%
+  # dplyr::mutate(asv_id = paste0("ASV_", rowid)) %>%
+  dplyr::select(asv_id, sequence) %>%
+  droplevels
+
+usvi_dada_nochim <- list(usvi_asvs, usvi_asvs_key, usvi_nochim_asvs, usvi_nochim_asvs_key) %>%
+  setNames(., c("usvi_asvs", "usvi_asvs_key", "usvi_nochim_asvs", "usvi_nochim_asvs_key"))
 if(!file.exists(paste0(projectpath, "/", "usvi_dada_nochim", ".rds"))){
-  write_rds(usvi_dada_nochim, file = paste0(projectpath, "/", "usvi_dada_nochim", ".rds"))
+  readr::write_rds(usvi_dada_nochim, file = paste0(projectpath, "/", "usvi_dada_nochim", ".rds"))
+}
+
+
+
+if(!file.exists(paste0(projectpath, "/", "usvi_qc_summary_df", ".tsv"))){
+  readr::write_delim(usvi_qc_summary_df, paste0(projectpath, "/", "usvi_qc_summary_df", ".tsv"),
+                     delim  = "\t", col_names = TRUE, num_threads = nthreads)
 }
