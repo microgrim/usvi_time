@@ -127,7 +127,8 @@ if(!exists("usvi_nochim_asvs.taxa.df", envir = .GlobalEnv)){
                                                     multithread = nthreads)
     usvi_nochim_asvs.taxa <- usvi_nochim_asvs.taxa %>%
       as.data.frame() %>%
-      tibble::rownames_to_column(., var = "sequence")
+      tibble::rownames_to_column(., var = "sequence") %>%
+      dplyr::rename(Domain = "Kingdom")
     
   usvi_nochim_asvs.taxa.df <- usvi_nochim_asvs.taxa %>%
     left_join(., usvi_asvs_key) %>%
@@ -206,11 +207,12 @@ if(!exists("usvi_prok_asvs.taxa.df", envir = .GlobalEnv) & file.exists(paste0(pr
 } else if(!file.exists(paste0(projectpath, "/", "usvi_prok_asvs.taxa.tsv", ".gz")) & exists("usvi_nochim_asvs.taxa.df", envir = .GlobalEnv)){
   drop <- c("Chloroplast", "mitochondria", "eukary")
   usvi_prok_asvs.taxa.df <- usvi_nochim_asvs.taxa.df %>%
-    dplyr::filter(if_all(c("Kingdom":"Species"), ~!grepl(paste0(drop, collapse = "|"), .x, ignore.case = TRUE))) %>%
+    # dplyr::filter(if_all(c("Kingdom":"Species"), ~!grepl(paste0(drop, collapse = "|"), .x, ignore.case = TRUE))) %>%
+    dplyr::filter(if_all(c("Domain":"Species"), ~!grepl(paste0(drop, collapse = "|"), .x, ignore.case = TRUE))) %>%
     droplevels %>%
-    dplyr::mutate(across(c("Kingdom":"Species"), ~ifelse(grepl("Cyanobacteriia", .x),
+    dplyr::mutate(across(c("Domain":"Species"), ~ifelse(grepl("Cyanobacteriia", .x),
                                                          "Cyanobacteria", .x))) %>%
-    dplyr::mutate(across(c("Kingdom":"Species"), ~ifelse(grepl("iia", .x, ignore.case = FALSE),
+    dplyr::mutate(across(c("Domain":"Species"), ~ifelse(grepl("iia", .x, ignore.case = FALSE),
                                                          gsub("iia", "ia", .),
                                                          .x)))
   readr::write_delim(usvi_prok_asvs.taxa.df,
