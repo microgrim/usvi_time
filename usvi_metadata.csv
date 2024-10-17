@@ -66,7 +66,7 @@ Metab_303,303,seawater,11.8,21.6,Yawzi,20210126,dawn,Day5,20240712,8.3,357,28862
 Metab_306,306,seawater,15.7,29.2,Yawzi,20210126,dawn,Day5,20240712,8.3,360,,,,,90,188,Deriv_111
 Metab_308,308,seawater,8.18,18.6,Yawzi,20210126,peak_photo,Day5,20240711,8.8,330,18593,57762,1497,5.91E+05,104,198,Deriv_113
 Metab_309,309,seawater,8.6,17.1,LB_seagrass,20210126,dawn,Day5,20240712,3.7,356,10977,54230,2784,7.35E+05,92,195,Deriv_109
-Metab_311,311,seawater,8.68,44.0,Tektite,20210126,peak_photo,Day5,20240711,9.2,336,17398,39708,959,4.59E+05,100,205,Deriv_115
+Metab_311,311,seawater,8.68,44,Tektite,20210126,peak_photo,Day5,20240711,9.2,336,17398,39708,959,4.59E+05,100,205,Deriv_115
 Metab_312,312,seawater,12.1,27.8,Tektite,20210126,dawn,Day5,20240712,9.4,335,25040,45616,1142,4.62E+05,94,191,Deriv_101
 Metab_313,313,seawater,16.5,29.4,Yawzi,20210125,dawn,Day4,20240723,8.4,352,25500,66705,1865,6.31E+05,73,172,Deriv_80
 Metab_314,314,seawater,9.2,25.8,Tektite,20210126,peak_photo,Day5,20240711,9.2,345,25040,37528,1011,4.62E+05,101,199,Deriv_116
@@ -89,22 +89,22 @@ Metab_331,331,seawater,15.9,37.2,Yawzi,20210125,dawn,Day4,20240723,8.4,349,23570
 Metab_332,332,seawater,18.6,27.6,LB_seagrass,20210126,peak_photo,Day5,20240711,3.6,354,13052,59850,1497,7.45E+05,97,203,DerIv_120
 Metab_334,334,seawater,7.12,25.2,LB_seagrass,20210125,dawn,Day4,20240723,3.8,340,8732,47691,3427,6.44E+05,75,175,Deriv_83
 Metab_337,337,seawater,9.34,33.4,LB_seagrass,20210125,dawn,Day4,20240723,3.8,346,9192,46759,3165,6.29E+05,76,173,Deriv_85
-pcr_control_01_29_cyc,(-) 29,pcr_control_01_29_cyc,,1.25,K1,,,,20240711,,,,,,,,,
-pcr_control_02_30_cyc,(-) 30 PCR2,pcr_control_02_30_cyc,,0.682,K2,,,,20240711,,,,,,,,,
-pcr_control_03_30_cyc,(-) 30 PCR3,pcr_control_03_30_cyc,,0.55,K3,,,,20240712,,,,,,,,,
-pcr_control_04_32_cyc,(-) 32,pcr_control_04_32_cyc,,1.28,K4,,,,20240712,,,,,,,,,
-pcr_control_05_34_cyc,(-) 34,pcr_control_05_34_cyc,,1.04,K5,,,,20240718,,,,,,,,,
-bowhead_3,Bowhead_3,bowhead_3,,39.6,K6,,,,20240718,,,,,,,,,
-control_102_jb,C-102 Jeanne,control_102_jb,,,K7,,,,20240722,,,,,,,,,
-Metab_K1,K1,control_extraction_01,,0.676,K8,,,,20240722,,,,,,,,,
-Metab_K10,K10,control_extraction_10,,1.64,K9,,,,20240723,,,,,,,,,
-Metab_K11,K11,control_extraction_11,,0.74,K10,,,,20240723,,,,,,,,,
-Metab_K2,K2,control_extraction_02,,0.468,K11,,,,20240724,,,,,,,,,
-Metab_K3,K3,control_extraction_03,,1.03,,,,,,,,,,,,,,
-Metab_K4,K4,control_extraction_04,,0.736,,,,,,,,,,,,,,
-Metab_K5,K5,control_extraction_05,,0.622,,,,,,,,,,,,,,
-Metab_K6,K6,control_extraction_06,,0.858,,,,,,,,,,,,,,
-Metab_K7,K7,control_extraction_07,,0.258,,,,,,,,,,,,,,
-Metab_K8,K8,control_extraction_08,,0.512,,,,,,,,,,,,,,
-Metab_K9,K9,control_extraction_09,,3.86,,,,,,,,,,,,,,
+pcr_control_01_29_cyc,(-) 29,pcr_control_01_29_cyc,,1.25,,,,,,,,,,,,,,
+pcr_control_02_30_cyc,(-) 30 PCR2,pcr_control_02_30_cyc,,0.682,,,,,,,,,,,,,,
+pcr_control_03_30_cyc,(-) 30 PCR3,pcr_control_03_30_cyc,,0.55,,,,,,,,,,,,,,
+pcr_control_04_32_cyc,(-) 32,pcr_control_04_32_cyc,,1.28,,,,,,,,,,,,,,
+pcr_control_05_34_cyc,(-) 34,pcr_control_05_34_cyc,,1.04,,,,,,,,,,,,,,
+bowhead_3,Bowhead_3,bowhead_3,,39.6,,,,,,,,,,,,,,
+control_102_jb,C-102 Jeanne,control_102_jb,,1.73,,,,,,,,,,,,,,
+Metab_K1,K1,control_extraction_01,,0.676,K1,,,,20240711,,,,,,,,,
+Metab_K10,K10,control_extraction_10,,1.64,K2,,,,20240711,,,,,,,,,
+Metab_K11,K11,control_extraction_11,,0.74,K3,,,,20240712,,,,,,,,,
+Metab_K2,K2,control_extraction_02,,0.468,K4,,,,20240712,,,,,,,,,
+Metab_K3,K3,control_extraction_03,,1.03,K5,,,,20240718,,,,,,,,,
+Metab_K4,K4,control_extraction_04,,0.736,K6,,,,20240718,,,,,,,,,
+Metab_K5,K5,control_extraction_05,,0.622,K7,,,,20240722,,,,,,,,,
+Metab_K6,K6,control_extraction_06,,0.858,K8,,,,20240722,,,,,,,,,
+Metab_K7,K7,control_extraction_07,,0.258,K9,,,,20240723,,,,,,,,,
+Metab_K8,K8,control_extraction_08,,0.512,K10,,,,20240723,,,,,,,,,
+Metab_K9,K9,control_extraction_09,,3.86,K11,,,,20240724,,,,,,,,,
 mock_community,Mock_Even,mock_community,,38.4,,,,,,,,,,,,,,

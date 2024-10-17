@@ -66,7 +66,7 @@ Metab_303	303	seawater	11.8	21.6	Yawzi	20210126	dawn	Day5	20240712	8.3	357	88	19
 Metab_306	306	seawater	15.7	29.2	Yawzi	20210126	dawn	Day5	20240712	8.3	360	90	188	Deriv_111				
 Metab_308	308	seawater	8.18	18.6	Yawzi	20210126	peak_photo	Day5	20240711	8.8	330	104	198	Deriv_113	18593	57762	1497	5.91E+05
 Metab_309	309	seawater	8.6	17.1	LB_seagrass	20210126	dawn	Day5	20240712	3.7	356	92	195	Deriv_109	10977	54230	2784	7.35E+05
-Metab_311	311	seawater	8.68	44.0	Tektite	20210126	peak_photo	Day5	20240711	9.2	336	100	205	Deriv_115	17398	39708	959	4.59E+05
+Metab_311	311	seawater	8.68	44	Tektite	20210126	peak_photo	Day5	20240711	9.2	336	100	205	Deriv_115	17398	39708	959	4.59E+05
 Metab_312	312	seawater	12.1	27.8	Tektite	20210126	dawn	Day5	20240712	9.4	335	94	191	Deriv_101	25040	45616	1142	4.62E+05
 Metab_313	313	seawater	16.5	29.4	Yawzi	20210125	dawn	Day4	20240723	8.4	352	73	172	Deriv_80	25500	66705	1865	6.31E+05
 Metab_314	314	seawater	9.2	25.8	Tektite	20210126	peak_photo	Day5	20240711	9.2	345	101	199	Deriv_116	25040	37528	1011	4.62E+05
@@ -95,7 +95,7 @@ pcr_control_03_30_cyc	(-) 30 PCR3	pcr_control_03_30_cyc		0.55
 pcr_control_04_32_cyc	(-) 32	pcr_control_04_32_cyc		1.28														
 pcr_control_05_34_cyc	(-) 34	pcr_control_05_34_cyc		1.04														
 bowhead_3	Bowhead_3	bowhead_3		39.6														
-C_102	C-102 Jeanne	control_102_jb																
+C_102	C-102 Jeanne	control_102_jb		1.73														
 Metab_K1	K1	control_extraction_01		0.676	K1				20240711									
 Metab_K10	K10	control_extraction_10		1.64	K10				20240723									
 Metab_K11	K11	control_extraction_11		0.74	K11				20240724									

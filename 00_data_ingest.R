@@ -2,62 +2,80 @@
 
 # import the amplicon fastqs for processing through DADA2
 
-# Load packages -----------------------------------------------------------
 
-library(tidyverse)
-library(data.table)
-if(!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-library(BiocManager)
-library(BiocParallel)
-library(dada2)
-library(cli)
-library(furrr)
-library(progressr)
+# Resource allocation time ------------------------------------------------
 
-# Plan for resource allocation --------------------------------------------
-if(grepl("arch64", Sys.getenv("R_PLATFORM"))){
-  print("Using parallelly...")
-  nthreads <- parallelly::availableCores() - 1
-  future::plan(multisession, workers = nthreads)
-  options(future.globals.maxSize = 10e9)
+if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
+  cat("Preparing resource allocations.")
+  source(paste0(getwd(), "/", "00_resource_allocation.R"), local = FALSE,
+         echo = TRUE, verbose = getOption("verbose"), prompt.echo = getOption("prompt"))
+  try(f_projectpath())
 } else {
-  print("Using data.table")
-  nthreads <- data.table::getDTthreads()
-  future::plan(sequential)
-  options(future.globals.maxSize = 10e9)
-}
-
-
-# nthreads <- data.table::getDTthreads()
-# cluster <- multidplyr::new_cluster(n = nthreads)
-if(nthreads > 4){
-  bpparam_multi <- BiocParallel::MulticoreParam(timeout = 100,
-                                                workers = nthreads - 2,
-                                                stop.on.error = TRUE,
-                                                RNGseed = 48105,
-                                                progressbar = TRUE)
-} else {
-  bpparam_multi <- BiocParallel::MulticoreParam(timeout = 100,
-                                                workers = nthreads,
-                                                stop.on.error = TRUE,
-                                                RNGseed = 48105,
-                                                progressbar = TRUE)
-}
-register(bpparam_multi)
-
-
-
-if(grepl("arch64", Sys.getenv("R_PLATFORM")) | grepl("usvi_temporal", getwd())){
-  projectpath <- getwd()
-} else {
-  if(grepl("vortex", getwd())){
-    # projectpath <- "/proj/omics/apprill"
-    projectpath <- "/vortexfs1/home/sharon.grim/projects/apprill/usvi_time"
+  cat("Preparing resource allocations.")
+  
+  #load packages
+  if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+  library(BiocManager)
+  library(BiocParallel)
+  library(data.table)
+  library(cli)
+  library(furrr)
+  library(progressr)
+  
+  #determine multithreading capability
+  if(grepl("arch64", Sys.getenv("R_PLATFORM"))){
+    print("Detected Mac, using parallelly...")
+    nthreads <- parallelly::availableCores(omit = 1) - 1
+    future::plan(multisession, workers = nthreads)
+    options(future.globals.maxSize = 10e9)
   } else {
-    projectpath <- "/user/sharon.grim/projects/apprill/usvi_time"
+    if(grepl("x86_64", Sys.getenv("R_PLATFORM"))){
+      print("Detected Windows")
+      nthreads <- parallelly::availableCores(omit = 1) - 1
+      future::plan(sequential)
+      options(future.globals.maxSize = 10e9)
+    } else {
+      print("Using data.table")
+      nthreads <- data.table::getDTthreads()
+      future::plan(sequential)
+      options(future.globals.maxSize = 10e9)
+    }
   }
+ 
+  if(nthreads > 4){
+    bpparam_multi <- BiocParallel::MulticoreParam(timeout = 100,
+                                                  workers = nthreads - 2,
+                                                  stop.on.error = TRUE,
+                                                  RNGseed = 48105,
+                                                  progressbar = TRUE)
+  } else {
+    bpparam_multi <- BiocParallel::MulticoreParam(timeout = 100,
+                                                  workers = nthreads,
+                                                  stop.on.error = TRUE,
+                                                  RNGseed = 48105,
+                                                  progressbar = TRUE)
+  }
+  register(bpparam_multi)
+  
+  
+  
+  #set project paths
+  if(grepl("arch64", Sys.getenv("R_PLATFORM")) | grepl("usvi_temporal", getwd())){
+    projectpath <- getwd()
+  } else {
+    if(grepl("vortex", getwd())){
+      # projectpath <- "/proj/omics/apprill"
+      projectpath <- "/vortexfs1/home/sharon.grim/projects/apprill/usvi_time"
+    } else {
+      projectpath <- "/user/sharon.grim/projects/apprill/usvi_time"
+    }
+  }
+  
 }
+library(tidyverse)
+library(dada2)
+
 
 # read in files -----------------------------------------------------------
 

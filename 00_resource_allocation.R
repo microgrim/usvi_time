@@ -56,20 +56,6 @@ if(nthreads > 4){
 }
 
 
-
-
-if(grepl("arch64", Sys.getenv("R_PLATFORM"))){
-  print("Setting your project path to your local working directory...")
-  projectpath <- getwd()
-} else {
-  if(grepl("vortexfs1", getwd()) | grepl("/user/", getwd()) | grepl("proj/omics", getwd())){
-    print("Setting your project path to your working directory on the HPC server...")
-    projectpath <- "/vortexfs1/home/sharon.grim/projects/apprill/usvi_time"
-  } else {
-    projectpath <- "/user/sharon.grim/projects/apprill/usvi_time"
-  }
-}
-
 f_projectpath <- function() {
   ANSWER <- readline("Type in your full project path. ")
   if (substr(ANSWER, 1, 1) == "/"){
@@ -82,6 +68,8 @@ f_projectpath <- function() {
     stop("Please provide a path.\n") 
   }
 }
-if(interactive()) try(f_projectpath())
+
+# if(interactive()) try(f_projectpath())
+# try(f_projectpath())
 
 

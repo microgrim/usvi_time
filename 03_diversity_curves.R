@@ -8,34 +8,42 @@
 
 if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
   cat("Preparing resource allocations.")
-  source(paste0(getwd(), "/", "00_resource_allocation.R"), local = FALSE)
+  source(paste0(getwd(), "/", "00_resource_allocation.R"), local = FALSE,
+         echo = TRUE, verbose = getOption("verbose"), prompt.echo = getOption("prompt"))
+  try(f_projectpath())
 } else {
   cat("Preparing resource allocations.")
+  
+  #load packages
   if(!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-  library(data.table)
   library(BiocManager)
   library(BiocParallel)
+  library(data.table)
   library(cli)
   library(furrr)
   library(progressr)
   
-  # Plan for resource allocation --------------------------------------------
+  #determine multithreading capability
   if(grepl("arch64", Sys.getenv("R_PLATFORM"))){
-    print("Using parallelly...")
-    nthreads <- parallelly::availableCores() - 1
+    print("Detected Mac, using parallelly...")
+    nthreads <- parallelly::availableCores(omit = 1) - 1
     future::plan(multisession, workers = nthreads)
     options(future.globals.maxSize = 10e9)
   } else {
-    print("Using data.table")
-    nthreads <- data.table::getDTthreads()
-    future::plan(sequential)
-    options(future.globals.maxSize = 10e9)
+    if(grepl("x86_64", Sys.getenv("R_PLATFORM"))){
+      print("Detected Windows")
+      nthreads <- parallelly::availableCores(omit = 1) - 1
+      future::plan(sequential)
+      options(future.globals.maxSize = 10e9)
+    } else {
+      print("Using data.table")
+      nthreads <- data.table::getDTthreads()
+      future::plan(sequential)
+      options(future.globals.maxSize = 10e9)
+    }
   }
   
-  
-  # nthreads <- data.table::getDTthreads()
-  # cluster <- multidplyr::new_cluster(n = nthreads)
   if(nthreads > 4){
     bpparam_multi <- BiocParallel::MulticoreParam(timeout = 100,
                                                   workers = nthreads - 2,
@@ -53,6 +61,7 @@ if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
   
   
   
+  #set project paths
   if(grepl("arch64", Sys.getenv("R_PLATFORM")) | grepl("usvi_temporal", getwd())){
     projectpath <- getwd()
   } else {
@@ -66,15 +75,10 @@ if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
   
 }
 
-# Load packages -----------------------------------------------------------
+# Load additional packages ------------------------------------------------
 
 library(tidyverse)
 library(phyloseq)
-
-# if(!require("ggvegan", quietly = TRUE)){
-#   install.packages("remotes")
-#   remotes::install_github("gavinsimpson/ggvegan")
-# }
 library(ggvegan)
 library(ggtext)
 library(viridis)
@@ -86,16 +90,11 @@ library(pals)
 
 # Custom functions --------------------------------------------------------
 
-#Turn data into relative abundances (since these data are compositional = quantitative descriptions of the parts of some whole, conveying relative information.)
-relabund <- function(sample) { #Write a relative abundance function
-  x = sample/sum(sample)
-  x = x*100
-  return(x)
-}
-
-scaleFUN2 <- function(x) sprintf("%.2f", x)
-scaleFUN1 <- function(x) sprintf("%.1f", x)
-scaleFUN0 <- function(x) sprintf("%.0f", x)
+if(file.exists(paste0(getwd(), "/", "00_custom_functions.R"))){
+  cat("Loading custom functions.")
+  source(paste0(getwd(), "/", "00_custom_functions.R"), local = FALSE,
+         echo = FALSE, verbose = getOption("verbose"), prompt.echo = getOption("prompt"))
+} 
 
 
 # Read in metadata --------------------------------------------------------
@@ -133,22 +132,11 @@ for(file in to_import){
 
 
 if(!exists("ps_usvi", envir = .GlobalEnv)){
-  if(file.exists(paste0(projectpath, "/", "usvi_prok_phyloseq", ".rds"))){
-    ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_phyloseq", ".rds"))
+  if(file.exists(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))){
+    # ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_phyloseq", ".rds"))
+    ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))
   } else {
-    ps_usvi <- phyloseq::phyloseq(phyloseq::otu_table((usvi_prok_asvs.df %>%
-                                                         tidyr::pivot_wider(., id_cols = c("asv_id"),
-                                                                            names_from = "sample_ID",
-                                                                            values_from = "counts") %>%
-                                                         tibble::column_to_rownames(var = "asv_id")),
-                                                      taxa_are_rows=TRUE),
-                                  phyloseq::sample_data(metadata %>%
-                                                          tibble::column_to_rownames(var = "sample_ID")),
-                                  phyloseq::tax_table(usvi_prok_asvs.taxa %>%
-                                                        dplyr::select(-sequence) %>%
-                                                        droplevels %>%
-                                                        tibble::column_to_rownames(var = "asv_id") %>%
-                                                        as.matrix))
+    cli::cli_alert_warning("Please process the USVI data through Phyloseq.")
     
   }
 }
@@ -164,6 +152,9 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
   dplyr::mutate(Genus = coalesce(Genus, Family)) %>%
   dplyr::mutate(Species = coalesce(Species, Genus)) %>%
   dplyr::relocate(asv_id) %>%
+  dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+                                          grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+                                          .default = Phylum)) %>%
   droplevels
 
 
@@ -190,6 +181,10 @@ sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
 
 # Prepare alpha diversity estimates ---------------------------------------
 
+
+#note that the following samples were sequenced in a separate run:
+#Metab_180, Metab_182, Metab_199, Metab_219, Metab_224, Metab_231, Metab_233, Metab_235
+
 usvi_seqdepth <- ps_usvi %>%
   phyloseq::subset_samples(., sample_type == "seawater") %>%
   phyloseq::otu_table(.) %>%
@@ -197,6 +192,12 @@ usvi_seqdepth <- ps_usvi %>%
   as.data.frame %>%
   t() %>%
   rowSums(.)
+#two LB samples and two Tektite samples had relatively lower seq counts
+#Metab_199, Metab_237
+#Metab_231, Metab_224
+
+usvi_seqdepth[c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235")]
+
 usvi_seqdepth_stats <- plyr::each(min, max)(usvi_seqdepth)
 
 usvi_rarefied_stats.df <- phyloseq::otu_table(ps_usvi) %>%
@@ -428,250 +429,4 @@ if(!any(grepl("controls", list.files(projectpath, pattern = "usvi_rarecurve.*.pn
 }
 
 
-# NMDS plot ---------------------------------------------------------------
-
-usvi_asv.tbl <- ps_usvi %>%
-  phyloseq::subset_samples(., sample_type == "seawater") %>%
-  phyloseq::otu_table(.) %>%
-  as.data.frame %>%
-  apply(., 2, relabund) %>% 
-  as.data.frame(.) %>%
-  dplyr::slice(which(rowSums(.) > 0)) %>%
-  tibble::rownames_to_column(var = "asv_id") %>%
-  tidyr::pivot_longer(., cols = -c("asv_id"),
-                      names_to = "sample",
-                      values_to = "abundance") %>%
-  dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
-                                  log2(abundance+1), #log transform abundance (with +1 pseudocount)
-                                  0)) %>%
-  tidyr::pivot_wider(., id_cols = "sample",
-                     # values_from = "abundance",
-                     values_from = "logabund",
-                     names_from = "asv_id") %>%
-  tibble::column_to_rownames(var = "sample")
-
-meta.seawater <- ps_usvi %>%
-  phyloseq::sample_data(.) %>%
-  tibble::as_tibble(rownames = "sample_id") %>%
-  dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
-  dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
-  # dplyr::select(sample_id, sampling_time, sampling_day, site, contains("fcm")) %>%
-  dplyr::select(!c(contains("label"), contains("dna_"))) %>%
-  tibble::column_to_rownames(., var = "sample_id") %>%
-  droplevels
-
-nmds.asv <- vegan::metaMDS(usvi_asv.tbl, distance = "bray", 
-                             autotransform = TRUE)
-
-env.sw <- vegan::envfit(nmds.asv, meta.seawater, permutations = 999, 
-                           na.rm = TRUE)
-
-nmds_asv_df <- (ggplot2::fortify(env.sw)) %>%
-  bind_rows(., (ggplot2::fortify(nmds.asv) %>%
-                  dplyr::filter(score == "sites") %>%
-                  dplyr::mutate(type = "sample") %>%
-                  dplyr::select(-score))) %>%
-  bind_rows(., (ggplot2::fortify(nmds.asv) %>%
-                  dplyr::filter(score == "species") %>%
-                  dplyr::mutate(type = "ASV") %>%
-                  dplyr::select(-score))) %>%
-  dplyr::left_join(., (metadata %>%
-                         dplyr::filter(grepl("seawater", sample_type)) %>%
-                         dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, replicate) %>%
-                         droplevels),
-                   by = c("label" = "sample_id"))
-
-
-{
-  ylim <- nmds_asv_df %>%
-    dplyr::filter(!grepl("ASV", type)) %>%
-    dplyr::select(NMDS2) %>%
-    simplify
-  xlim <- nmds_asv_df %>%
-    dplyr::filter(!grepl("ASV", type)) %>%
-    dplyr::select(NMDS1) %>%
-    simplify
-  nmds_lims <- list(ylim = c(round(min(ylim), digits = 1), round(max(ylim), digits = 1)) * 1.1,
-                    xlim = c(round(min(xlim), digits = 1), round(max(xlim), digits = 1)) * 1.1)
-  g1 <- ggplot(data = nmds_asv_df,
-               aes(x = NMDS1, y = NMDS2))
-  g1 <- g1 + theme(text = element_text(size=14))
-  g1 <- g1 + geom_point(data = (nmds_asv_df %>%
-                                  dplyr::filter(type == "sample") %>%
-                                  droplevels),
-                        aes(fill = site, shape = sampling_time), color = "black",
-                        size = 5, stroke = 2, alpha = 1)
-  g1 <- g1 + scale_shape_manual(values = c(22, 21), labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-  g1 <- g1 + scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
-  g1 <- g1 + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-                   panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-                   panel.grid = element_blank(),
-                   legend.position = "bottom",
-                   legend.key = element_blank(),
-                   legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-                   legend.text = element_text(size = 12, colour = "grey30"))
-  g1 <- g1 + guides(color = "none",
-                    fill = guide_legend(order = 2, ncol = 1, title = "Site", direction = "vertical",
-                                        override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-                    shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
-                                         override.aes = list(color = "black", stroke = 1, size = 2)))
-  g1 <- g1 + coord_cartesian(ylim = nmds_lims[["ylim"]],
-                             xlim = nmds_lims[["xlim"]],
-                             expand = TRUE)
-  g1
-  }
-
-# g2 <- g1 + geom_segment(aes(x = 0, y = 0,
-#                             xend = NMDS1,
-#                             yend = NMDS2),
-#                         data = (nmds_asv_df %>%
-#                                   dplyr::filter(type == "Vector") %>%
-#                                   droplevels),
-#                         arrow = grid::arrow(angle = 20, length = unit(0.05, "npc"),
-#                                             ends = "last", type = "closed"),
-#                         linewidth = 0.5, alpha = 0.5, colour = "grey30") +
-#   geom_text(data = (nmds_asv_df %>%
-#                                   dplyr::filter(type == "Vector") %>%
-#                                   dplyr::mutate(across(c(NMDS1, NMDS2), ~.x * 1.1)) %>%
-#                                   droplevels),
-#                         aes(label = label, x = NMDS1, vjust = "outward", hjust = "center",
-#                             y = NMDS2),
-#                         check_overlap = TRUE,
-#                         colour = "grey30", fontface = "bold")
-# g2
-
-if(!any(grepl("seawater", list.files(projectpath, pattern = "usvi_nmds.*.png")))){
-  ggsave(paste0(projectpath, "/", "usvi_nmds_seawater-", Sys.Date(), ".png"),
-         g1,
-         width = 10, height = 10, units = "in")
-}
-
-# g3 <- g1 + geom_segment(aes(x = 0, y = 0,
-#                             xend = NMDS1,
-#                             yend = NMDS2),
-#                         data = (nmds_sw_df %>%
-#                                   dplyr::filter(type == "ASV") %>%
-#                                   dplyr::slice_max(n = 10, order_by = abs(NMDS1)) %>%
-#                                   droplevels),
-#                         arrow = grid::arrow(angle = 20, length = unit(0.05, "npc"),
-#                                             ends = "last", type = "closed"),
-#                         linewidth = 0.5, alpha = 0.5, colour = "grey30") +
-#   geom_text(data = (nmds_sw_df %>%
-#                       dplyr::filter(type == "ASV") %>%
-#                       # dplyr::slice_max(abs(NMDS1), n = 10) %>%
-#                       dplyr::slice_max(n = 10, order_by = abs(NMDS1)) %>%
-#                       dplyr::mutate(across(c(NMDS1, NMDS2), ~.x * 1.1)) %>%
-#                       droplevels),
-#             aes(label = label, x = NMDS1, vjust = "outward", hjust = "center",
-#                 y = NMDS2),
-#             check_overlap = TRUE,
-#             colour = "grey30", fontface = "bold")
-# g3
-
-
-#correlate the bray-curtis NMDS of seawater samples with the FCM measurements?
-#FCM sample from Metab_280 had weird Prochlorococcus, Picoeukaryotes, and unpigmented cells
-usvi_sw_fcm_df <- ps_usvi %>%
-  phyloseq::sample_data(.) %>%
-  tibble::as_tibble(rownames = "sample_id") %>%
-  dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
-  dplyr::filter(!grepl("Metab_280", sample_id)) %>%
-  # dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
-#   dplyr::select(sample_id, sampling_time, sampling_day, site, contains("fcm")) %>%
-#   dplyr::select(!c(contains("label"), contains("dna_"))) %>%
-  tibble::column_to_rownames(., var = "sample_id") %>%
-#   droplevels
-# usvi_sw_fcm_df <- meta.seawater[!grepl("Metab_280", rownames(meta.seawater)),] %>%
-# usvi_sw_fcm_df <- meta.seawater %>%
-  dplyr::select(starts_with("fcm_")) %>%
-  tidyr::drop_na(.) %>%
-  vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
-                                 autotransform = TRUE) %>%
-  as.matrix(.) %>%
-  as.data.frame(.) %>%
-  tibble::rownames_to_column(var = "sample_id") %>%
-  droplevels
-
-usvi_sw_dist_df <- vegan::vegdist(usvi_asv.tbl, distance = "horn", binary = FALSE, upper = TRUE,
-                                  autotransform = TRUE) %>%
-  as.matrix(.) %>%
-  as.data.frame(.) %>%
-  dplyr::select(usvi_sw_fcm_df[["sample_id"]]) %>%
-  tibble::rownames_to_column(var = "sample_id") %>%
-  dplyr::filter(sample_id %in% usvi_sw_fcm_df[["sample_id"]]) %>%
-  droplevels %>%
-  tibble::column_to_rownames(var = "sample_id")
-usvi_sw_fcm_df <- usvi_sw_fcm_df %>%
-  tibble::column_to_rownames(var = "sample_id")
-
-usvi_mantel_res <- vegan::mantel(usvi_sw_fcm_df, usvi_sw_dist_df, permutations = 999, parallel = nthreads,
-                                 # method = "pearson") 
-                                 method = "spearman")
-
-#so the statistic ranges from 0.33 to 0.46 but the "signif = 0.001
-
-
-#make a NMDS using the FCM measurements and see if we have anything significant.
-nmds.fcm <- ps_usvi %>%
-  phyloseq::sample_data(.) %>%
-  tibble::as_tibble(rownames = "sample_id") %>%
-  dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
-  dplyr::filter(!grepl("Metab_280", sample_id)) %>%
-  tibble::column_to_rownames(., var = "sample_id") %>%
-  dplyr::select(starts_with("fcm_")) %>%
-  tidyr::drop_na(.) %>%
-  vegan::decostand(., method = "normalize") %>%
-  # dplyr::mutate(across(everything(), scale)) %>%
-  vegan::metaMDS(., distance = "horn", autotransform = FALSE)
-
-
-nmds_fcm_df <- ggplot2::fortify(nmds.fcm) %>%
-                  dplyr::filter(score == "sites") %>%
-                  dplyr::mutate(type = "sample") %>%
-                  dplyr::select(-score) %>%
-  dplyr::left_join(., (metadata %>%
-                         dplyr::filter(grepl("seawater", sample_type)) %>%
-                         dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, replicate) %>%
-                         droplevels),
-                   by = c("label" = "sample_id")) %>%
-  droplevels
-
-{
-  ylim <- nmds_fcm_df %>%
-    dplyr::filter(!grepl("ASV", type)) %>%
-    dplyr::select(NMDS2) %>%
-    simplify
-  xlim <- nmds_fcm_df %>%
-    dplyr::filter(!grepl("ASV", type)) %>%
-    dplyr::select(NMDS1) %>%
-    simplify
-  nmds_lims <- list(ylim = c(round(min(ylim), digits = 4), round(max(ylim), digits = 4)) * 1.1,
-                    xlim = c(round(min(xlim), digits = 4), round(max(xlim), digits = 4)) * 1.1)
-  g3 <- ggplot(data = nmds_fcm_df,
-               aes(x = NMDS1, y = NMDS2))
-  g3 <- g3 + theme(text = element_text(size=14))
-  g3 <- g3 + geom_point(data = (nmds_fcm_df %>%
-                                  dplyr::filter(type == "sample") %>%
-                                  droplevels),
-                        aes(fill = site, shape = sampling_time), color = "black",
-                        size = 5, stroke = 2, alpha = 1)
-  g3 <- g3 + scale_shape_manual(values = c(22, 21), labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-  g3 <- g3 + scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
-  g3 <- g3 + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-                   panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-                   panel.grid = element_blank(),
-                   legend.position = "bottom",
-                   legend.key = element_blank(),
-                   legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-                   legend.text = element_text(size = 12, colour = "grey30"))
-  g3 <- g3 + guides(color = "none",
-                    fill = guide_legend(order = 2, ncol = 1, title = "Site", direction = "vertical",
-                                        override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-                    shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
-                                         override.aes = list(color = "black", stroke = 1, size = 2)))
-  g3 <- g3 + coord_cartesian(ylim = nmds_lims[["ylim"]],
-                             xlim = nmds_lims[["xlim"]],
-                             expand = TRUE)
-  g3
-  }
 
