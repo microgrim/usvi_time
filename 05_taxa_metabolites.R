@@ -77,14 +77,14 @@ if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
 # Load additional packages ------------------------------------------------
 
 library(tidyverse)
-library(phyloseq)
+# library(phyloseq)
 library(ggvegan)
 library(ggtext)
 library(viridis)
 library(patchwork)
 library(viridisLite)
 library(pals)
-
+library(radEmu)
 
 
 # Custom functions --------------------------------------------------------
@@ -139,7 +139,25 @@ if(!exists("ps_usvi", envir = .GlobalEnv)){
     
   }
 }
-
+if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))){
+  metabolomics_sample_metadata <- readr::read_delim(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"), delim = "\t", col_names = TRUE, show_col_types = FALSE)
+} else {
+  metabolomics_sample_metadata <- ps_usvi %>%
+    phyloseq::sample_data(.) %>%
+    tibble::as_tibble(., rownames = "sample_id") %>%
+    tidyr::drop_na(metab_deriv_label) %>%
+    tidyr::separate_longer_delim(., metab_deriv_label, delim = ", ") %>%
+    dplyr::mutate(metab_deriv_label = stringr::str_remove_all(metab_deriv_label, "[[:punct:]]") %>%
+                    stringr::str_replace_all(., "[[:alpha:]]{1,}", "CINAR_BC_")) %>%
+    dplyr::mutate(metab_deriv_label = dplyr::case_when(grepl("Metab_219", sample_id) ~ "CINAR_BC_81B",
+                                                       grepl("Metab_319", sample_id) ~ "CINAR_BC_81A",
+                                                       .default = metab_deriv_label)) %>%
+    droplevels
+  
+  readr::write_delim(metabolomics_sample_metadata, paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"),
+                     delim = "\t", col_names = TRUE, num_threads = nthreads)
+  
+}
 
 #replace NA in taxonomy with last known level
 
@@ -199,19 +217,9 @@ usvi_metabolomics_long.df <- readr::read_delim(paste0(projectpath, "/", "USVI202
 # long metabolomics dataset from Brianna confirms that CINAR_BC_81A is the BC sample associated with Tektite Metab_319
 # and CINAR_BC_81B is the BC sample associated with LB_seagrass Metab_219
 
-metabolomics_sample_metadata <- ps_usvi %>%
-  phyloseq::sample_data(.) %>%
-  tibble::as_tibble(., rownames = "sample_id") %>%
-  tidyr::drop_na(metab_deriv_label) %>%
-  tidyr::separate_longer_delim(., metab_deriv_label, delim = ", ") %>%
-  dplyr::mutate(metab_deriv_label = stringr::str_remove_all(metab_deriv_label, "[[:punct:]]") %>%
-                  stringr::str_replace_all(., "[[:alpha:]]{1,}", "CINAR_BC_")) %>%
-  dplyr::mutate(metab_deriv_label = dplyr::case_when(grepl("Metab_219", sample_id) ~ "CINAR_BC_81B",
-                                                     grepl("Metab_319", sample_id) ~ "CINAR_BC_81A",
-                                                     .default = metab_deriv_label)) %>%
-  droplevels
 
 
+# NMDS on metabolomics profiles -------------------------------------------
 
 {
  
@@ -452,55 +460,309 @@ nmds_asv_df %>%
 
 
 
-
-# if(!any(grepl("seawater", list.files(projectpath, pattern = "usvi_nmds.*.png")))){
-#   ggsave(paste0(projectpath, "/", "usvi_nmds_seawater-", Sys.Date(), ".png"),
-#          g1,
-#          width = 10, height = 10, units = "in")
-# }
-
-
 # Correlations between DNA profile and metabolomics -----------------------
 
 drop <- c("CINAR_BC_73", "CINAR_BC_43", "CINAR_BC_105", "CINAR_BC_69")
 usvi_metab_df <- usvi_metabolomics.df %>%
   dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
-  tibble::column_to_rownames(var = "metab_deriv_label") %>%
-  as.matrix(.) %>%
-    vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
-                   autotransform = TRUE) %>%
-  # as.matrix(.) %>% as.data.frame(.) %>% tibble::rownames_to_column(var = "sample_id") %>% droplevels
-  as.matrix(.)
-
-usvi_asv_df <- ps_usvi %>%
-  phyloseq::subset_samples(., sample_type == "seawater") %>%
-  phyloseq::otu_table(.) %>%
-  t() %>%
-  as.data.frame %>%
-  tibble::rownames_to_column(var = "sample_id") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
                          dplyr::filter(grepl("seawater", sample_type)) %>%
                          dplyr::select(sample_id, metab_deriv_label) %>%
                          droplevels),
-                   by = join_by(sample_id)) %>%
-    dplyr::select(-sample_id) %>%
-    tibble::column_to_rownames(var = "metab_deriv_label") %>%
-  t() %>%
-  apply(., 2, relabund) %>% 
+                   by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+  dplyr::relocate(sample_id) %>%
+  tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
+                      names_to = "simpleName",
+                      values_to = "conc") %>%
+  dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::group_by(sample_id, simpleName) %>%
+  # dplyr::summarise(num = length(conc)) %>%
+  dplyr::summarise(mean_conc = mean(conc, na.rm = TRUE), 
+                   num = length(conc),
+                   # .by = c(sample_id, simpleName),
+                   .groups = "keep",
+                   sd = sd(conc, na.rm = TRUE)) %>%
+  dplyr::rename(conc = "mean_conc") %>%
+  dplyr::select(sample_id, simpleName, conc) %>%
+  droplevels
+
+
+sample_relabel <- metabolomics_sample_metadata %>%
+  dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
+  dplyr::distinct(., .keep_all = TRUE) %>%
+  dplyr::arrange(site, sampling_time, sampling_day) %>%
+  droplevels %>%
+  tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time), sep = "_", remove = TRUE)  %>%
+  tibble::deframe(.)
+
+# 
+# usvi_metab_mat <- usvi_metab_df %>%
+#   dplyr::group_by(simpleName) %>%
+#   dplyr::mutate(conc = scales::rescale(conc)) %>%
+#   tidyr::pivot_wider(., id_cols = "sample_id",
+#                      names_from = "simpleName",
+#                      values_fill = 0,
+#                      values_from = "conc") %>%
+#   tibble::column_to_rownames(var = "sample_id") %>%
+#   as.matrix(.) %>%
+#     vegan::vegdist(., binary = FALSE, upper = TRUE,
+#                    # distance = "horn", 
+#                    distance = "bray",
+#                    autotransform = TRUE) %>%
+#   as.matrix(.)
+
+
+
+usvi_metab_mat <- usvi_metab_df %>%
+  dplyr::group_by(sample_id) %>%
+  dplyr::mutate(conc = relabund(conc)) %>%
+    dplyr::group_by(simpleName) %>%
+    dplyr::mutate(conc = scales::rescale(conc)) %>%
+  tidyr::pivot_wider(., id_cols = "sample_id",
+                     names_from = "simpleName",
+                     values_fill = 0,
+                     values_from = "conc") %>%
+  tibble::column_to_rownames(var = "sample_id") %>%
+  as.matrix(.) %>%
+  vegan::vegdist(., binary = FALSE, upper = TRUE,
+                 distance = "horn",
+                 # distance = "bray",
+                 autotransform = TRUE) %>%
+  as.matrix(.)
+
+temp_df <- usvi_metab_mat %>%
+  as.matrix(.) %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "sample_1") %>%
+  tidyr::pivot_longer(., cols = !c(sample_1),
+                      names_to = "sample_2",
+                      values_to = "dissimilarity") %>%
+  # dplyr::distinct(sample_1, sample_2, .keep_all = TRUE) %>%
+  dplyr::distinct(., .keep_all = FALSE) %>%
+  # dplyr::left_join(., metabolomics_sample_metadata %>%
+  #                    dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
+  #                    droplevels,
+  #                  by = c("sample_1" = "sample_id"), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::mutate(dissimilarity = dplyr::case_when(sample_1 == sample_2 ~ NA,
+                                              .default = dissimilarity)) %>%
+  # dplyr::mutate(sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+  #               sampling_time = factor(sampling_time, levels = names(sampling_time_lookup)),
+  #               site = factor(site, levels = names(site_lookup))) %>%
+  dplyr::mutate(sample_1 = factor(sample_1, levels = names(sample_relabel)),
+                sample_2 = factor(sample_2, levels = names(sample_relabel))) %>%
+  droplevels
+
+
+
+g1 <- print(
+  ggplot(data = temp_df)
+  + theme_bw() 
+  + geom_tile(aes(x = sample_1, y = sample_2, 
+                  # group = interaction(site, sampling_day, sampling_time),
+                  fill = (1-dissimilarity)*100),
+              show.legend = TRUE)
+  + scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100), transform = "reverse",
+                         aesthetics = "fill", expand = expansion(1.1,1.1), name = "Similarity (%)",
+                         na.value = "white")
+  + scale_x_discrete(labels = sample_relabel, name = "Sample identifier")
+  + scale_y_discrete(labels = sample_relabel, name = "Sample identifier")
+  + theme(strip.text.y = element_text(angle = 0),
+          axis.text.x = element_text(angle = 90), 
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank())
+)
+
+#trying out mrpp--in progress
+{
+  # temp_mat_metadata <- metabolomics_sample_metadata %>%
+  #   dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
+  #   dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+  #   droplevels %>%
+  #   dplyr::ungroup(.) %>%
+  #   # dplyr::mutate(across(c(site, sampling_day, sampling_time), ~as.character(.x))) %>%
+  #   # dplyr::mutate(across(c(site, sampling_day, sampling_time), ~as.numeric(.x))) %>%
+  #   tibble::column_to_rownames(var = "sample_id")
+  #   # dplyr::select(sample_id, site) %>%
+  #   # tibble::deframe(.)
+  # 
+  # metab_mrpp <- vegan::mrpp(usvi_metab_mat, temp_mat_metadata$site)
+}
+
+# usvi_asv_df <- ps_usvi %>%
+#   phyloseq::subset_samples(., sample_type == "seawater") %>%
+#   phyloseq::otu_table(.) %>%
+#   t() %>%
+#   as.data.frame %>%
+#   tibble::rownames_to_column(var = "sample_id") %>%
+#   dplyr::left_join(., (metabolomics_sample_metadata %>%
+#                          dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+#                          dplyr::filter(grepl("seawater", sample_type)) %>%
+#                          dplyr::select(sample_id, metab_deriv_label) %>%
+#                          droplevels),
+#                    by = join_by(sample_id)) %>%
+#     dplyr::select(-sample_id) %>%
+#     tibble::column_to_rownames(var = "metab_deriv_label") %>%
+#   t() %>%
+#   apply(., 2, relabund) %>% 
+#   as.data.frame(.) %>%
+#   dplyr::slice(which(rowSums(.) > 0)) %>%
+#   tibble::rownames_to_column(var = "asv_id") %>%
+#   tidyr::pivot_longer(., cols = -c("asv_id"),
+#                       names_to = "sample",
+#                       values_to = "abundance")
+# usvi_asv_mat <- usvi_asv_df %>%
+#   dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
+#                                   log2(abundance+1), #log transform abundance (with +1 pseudocount)
+#                                   0)) %>%
+#   tidyr::pivot_wider(., id_cols = "sample",
+#                      # values_from = "abundance",
+#                      values_from = "logabund",
+#                      names_from = "asv_id") %>%
+#   dplyr::filter(sample %in% colnames(usvi_metab_mat)) %>%
+#   tibble::column_to_rownames(var = "sample") %>%
+#   tidyr::drop_na(.) %>%
+#   vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
+#                  autotransform = TRUE) %>%
+#   # as.matrix(.) %>% as.data.frame(.) %>% tibble::rownames_to_column(var = "sample_id") %>% droplevels
+#   as.matrix(.)
+
+# usvi_mantel_res <- vegan::mantel(usvi_asv_mat, usvi_metab_mat, permutations = 999, parallel = nthreads,
+#                                  # method = "pearson") 
+#                                  method = "spearman")
+
+#at the ASV level,
+# Call:
+#   vegan::mantel(xdis = usvi_asv_df, ydis = usvi_metab_df, method = "spearman",      permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: -0.04485 
+# Significance: 0.786 
+
+
+#what about at the genus level?
+# usvi_genus_df <- ps_usvi %>%
+#   phyloseq::subset_samples(., sample_type == "seawater") %>%
+#   phyloseq::filter_taxa(function(x) sum(x) > 0, TRUE) %>% # remove ASVs not present in any samples
+#   phyloseq::tax_glom(., taxrank = "Genus") %>%
+#   phyloseq::otu_table(.) %>%
+#   t() %>%
+#   as.data.frame %>%
+#   tibble::rownames_to_column(var = "sample_id") %>%
+#   # dplyr::filter(sample_ID %in% metabolomics_sample_metadata[["sample_id"]]) %>%
+#   dplyr::left_join(., (metabolomics_sample_metadata %>%
+#                          dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+#                          dplyr::filter(grepl("seawater", sample_type)) %>%
+#                          dplyr::select(sample_id, metab_deriv_label) %>%
+#                          droplevels),
+#                    by = join_by(sample_id)) %>%
+#   dplyr::select(-sample_id) %>%
+#   tibble::column_to_rownames(var = "metab_deriv_label") %>%
+#   t() %>%
+#   apply(., 2, relabund) %>% 
+#   as.data.frame(.) %>%
+#   dplyr::slice(which(rowSums(.) > 0)) %>%
+#   tibble::rownames_to_column(var = "asv_id") %>%
+#   # tidyr::pivot_longer(., cols = -c("asv_id"),
+#   #                     names_to = "sample",
+#   #                     values_to = "abundance")  %>%
+#   droplevels
+
+# usvi_genus_mat <- usvi_genus_df %>%
+#   dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
+#                                   log2(abundance+1), #log transform abundance (with +1 pseudocount)
+#                                   0)) %>%
+#   tidyr::pivot_wider(., id_cols = "sample",
+#                      # values_from = "abundance",
+#                      values_from = "logabund",
+#                      names_from = "asv_id") %>%
+#   dplyr::filter(sample %in% colnames(usvi_metab_mat)) %>%
+#   tibble::column_to_rownames(var = "sample") %>%
+#   tidyr::drop_na(.) %>%
+#   vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
+#                  autotransform = TRUE) %>%
+#   # as.matrix(.) %>% as.data.frame(.) %>% tibble::rownames_to_column(var = "sample_id") %>% droplevels
+#   as.matrix(.)
+# 
+# usvi_mantel_genus_res <- vegan::mantel(usvi_genus_mat, usvi_metab_mat, permutations = 999, parallel = nthreads,
+#                                  method = "pearson")
+#                                  # method = "spearman")
+# Call:
+#   vegan::mantel(xdis = usvi_genus_df, ydis = usvi_metab_df, method = "pearson",      permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: -0.06304 
+# Significance: 0.846 
+
+
+#get the top 100 genera:
+usvi_sw_genus.taxa.df <- usvi_prok_filled.taxa.df %>%
+  dplyr::select(asv_id, Domain, Phylum, Class, Order, Family, Genus) %>%
+  dplyr::distinct(Domain, Phylum, Class, Order, Family, Genus, .keep_all = TRUE) %>%
+  droplevels
+
+usvi_sw_genus.tbl <- usvi_prok_asvs.df %>%
+  dplyr::filter(sample_ID %in% rownames(usvi_metab_mat)) %>%
+  droplevels %>%
+  tidyr::pivot_wider(., id_cols = "asv_id",
+                     names_from = "sample_ID",
+                     values_from = "counts",
+                     values_fill = 0) %>%
+  otu_to_taxonomy(., usvi_prok_filled.taxa.df, level = "Genus") %>%
+  dplyr::left_join(., usvi_sw_genus.taxa.df,
+                   by = join_by(Domain, Phylum, Class, Order, Family, Genus)) %>%
+  dplyr::relocate(asv_id) %>%
+  dplyr::select(-c(Domain, Phylum, Class, Order, Family, Genus)) %>%
+  droplevels
+
+usvi_top100_genus_mat <- usvi_sw_genus.tbl %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  apply(., 2, relabund) %>%
   as.data.frame(.) %>%
   dplyr::slice(which(rowSums(.) > 0)) %>%
+  dplyr::mutate(TotAbund = rowSums(.)) %>%
+  dplyr::arrange(desc(TotAbund)) %>%
+  dplyr::slice_head(., n = 100) %>%
+  dplyr::select(-TotAbund) %>%
   tibble::rownames_to_column(var = "asv_id") %>%
   tidyr::pivot_longer(., cols = -c("asv_id"),
                       names_to = "sample",
-                      values_to = "abundance") %>%
+                      values_to = "abundance")  %>%
+  droplevels %>%
+  # dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
+  #                                 log2(abundance+1), #log transform abundance (with +1 pseudocount)
+  #                                 0)) %>%
+  tidyr::pivot_wider(., id_cols = "sample",
+                     values_from = "abundance",
+                     # values_from = "logabund",
+                     names_from = "asv_id") %>%
+  dplyr::filter(sample %in% colnames(usvi_metab_mat)) %>%
+  tibble::column_to_rownames(var = "sample") %>%
+  tidyr::drop_na(.) %>%
+  vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
+                 autotransform = TRUE) %>%
+  as.matrix(.)
+
+usvi_top25_genus_mat <- usvi_sw_genus.tbl %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  apply(., 2, relabund) %>%
+  as.data.frame(.) %>%
+  dplyr::slice(which(rowSums(.) > 0)) %>%
+  dplyr::mutate(TotAbund = rowSums(.)) %>%
+  dplyr::arrange(desc(TotAbund)) %>%
+  dplyr::slice_head(., n = 25) %>%
+  dplyr::select(-TotAbund) %>%
+  tibble::rownames_to_column(var = "asv_id") %>%
+  tidyr::pivot_longer(., cols = -c("asv_id"),
+                      names_to = "sample",
+                      values_to = "abundance")  %>%
+  droplevels %>%
   dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
                                   log2(abundance+1), #log transform abundance (with +1 pseudocount)
                                   0)) %>%
   tidyr::pivot_wider(., id_cols = "sample",
-                     # values_from = "abundance",
-                     values_from = "logabund",
+                     values_from = "abundance",
+                     # values_from = "logabund",
                      names_from = "asv_id") %>%
-  dplyr::filter(sample %in% colnames(usvi_metab_df)) %>%
+  dplyr::filter(sample %in% colnames(usvi_metab_mat)) %>%
   tibble::column_to_rownames(var = "sample") %>%
   tidyr::drop_na(.) %>%
   vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
@@ -508,114 +770,216 @@ usvi_asv_df <- ps_usvi %>%
   # as.matrix(.) %>% as.data.frame(.) %>% tibble::rownames_to_column(var = "sample_id") %>% droplevels
   as.matrix(.)
 
-usvi_mantel_res <- vegan::mantel(usvi_asv_df, usvi_metab_df, permutations = 999, parallel = nthreads,
-                                 # method = "pearson") 
-                                 method = "spearman")
 
-# 
-# 
-# #correlate the bray-curtis NMDS of seawater samples with the FCM measurements?
-# #FCM sample from Metab_280 had weird Prochlorococcus, Picoeukaryotes, and unpigmented cells
-# usvi_sw_fcm_df <- ps_usvi %>%
-#   phyloseq::sample_data(.) %>%
-#   tibble::as_tibble(rownames = "sample_id") %>%
-#   dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
-#   dplyr::filter(!grepl("Metab_280", sample_id)) %>%
-#   # dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
-#   #   dplyr::select(sample_id, sampling_time, sampling_day, site, contains("fcm")) %>%
-#   #   dplyr::select(!c(contains("label"), contains("dna_"))) %>%
-#   tibble::column_to_rownames(., var = "sample_id") %>%
-#   #   droplevels
-#   # usvi_sw_fcm_df <- meta.seawater[!grepl("Metab_280", rownames(meta.seawater)),] %>%
-#   # usvi_sw_fcm_df <- meta.seawater %>%
-#   dplyr::select(starts_with("fcm_")) %>%
-#   tidyr::drop_na(.) %>%
-#   vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
-#                  autotransform = TRUE) %>%
-#   as.matrix(.) %>%
-#   as.data.frame(.) %>%
-#   tibble::rownames_to_column(var = "sample_id") %>%
-#   droplevels
-# 
-# usvi_sw_dist_df <- vegan::vegdist(usvi_asv.tbl, distance = "horn", binary = FALSE, upper = TRUE,
-#                                   autotransform = TRUE) %>%
-#   as.matrix(.) %>%
-#   as.data.frame(.) %>%
-#   dplyr::select(usvi_sw_fcm_df[["sample_id"]]) %>%
-#   tibble::rownames_to_column(var = "sample_id") %>%
-#   dplyr::filter(sample_id %in% usvi_sw_fcm_df[["sample_id"]]) %>%
-#   droplevels %>%
-#   tibble::column_to_rownames(var = "sample_id")
-# usvi_sw_fcm_df <- usvi_sw_fcm_df %>%
-#   tibble::column_to_rownames(var = "sample_id")
-
-usvi_mantel_res <- vegan::mantel(usvi_sw_fcm_df, usvi_sw_dist_df, permutations = 999, parallel = nthreads,
-                                 # method = "pearson") 
-                                 method = "spearman")
-
-#so the statistic ranges from 0.33 to 0.46 but the "signif = 0.001
+usvi_top_genus_mat <- usvi_top100_genus_mat
+# usvi_top_genus_mat <- usvi_top25_genus_mat
 
 
-#make a NMDS using the FCM measurements and see if we have anything significant.
-nmds.fcm <- ps_usvi %>%
-  phyloseq::sample_data(.) %>%
-  tibble::as_tibble(rownames = "sample_id") %>%
-  dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
-  dplyr::filter(!grepl("Metab_280", sample_id)) %>%
-  tibble::column_to_rownames(., var = "sample_id") %>%
-  dplyr::select(starts_with("fcm_")) %>%
-  tidyr::drop_na(.) %>%
-  vegan::decostand(., method = "normalize") %>%
-  # dplyr::mutate(across(everything(), scale)) %>%
-  vegan::metaMDS(., distance = "horn", autotransform = FALSE)
-
-
-nmds_fcm_df <- ggplot2::fortify(nmds.fcm) %>%
-  dplyr::filter(score == "sites") %>%
-  dplyr::mutate(type = "sample") %>%
-  dplyr::select(-score) %>%
-  dplyr::left_join(., (metadata %>%
-                         dplyr::filter(grepl("seawater", sample_type)) %>%
-                         dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, replicate) %>%
-                         droplevels),
-                   by = c("label" = "sample_id")) %>%
-  droplevels
+#if you want to plot the similarities:
 
 {
-  ylim <- nmds_fcm_df %>%
-    dplyr::filter(!grepl("ASV", type)) %>%
-    dplyr::select(NMDS2) %>%
-    simplify
-  xlim <- nmds_fcm_df %>%
-    dplyr::filter(!grepl("ASV", type)) %>%
-    dplyr::select(NMDS1) %>%
-    simplify
-  nmds_lims <- list(ylim = c(round(min(ylim), digits = 4), round(max(ylim), digits = 4)) * 1.1,
-                    xlim = c(round(min(xlim), digits = 4), round(max(xlim), digits = 4)) * 1.1)
-  g3 <- ggplot(data = nmds_fcm_df,
-               aes(x = NMDS1, y = NMDS2))
-  g3 <- g3 + theme(text = element_text(size=14))
-  g3 <- g3 + geom_point(data = (nmds_fcm_df %>%
-                                  dplyr::filter(type == "sample") %>%
-                                  droplevels),
-                        aes(fill = site, shape = sampling_time), color = "black",
-                        size = 5, stroke = 2, alpha = 1)
-  g3 <- g3 + scale_shape_manual(values = c(22, 21), labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-  g3 <- g3 + scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
-  g3 <- g3 + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-                   panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-                   panel.grid = element_blank(),
-                   legend.position = "bottom",
-                   legend.key = element_blank(),
-                   legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-                   legend.text = element_text(size = 12, colour = "grey30"))
-  g3 <- g3 + guides(color = "none",
-                    fill = guide_legend(order = 2, ncol = 1, title = "Site", direction = "vertical",
-                                        override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-                    shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
-                                         override.aes = list(color = "black", stroke = 1, size = 2)))
-  g3 <- g3 + coord_cartesian(ylim = nmds_lims[["ylim"]],
-                             xlim = nmds_lims[["xlim"]],
-                             expand = TRUE)
-  g3
+  # temp_mat <- usvi_metab_mat
+
+  reorder_mat <- intersect(names(sample_relabel), colnames(usvi_metab_mat))
+  temp_mat <- usvi_metab_mat[reorder_mat, reorder_mat]
+  
+  temp_mat[upper.tri(temp_mat, diag = FALSE)] <- NA
+  temp_df <- temp_mat %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "sample_1") %>%
+    tidyr::pivot_longer(., cols = !c(sample_1),
+                        names_to = "sample_2",
+                        values_to = "dissimilarity") %>%
+    tidyr::drop_na(.) %>%
+    dplyr::mutate(input = "metabolites") %>%
+    dplyr::ungroup(.) %>%
+    # dplyr::mutate(sample_1 = factor(sample_1, levels = names(sample_relabel)),
+    #               sample_2 = factor(sample_2, levels = names(sample_relabel))) %>%
+    dplyr::arrange(dissimilarity) %>%
+    dplyr::mutate(sample_1 = factor(sample_1, levels = unique(.[["sample_1"]])),
+                  sample_2 = factor(sample_2, levels = unique(.[["sample_2"]]))) %>%
+    droplevels
+  
+  g1 <- print(
+    ggplot(data = temp_df %>%
+             dplyr::mutate(dissimilarity = dplyr::case_when(sample_1 == sample_2 ~ NA,
+                                                            .default = dissimilarity)))
+    + theme_bw() 
+    + geom_tile(aes(x = sample_1, y = sample_2, fill = (1-dissimilarity)*100, group = input),
+                show.legend = TRUE)
+    + scale_fill_gradientn(colors = colorRampPalette(pals::parula(n = 3))(100), 
+                           # transform = "reverse", limits = c(100, 0),
+                           aesthetics = "fill", 
+                           limits = c(0, 100),
+                           # expand = expansion(1.1,1.1), 
+                           name = "Similarity (%)",
+                           na.value = "white")
+    + scale_x_discrete(labels = sample_relabel, name = "Sample identifier")
+    + scale_y_discrete(labels = sample_relabel, name = "Sample identifier")
+    + theme(strip.text.y = element_text(angle = 0),
+            axis.text.x = element_text(angle = 90), 
+            panel.grid.minor = element_blank(),
+            panel.grid.major = element_blank())
+  )
+  
+  
+  usvi_top_genus_mat <- usvi_top100_genus_mat
+  # usvi_top_genus_mat <- usvi_top_genus_mat[rownames(usvi_metab_mat), colnames(usvi_metab_mat)]
+  usvi_top_genus_mat <- usvi_top_genus_mat[rownames(temp_mat), colnames(temp_mat)]
+  
+  usvi_top_genus_mat[upper.tri(usvi_top_genus_mat, diag = FALSE)] <- NA
+  temp_df2 <- usvi_top_genus_mat %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "sample_2") %>%
+    tidyr::pivot_longer(., cols = !c(sample_2),
+                        names_to = "sample_1",
+                        values_to = "dissimilarity") %>%
+    tidyr::drop_na(.) %>%
+    # dplyr::mutate(dissimilarity = dplyr::case_when(sample_1 == sample_2 ~ NA,
+    #                                                .default = dissimilarity)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::mutate(input = "genera") %>%
+    # dplyr::mutate(sample_1 = factor(sample_1, levels = names(sample_relabel)),
+    #               sample_2 = factor(sample_2, levels = names(sample_relabel))) %>%
+    dplyr::arrange(dissimilarity) %>%
+    dplyr::mutate(sample_1 = factor(sample_1, levels = unique(.[["sample_1"]])),
+                  sample_2 = factor(sample_2, levels = unique(.[["sample_2"]]))) %>%
+    droplevels
+  
+  g2 <- print(
+    ggplot(data = temp_df2)
+    + theme_bw() 
+    + geom_tile(aes(x = sample_1, y = sample_2, fill = (1-dissimilarity)*100, group = input),
+                show.legend = TRUE)
+    + scale_fill_gradientn(colors = colorRampPalette(pals::parula(n = 3))(100), 
+                         # transform = "reverse", limits = c(100, 0),
+                         aesthetics = "fill", 
+                         limits = c(0, 100),
+                         # expand = expansion(1.1,1.1), 
+                         name = "Similarity (%)",
+                         na.value = "white")
+    + scale_x_discrete(labels = sample_relabel, name = "Sample identifier")
+    + scale_y_discrete(labels = sample_relabel, name = "Sample identifier")
+    + theme(strip.text.y = element_text(angle = 0),
+            axis.text.x = element_text(angle = 90), 
+            panel.grid.minor = element_blank(),
+            panel.grid.major = element_blank())
+  )
+  
+  temp_df3 <- temp_df2 %>%
+    bind_rows(., temp_df) %>%
+    dplyr::mutate(input = factor(input, levels = c("genera", "metabolites"))) %>%
+    dplyr::rowwise(.) %>%
+    dplyr::mutate(dissimilarity = dplyr::case_when(sample_1 == sample_2 ~ NA,
+                                                   .default = dissimilarity)) %>%
+    dplyr::mutate(sample_1 = factor(sample_1, levels = unique(.[["sample_1"]])),
+                  sample_2 = factor(sample_2, levels = unique(.[["sample_2"]]))) %>%
+    # dplyr::mutate(sample_1 = factor(sample_1, levels = names(sample_relabel)),
+    #               sample_2 = factor(sample_2, levels = names(sample_relabel))) %>%
+    dplyr::arrange(input, sample_1, sample_2) %>%
+    droplevels
+
+  g3 <- print(
+    ggplot(data = temp_df3)
+    + theme_bw() 
+    + geom_tile(aes(x = sample_1, y = sample_2, fill = (1-dissimilarity)*100, group = input),
+                show.legend = TRUE)
++  scale_fill_gradientn(colors = colorRampPalette(pals::parula(n = 3))(100), 
+                        # transform = "reverse", limits = c(100, 0),
+                        aesthetics = "fill", 
+                        limits = c(0, 100),
+                        # expand = expansion(1.1,1.1), 
+                        name = "Similarity (%)",
+                        na.value = "white")
+    + scale_x_discrete(labels = sample_relabel,
+                       # name = "Sample identifier")
+                       name = "Metabolomics")
+    + scale_y_discrete(labels = sample_relabel, 
+                       # name = "Sample identifier")
+                       name = "Top genera")
+    + theme(strip.text.y = element_text(angle = 0),
+            axis.text.x = element_text(angle = 90), 
+            panel.grid.minor = element_blank(),
+            panel.grid.major = element_blank())
+  )
+  
+  g4 <- g3 + facet_wrap(.~input) + scale_x_discrete(labels = sample_relabel, name = "Sample identifier") + scale_y_discrete(labels = sample_relabel, name = "Sample identifier")
+  
+  
 }
+
+g3 <- g3 + patchwork::plot_annotation(title = "Similarity in profiles generated from genera-level abundances, and metabolomics")
+g4 <- g4 + patchwork::plot_annotation(title = "Similarity in profiles generated from genera-level abundances, and metabolomics")
+
+g5 <- (g1 + ggtitle("Metabolomics")) + (g2 + ggtitle("Top 100 genera")) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Similarity in profiles generated from genera-level abundances, and metabolomics",
+                                                                                                                                                  tag_levels = "A")
+
+ggsave(paste0(projectpath, "/", "usvi_dissim_metab_genera-", Sys.Date(), ".png"),
+       g5,
+       width = 20,height = 10, units = "in")
+ggsave(paste0(projectpath, "/", "usvi_dissim_metab_genera_combo-", Sys.Date(), ".png"),
+       g3,
+       width = 10,height = 10, units = "in")
+
+usvi_mantel_genus_res <- vegan::mantel(usvi_top_genus_mat, usvi_metab_mat, permutations = 999, parallel = nthreads,
+                                 # method = "pearson")
+                                 method = "spearman")
+usvi_mantel_genus_res
+
+#recaling the concentrations of metabolits from 0 to 1 wrt metabolites
+#using top 25 genera relative abundance:
+# Call:
+#   vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: -0.006939 
+# Significance: 0.551 
+
+
+#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+#using top 25 genera relative abundance:
+# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: 0.04983 
+# Significance: 0.115 
+
+#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+#using top 25 genera relative abundance log+1-transformed:
+# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: 0.04983 
+# Significance: 0.112 
+
+
+
+#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+#using top 100 genera rlative abundance:
+# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: 0.05378 
+# Significance: 0.095 
+
+
+#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+#using top 100 genera rlative abundance log+1 transformed:
+# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: 0.05378 
+# Significance: 0.105 
+
+
+# Mantel statistic based on Pearson's product-moment correlation 
+# 
+# Call:
+# vegan::mantel(xdis = usvi_top100_genus_mat, ydis = usvi_metab_mat,      method = "pearson", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: 0.0172 
+#       Significance: 0.319 
+
+# Mantel statistic based on Spearman's rank correlation rho 
+# 
+# Call:
+# vegan::mantel(xdis = usvi_top100_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+# 
+# Mantel statistic r: 0.02933 
+#       Significance: 0.275 
+# 
