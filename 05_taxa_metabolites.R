@@ -983,3 +983,191 @@ usvi_mantel_genus_res
 # Mantel statistic r: 0.02933 
 #       Significance: 0.275 
 # 
+
+
+# Try log-transforming metabolites ----------------------------------------
+
+
+drop <- c("CINAR_BC_73", "CINAR_BC_43", "CINAR_BC_105", "CINAR_BC_69")
+usvi_metab.tbl <- usvi_metabolomics.df %>%
+  dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+  dplyr::left_join(., (metabolomics_sample_metadata %>%
+                         dplyr::filter(grepl("seawater", sample_type)) %>%
+                         dplyr::select(sample_id, metab_deriv_label) %>%
+                         droplevels),
+                   by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+  dplyr::relocate(sample_id) %>%
+  tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
+                      names_to = "simpleName",
+                      values_to = "conc") %>%
+  dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::group_by(sample_id, simpleName) %>%
+  # dplyr::summarise(num = length(conc)) %>%
+  dplyr::summarise(mean_conc = mean(conc, na.rm = TRUE), 
+                   num = length(conc),
+                   # .by = c(sample_id, simpleName),
+                   .groups = "keep",
+                   sd = sd(conc, na.rm = TRUE)) %>%
+  dplyr::rename(conc = "mean_conc") %>%
+  dplyr::mutate(log_conc = ifelse(!(is.na(conc) | (conc < 0)),
+                                  log2(conc+1), #log transform abundance (with +1 pseudocount)
+                                  0)) %>%
+  dplyr::select(sample_id, simpleName, log_conc) %>%
+  droplevels %>%
+  tidyr::pivot_wider(., id_cols = "sample_id",
+                     values_from = "log_conc",
+                     # values_from = "logabund",
+                     names_from = "simpleName") %>%
+  tibble::column_to_rownames(var = "sample_id") %>%
+  droplevels
+
+usvi_top100_genus.tbl <- usvi_sw_genus.tbl %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  apply(., 2, relabund) %>%
+  as.data.frame(.) %>%
+  dplyr::slice(which(rowSums(.) > 0)) %>%
+  dplyr::mutate(TotAbund = rowSums(.)) %>%
+  dplyr::arrange(desc(TotAbund)) %>%
+  dplyr::slice_head(., n = 100) %>%
+  dplyr::select(-TotAbund) %>%
+  tibble::rownames_to_column(var = "asv_id") %>%
+  tidyr::pivot_longer(., cols = -c("asv_id"),
+                      names_to = "sample",
+                      values_to = "abundance")  %>%
+  droplevels %>%
+  # dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
+  #                                 log2(abundance+1), #log transform abundance (with +1 pseudocount)
+  #                                 0)) %>%
+  tidyr::pivot_wider(., id_cols = "sample",
+                     values_from = "abundance",
+                     # values_from = "logabund",
+                     names_from = "asv_id") %>%
+  dplyr::filter(sample %in% rownames(usvi_metab.tbl)) %>%
+  tibble::column_to_rownames(var = "sample") %>%
+  tidyr::drop_na(.) %>%
+  droplevels
+
+usvi_top100_genus.tbl <- usvi_top100_genus.tbl[rownames(usvi_metab.tbl),]
+
+
+
+spearman.test <- matrix(nrow = ncol(usvi_top100_genus.tbl), ncol = ncol(usvi_metab.tbl))
+colnames(spearman.test) <- colnames(usvi_metab.tbl)
+rownames(spearman.test) <- colnames(usvi_top100_genus.tbl)
+
+spearman.test.rho <- spearman.test
+
+y <- length(colnames(spearman.test))
+for(j in seq_len(y)){
+  vector_metab <- usvi_metab.tbl[, j]
+  # for(i in seq_len(2)){
+  for(i in seq_len(nrow(spearman.test))){
+    spearman.test[i, j] <- cor.test(vector_metab, usvi_top100_genus.tbl[,i], method = "spearman", exact = FALSE) %>%
+      purrr::pluck(., "p.value")
+    spearman.test.rho[i, j] <- cor.test(vector_metab, usvi_top100_genus.tbl[,i], method = "spearman", exact = FALSE) %>%
+      purrr::pluck(., "estimate")
+  }
+}
+
+spearman.test.corrected <- spearman.test %>%
+  apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
+  apply(., 2, function(x) ifelse(x < 0.05, x, NA)) #drop the p.values > 0.05 or did not compute
+
+dend_asv <- spearman.test.rho %>%
+  dist(t(.), method = "euclidean") %>%
+  hclust(method = "ward.D2") %>%
+  as.dendrogram
+dend_metab <- spearman.test.rho %>%
+  t() %>%
+  dist(t(.), method = "euclidean") %>%
+  hclust(method = "ward.D2") %>%
+  as.dendrogram
+
+  
+spearman.test.df <- spearman.test.corrected %>%
+  tibble::as_tibble(., rownames = "asv_id") %>%
+  tidyr::pivot_longer(., cols = !asv_id,
+                      names_to = "simpleName",
+                      values_to = "padj") %>%
+  dplyr::right_join(., (spearman.test.rho %>%
+                         tibble::as_tibble(., rownames = "asv_id") %>%
+                         tidyr::pivot_longer(., cols = !asv_id,
+                                             names_to = "simpleName",
+                                             values_to = "estimate")),
+                   by = join_by(asv_id, simpleName)) %>%
+  dplyr::mutate(sig = dplyr::case_when(is.na(padj) ~ "not",
+                                       .default = "sig")) %>%
+  dplyr::mutate(sig = factor(sig)) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = labels(dend_asv))) %>%
+  dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
+  dplyr::arrange(asv_id, simpleName) %>%
+  tidyr::drop_na(padj) %>%
+  dplyr::mutate(label = signif(estimate, digits = 2)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+  # dplyr::mutate(simpleName = factor(comparison, levels = names(kw.test.transplant.lookup))) %>%
+  # dplyr::mutate(replant = comparison) %>%
+  # tidyr::separate_longer_delim(., cols = "replant", 
+  #                              # into = c("first", "second"), extra = "merge", drop = FALSE,
+  #                              delim = "_vs_") %>%
+  # left_join(coral_prok_asvs.taxonomy %>%
+  #             dplyr::select(asv_id, taxonomy)) %>%
+  droplevels
+
+usvi_top100_genera_relabel <- usvi_sw_genus.taxa.df %>%
+  dplyr::select(asv_id, 
+                Order, Genus) %>%
+  tidyr::unite("taxa_label", c(Order, Genus), sep = ";", remove = TRUE)  %>%
+  # droplevels
+  tibble::deframe(.)
+
+g6 <- print(
+  ggplot(data = spearman.test.df, aes(x = asv_id, y = simpleName))
+  + theme_bw() 
+  # + geom_raster(aes(fill = estimate), hjust = 0, alpha = 0.7, show.legend = TRUE)
+  + geom_tile(aes(fill = estimate), stat = "identity", color = "black", alpha = 0.7, show.legend = TRUE)
+  # + geom_text(aes(x = asv_id, y = simpleName, label = label))
+  +  scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100), 
+                          transform = "reverse",
+                          aesthetics = "fill", 
+                          limits = c(1, -1),
+                          # expand = expansion(1.1,1.1), 
+                          # name = "Similarity (%)",
+                          na.value = "white")
+  + scale_color_manual(values = c("grey", "black"), 
+                       breaks = c("not", "sig"), 
+                       labels = c("not", "sig"))
+  + scale_x_discrete(labels = usvi_top100_genera_relabel,
+                     expand = c(0,0),
+                     # name = "Sample identifier")
+                     name = "Taxon")
+  + scale_y_discrete(name = "Metabolite",
+                     expand = c(0,0))
+  + theme(panel.spacing = unit(1, "lines"),
+  # + theme(
+          panel.background = element_blank(),
+          axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+          axis.text.y = element_text(vjust = 0.5, hjust = 1),
+          # axis.ticks.x = element_blank(),
+          axis.ticks.y = element_blank(),
+          # axis.minor.ticks.x.bottom = element_line(linewidth = 2),
+          # panel.grid.major = element_blank(),
+          # panel.grid.minor = element_line(color = "black", linewidth = 2),
+          panel.grid.major.y = element_line(color = "black"),
+          panel.grid.major.x = element_line(color = "black"),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.minor.x = element_blank(),
+  panel.ontop = FALSE,
+          strip.text.y = element_blank())
+  + guides(fill = guide_legend(order = 2, ncol = 1, title = "Spearman estimate", direction = "vertical",
+                               override.aes = list(stroke = 1, color = "black")),
+           color = "none")
+  + coord_flip()
+)
+
+if(!any(grepl("spearman_corr_top100", list.files(projectpath, pattern = "usvi_.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_spearman_corr_top100-", Sys.Date(), ".png"),
+         g6,
+         width = 20, height = 16, units = "in")
+}
