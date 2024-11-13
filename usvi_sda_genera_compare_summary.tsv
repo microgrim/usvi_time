@@ -1,0 +1,63 @@
+asv_id	Tektite_dawn - all_peak_photo	Yawzi_dawn - all_peak_photo	Tektite - LB_seagrass_all	Yawzi - LB_seagrass_all	Tektite_dawn - LB_seagrass_all	Yawzi_dawn - LB_seagrass_all	Tektite_peak_photo - LB_seagrass_all	Yawzi_peak_photo - LB_seagrass_all	Tektite_dawn - LB_seagrass	Tektite_peak_photo - LB_seagrass	Yawzi_peak_photo - LB_seagrass	Tektite_dawn - LB_seagrass_dawn	Yawzi_dawn - LB_seagrass_dawn	Tektite_peak_photo - LB_seagrass_peak_photo	Yawzi_peak_photo - LB_seagrass_peak_photo	Yawzi_dawn - LB_seagrass	test_type	Domain	Phylum	Class	Order	Family	Genus
+ASV_00002	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia
+ASV_00003	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	HIMB11
+ASV_00004									deseq	deseq	deseq						deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group
+ASV_00006	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae
+ASV_00007	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Prochlorococcus MIT9313
+ASV_00008	rademu	rademu			rademu	rademu	rademu	rademu	deseq	deseq	deseq						both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade
+ASV_00009	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae
+ASV_00012	rademu	rademu			rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade II	Clade II
+ASV_00013									deseq	deseq	deseq						deseq	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina
+ASV_00014									deseq	deseq	deseq						deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group
+ASV_00017	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group
+ASV_00018												deseq					deseq	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	Coraliomargarita
+ASV_00021									deseq								deseq	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae
+ASV_00023	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib
+ASV_00031	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)
+ASV_00038	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Formosa
+ASV_00045	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS7 marine group	NS7 marine group
+ASV_00058											deseq	deseq					deseq	Bacteria	Actinobacteriota	Acidimicrobia	Microtrichales	Microtrichaceae	Sva0996 marine group
+ASV_00060		rademu	rademu	rademu		rademu			deseq	deseq	deseq	deseq		deseq	deseq		both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Litorimicrobium
+ASV_00072	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade IV	Clade IV
+ASV_00097	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Tenacibaculum
+ASV_00105		rademu	rademu	rademu		rademu		rademu				deseq		deseq	deseq		both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Nitrincolaceae	Marinobacterium
+ASV_00111	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Pseudomonadales	Pseudomonadales
+ASV_00119												deseq					deseq	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Porticoccaceae	SAR92 clade
+ASV_00124	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Sphingobacteriales	NS11-12 marine group	NS11-12 marine group
+ASV_00129	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	deseq	deseq	deseq						both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Ectothiorhodospirales	Ectothiorhodospiraceae	Ectothiorhodospiraceae
+ASV_00131	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	deseq	deseq	deseq						both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Thalassobius
+ASV_00133										deseq							deseq	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rickettsiales	S25-593	S25-593
+ASV_00138	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Spongiibacteraceae	BD1-7 clade
+ASV_00150	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq					both	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	MB11C04 marine group
+ASV_00164									deseq	deseq	deseq						deseq	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Chitinophagales	Chitinophagales
+ASV_00171	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Puniceispirillales	SAR116 clade	Candidatus Puniceispirillum
+ASV_00186			rademu	rademu													rademu	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidaceae	Bacteroides
+ASV_00191					rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria
+ASV_00215	rademu	rademu	rademu	rademu													rademu	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae
+ASV_00217					rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Coxiellales	Coxiellaceae	Coxiella
+ASV_00227	rademu	rademu	rademu	rademu													rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Photobacterium
+ASV_00229					rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Cyclobacteriaceae
+ASV_00236										deseq							deseq	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Thiotrichales	Thiotrichaceae	Thiotrichaceae
+ASV_00243		rademu	rademu	rademu													rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Winogradskyella
+ASV_00251		rademu	rademu	rademu		rademu											rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Alteromonadaceae
+ASV_00271			rademu	rademu	rademu	rademu		rademu				deseq					both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Halieaceae	Luminiphilus
+ASV_00282		rademu	rademu	rademu													rademu	Bacteria	Desulfobacterota	Desulfobulbia	Desulfobulbales	Desulfocapsaceae	Desulfocapsaceae
+ASV_00290					rademu	rademu	rademu	rademu									rademu	Bacteria	Planctomycetota	OM190	OM190	OM190	OM190
+ASV_00300			rademu	rademu					deseq	deseq	deseq	deseq					both	Bacteria	Actinobacteriota	Actinobacteria	Micrococcales	Microbacteriaceae	Candidatus Aquiluna
+ASV_00307					rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Burkholderiales	Methylophilaceae	OM43 clade
+ASV_00339			rademu	rademu													rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Aestuariibacter
+ASV_00346												deseq					deseq	Bacteria	Chloroflexi	Dehalococcoidia	SAR202 clade	SAR202 clade	SAR202 clade
+ASV_00348			rademu	rademu													rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Aestuariicoccus
+ASV_00372										deseq	deseq					deseq	deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Mesoflavibacter
+ASV_00389			rademu	rademu													rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Holosporales	Holosporaceae	Holosporaceae
+ASV_00399			rademu	rademu													rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Celeribacter
+ASV_00400			rademu	rademu					deseq	deseq	deseq						both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Thiomicrospirales	Thiomicrospiraceae	Thiomicrorhabdus
+ASV_00429										deseq							deseq	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group III	Marine Group III	Marine Group III
+ASV_00445									deseq	deseq	deseq						deseq	Bacteria	Cyanobacteria	Cyanobacteria	Cyanobacteriales	Oscillatoriaceae	Oscillatoriaceae
+ASV_00495			rademu	rademu					deseq			deseq					both	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Crocinitomicaceae	Crocinitomix
+ASV_00524										deseq							deseq	Bacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria
+ASV_00528												deseq					deseq	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Lewinella
+ASV_00608													deseq				deseq	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Prevotellaceae	Prevotellaceae UCG-004
+ASV_00769												deseq					deseq	Bacteria	Firmicutes	Clostridia	Lachnospirales	Lachnospiraceae	Cellulosilyticum
+ASV_01134	rademu	rademu	rademu	rademu								deseq	deseq	deseq			both	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	Woesearchaeales	Woesearchaeales
+ASV_01140						rademu		rademu									rademu	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	SCGC AAA011-D5	SCGC AAA011-D5

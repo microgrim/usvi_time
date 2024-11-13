@@ -65,7 +65,11 @@ f_projectpath <- function() {
     } else
       stop("Your provided path does not seem to exist.")
   } else {
-    stop("Please provide a path.\n") 
+    if(ANSWER == "getwd()"){
+      assign("projectpath", getwd(), inherits = TRUE, envir = .GlobalEnv)  
+    } else {
+      stop("Please provide a path.\n")   
+    }
   }
 }
 

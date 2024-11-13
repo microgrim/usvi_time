@@ -5,3 +5,6 @@
 usvi*.rds
 usvi*.png
 .DS_Store
+.Rapp.history
+*.RData
+~*.*

@@ -357,6 +357,7 @@ keep <- c("Phylum", "Class", "Order", "Family", "Genus")
 for(taxlevel in keep){
   namevar <- stringr::str_to_lower(taxlevel)
   temp_df <- phyloseq::transform_sample_counts(ps_usvi, function(x) x/sum(x)*100) %>%
+    phyloseq::subset_samples(., sample_type == "seawater") %>%
     phyloseq::filter_taxa(., function(x) sum(x) > 0, TRUE) %>%
     phyloseq::otu_table(.) %>%
     as.data.frame %>%
@@ -598,7 +599,42 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
     annotation_taxa_colors_list <- readr::read_rds(paste0(projectpath, "/", "annotation_taxa_colors_list.rds"))
   } else {
     #make colors list for plotting taxonomy of bins
-    annotation_archaea_list <- usvi_filtered_genus.df %>%
+    #don't use the filled-in taxonomy tble for this!
+    usvi_prok_asvs.taxa.mod.df <- usvi_prok_asvs.taxa %>%
+      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+                                              grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+                                              .default = Phylum)) %>%
+      dplyr::select(asv_id, Domain, Phylum, Class, Order, Family, Genus, Species) %>%
+      droplevels
+    
+    usvi_genus_taxonomy.df <- phyloseq::transform_sample_counts(ps_usvi, function(x) x/sum(x)*100) %>%
+        phyloseq::subset_samples(., sample_type == "seawater") %>%
+        phyloseq::filter_taxa(., function(x) sum(x) > 0, TRUE) %>%
+        phyloseq::otu_table(.) %>%
+        as.data.frame %>%
+        dplyr::mutate(TotAbund = rowSums(.)) %>%
+        dplyr::arrange(desc(TotAbund)) %>%
+        dplyr::select(-TotAbund) %>%
+        tibble::rownames_to_column(var = "asv_id") %>%
+        otu_to_taxonomy(dataset = .,
+                        level = "Genus",
+                        taxonomy = usvi_prok_asvs.taxa.mod.df) %>%
+        tidyr::pivot_longer(.,
+                            cols = !c(1:all_of("Genus")),
+                            names_to = "sample_id",
+                            values_to = "relabund") %>%
+        # droplevels
+      # usvi_genus_taxonomy.df <- usvi_genus.df %>%
+    #   dplyr::semi_join(., usvi_seq_summary.df %>% #use only biological samples to filter taxonomic levels
+    #                      dplyr::filter(sample_type == "seawater") %>%
+    #                      dplyr::select(sample_id) %>%
+    #                      droplevels, by = join_by(sample_id)) %>%
+      tidyr::unite("taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::relocate(taxonomy) %>%
+      droplevels
+    
+    # annotation_archaea_list <- usvi_filtered_genus.df %>%
+    annotation_archaea_list <- usvi_genus_taxonomy.df %>%
       dplyr::select(Domain, Phylum, Class, Order, Family, Genus, taxonomy) %>%
       dplyr::filter(grepl("Archaea", Domain)) %>%
       dplyr::distinct(., .keep_all = TRUE) %>%
@@ -636,7 +672,8 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
       }
     
     #now bacteria:
-    annotation_bacteria_list <- usvi_filtered_genus.df %>%
+    # annotation_bacteria_list <- usvi_filtered_genus.df %>%
+    annotation_bacteria_list <- usvi_genus_taxonomy.df %>%
       # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
       #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
       #                                         .default = Phylum)) %>%
@@ -676,7 +713,8 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
     }
     
     bacteria_options <- c(brewer.blues, brewer.gnbu,  brewer.oranges, brewer.greens, brewer.purples, 
-                          
+                          ocean.haline, ocean.solar, ocean.ice, ocean.oxy, ocean.deep, ocean.dense, 
+                          ocean.algae, ocean.matter, ocean.turbid, ocean.speed, ocean.amp, 
                           brewer.purd, 
                           brewer.bugn, brewer.bupu, brewer.rdpu, brewer.reds, brewer.ylgn,
                           brewer.orrd, brewer.pubu, brewer.pubugn,
@@ -688,8 +726,8 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
       namevar <- names(annotation_bacteria_colors_list)[i]
       temp_list <- annotation_bacteria_colors_list[namevar] %>%
         purrr::flatten(.)
-      if(length(temp_list) > 2){ #is there is more than one class in this phylum in the MAGs
-        # if(length(temp_list) > 4){ #is there is more specific taxonomic levels for this phylum
+      # if(length(temp_list) > 2){ #is there is more than one class in this phylum in the MAGs
+        if(length(temp_list) > 4){ #is there is more specific taxonomic levels for this phylum
         annotation_bact_phyla <- c(annotation_bact_phyla, namevar)
       } else {
         annotation_bact_phyla_solo <- c(annotation_bact_phyla_solo, namevar)
