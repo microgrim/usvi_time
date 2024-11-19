@@ -8,3 +8,5 @@ usvi*.png
 .Rapp.history
 *.RData
 ~*.*
+se.usvi_*.gl.rds
+se.usvi_*.slr.rds

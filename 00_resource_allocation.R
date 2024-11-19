@@ -11,9 +11,9 @@ if (!require("furrr", quietly = TRUE)){
   install.packages("furrr")
   install.packages("future")
 }
-library(data.table)
 library(BiocManager)
 library(BiocParallel)
+library(data.table)
 library(cli)
 library(furrr)
 library(progressr)

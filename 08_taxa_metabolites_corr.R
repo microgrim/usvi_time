@@ -274,22 +274,13 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
 }
 # Read in metabolites -----------------------------------------------------
 
-
-usvi_metabolomics.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_wideFormat_noMetadata.csv"),
-                                          col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads)
-colnames(usvi_metabolomics.df)[1] <- "metab_deriv_label"
-
-
-#there are samples "CINAR_BC_81A" and "CINAR_BC_81B" in the metabolomics dataset 
-#and in the metadata, there are two DNA samples associated with "Deriv_81": Metab_219 (LB_seagrass dawn) and Metab_319 (tektite dawn)
-
-usvi_metabolomics_long.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_longFormat_wMetadata.csv"), 
-                                               col_select = c(2:last_col()),
-                                               col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads) %>%
-  dplyr::mutate(sample_id = paste0("Metab_", DNA_no))
-
-# long metabolomics dataset from Brianna confirms that CINAR_BC_81A is the BC sample associated with Tektite Metab_319
-# and CINAR_BC_81B is the BC sample associated with LB_seagrass Metab_219
+if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
+  temp_list <- readr::read_rds(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))
+  list2env(temp_list, envir = .GlobalEnv)
+  rm(temp_list)
+} else {
+  cli::cli_alert_warning("Please tidy the metabolomics datasets.")
+}
 
 
 
@@ -1774,19 +1765,6 @@ if(!any(grepl("key_genera_relabund", list.files(projectpath, pattern = "usvi_.*.
 
 
 # make networkg raph ------------------------------------------------------
-
-# temp_df <-  spearman.test.filtered.df %>%
-#   dplyr::filter(!is.na(rho_threshold) | !is.na(group)) %>%
-#   dplyr::select(asv_id, simpleName, estimate) %>%
-#   droplevels %>%
-#   droplevels %>%
-#   ggsankey::make_long(., asv_id, simpleName, value = "estimate") %>%
-#   tidyr::drop_na(next_node) %>%
-#   dplyr::rename(from = "node",
-#                 to = "next_node",
-#                 estimate = "value") %>%
-#   dplyr::select(from, to, estimate) %>%
-#   dplyr::distinct(., .keep_all = TRUE) 
 
 
 temp_graph <- spearman.test.filtered.df %>%

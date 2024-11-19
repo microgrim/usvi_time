@@ -159,25 +159,54 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
 
 
 # Prepare color palette ---------------------------------------------------
+if(!exists("site_lookup", envir = .GlobalEnv)){
+  site_lookup <- data.frame(site = c("LB_seagrass", "Tektite", "Yawzi", "control_extraction", "control_pcr", "control_seq"),
+                            label = c("Lameshur Bay seagrass", "Tektite Reef", "Yawzi Reef",
+                                      "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%
+    dplyr::mutate(label = stringr::str_wrap(label, width = 16)) %>%
+    tibble::deframe(.)
+  site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
+    # site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
+    setNames(., names(site_lookup))
+  sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
+                                     label = c("Dawn", "Peak photosynthesis")) %>%
+    tibble::deframe(.)
+  sampling_time_colors <- pals::ocean.haline(n = length(sampling_time_lookup)) %>%
+    setNames(., names(sampling_time_lookup))
+  sampling_day_lookup <- data.frame(sampling_day = c("Day1", "Day2", "Day3", "Day4", "Day5"),
+                                    label = c("20210122", "20210123", "20210124", "20210125", "20210126")) %>%
+    tibble::deframe(.)
+  sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
+    setNames(., names(sampling_day_lookup))
+}
 
-site_lookup <- data.frame(site = c("LB_seagrass", "Tektite", "Yawzi", "control_extraction", "control_pcr", "control_seq"),
-                          label = c("Lameshur Bay seagrass", "Tektite Reef", "Yawzi Reef",
-                                    "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%
+usvi_genera_relabel <- usvi_prok_filled.taxa.df %>%
+  dplyr::mutate(across(everything(), ~stringr::str_replace_all(.x, " clade", ""))) %>%
+  dplyr::rowwise(.) %>%
+  dplyr::mutate(first = dplyr::case_when((Order == Genus) ~ Class,
+                                         .default = Order)) %>%
+  dplyr::mutate(first = dplyr::case_when((Class == Order) ~ NA,
+                                         (Class != Phylum) ~ Phylum,
+                                         grepl(paste0(c("Synechococcales"), collapse = "|"), first) ~ NA,
+                                         .default = first)) %>%
+  dplyr::mutate(second = dplyr::case_when((Order == Genus) ~ Order,
+                                          .default = Genus)) %>%
+  dplyr::mutate(taxa_label = dplyr::case_when(!is.na(first) ~ paste0(first, "; ", second),
+                                              .default = second)) %>%
+  dplyr::select(asv_id, taxa_label) %>%
   tibble::deframe(.)
-site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
-# site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
-  setNames(., names(site_lookup))
-sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
-                                   label = c("Dawn", "Peak photosynthesis")) %>%
-  tibble::deframe(.)
-sampling_time_colors <- pals::ocean.haline(n = length(sampling_time_lookup)) %>%
-  setNames(., names(sampling_time_lookup))
-sampling_day_lookup <- data.frame(sampling_day = c("Day1", "Day2", "Day3", "Day4", "Day5"),
-                                  label = c("20210122", "20210123", "20210124", "20210125", "20210126")) %>%
-  tibble::deframe(.)
-sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
-  setNames(., names(sampling_day_lookup))
 
+global_labeller <- labeller(
+  # model2 = model_dispersion_lookup,
+  model = model_dispersion_lookup,
+  Combo = group_labels_lookup,
+  site = site_lookup,
+  sampling_day = sampling_day_lookup,
+  sampling_time = sampling_time_lookup,
+  asv_id = usvi_genera_relabel,
+  .multi_line = TRUE,
+  .default = label_both
+)
 
 # Prepare alpha diversity estimates ---------------------------------------
 
@@ -247,55 +276,6 @@ xlim <- max(usvi_rarefied_stats.df %>%
               max(.))
 xlim <- round(xlim/100, digits = -1)
 xlim <- xlim*100
-
-#facetting by sampling time, for each site:
-{
-  # for(i in 1:length(temp_list1)){
-  #   gtitle <- eval(names(temp_list1)[i])
-  #   
-  #   ylim <- temp_list1[[i]] %>%
-  #     dplyr::select(num_ASVs) %>%
-  #     deframe(.) %>%
-  #     max(.)
-  #   ylim <- ceiling(ylim/100)*100
-  #   
-  #   g <- print(
-  #     ggplot(data = temp_list1[[i]],
-  #            aes(x = seqdepth, y = num_ASVs, group = sample_id))
-  #     + theme_bw()
-  #     + geom_smooth(aes(color = sampling_day),
-  #                   method = lm, formula = y ~ log2(x+1), span = 1, 
-  #                   se = FALSE,
-  #                   show.legend = FALSE)
-  #     + geom_point(aes(fill = sampling_day, shape = site), size = 2)
-  #     + scale_shape_manual(values = c(21, 22, 23),
-  #                          labels = site_lookup,
-  #                          breaks = names(site_lookup))
-  #     + scale_fill_manual(values = sampling_day_colors, labels = sampling_day_lookup, breaks = names(sampling_day_lookup))
-  #     + scale_color_manual(values = sampling_day_colors)
-  #     + scale_x_continuous(name = "Number of sequences", labels = scaleFUN0)
-  #     + scale_y_continuous(name = "Number of ASVs in rarefaction", labels = scaleFUN0)
-  #     + guides(color = "none",
-  #              fill = guide_legend(order = 2, ncol = 1, title = "Sampling day", direction = "vertical",
-  #                                  override.aes = list(color = "black", stroke = 1, shape = 21)),
-  #              shape = "none")
-  #     + facet_grid(cols = vars(sampling_time),
-  #                  scales = "free_y",
-  #                  space = "fixed",
-  #                  labeller = labeller(sampling_time = sampling_time_lookup))
-  #     + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-  #             panel.grid.minor = element_blank())
-  #     + coord_cartesian(xlim = c(0, xlim), 
-  #                       ylim = c(0, ylim),
-  #                       expand = FALSE)
-  #     + ggtitle(gtitle)
-  #     + theme(plot.title = ggtext::element_markdown())
-  #   )
-  #   assign(paste0("g_curve_", gtitle), g, envir = .GlobalEnv, inherits = TRUE)
-  #   rm(g)
-  #   rm(gtitle)
-  # }
-}
 
 #faceting by sampling day for each site:
 {
@@ -428,5 +408,89 @@ if(!any(grepl("controls", list.files(projectpath, pattern = "usvi_rarecurve.*.pn
          width = 10, height = 10, units = "in")
 }
 
+
+# Make Bray curtis box plots ----------------------------------------------
+
+
+usvi_asv.tbl <- ps_usvi %>%
+  phyloseq::subset_samples(., sample_type == "seawater") %>%
+  phyloseq::otu_table(.) %>%
+  apply(., 2, relabund) %>% 
+  as.data.frame(.) %>%
+  dplyr::slice(which(rowSums(.) > 0)) %>%
+  tibble::rownames_to_column(var = "asv_id") %>%
+  tidyr::pivot_longer(., cols = -c("asv_id"),
+                      names_to = "sample",
+                      values_to = "abundance") %>%
+  dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
+                                  log2(abundance+1), #log transform abundance (with +1 pseudocount)
+                                  0)) %>%
+  tidyr::pivot_wider(., id_cols = "sample",
+                     # values_from = "abundance",
+                     values_from = "logabund",
+                     names_from = "asv_id") %>%
+  tibble::column_to_rownames(var = "sample") %>%
+  droplevels
+
+meta.seawater <- ps_usvi %>%
+  phyloseq::sample_data(.) %>%
+  tibble::as_tibble(rownames = "sample_id") %>%
+  dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
+  dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
+  dplyr::select(!c(contains("label"), contains("dna_"))) %>%
+  tibble::column_to_rownames(., var = "sample_id") %>%
+  droplevels
+
+st_usvi_asv.d <- vegan::vegdist(usvi_asv.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
+
+dist_usvi_asv.df <- vegan::betadisper(dist_usvi_asv.d, meta.seawater$site) %>%
+  purrr::pluck("distances") %>%
+  tibble::enframe(value = "dissimilarity", name = "sample_id") %>%
+  dplyr::left_join(., (metadata %>%
+                         dplyr::filter(grepl("seawater", sample_type)) %>%
+                         dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, replicate) %>%
+                         droplevels),
+                   by = c("sample_id" = "sample_id")) %>%
+  droplevels
+
+g1 <- print(
+  ggplot(data = dist_usvi_asv.df)
+  + theme_bw()
+  + geom_boxplot(aes(x = site, y = dissimilarity, 
+                     # color = site, 
+                     # color = sampling_time, 
+                     group = interaction(site, sampling_time)), 
+                 color = "black",
+                 position = position_dodge2(padding = 0.2, preserve = "single"),
+                 show.legend = FALSE, outliers = FALSE)
+  + geom_point(aes(x = site, y = dissimilarity, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
+               alpha = 1.0, size = 3, position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2))
+  + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
+  # + scale_color_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+  # + scale_color_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
+  + scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
+  + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Bray-Curtis dissimilarity")
+  + scale_x_discrete(labels = site_lookup, name = "Site")
+  + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
+          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+          panel.grid = element_blank(),
+          legend.position = "right",
+          legend.key = element_blank(),
+          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+          legend.text = element_text(size = 12, colour = "grey30"))
+  + guides(color = "none",
+           fill = guide_legend(order = 2, ncol = 1, title = "Site", direction = "vertical",
+                               override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+           shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
+                                override.aes = list(color = "black", stroke = 1, size = 2)))
+)
+
+g1 <- g1 + patchwork::plot_annotation(title = "Community dissimilarity distance from site average")
+
+if(!any(grepl("comm_dist_boxplot", list.files(projectpath, pattern = "usvi_.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_comm_dist_boxplot-", Sys.Date(), ".png"),
+         g1,
+         width = 12, height = 6, units = "in")
+}
 
 
