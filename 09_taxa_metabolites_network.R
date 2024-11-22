@@ -1118,8 +1118,8 @@ netprops_se.sites.mb <- NetCoMi::netAnalyze(net_se.sites.mb,
 
 #plotting:
 if(!exists("p1", envir = .GlobalEnv)){
-  p1 <- netprops_se.sites.mb %>%
-    plot(.,
+  p1 <- (
+    plot(netprops_se.sites.mb,
          layout = "spring",
          repulsion = 1.2,
          shortenLabels = "none",
@@ -1138,6 +1138,7 @@ if(!exists("p1", envir = .GlobalEnv)){
          showTitle = TRUE,
          groupNames = c("Reef sites", "Seagrass"),
          cexTitle = 2.3)
+  )
   p1.cutoff <- netprops_se.sites.mb %>%
     plot(.,
          layout = "spring",
@@ -1158,6 +1159,10 @@ if(!exists("p1", envir = .GlobalEnv)){
          showTitle = TRUE,
          groupNames = c("Reef sites", "Seagrass"),
          cexTitle = 2.3)
+  
+  # ggsave(paste0(projectpath, "/", "net_sites.mb.adjgraph-", Sys.Date(), ".png"),
+  #        p1,
+  #        width = 10, height = 10, units = "in")
 }
 
 #in netCompare, can't do permutation tests with the two association matrices from spiec-easi (condDependence method)
@@ -1172,6 +1177,18 @@ netcom_se.sites.mb <- NetCoMi::netCompare(netprops_se.sites.mb,
 
 # summary(netcom_se.sites.mb, groupNames = c("Reef sites", "Seagrass"))
 
+
+#save the association matrices
+if(!file.exists(paste0(projectpath, "/", "usvi_se.asso_mat.reefs.mb", ".tsv"))){
+  temp_mat1 <- se.reefs.mb[names(nodeCols), names(nodeCols)] %>%
+    tibble::as_tibble(rownames = "var1")
+  temp_mat2 <- se.seagrass.mb[names(nodeCols), names(nodeCols)] %>%
+    tibble::as_tibble(rownames = "var1")
+  readr::write_delim(temp_mat1, paste0(projectpath, "/", "usvi_se.asso_mat.reefs.mb", ".tsv"), col_names = TRUE,
+                     delim = "\t")
+  readr::write_delim(temp_mat2, paste0(projectpath, "/", "usvi_se.asso_mat.seagrass.mb", ".tsv"), col_names = TRUE,
+                     delim = "\t")
+}
 
 # Work with the association matrices --------------------------------------
 
@@ -1380,6 +1397,13 @@ se.sites.mb.ranked.full.df <- se.sites.mb.ranked.df %>%
   dplyr::mutate(across(c("v1", "v2"), ~factor(.x, levels = names(nodeCols)))) %>%
   dplyr::arrange(site, v1, rev(v2), rank) %>%
   droplevels
+
+if(!file.exists(paste0(projectpath, "/", "usvi_se.asso_mat.sites.df", ".tsv"))){
+  usvi_se.asso_mat.sites.df <- se.sites.mb.ranked.full.df %>%
+    dplyr::select(site, v1, v2, asso, type)
+  readr::write_delim(usvi_se.asso_mat.sites.df, paste0(projectpath, "/", "usvi_se.asso_mat.sites.df", ".tsv"), col_names = TRUE,
+                     delim = "\t")
+}
 
 g_hm2 <- print(
   ggplot(data = se.sites.mb.ranked.df %>%
@@ -1632,13 +1656,11 @@ plot(net_se.sites.mb_diff1,
   # dplyr::rename_with(cols = everything(), ~paste0("seagrass_", .x))
   
   # Add category with clusters (can be used as node colors in Gephi)
-  net_sites.mb.nodes$reefs_Category <- netcom_se.sites.mb[["properties"]][["clust1"]][net_sites.mb.nodes$Label]
-  net_sites.mb.nodes$seagrass_Category <- netcom_se.sites.mb[["properties"]][["clust2"]][net_sites.mb.nodes$Label]
+  net_sites.mb.nodes$reefs_hub <- netcom_se.sites.mb[["properties"]][["clust1"]][net_sites.mb.nodes$Label]
+  net_sites.mb.nodes$seagrass_hub <- netcom_se.sites.mb[["properties"]][["clust2"]][net_sites.mb.nodes$Label]
   
   net_sites.mb.edges <- bind_rows(net_sites.mb.edges1, net_sites.mb.edges2) %>%
     dplyr::select(contains("cluster"), contains("Source"), contains("Target"), contains("Type"), contains("Weight"))
-  
-  
   
   readr::write_delim(net_sites.mb.edges, paste0(projectpath, "/", "net_sites.mb.edges", ".csv"),
                      delim = ",", col_names = TRUE)
