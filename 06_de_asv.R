@@ -101,23 +101,26 @@ set.seed(48105)
 
 F_deseq_frac <- function(counts, mdata, mdata_filter, deseq_design, prefix,
                          p = no_progress){
-  #here is a generalized function to make the comparisons where the baseline is
-  #13H + 12L
-  #13H only
-  #12L only
+  #here is a generalized function to conduct deseq2
   
   #counts : your counts table
+  
   #mdata: your metadata
+  
   #mdata_filter: optional selector of your data
-  #provide the filter a list of named vectors
+  #provide the filter a list of named vectors, e.g.
   # metadata_filter <- list(`Fraction` = c("12L", "13H"))
   # metadata_filter <- list(`Type` = c("SIP"),
   #                         `Temperature` = c("30; 55"))
+  
   #due to DESeq's design, all samples included via this mdata_filter will be used
   #to calculate a baseline expression for the genes
   #if you don't want that, you will need to modify your filter, or account for it post-hoc
+  
   #deseq_design: the formula
+  
   #`prefix`: name prefix for the output list
+  
   if(!missing(prefix)){
     prefix <- rlang::parse_expr(prefix)
   } else {
@@ -167,7 +170,8 @@ F_deseq_frac <- function(counts, mdata, mdata_filter, deseq_design, prefix,
   
   #data
   colnames(counts)[1] <- "gene_id"
-  if(!("sample_name" %in% colnames(counts))){
+  # if(!("sample_name" %in% colnames(counts))){
+  if(!("sample" %in% colnames(counts))){
     cli::cli_alert_info("Formatting the counts data to be a long table.")
     counts <- counts %>%
       tidyr::pivot_longer(., 

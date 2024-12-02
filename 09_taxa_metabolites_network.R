@@ -312,7 +312,12 @@ usvi_metab.groups <- metabolomics_sample_metadata %>%
 #this is genera to genera:
 
 
-if(!file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))){
+if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi MB results from top 100 genera.")
+  se.usvi_top100_genus.mb <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))
+  
+} else {
+  cli::cli_alert_info("Conducting spiec-easi MB on top 100 genera.")
   se.usvi_top100_genus.mb <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), 
                                         method = "mb", 
                                         pulsar.select = TRUE, 
@@ -320,36 +325,35 @@ if(!file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))){
   
   readr::write_rds(se.usvi_top100_genus.mb, paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"), compress = "gz")
   
-} else {
-  se.usvi_top100_genus.mb <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))
 }
 
-#it looks like "glasso" method with spiec-easi isn't as good as "mb"
-
-if(!file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))){
+if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi glasso results from top 100 genera.")
+  se.usvi_top100_genus.gl <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting spiec-easi glasso method on top 100 genera.")
   se.usvi_top100_genus.gl <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), method = "glasso", 
                                         pulsar.select = TRUE, 
                                         lambda.min.ratio = 0.01, 
                                         nlambda = 20, 
                                         pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
   readr::write_rds(se.usvi_top100_genus.gl, paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"), compress = "gz")
-} else {
-  se.usvi_top100_genus.gl <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))
+  #it looks like "glasso" method with spiec-easi isn't as good as "mb" 
 }
 
 
-#can we do slr method? "sparse + low-rank decomposition"
-if(!file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"))){
-  se.usvi_top100_genus.slr <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), method = "slr", 
-                                         pulsar.select = TRUE, 
-                                         lambda.min.ratio = 0.01, 
-                                         nlambda = 100,
-                                         pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 50, seed = 48105, ncores = nthreads))
-  readr::write_rds(se.usvi_top100_genus.slr, paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"), compress = "gz")
-} else {
-  se.usvi_top100_genus.slr <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"))
-}
-
+# #can we do slr method? "sparse + low-rank decomposition"
+# if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"))){
+#   se.usvi_top100_genus.slr <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"))
+# } else {
+#   se.usvi_top100_genus.slr <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), method = "slr", 
+#                                          pulsar.select = TRUE, 
+#                                          lambda.min.ratio = 0.01, 
+#                                          nlambda = 100,
+#                                          pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 50, seed = 48105, ncores = nthreads))
+#   readr::write_rds(se.usvi_top100_genus.slr, paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"), compress = "gz")
+# }
+# 
 
 #examine ROC via huge and via stars:
 {
@@ -459,11 +463,11 @@ if(!file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.slr", ".rds"))){
 # 
 
 
-#network via sparcc:
-usvi_top100_genus.sparcc <- SpiecEasi::sparcc(as.matrix(usvi_top100_genus_with_metab.tbl))
-usvi_sparcc.graph <- abs(usvi_top100_genus.sparcc$Cor) >= 0.3
-diag(usvi_sparcc.graph) <- 0
-usvi_sparcc.graph <- Matrix::Matrix(usvi_sparcc.graph, sparse=TRUE) #dsCMatrix
+# #network via sparcc:
+# usvi_top100_genus.sparcc <- SpiecEasi::sparcc(as.matrix(usvi_top100_genus_with_metab.tbl))
+# usvi_sparcc.graph <- abs(usvi_top100_genus.sparcc$Cor) >= 0.3
+# diag(usvi_sparcc.graph) <- 0
+# usvi_sparcc.graph <- Matrix::Matrix(usvi_sparcc.graph, sparse=TRUE) #dsCMatrix
 
 #testing out plots of networks:
 {
@@ -622,7 +626,11 @@ usvi_metab_lc <- usvi_metab.tbl %>%
   droplevels %>%
   apply(., 2, function(x) scale(x, center = FALSE, scale = FALSE), simplify = TRUE)
 rownames(usvi_metab_lc) <- rownames(usvi_metab.tbl)
-if(!file.exists(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))){
+if(file.exists(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))){
+  cli::cli_alert_info("Reading in speci-easi glasso results from metabolites.")
+  se.usvi_metab_genus.gl <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting speci-easi glasso on metabolites.")
   se.usvi_metab_genus.gl <- spiec.easi(list(as.matrix(usvi_top100_genus_with_metab.tbl), usvi_metab_lc), 
                                        method = "glasso", 
                                        pulsar.select = TRUE, 
@@ -630,8 +638,6 @@ if(!file.exists(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))){
                                        nlambda = 100, 
                                        pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
   readr::write_rds(se.usvi_metab_genus.gl, paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"), compress = "gz")
-} else {
-  se.usvi_metab_genus.gl <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))
 }
 
 # getStability(se.usvi_metab_genus.gl)
@@ -651,7 +657,11 @@ if(!file.exists(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))){
 # plot(ig2.metab.gl, vertex.color = dtype+1)
 # phyloseq::plot_network(ig2.metab.gl)
 
-if(!file.exists(paste0(projectpath, "/","se.usvi_metab_genus.mb", ".rds"))){
+if(file.exists(paste0(projectpath, "/","se.usvi_metab_genus.mb", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi MB results on metabolites and top 100 genera.")
+  se.usvi_metab_genus.mb <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_genus.mb", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting spiec-easi MB on metabolites and top 100 genera.")
   se.usvi_metab_genus.mb <- spiec.easi(list(as.matrix(usvi_top100_genus_with_metab.tbl), usvi_metab_lc), 
                                        method = "mb", 
                                        pulsar.select = TRUE, 
@@ -659,8 +669,6 @@ if(!file.exists(paste0(projectpath, "/","se.usvi_metab_genus.mb", ".rds"))){
                                        nlambda = 20, 
                                        pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
   readr::write_rds(se.usvi_metab_genus.mb, paste0(projectpath, "/","se.usvi_metab_genus.mb", ".rds"), compress = "gz")
-} else {
-  se.usvi_metab_genus.mb <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_genus.mb", ".rds"))
 }
 # getStability(se.usvi_metab_genus.mb)
 # # 0.047807
@@ -782,7 +790,7 @@ net_se.metab.mb <- NetCoMi::netConstruct(data = se.metab.mb_cor,
                                          cores = nthreads,
                                          verbose = 1,
                                          seed = 48105)
-netcom_se.metab.mb <- netAnalyze(net_se.metab.mb, 
+netcom_se.metab.mb <- NetCoMi::netAnalyze(net_se.metab.mb, 
                                  # centrLCC = FALSE, sPathAlgo = "automatic",
                                  # hubPar = c("degree", "eigenvector"), gcmHeat = FALSE, hubQuant = 0.9, sPathNorm = FALSE, lnormFit = FALSE,
                                  # normDeg = FALSE, normBetw = FALSE, normClose = FALSE, normEigen = FALSE,
@@ -810,7 +818,7 @@ netcom_se.metab.mb <- netAnalyze(net_se.metab.mb,
 #        cexTitle = 2.3)
 
 #extract the edges and weights for plotting:
-{
+if(!file.exists(paste0(projectpath, "/", "net_se.mb.nodes", ".csv"))){
   net_mb.edges <- dplyr::select(net_se.metab.mb$edgelist1, v1, v2)
   # net_mb.edges$Source <- as.numeric(factor(net_mb.edges$v1))
   # net_mb.edges$Target <- as.numeric(factor(net_mb.edges$v2))
@@ -859,14 +867,14 @@ net_se.metab.gl <- NetCoMi::netConstruct(data = se.metab.gl_cov,
                                          cores = nthreads,
                                          verbose = 1,
                                          seed = 48105)
-netcom_se.metab.gl <- netAnalyze(net_se.metab.gl, 
+netcom_se.metab.gl <- NetCoMi::netAnalyze(net_se.metab.gl, 
                                  # centrLCC = FALSE, sPathAlgo = "automatic",
                                  # hubPar = c("degree", "eigenvector"), gcmHeat = FALSE, hubQuant = 0.9, sPathNorm = FALSE, lnormFit = FALSE,
                                  # normDeg = FALSE, normBetw = FALSE, normClose = FALSE, normEigen = FALSE,
                                  clustMethod = "hierarchical")
 summary(netcom_se.metab.gl)
 
-{
+if(!file.exists(paste0(projectpath, "/", "net_se.gl.nodes", ".csv"))){
   net_gl.edges <- dplyr::select(net_se.metab.gl$edgelist1, v1, v2)
   
   # Add Source and Target variables (as IDs)
@@ -988,31 +996,35 @@ top100_genus_reefs.tbl <- usvi_top100_genus_with_metab.tbl[rownames(usvi_top100_
 #mb method
 #use nlamba = 50 for seagrass, and nlambda = 200 for reefs
 
-if(!file.exists(paste0(projectpath, "/","se.usvi_seagrass.mb", ".rds"))){
-  se.usvi_seagrass.mb <- spiec.easi(list(as.matrix(top100_genus_seagrass.tbl), metab_seagrass_lc), 
-                                       method = "mb", 
-                                       pulsar.select = TRUE, 
-                                       lambda.min.ratio = 0.01, 
-                                       nlambda = 50, 
-                                       pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
-  readr::write_rds(se.usvi_seagrass.mb, paste0(projectpath, "/","se.usvi_seagrass.mb", ".rds"), compress = "gz")
-} else {
+if(file.exists(paste0(projectpath, "/","se.usvi_seagrass.mb", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi MB results on seagrass metabolites and top 100 genera.")
   se.usvi_seagrass.mb <- readr::read_rds(paste0(projectpath, "/","se.usvi_seagrass.mb", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting spiec-easi MB on seagrass metabolites and top 100 genera.")
+  se.usvi_seagrass.mb <- spiec.easi(list(as.matrix(top100_genus_seagrass.tbl), metab_seagrass_lc), 
+                                    method = "mb", 
+                                    pulsar.select = TRUE, 
+                                    lambda.min.ratio = 0.01, 
+                                    nlambda = 50, 
+                                    pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+  readr::write_rds(se.usvi_seagrass.mb, paste0(projectpath, "/","se.usvi_seagrass.mb", ".rds"), compress = "gz")
 }
 
 
 
 
-if(!file.exists(paste0(projectpath, "/","se.usvi_reefs.mb", ".rds"))){
-  se.usvi_reefs.mb <- spiec.easi(list(as.matrix(top100_genus_reefs.tbl), metab_reefs_lc), 
-                                    method = "mb", 
-                                    pulsar.select = TRUE, 
-                                    lambda.min.ratio = 0.01, 
-                                    nlambda = 200, 
-                                    pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
-  readr::write_rds(se.usvi_reefs.mb, paste0(projectpath, "/","se.usvi_reefs.mb", ".rds"), compress = "gz")
-} else {
+if(file.exists(paste0(projectpath, "/","se.usvi_reefs.mb", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi MB results on reefs' metabolites and top 100 genera.")
   se.usvi_reefs.mb <- readr::read_rds(paste0(projectpath, "/","se.usvi_reefs.mb", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting spiec-easi MB on reefs' metabolites and top 100 genera.")
+  se.usvi_reefs.mb <- spiec.easi(list(as.matrix(top100_genus_reefs.tbl), metab_reefs_lc), 
+                                 method = "mb", 
+                                 pulsar.select = TRUE, 
+                                 lambda.min.ratio = 0.01, 
+                                 nlambda = 200, 
+                                 pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+  readr::write_rds(se.usvi_reefs.mb, paste0(projectpath, "/","se.usvi_reefs.mb", ".rds"), compress = "gz")
 }
 
 #assess quality of the network:
@@ -1146,11 +1158,12 @@ if(!exists("p1", envir = .GlobalEnv)){
          shortenLabels = "none",
          labelScale = TRUE,
          rmSingles = TRUE,
-         nodeSize = "eigenvector",
-         nodeSizeSpread = 2,
+         nodeSize = "fix", cexHubs = 4,
+         # nodeSize = "eigenvector", nodeSizeSpread = 2,
          # nodeColor = "cluster",
          nodeColor = "colorVec", colorVec = nodeCols,
-         edgeFilter = "threshold", edgeFilterPar = se.mb_cutoff,
+         # edgeFilter = "threshold", edgeFilterPar = se.mb_cutoff,
+         edgeFilter = "threshold", edgeFilterPar = 0.15,
          hubBorderCol = "gray60",
          cexNodes = 1.8,
          cexLabels = 2,
@@ -1158,7 +1171,7 @@ if(!exists("p1", envir = .GlobalEnv)){
          title1 = "Network for Genera/Metabolite data",
          showTitle = TRUE,
          groupNames = c("Reef sites", "Seagrass"),
-         cexTitle = 2.3)
+         cexTitle = 1)
   
   # ggsave(paste0(projectpath, "/", "net_sites.mb.adjgraph-", Sys.Date(), ".png"),
   #        p1,
@@ -1438,9 +1451,11 @@ gpatch <- g_hm2  + gpatch + patchwork::plot_layout(guides = "collect")
 gpatch <- gpatch + patchwork::plot_annotation(title = "Association matrices between 49 metabolites and 100 top genera",
                                               tag_levels = "A",
                                               subtitle = "In just reef samples compared to just seagrass samples")
-ggsave(paste0(projectpath, "/", "usvi_se_sites.mb-", Sys.Date(), ".png"),
-       gpatch,
-       width = 22, height = 8, units = "in")
+if(!any(grepl("usvi_se_sites.mb", list.files(projectpath, pattern = "usvi_se_sites.mb-.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_se_sites.mb-", Sys.Date(), ".png"),
+         gpatch,
+         width = 22, height = 8, units = "in")
+}
 
 #what if I made v2 from reefs, the v1?
 #and keep v1 from seagrass
@@ -1629,8 +1644,8 @@ plot(net_se.sites.mb_diff1,
      # legend = FALSE,
      legend = TRUE, legendPos = "topright", legendTitle = "Sites", legendGroupnames = c("Reef sites", "Seagrass"),
      labelScale = TRUE)
-{
-  
+
+if(!file.exists(paste0(projectpath, "/", "net_sites.mb.nodes", ".csv"))){
   net_sites.mb.edges <- dplyr::select(net_se.sites.mb$edgelist1, v1, v2)
   
   net_sites.mb.nodes <- data.frame(Label = union(net_sites.mb.edges$v1, net_sites.mb.edges$v2),
