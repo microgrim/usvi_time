@@ -1341,7 +1341,7 @@ if(!any(grepl("genera_dawn_photo_sda", list.files(projectpath, pattern = "usvi_d
 
 
 if(!any(grepl("genera_site_time", list.files(projectpath, pattern = "usvi_deseq_.*.RData")))){
-  save(usvi_deseq_genera_res.list, usvi_deseq_genera_abund_filtered.df, usvi_deseq_genera_res.df, file = paste0(projectpath, "/", "usvi_deseq_genera_site_time-", Sys.Date(), ".RData"))
+  save(usvi_deseq_genera_res.list, usvi_deseq_genera_abund_filtered.df, usvi_deseq_genera_abund.df, usvi_deseq_genera_res.df, file = paste0(projectpath, "/", "usvi_deseq_genera_site_time-", Sys.Date(), ".RData"))
 }
 
 # ASV-level deseq results -------------------------------------------------
@@ -1350,7 +1350,8 @@ if(!any(grepl("genera_site_time", list.files(projectpath, pattern = "usvi_deseq_
 
 #now do it at the ASV level
 if(any(grepl("asvs_site_time", list.files(projectpath, pattern = "usvi_deseq_.*.RData")))){
-  temp_file <- list.files(projectpath, pattern = "usvi_deseq_asvs_site_time-.*.RData")[1]
+  # temp_file <- list.files(projectpath, pattern = "usvi_deseq_asvs_site_time-.*.RData")[1]
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_deseq_asvs_site_time-.*.RData"))
   load(paste0(projectpath, "/", temp_file))
   rm(temp_file)
 } else {
@@ -1616,7 +1617,8 @@ if(!any(grepl("asvs_site_time", list.files(projectpath, pattern = "usvi_deseq_.*
 
 #read in the genera that were significant by site through rademu:
 if(any(grepl("genera_reef_highlow", list.files(projectpath, pattern = "usvi_rademu_.*.RData")))){
-  temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_reef_highlow.*.RData")[1]
+  # temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_reef_highlow.*.RData")[1]
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_rademu_genera_reef_highlow.*.RData"))
   load(paste0(projectpath, "/", temp_file))
   rm(temp_file)
 }
@@ -1631,7 +1633,8 @@ if(any(grepl("genera_reef_highlow", list.files(projectpath, pattern = "usvi_rade
 #   droplevels
 
 if(any(grepl("genera_site_time", list.files(projectpath, pattern = "usvi_rademu_.*.RData")))){
-  temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_site_time.*.RData")[1]
+  # temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_site_time.*.RData")[1]
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_rademu_genera_site_time.*.RData"))
   load(paste0(projectpath, "/", temp_file))
   rm(temp_file)
 }
@@ -1722,6 +1725,46 @@ setdiff(rademu_time_res.df[["asv_id"]], rademu_site_genera_idx)
 
 
 
+# Read in results from corncob --------------------------------------------
+
+#read in the genera that were significant via corncob:
+# if(any(grepl("cc_dt_sda", list.files(projectpath, pattern = ".*ps_usvi_filtered-.*.RData")))){
+#   temp_file <- data.table::last(list.files(projectpath, pattern = "cc_dt_sda_ps_usvi_filtered*.RData"))
+#   load(paste0(projectpath, "/", temp_file))
+#   rm(temp_file)
+# }
+
+if(file.exists(paste0(projectpath, "/", "cc_dt_usvi_summary.df", ".tsv"))){
+  cc_dt_usvi_summary.df <- readr::read_delim(paste0(projectpath, "/", "cc_dt_usvi_summary.df", ".tsv"),
+                     delim = "\t", col_names = TRUE)
+}
+
+
+#since rademu couldn't proceed at the ASV level, use just corncob results at the agglomerated genera-level 
+
+corncob_res.df <- cc_dt_usvi_summary.df %>%
+  dplyr::filter(grepl("agg_genus", taxon_resolution)) %>%
+  dplyr::mutate(test_type = "corncob") %>%
+  dplyr::rename(padj = "p_fdr") %>%
+  dplyr::rename(model = "test") %>%
+  dplyr::select(contrast, hold, variable, asv_id, padj, taxonomy, test_type, model) %>%
+  dplyr::distinct(asv_id, hold, variable, .keep_all = TRUE) %>%
+  # tidyr::separate_longer_delim(variable, delim = " - ") %>%
+  dplyr::mutate(pair1 = dplyr::case_when((hold %in% names(sampling_time_lookup)) ~ paste0(gsub("([[:print:]]+)( - )(.*)$", "\\1", variable), "_", hold),
+                                         .default = paste0(hold, "_", gsub("([[:print:]]+)( - )(.*)$", "\\1", variable)))) %>%
+  dplyr::mutate(pair2 = dplyr::case_when((hold %in% names(sampling_time_lookup)) ~ paste0(gsub("([[:print:]]+)( - )(.*)$", "\\3", variable), "_", hold),
+                                         .default = paste0(hold, "_", gsub("([[:print:]]+)( - )(.*)$", "\\3", variable)))) %>%
+  dplyr::select(contrast, hold, variable, asv_id, padj, test_type, model) %>%
+  # dplyr::mutate(sampling_time = dplyr::case_when(grepl("dawn|peak", contrast) ~ stringr::str_extract(contrast, "dawn|peak_photo"),
+  #                                                .default = "all")) %>%
+  # dplyr::mutate(site = stringr::str_extract(contrast, "Yawzi|Tektite")) %>%
+  # dplyr::mutate(Combo = dplyr::case_when(grepl("Yawzi_|Tektite_", contrast) ~ stringr::str_extract(contrast, "Yawzi_.|Tektite_."),
+  #                                        .default = site)) %>%
+  # dplyr::mutate(baseline = gsub("([[:print:]]+)( - )(.*)$", "\\3", contrast)) %>%
+  # dplyr::mutate(baseline = dplyr::case_when(grepl("all_peak_photo", baseline) ~ "all_peak_photo",
+  #                                           grepl("dawn|peak", baseline) ~ "LB_seagrass_time",
+  #                                           .default = "LB_seagrass_all")) %>%
+  droplevels
 
 
 usvi_sda_genera_compare.df <- rademu_res.df %>%
@@ -1741,7 +1784,8 @@ usvi_sda_genera_compare.df <- rademu_res.df %>%
   # bind_rows(., (usvi_deseq_genera_abund_filtered.df %>%
                   dplyr::mutate(test_type = "deseq"))) %>%
   dplyr::mutate(pair1 = stringr::str_split_i(contrast, " - ", 1),
-                pair2 = stringr::str_split_i(contrast, " - ", 2))
+                pair2 = stringr::str_split_i(contrast, " - ", 2)) %>%
+  bind_rows(., corncob_res.df)
 
 
 

@@ -11,3 +11,5 @@ usvi*.png
 se.usvi_*.gl.rds
 se.usvi_*.slr.rds
 se.usvi_*.mb.rds
+cc_dt_res_ps_usvi_filtered*_list*.rds
+
