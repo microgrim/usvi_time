@@ -3,7 +3,8 @@
 .RData
 .Ruserdata
 usvi*.rds
-usvi*.png
+#usvi*.png
+potential_contam/
 .DS_Store
 .Rapp.history
 *.RData

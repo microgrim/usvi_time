@@ -441,7 +441,7 @@ meta.seawater <- ps_usvi %>%
   tibble::column_to_rownames(., var = "sample_id") %>%
   droplevels
 
-st_usvi_asv.d <- vegan::vegdist(usvi_asv.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
+dist_usvi_asv.d <- vegan::vegdist(usvi_asv.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
 
 dist_usvi_asv.df <- vegan::betadisper(dist_usvi_asv.d, meta.seawater$site) %>%
   purrr::pluck("distances") %>%
