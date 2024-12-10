@@ -81,6 +81,7 @@ library(viridis)
 library(patchwork)
 library(viridisLite)
 library(pals)
+library(ggVennDiagram)
 
 
 # Custom functions --------------------------------------------------------
@@ -262,9 +263,6 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
   droplevels
 
 
-
-
-
 usvi_metabolomics.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_wideFormat_noMetadata.csv"),
                                           col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads)
 colnames(usvi_metabolomics.df)[1] <- "metab_deriv_label"
@@ -327,21 +325,40 @@ sampling_day_lookup <- data.frame(sampling_day = c("Day1", "Day2", "Day3", "Day4
 sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
   setNames(., names(sampling_day_lookup))
 
-usvi_genera_relabel <- usvi_prok_filled.taxa.df %>%
-  dplyr::mutate(across(everything(), ~stringr::str_replace_all(.x, " clade", ""))) %>%
-  dplyr::rowwise(.) %>%
-  dplyr::mutate(first = dplyr::case_when((Order == Genus) ~ Class,
-                                         .default = Order)) %>%
-  dplyr::mutate(first = dplyr::case_when((Class == Order) ~ NA,
-                                         (Class != Phylum) ~ Phylum,
-                                         grepl(paste0(c("Synechococcales"), collapse = "|"), first) ~ NA,
-                                         .default = first)) %>%
-  dplyr::mutate(second = dplyr::case_when((Order == Genus) ~ Order,
-                                          .default = Genus)) %>%
-  dplyr::mutate(taxa_label = dplyr::case_when(!is.na(first) ~ paste0(first, "; ", second),
-                                              .default = second)) %>%
-  dplyr::select(asv_id, taxa_label) %>%
-  tibble::deframe(.)
+# usvi_genera_relabel <- usvi_prok_filled.taxa.df %>%
+#   dplyr::mutate(across(everything(), ~stringr::str_replace_all(.x, " clade", ""))) %>%
+#   dplyr::rowwise(.) %>%
+#   dplyr::mutate(first = dplyr::case_when((Order == Genus) ~ Class,
+#                                          .default = Order)) %>%
+#   dplyr::mutate(first = dplyr::case_when((Class == Order) ~ NA,
+#                                          (Class != Phylum) ~ Phylum,
+#                                          grepl(paste0(c("Synechococcales"), collapse = "|"), first) ~ NA,
+#                                          .default = first)) %>%
+#   dplyr::mutate(second = dplyr::case_when((Order == Genus) ~ Order,
+#                                           .default = Genus)) %>%
+#   dplyr::mutate(taxa_label = dplyr::case_when(!is.na(first) ~ paste0(first, "; ", second),
+#                                               .default = second)) %>%
+#   dplyr::select(asv_id, taxa_label) %>%
+#   tibble::deframe(.)
+
+
+usvi_genera_relabel <- usvi_prok_asvs.taxa %>%
+  dplyr::select(-sequence) %>%
+  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(
+    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+  dplyr::relocate(contains("_id"), taxonomy) %>%
+  dplyr::select(-c(final_taxonomy)) %>%
+  droplevels %>%
+  # dplyr::arrange(taxonomy) %>%
+  # dplyr::mutate(across(contains("_id"), ~factor(.x, levels = unique(.x)))) %>%
+  # droplevels
+  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>% dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>% dplyr::select(asv_id, taxonomy) %>% tibble::deframe(.)
 
 global_labeller <- labeller(
   # model2 = model_dispersion_lookup,
@@ -352,7 +369,8 @@ global_labeller <- labeller(
   sampling_time = sampling_time_lookup,
   asv_id = usvi_genera_relabel,
   .multi_line = TRUE,
-  .default = label_both
+  .default = label_wrap_gen(25, multi_line = TRUE)
+  # .default = label_value
 )
 
 # Prepare models for de ---------------------------------------------------
@@ -1609,504 +1627,6 @@ if(!any(grepl("genera_asvs_dawn_photo_sda", list.files(projectpath, pattern = "u
 if(!any(grepl("asvs_site_time", list.files(projectpath, pattern = "usvi_deseq_.*.RData")))){
   save(usvi_deseq_asvs_res.list, usvi_deseq_asvs_abund_filtered.df, usvi_deseq_asvs_res.df, file = paste0(projectpath, "/", "usvi_deseq_asvs_site_time-", Sys.Date(), ".RData"))
 }
-
-
-
-# Compare these results to those from radEmu ------------------------------
-
-
-#read in the genera that were significant by site through rademu:
-if(any(grepl("genera_reef_highlow", list.files(projectpath, pattern = "usvi_rademu_.*.RData")))){
-  # temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_reef_highlow.*.RData")[1]
-  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_rademu_genera_reef_highlow.*.RData"))
-  load(paste0(projectpath, "/", temp_file))
-  rm(temp_file)
-}
-
-# rademu_reef_res.df <- score_lowreef_res_list %>%
-#   bind_rows(.) %>%
-#   dplyr::mutate(group = "low_reef") %>%
-#   bind_rows(., score_highreef_res_list %>%
-#               bind_rows(.) %>%
-#               dplyr::mutate(group = "high_reef")) %>%
-#   dplyr::rename(asv_id = "category") %>%
-#   droplevels
-
-if(any(grepl("genera_site_time", list.files(projectpath, pattern = "usvi_rademu_.*.RData")))){
-  # temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_site_time.*.RData")[1]
-  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_rademu_genera_site_time.*.RData"))
-  load(paste0(projectpath, "/", temp_file))
-  rm(temp_file)
-}
-
-rademu_res.df <- bind_rows((score_1_res_list %>%
-                                   bind_rows(.) %>% #these were genera that were found to be higher in samples collected at dawn
-                                   dplyr::mutate(group = "high_dawn") %>%
-                                   dplyr::filter(pval < 0.05) %>%
-                                   tidyr::drop_na(score_stat)),
-                                (score_2_res_list %>%
-                                   bind_rows(.) %>% # these were genera that were found to be higher in samples collected at peak photo
-                                   dplyr::mutate(group = "low_dawn") %>%
-                                   dplyr::filter(pval < 0.05) %>%
-                                   tidyr::drop_na(score_stat)),
-                                (score_4_res_list %>%
-                                   bind_rows(.) %>% #these were genera that were found to be higher in samples collected in seagrass
-                                   dplyr::mutate(group = "high_seagrass") %>%
-                                   dplyr::filter(pval < 0.05) %>%
-                                   tidyr::drop_na(score_stat)),
-                                (score_5_res_list %>%
-                                   bind_rows(.) %>% #these were genera that were found to be higher in samples collected in reef sites
-                                   dplyr::mutate(group = "low_seagrass") %>%
-                                   dplyr::filter(pval < 0.05) %>%
-                                   tidyr::drop_na(score_stat)),
-                                (score_lowreef_res_list %>%
-                                   bind_rows(.) %>%
-                                   dplyr::mutate(group = "low_reef") %>%
-                                   dplyr::filter(pval < 0.05) %>%
-                                   tidyr::drop_na(score_stat)),
-                                (score_highreef_res_list %>%
-                                   bind_rows(.) %>%
-                                   dplyr::mutate(group = "high_reef") %>%
-                                   dplyr::filter(pval < 0.05) %>%
-                                   tidyr::drop_na(score_stat))) %>%
-  dplyr::rename(asv_id = "category") %>%
-  droplevels %>%
-  dplyr::rename(contrast = "covariate") %>%
-  dplyr::mutate(contrast = stringr::str_remove_all(contrast, "site") %>%
-                  stringr::str_replace_all(., ":sampling_time", "_")) %>%
-  dplyr::mutate(contrast = dplyr::case_when(grepl("reef", group) ~ paste0(contrast, " - LB_seagrass_all"),
-                                            grepl("dawn", group) ~ paste0(contrast, " - all_peak_photo"),
-                                            grepl("seagrass", group) ~ paste0(contrast, " - LB_seagrass_all"),
-                                            .default = contrast)) %>%
-  dplyr::mutate(site = stringr::str_extract(contrast, "Yawzi|Tektite")) %>%
-  dplyr::mutate(commonid = stringr::str_split_i(group, "_", 2)) %>%
-  dplyr::arrange(commonid, asv_id) %>%
-  dplyr::group_by(commonid) %>%
-  dplyr::distinct(asv_id, group, contrast, .keep_all = TRUE) %>%
-  droplevels
-
-#for the temporal nuances:
-#subtract all genera that were just significantly higher/lower in seagrass regardless of time
-# temp_list <- rademu_res.df %>%
-#   split(., f = .$commonid) %>%
-#   map(., ~.x %>%
-#         droplevels)
-rademu_seagrass_res.df <- rademu_res.df %>%
-  dplyr::filter(commonid == "seagrass") %>%
-  dplyr::distinct(asv_id, group, .keep_all = TRUE) %>%
-  dplyr::arrange(asv_id) %>%
-  droplevels
-
-rademu_reef_res.df <- rademu_res.df %>%
-  dplyr::filter(commonid == "reef") %>%
-  dplyr::distinct(asv_id, group, .keep_all = TRUE) %>%
-  dplyr::arrange(asv_id) %>%
-  droplevels
-
-rademu_time_res.df <- rademu_res.df %>%
-  dplyr::filter(commonid == "dawn") %>%
-  dplyr::distinct(asv_id, group, .keep_all = TRUE) %>%
-  dplyr::arrange(asv_id) %>%
-  droplevels
-
-#these are the genera that were shared between high/low reef and high/low seagrass (23):
-rademu_site_genera_idx <- intersect(rademu_reef_res.df[["asv_id"]], rademu_seagrass_res.df[["asv_id"]])
-# union(rademu_reef_res.df[["asv_id"]], rademu_seagrass_res.df[["asv_id"]])
-
-# #these are the genera that were not shared between high/low reef and high/low seagrass (13):
-# setdiff(rademu_reef_res.df[["asv_id"]], rademu_seagrass_res.df[["asv_id"]])
-
-
-
-#now find the difference between the genera flagged as spatiotemporally different, and the site different:
-# setdiff(rademu_reef_res.df[["asv_id"]], rademu_time_res.df[["asv_id"]])
-setdiff(rademu_time_res.df[["asv_id"]], rademu_site_genera_idx)
-# [1] "ASV_00008" "ASV_00012" "ASV_00215" "ASV_00227" "ASV_00243" "ASV_00282" "ASV_01134"
-
-
-
-# Read in results from corncob --------------------------------------------
-
-#read in the genera that were significant via corncob:
-# if(any(grepl("cc_dt_sda", list.files(projectpath, pattern = ".*ps_usvi_filtered-.*.RData")))){
-#   temp_file <- data.table::last(list.files(projectpath, pattern = "cc_dt_sda_ps_usvi_filtered*.RData"))
-#   load(paste0(projectpath, "/", temp_file))
-#   rm(temp_file)
-# }
-
-if(file.exists(paste0(projectpath, "/", "cc_dt_usvi_summary.df", ".tsv"))){
-  cc_dt_usvi_summary.df <- readr::read_delim(paste0(projectpath, "/", "cc_dt_usvi_summary.df", ".tsv"),
-                     delim = "\t", col_names = TRUE)
-}
-
-
-#since rademu couldn't proceed at the ASV level, use just corncob results at the agglomerated genera-level 
-
-corncob_res.df <- cc_dt_usvi_summary.df %>%
-  dplyr::filter(grepl("agg_genus", taxon_resolution)) %>%
-  dplyr::mutate(test_type = "corncob") %>%
-  dplyr::rename(padj = "p_fdr") %>%
-  dplyr::rename(model = "test") %>%
-  dplyr::select(contrast, hold, variable, asv_id, padj, taxonomy, test_type, model) %>%
-  dplyr::distinct(asv_id, hold, variable, .keep_all = TRUE) %>%
-  # tidyr::separate_longer_delim(variable, delim = " - ") %>%
-  dplyr::mutate(pair1 = dplyr::case_when((hold %in% names(sampling_time_lookup)) ~ paste0(gsub("([[:print:]]+)( - )(.*)$", "\\1", variable), "_", hold),
-                                         .default = paste0(hold, "_", gsub("([[:print:]]+)( - )(.*)$", "\\1", variable)))) %>%
-  dplyr::mutate(pair2 = dplyr::case_when((hold %in% names(sampling_time_lookup)) ~ paste0(gsub("([[:print:]]+)( - )(.*)$", "\\3", variable), "_", hold),
-                                         .default = paste0(hold, "_", gsub("([[:print:]]+)( - )(.*)$", "\\3", variable)))) %>%
-  dplyr::select(contrast, hold, variable, asv_id, padj, test_type, model) %>%
-  # dplyr::mutate(sampling_time = dplyr::case_when(grepl("dawn|peak", contrast) ~ stringr::str_extract(contrast, "dawn|peak_photo"),
-  #                                                .default = "all")) %>%
-  # dplyr::mutate(site = stringr::str_extract(contrast, "Yawzi|Tektite")) %>%
-  # dplyr::mutate(Combo = dplyr::case_when(grepl("Yawzi_|Tektite_", contrast) ~ stringr::str_extract(contrast, "Yawzi_.|Tektite_."),
-  #                                        .default = site)) %>%
-  # dplyr::mutate(baseline = gsub("([[:print:]]+)( - )(.*)$", "\\3", contrast)) %>%
-  # dplyr::mutate(baseline = dplyr::case_when(grepl("all_peak_photo", baseline) ~ "all_peak_photo",
-  #                                           grepl("dawn|peak", baseline) ~ "LB_seagrass_time",
-  #                                           .default = "LB_seagrass_all")) %>%
-  droplevels
-
-
-usvi_sda_genera_compare.df <- rademu_res.df %>%
-  dplyr::mutate(test_type = "rademu") %>%
-  dplyr::rename(estimate = "score_stat") %>%
-  dplyr::mutate(model = "auto_fit") %>%
-  dplyr::mutate(sampling_time = dplyr::case_when(grepl("dawn|peak", contrast) ~ stringr::str_extract(contrast, "dawn|peak_photo"),
-                                                 .default = "all")) %>%
-  dplyr::mutate(site = stringr::str_extract(contrast, "Yawzi|Tektite")) %>%
-  dplyr::mutate(Combo = dplyr::case_when(grepl("Yawzi_|Tektite_", contrast) ~ stringr::str_extract(contrast, "Yawzi_.|Tektite_."),
-                                         .default = site)) %>%
-  dplyr::mutate(baseline = gsub("([[:print:]]+)( - )(.*)$", "\\3", contrast)) %>%
-  dplyr::mutate(baseline = dplyr::case_when(grepl("all_peak_photo", baseline) ~ "all_peak_photo",
-                                            grepl("dawn|peak", baseline) ~ "LB_seagrass_time",
-                                            .default = "LB_seagrass_all")) %>%
-  bind_rows(., (usvi_deseq_genera_abund.df %>%
-  # bind_rows(., (usvi_deseq_genera_abund_filtered.df %>%
-                  dplyr::mutate(test_type = "deseq"))) %>%
-  dplyr::mutate(pair1 = stringr::str_split_i(contrast, " - ", 1),
-                pair2 = stringr::str_split_i(contrast, " - ", 2)) %>%
-  bind_rows(., corncob_res.df)
-
-
-
-#which genera are flagged as significantly differentially abundant in both tests?
-shared_sda_genera_idx <- usvi_sda_genera_compare.df %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(test_type, asv_id, .keep_all = FALSE) %>%
-  dplyr::group_by(asv_id) %>%
-  dplyr::summarise(num_results = length(test_type)) %>%
-  dplyr::filter(num_results > 1) %>%
-  # dplyr::filter(num_results > 2) %>%
-  dplyr::arrange(asv_id) %>%
-  dplyr::distinct(asv_id) %>%
-  unlist %>%
-  as.character
-  # droplevels
-
-
-#which are not?
-selfish_sda_genera_idx <- usvi_sda_genera_compare.df %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(test_type, asv_id, .keep_all = FALSE) %>%
-  dplyr::group_by(asv_id) %>%
-  dplyr::summarise(num_results = length(test_type)) %>%
-  dplyr::filter(num_results <= 1) %>%
-  # dplyr::filter(num_results <= 2) %>%
-  dplyr::distinct(asv_id) %>%
-  dplyr::left_join(., usvi_sda_genera_compare.df %>%
-                     dplyr::distinct(asv_id, test_type, .keep_all = FALSE),
-                   by = join_by(asv_id)) %>%
-  dplyr::select(test_type, asv_id) %>%
-  dplyr::arrange(asv_id) %>%
-  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  tibble::deframe(.)
-  # unlist %>%
-  # as.character
-
-#save the results as a table listing which genera are significant in which comparison/test
-
-temp_df1 <- usvi_sda_genera_compare.df %>%
-  dplyr::distinct(asv_id, contrast, test_type) %>%
-  dplyr::arrange(asv_id) %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = "asv_id",
-                     names_from = c(contrast),
-                     values_from = c(test_type),
-                     values_fill = NA) %>%
-  droplevels %>%
-  dplyr::left_join(., selfish_sda_genera_idx %>%
-                     tibble::enframe(name = "test_type.x", value = "asv_id")) %>%
-  dplyr::left_join(., data.frame(asv_id = shared_sda_genera_idx,
-                                 test_type.y = "both")) %>%
-  tidyr::unite("test_type", c("test_type.x", "test_type.y"), remove = TRUE, na.rm = TRUE) %>%
-  dplyr::left_join(., usvi_sw_genus.taxa.df, by = join_by(asv_id)) %>%
-  droplevels
-
-readr::write_delim(temp_df1, paste0(projectpath, "/", "usvi_sda_genera_compare_summary.tsv"),
-                   delim = "\t", col_names = TRUE, na = "")
-if(!any(grepl("rds$", list.files(projectpath, pattern = "usvi_sda_genera_compare.*.rds")))){
-  readr::write_rds(usvi_sda_genera_compare.df, 
-                   paste0(projectpath, "/", "usvi_sda_genera_compare.rds"))
-  #also save the results with the pvals and estimates
-  readr::write_delim(usvi_sda_genera_compare.df, 
-                     paste0(projectpath, "/", "usvi_sda_genera_compare.tsv"),
-                     delim = "\t", col_names = TRUE, na = "")
-}
-  
-
-
-
-
-  
-# usvi_sda_genera_shared_samples.df <- usvi_sda_genera_compare.df %>%
-#   dplyr::filter(asv_id %in% shared_sda_genera_idx) %>%
-#   droplevels %>%
-#   dplyr::distinct(asv_id, contrast, test_type, group, baseline, sampling_time, site, pair1, pair2, .keep_all = FALSE) %>%
-#   dplyr::mutate(sampling_time = stringr::str_replace_all(sampling_time, "all", "dawn,peak_photo")) %>%
-#   tidyr::separate_longer_delim(sampling_time, delim = ",") %>%
-#   dplyr::rename(pair1_site ="site",
-#                 pair1_sampling_time = "sampling_time") %>%
-#   # dplyr::mutate(pair2_site = "LB_seagrass",
-#   #               pair2_sampling_time = stringr::str_remove_all(pair2, "LB_seagrass_")) %>%
-#   # dplyr::mutate(pair2_sampling_time = stringr::str_replace_all(pair2_sampling_time, "all", "dawn,peak_photo")) %>%
-#   # tidyr::separate_longer_delim(pair2_sampling_time, delim = ",") %>%
-#   dplyr::left_join(., usvi_selected_metadata %>%
-#                      dplyr::select(sample_id, sampling_time, site),
-#                    by = join_by("pair1_site" == "site", "pair1_sampling_time" == "sampling_time"), relationship = "many-to-many", multiple = "all") %>%
-#   # dplyr::bind_rows(., usvi_selected_metadata %>%
-#   #                    dplyr::filter(grepl("LB", site)) %>%
-#   #                    dplyr::select(sample_id, sampling_time) %>%
-#   #                    dplyr::rename(pair2_sampling_time = "sampling_time")) %>%
-#   droplevels
-
-# temp_df2 <- usvi_sw_genus.tbl %>%
-#   apply(., 2, relabund) %>%
-#   as.data.frame(.) %>%
-#   dplyr::slice(which(rowSums(.) > 0)) %>%
-#   t() %>%
-#   as.data.frame(.) %>%
-#   tibble::rownames_to_column(var = "sample_id") %>%
-#   tidyr::pivot_longer(., cols = !c("sample_id"),
-#                       names_to = "asv_id",
-#                       values_to = "relabund") %>%
-#   dplyr::filter(asv_id %in% shared_sda_genera_idx) %>%
-#   dplyr::left_join(., usvi_selected_metadata %>%
-#                      dplyr::select(sample_id, sampling_time, site),
-#                    by = join_by(sample_id), relationship = "many-to-many", multiple = "all") %>%
-#   droplevels
-# usvi_sda_genera_shared_samples_baseline.df <- temp_df2 %>%
-#   dplyr::filter(grepl("LB", site)) %>%
-#   dplyr::filter(asv_id %in% shared_sda_genera_idx) %>%
-#   dplyr::rename(pair2_sampling_time = "sampling_time",
-#                 pair2_site = "site") %>%
-#   dplyr::mutate(pair2 = "dawn,peak_photo,all") %>%
-#   tidyr::separate_longer_delim(pair2, delim = ",") %>%
-#   dplyr::mutate(pair2 = paste0("LB_seagrass_", pair2)) %>%
-#   droplevels
-# 
-# temp_list <- usvi_sda_genera_shared_samples.df %>%
-#   dplyr::filter(asv_id == shared_sda_genera_idx[[1]]) %>%
-#   dplyr::filter(pair1 == "Yawzi_dawn") %>%
-#   droplevels %>%
-#   dplyr::left_join(., temp_df2, by = join_by(sample_id, "pair1_site" == "site", "pair1_sampling_time" == "sampling_time", asv_id),
-#                    relationship = "many-to-many", multiple = "all") %>%
-#   # # dplyr::bind_rows(., temp_df2 %>%
-#   #                    dplyr::filter(asv_id == shared_sda_genera_idx[[1]]) %>%
-#   #                    dplyr::filter(grepl("LB", site)) %>%
-#   #                    droplevels %>%
-#   #                    dplyr::mutate(test_type = "rademu,deseq") %>%
-#   #                    tidyr::separate_longer_delim(test_type, delim = ",") %>%
-#   #                    droplevels) %>%
-#   # dplyr::select(-group) %>%
-#   dplyr::distinct(., .keep_all = TRUE) %>%
-#   # dplyr::full_join(., usvi_sda_genera_shared_samples_baseline.df %>%
-#   #                    dplyr::filter(asv_id == shared_sda_genera_idx[[1]]) %>%
-#   #                    droplevels) %>%
-#   droplevels
-# print(ggplot(data = temp_list,
-#              aes(x = sample_id, y = relabund, fill = asv_id))
-#       + geom_bar(stat = "identity", width = 0.90, show.legend = TRUE, position = position_dodge2(padding = 0.1, preserve = "total", reverse = TRUE))
-#       + geom_bar(color = "black", stat = "identity", width = 0.90, show.legend = FALSE,
-#                  position = position_dodge2(padding = 0.1, preserve = "total", reverse = TRUE))
-#       + theme_bw() 
-#       + scale_y_continuous(expand = expansion(mult = c(0,0.1)))
-#       + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-#               strip.text.y = element_text(angle = 0))
-#       + facet_wrap(test_type~contrast))
-# 
-# print(ggplot(data = temp_list,
-#              aes(x = pair1, y = relabund, fill = asv_id))
-#       + geom_point(shape = 21)
-#       + theme_bw() 
-#       + scale_y_continuous(expand = expansion(mult = c(0,0.1)))
-#       + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-#               strip.text.y = element_text(angle = 0))
-#       + facet_wrap(.~test_type))
-
-# temp_df2 <- usvi_sw_genus.tbl %>%
-#   apply(., 2, relabund) %>%
-#   as.data.frame(.) %>%
-#   dplyr::slice(which(rowSums(.) > 0)) %>%
-#   t() %>%
-#   as.data.frame(.) %>%
-#   tibble::rownames_to_column(var = "sample_id") %>%
-#   tidyr::pivot_longer(., cols = !c("sample_id"),
-#                       names_to = "asv_id",
-#                       values_to = "relabund") %>%
-#   dplyr::filter(asv_id %in% selfish_sda_genera_idx) %>%
-#   dplyr::left_join(., usvi_sda_genera_compare.df %>%
-#                      dplyr::distinct(asv_id, site, sampling_time, .keep_all = FALSE) %>%
-#                      droplevels,
-#                    by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-#   droplevels
-
-
-usvi_sda_genus_relabund.df <- usvi_sw_genus.tbl %>%
-  apply(., 2, relabund) %>%
-  as.data.frame(.) %>%
-  dplyr::slice(which(rowSums(.) > 0)) %>%
-  t() %>%
-  as.data.frame(.) %>%
-  tibble::rownames_to_column(var = "sample_id") %>%
-  tidyr::pivot_longer(., cols = !c("sample_id"),
-                      names_to = "asv_id",
-                      values_to = "relabund") %>%
-  dplyr::filter(asv_id %in% unique(usvi_sda_genera_compare.df[["asv_id"]])) %>%
-  dplyr::left_join(., usvi_selected_metadata %>%
-                     dplyr::select(sample_id, sampling_time, site),
-                   by = join_by(sample_id), relationship = "many-to-many", multiple = "all") %>%
-  droplevels
-
-# temp_df1 <- usvi_sda_genera_compare.df %>%
-#   dplyr::distinct(asv_id, contrast, test_type, estimate, log2FoldChange_MMSE) %>%
-#   tidyr::unite("value", c(estimate, log2FoldChange_MMSE), remove = TRUE, na.rm = TRUE) %>%
-#   tidyr::nest(., .by = test_type, .key = "genera") %>%
-#   # dplyr::distinct(asv_id, contrast, test_type, pval, padj) %>%
-#   # droplevels %>%
-#   # tidyr::pivot_wider(., id_cols = "asv_id",
-#   #                    names_from = c(contrast),
-#   #                    values_from = c(test_type),
-#   #                    # names_from = c(test_type, contrast),
-#   #                    # values_from = c(pval, padj),
-#   #                    values_fill = NA) %>%
-#   droplevels
-
-
-
-
-
-# temp_df2 <- usvi_sda_genus_relabund.df %>%
-#   dplyr::filter(asv_id == shared_sda_genera_idx[1]) %>%
-#   droplevels
-
-# for(i in seq_len(5)){
-# for(i in seq_along(shared_sda_genera_idx)){
-#   namevar <- shared_sda_genera_idx[i]
-#   temp_df2 <- usvi_sda_genus_relabund.df %>%
-#     dplyr::filter(asv_id == namevar) %>%
-#     droplevels
-#   g <- print(
-#     ggplot(data = temp_df2)
-#     + theme_bw() 
-#     + geom_boxplot(aes(y = relabund, x = sampling_time, group = sampling_time), 
-#                    alpha = 0.6, show.legend = FALSE, color = "black",
-#                    position = position_dodge(0.8))
-#     + geom_point(aes(y = relabund, x = sampling_time, group = sampling_time, fill = sampling_time, shape = site),
-#                  alpha = 0.8, color = "black", size = 3, show.legend = TRUE, 
-#                  position = position_jitter(width = 0.2, seed = 48105))
-#     + scale_shape_manual(name = "Sampling site and time",
-#                          values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
-#     + scale_fill_manual(name = "Sampling time",
-#                         values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-#     + scale_x_discrete(labels = sampling_time_lookup, name = "Sampling time")
-#     + scale_y_continuous(name = "Relative abundance (%)")
-#     + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sampling site and time",  direction = "vertical", 
-#                                  override.aes = list(color = "black", shape = 21, size = 3)),
-#              color = "none")
-#     # + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-#     + theme(axis.text.x = element_blank(),
-#             axis.title.y = element_blank(),
-#             strip.text.y = element_text(angle = 0))
-#     + facet_grid(. ~ site,
-#                  drop = TRUE,
-#                  scales = "fixed", labeller = global_labeller)
-#     + ggtitle(paste0("Genera ", namevar))
-#   )
-#   assign(paste0("g_sda_", i), g, envir = .GlobalEnv, inherits = TRUE)
-#   rm(g)
-#   rm(namevar)
-# }
-
-shared_sda_genera_idx_cluster <- usvi_sda_genera_compare.df %>%
-  dplyr::filter(asv_id %in% shared_sda_genera_idx) %>%
-  dplyr::distinct(contrast, asv_id, .keep_all = FALSE) %>%
-  dplyr::group_by(asv_id) %>%
-  dplyr::summarise(num_results = length(contrast)) %>%
-  dplyr::arrange(num_results) %>%
-  dplyr::mutate(cluster = dplyr::case_when(num_results < 8 ~ 1,
-                                           num_results < 11 ~ 2,
-                                           .default = 3)) %>%
-  split(., f = .$cluster) %>%
-  map(., ~.x %>%
-        dplyr::select(asv_id, num_results) %>%
-        droplevels)
-shared_sda_genera_idx_cluster[[1]] %>%
-  # map(., ~.x %>%
-  purrr::pluck(., "asv_id")
-rm(list = apropos("g_sda_.*", mode = "list"))
-
-for(i in seq_along(shared_sda_genera_idx_cluster)){
-  namevar <- shared_sda_genera_idx_cluster[[i]] %>%
-    purrr::pluck("asv_id")
-  temp_df2 <- usvi_sda_genus_relabund.df %>%
-    dplyr::filter(asv_id %in% namevar) %>%
-    droplevels
-  g <- print(
-    ggplot(data = temp_df2)
-    + theme_bw() 
-    + geom_boxplot(aes(y = relabund, x = sampling_time, group = sampling_time), 
-                   alpha = 0.6, show.legend = FALSE, color = "black",
-                   position = position_dodge(0.8))
-    + geom_point(aes(y = relabund, x = sampling_time, group = sampling_time, fill = sampling_time, shape = site),
-                 alpha = 0.8, color = "black", size = 3, show.legend = TRUE, 
-                 position = position_jitter(width = 0.2, seed = 48105))
-    + scale_shape_manual(name = "Sampling site and time",
-                         values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
-    + scale_fill_manual(name = "Sampling time",
-                        values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-    + scale_x_discrete(labels = sampling_time_lookup, name = "Sampling time")
-    + scale_y_continuous(name = "Relative abundance (%)")
-    + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sampling site and time",  direction = "vertical", 
-                                 override.aes = list(color = "black", shape = 21, size = 3)),
-             color = "none")
-    # + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-    + theme(axis.text.x = element_blank(),
-            strip.text.y = element_text(size = rel(0.7)),
-            axis.title.y = element_blank())
-    + facet_grid(asv_id ~ site,
-                 drop = TRUE,
-                 # labeller = global_labeller,
-                 scales = "free")
-    + ggtitle(paste0("Group ", i))
-  )
-  assign(paste0("g_sda_", i), g, envir = .GlobalEnv, inherits = TRUE)
-  rm(g)
-  rm(namevar)
-}
-
-gpatch <- apropos("g_sda_.*", mode = "list") %>%
-  lapply(., get) %>%
-  # purrr::reduce(., `+ theme(legend.position = "none")`) %>%
-  purrr::reduce(., `+`)
-gpatch <- gpatch + patchwork::plot_layout(guides = "collect")  & theme(legend.position = "none")
-gpatch
-
-if(!any(grepl("genera_relabund", list.files(projectpath, pattern = "usvi_sda_.*.png")))){
-  ggsave(paste0(projectpath, "/", "usvi_sda_genera_relabund-", Sys.Date(), ".png"),
-         gpatch,
-         width = 15, height = 10, units = "in")
-}
-
 
 
 

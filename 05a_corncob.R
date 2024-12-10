@@ -427,7 +427,8 @@ temp_df <- tibble::enframe(temp_res_cc[["p"]], name = "asv_id", value = "p") %>%
 
 #these taxa are included in the list of 114 identified in corncob as significant; there aren't any excluded
               
-temp_res_cc_list <- temp_res_cc_list %>%
+temp_res_cc_df <- temp_res_cc_list %>%
+  dplyr::rename(StdError = `Std. Error`) %>%
   dplyr::left_join(., tibble::enframe(temp_res_cc[["p"]], name = "asv_id", value = "p") %>%
                      dplyr::mutate(p_bh_adj = dplyr::case_when(p <= padj_cutoff ~ p,
                                                                .default = NA)) %>%
@@ -435,9 +436,49 @@ temp_res_cc_list <- temp_res_cc_list %>%
                      dplyr::mutate(p_cc = dplyr::case_when(p_fdr <= set.alpha ~ p_fdr,
                                                            .default = NA)) %>%
                      dplyr::select(asv_id, p_bh_adj, p_cc),
-                   by = join_by(asv_id))
+                   by = join_by(asv_id)) %>%
+  dplyr::mutate(metric = dplyr::case_when(grepl("^mu", condition) ~ "mu",
+                                            grepl("^phi", condition) ~ "phi",
+                                            .default = NA)) %>%
+  dplyr::mutate(variable = stringr::str_remove_all(condition, paste0(metric, "."))) %>%
+  dplyr::mutate(variable = dplyr::case_when(grepl("Intercept", variable) ~ "LB_seagrass",
+                                            grepl("site", variable) ~ stringr::str_remove_all(variable, "site"),
+                                            grepl("sampling_day", variable) ~ stringr::str_remove_all(variable, "sampling_day"),
+                                            .default = variable))
 
 #plot the coefficient estimates and std.errors for these 114 taxa
+temp_df_to_plot <- temp_res_cc_df %>%
+  dplyr::left_join(., (temp_res_cc_df %>%
+                         dplyr::filter(grepl("LB", variable)) %>%
+                         dplyr::rename(Estimate_LB = Estimate) %>%
+                         dplyr::select(Estimate_LB, asv_id, metric) %>%
+                         droplevels),
+                   by = join_by(asv_id, metric), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::filter(metric == "mu") %>%
+  # dplyr::mutate(Estimate = Estimate - Estimate_LB) %>%
+  # dplyr::filter(!grepl("LB", variable)) %>%
+  dplyr::arrange(desc(Estimate)) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = unique(.$asv_id))) %>%
+  droplevels
+g <- print(
+  ggplot(data = temp_df_to_plot)
+  + geom_errorbar(aes(x = asv_id, ymin = Estimate-StdError, ymax = Estimate+StdError), color = "black", width = .3, position=position_dodge(.9)) 
+  + geom_point(aes(x = asv_id, y = Estimate, group = interaction(asv_id, variable)), fill = "grey", alpha = 0.5,
+               size = 1, pch = 21) 
+  + geom_point(data = temp_df_to_plot %>%
+                 tidyr::drop_na(p_bh_adj) %>%
+                 droplevels,
+               aes(x = asv_id, y = Estimate, fill = variable, group = interaction(asv_id, variable)),
+               size = 4, pch = 21) 
+  + scale_x_discrete(limits = rev(levels(temp_df_to_plot$asv_id))) 
+  # + scale_fill_manual(values = palette) 
+  # + geom_line() 
+  + coord_flip()
+  + theme_bw()
+  + labs(x = "Taxa", y = "Coefficient", title = "Peak photosynthesis")
+  + geom_hline(yintercept = 0, linetype = "dashed", color = "darkgray")
+  + facet_grid(.~variable)
+)
   
 # Full scale corncob ------------------------------------------------------
 
@@ -652,6 +693,7 @@ for(i in ps_objects){
 # Summarize corncob results -----------------------------------------------
 
 ds_objects <- c("ps_usvi_filtered_agglom-site-sampling_time", "ps_usvi_filtered-site-sampling_time")
+# ds_objects <- c("ps_usvi_filtered-site-sampling_time")
 
 for(i in ds_objects){
   dt_list <- paste0("cc_dt_res_", i, "_list")
@@ -671,17 +713,33 @@ for(i in ds_objects){
       furrr::future_map(., (~.x %>%
                               dplyr::mutate(across(c(asv_id, test), ~as.factor(.x))) %>%
                               dplyr::group_by(asv_id) %>%
-                              dplyr::filter(p_fdr <= 0.10) %>%
-                              dplyr::filter(!is.na(p_fdr)) %>%
+                              dplyr::filter(p_fdr <= 0.05) %>%
+                              # dplyr::filter(!is.na(p_fdr)) %>%
                               droplevels), .progress = TRUE) %>%
       bind_rows(., .id = "contrast") %>%
       tidyr::pivot_longer(., cols = !c(contrast, asv_id, test),
                           names_to = "metric",
                           values_to = "p_fdr") %>%
-      dplyr::left_join(., usvi_sw_genus.taxa.df %>%
+      dplyr::left_join(., usvi_prok_asvs.taxonomy %>%
                          dplyr::select(asv_id, taxonomy),
                        by = join_by(asv_id)) %>%
       droplevels
+    
+    #post-hoc p adjustment:
+    {
+      padj_cutoff <- dt_results_df[["p_fdr"]] %>%
+        p.adjust(., method = "BH") %>% #multiple testing corrections, "BH" is an alias for "fdr" accordiong to p.adjust()
+        ashr::qval.from.lfdr(.) %>%
+        unlist %>%
+        quantile(., probs = q_value, na.rm = TRUE, names = FALSE,type = 7)
+      
+      dt_results_df <- dt_results_df %>%
+        dplyr::mutate(p_adj = dplyr::case_when(p_fdr <= padj_cutoff ~ p_fdr,
+                                               .default = NA)) %>%
+        dplyr::filter(!is.na(p_fdr)) %>%
+        droplevels  
+    }
+    
     
     assign(paste0("cc_dt_res_", i, "_df"), dt_results_df, envir = .GlobalEnv, inherits = TRUE)
     readr::write_rds(dt_results_df, file = paste0(projectpath, "/", "cc_dt_res_", i, "_df", ".rds"))
@@ -800,15 +858,26 @@ rm(temp_df2)
 
 if(!any(grepl("cc_dt_sda", list.files(projectpath, pattern = ".*ps_usvi_filtered-.*.RData")))){
   save(cc_dt_sda_ps_usvi_filtered_list, cc_dt_sda_ps_usvi_filtered_agglom_list, file = paste0(projectpath, "/", "cc_dt_sda_ps_usvi_filtered-", Sys.Date(), ".RData"))
+  # readr::write_rds(cc_dt_sda_ps_usvi_filtered_list, paste0(projectpath, "/", "cc_dt_sda_ps_usvi_filtered_list", ".rds", compress = "gz"))
+  # readr::write_rds(cc_dt_sda_ps_usvi_filtered_agglom_list, paste0(projectpath, "/", "cc_dt_sda_ps_usvi_filtered_agglom_list", ".rds", compress = "gz"))
 }
 
 
 #summary of results:
 cc_dt_usvi_summary_table <- cc_dt_usvi_summary.df %>%
   dplyr::group_by(contrast, taxon_resolution, test) %>%
-  dplyr::summarise(num_sda_taxa = length(asv_id)) %>%
-  tidyr::complete(test, fill = list(num_sda_taxa = 0))
+  dplyr::summarise(num_sda_taxa_cc = length(asv_id)) %>%
+  # tidyr::complete(test, fill = list(num_sda_taxa_cc = 0)) %>%
+  dplyr::left_join(., cc_dt_usvi_summary.df %>%
+                     tidyr::drop_na(p_adj) %>%
+                     droplevels %>%
+                     dplyr::group_by(contrast, taxon_resolution, test) %>%
+                     dplyr::summarise(num_sda_taxa_padj = length(asv_id)) %>%
+                     droplevels,
+                   by = join_by(contrast, taxon_resolution, test)) %>%
+  tidyr::complete(test, fill = list(num_sda_taxa_cc = 0, num_sda_taxa_padj = 0))
 
+#using corncob's multiple test correction criteria:
 #site-specific temporal (dawn vs peak_photo) differences in abundances (SDA) and variability (SDV):
 #LB_seagrass had 7 genera that were SDA between dawn and peak_photo, and 0 were SDV; 5 ASVs were SDA and 1 ASV was SDV
 #Tektite had 3 genera that were SDA and SDV. 9 ASVs were SDV but 0 were SDA
@@ -824,3 +893,77 @@ cc_dt_usvi_summary_table <- cc_dt_usvi_summary.df %>%
 #between Yawzi and LB, 103 genera were SDA, 43 were SDV. 104 ASVs were SDA, 112 wereSDV
 #between Yawzi and Tektite, 4 genera were SDA, 6 were SDV. 2 ASVs were SDA, 65 were SDV
 
+
+# Plot the relabunds of genera found SDA/SDV through cc -------------------
+
+#corncob says 83 genera were SDA between 	peak_photo (Tektite - LB_seagrass)
+#but post-test correction narrows it to 5 genera
+
+temp_df <- cc_dt_sda_ps_usvi_filtered_agglom_list[["peak_photo (Yawzi - Tektite)"]] %>%
+  dplyr::left_join(., cc_dt_usvi_summary.df %>%
+                     dplyr::filter(grepl("agg_genus", taxon_resolution)) %>%
+                     dplyr::filter(contrast == "peak_photo (Yawzi - Tektite)") %>%
+                     dplyr::filter(test == "cc_da") %>%
+                     dplyr::select(asv_id, hold, test, p_fdr, p_adj, taxonomy) %>%
+                     droplevels, by = join_by(hold, asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::rename(sampling_time = "hold", site = "variable") %>%
+  droplevels
+
+g1_sigboth <- print(
+  ggplot(data = temp_df %>%
+           tidyr::drop_na(p_adj) %>%
+           droplevels)
+  + theme_bw() 
+  + geom_boxplot(aes(y = relabund, x = site, group = interaction(site, sampling_time)), 
+                 alpha = 0.6, show.legend = FALSE, color = "black",
+                 position = position_dodge(0.8))
+  + geom_point(aes(y = relabund, group = sampling_time, x = site, fill = sampling_time, shape = site),
+               alpha = 0.8, color = "black", size = 3, show.legend = TRUE, 
+               position = position_jitter(width = 0.2, seed = 48105))
+  + scale_shape_manual(name = "Sampling site and time",
+                       values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
+  + scale_fill_manual(name = "Sampling time",
+                      values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+  + scale_x_discrete(labels = site_lookup, name = "Site")
+  + scale_y_continuous(name = "Relative abundance (%)")
+  + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sampling site and time",  direction = "vertical", 
+                               override.aes = list(color = "black", shape = 21, size = 3)),
+           color = "none")
+  + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0))
+  # # + theme(axis.text.x = element_blank(),
+  #         strip.text.y = element_text(size = rel(0.7)),
+  #         axis.title.y = element_blank())
+  # + facet_grid(space = "fixed",
+  # + facet_wrap(
+  #              asv_id ~ ., 
+  #              drop = TRUE,
+  #              # labeller = global_labeller,
+  #              scales = "free_y")
+)
+
+g1_sigcc <- print(
+  ggplot(data = temp_df %>%
+           dplyr::filter(is.na(p_adj)) %>%
+           droplevels)
+  + theme_bw() 
+  + geom_boxplot(aes(y = relabund, x = site, group = interaction(site, sampling_time)), 
+                 alpha = 0.6, show.legend = FALSE, color = "black",
+                 position = position_dodge(0.8))
+  + geom_point(aes(y = relabund, group = sampling_time, x = site, fill = sampling_time, shape = site),
+               alpha = 0.8, color = "black", size = 3, show.legend = TRUE, 
+               position = position_jitter(width = 0.2, seed = 48105))
+  + scale_shape_manual(name = "Sampling site and time",
+                       values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
+  + scale_fill_manual(name = "Sampling time",
+                      values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+  + scale_x_discrete(labels = site_lookup, name = "Site")
+  + scale_y_continuous(name = "Relative abundance (%)")
+  + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sampling site and time",  direction = "vertical", 
+                               override.aes = list(color = "black", shape = 21, size = 3)),
+           color = "none")
+  + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0))
+  + facet_wrap(
+    asv_id ~ ., 
+    drop = TRUE,
+    scales = "free_y")
+)

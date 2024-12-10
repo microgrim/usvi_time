@@ -367,7 +367,8 @@ g_nuts1 <- print(ggplot(data = usvi_npoc_tn.df %>%
                    position = position_jitterdodge(jitter.width = 0.1),
                    shape = 21)
       + theme_bw()
-      + facet_grid(nutrient ~ site, drop = TRUE, scales = "free", space = "fixed", 
+      # + facet_wrap(nutrient ~ site, drop = TRUE, scales = "free", 
+      + facet_grid(nutrient ~ site, drop = TRUE, scales = "free", space = "free_x",
                    labeller = labeller(site = site_lookup))
       + scale_x_discrete(labels = sample_relabel, name = "Sample time")
       + scale_y_continuous(name = "Concentration (uM)")
@@ -411,7 +412,8 @@ if(!any(grepl("nutrients", list.files(projectpath, pattern = "usvi_.*.png")))){
          width = 10, height = 6, units = "in")
 }
 
-# NMDS on metabolomics profiles -------------------------------------------
+
+# Plot metabolite profiles ------------------------------------------------
 
 #here are metabolites where we don't have LODs reported:
 usvi_sus_metabolites_idx <- usvi_metabolomics_long.df %>%
@@ -420,6 +422,331 @@ usvi_sus_metabolites_idx <- usvi_metabolomics_long.df %>%
   dplyr::arrange(metabolites) %>%
   dplyr::filter(is.na(LOD)) %>%
   droplevels
+
+#spoiler: CINAR_BC_73 is suspicious, so drop it.
+
+#also, there are some entries that are dummy values: they are reported as 1/10 the LOD
+# the measurement should be removed
+
+usvi_metab_summary.df <- usvi_metabolomics.df %>%
+  dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+  droplevels %>%
+  tidyr::pivot_longer(., cols = !c("metab_deriv_label"),
+                      names_to = "metabolite",
+                      values_to = "concentration") %>%
+  dplyr::filter(!(metabolite %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+  dplyr::left_join(., usvi_metabolomics_long.df %>%
+                     dplyr::distinct(metabolites, LODflag, adaptedDervLabel, .keep_all = FALSE),
+                   by = join_by("metabolite" == "metabolites", "metab_deriv_label" == "adaptedDervLabel")) %>%
+  dplyr::filter(LODflag == "TRUE") %>%
+  dplyr::left_join(., (metabolomics_sample_metadata %>%
+                         dplyr::filter(grepl("seawater", sample_type)) %>%
+                         dplyr::select(sample_id, sampling_date, sampling_time, sampling_day, site, metab_deriv_label) %>%
+                         droplevels),
+                   by = c("metab_deriv_label")) %>%
+  dplyr::select(-LODflag) %>%
+  dplyr::mutate(across(c(sample_id, metabolite, sampling_time, sampling_day, site, metab_deriv_label), ~factor(.x))) %>%
+  droplevels
+
+
+
+#these values of metabolite concentrations are potentially outliers, based on all measured concentrations across sites and times:
+usvi_sus_metabolites_conc.df <- usvi_metab_summary.df %>%
+  dplyr::group_by(metabolite) %>%
+  dplyr::summarise(mean_conc = mean(concentration, na.rm = TRUE),
+                   conc_5 = quantile(concentration, probs = 0.05, na.rm = TRUE, type = 7),
+                   conc_95 = quantile(concentration, probs = 0.95, na.rm = TRUE, type = 7),
+                   outlier1 = outliers::outlier(concentration),
+                   outlier2 = outliers::outlier(concentration, opposite = TRUE)) %>%
+  dplyr::mutate(potential_high_outlier = dplyr::case_when((outlier1 > conc_95) ~ outlier1,
+                                                          (outlier2 > conc_95) ~ outlier2,
+                                                          .default = NA),
+                potential_low_outlier = dplyr::case_when((outlier1 < conc_5) ~ outlier1,
+                                                         (outlier2 < conc_5) ~ outlier2,
+                                                         .default = NA)) %>%
+  dplyr::select(-c(outlier1, outlier2)) %>%
+  dplyr::rowwise(.) %>%
+  dplyr::mutate(high_FC = potential_high_outlier/conc_95,
+                low_FC = conc_5/potential_low_outlier) %>%
+  dplyr::mutate(log2high_FC = dplyr::case_when(log2(high_FC) > 1.05 ~ log2(high_FC),
+                                               .default = NA),
+                log2low_FC = dplyr::case_when(log2(low_FC) > 1.05 ~ log2(low_FC),
+                                              .default = NA)) %>%
+  droplevels %>%
+  dplyr::mutate(drop_high = dplyr::case_when(!is.na(log2high_FC) ~ potential_high_outlier,
+                                             .default = NA),
+                drop_low = dplyr::case_when(!is.na(log2low_FC) ~ potential_low_outlier,
+                                            .default = NA)) %>%
+  dplyr::select(metabolite, starts_with("drop")) %>%
+  tidyr::pivot_longer(., cols = starts_with("drop"),
+                      names_to = "direction",
+                      values_to = "concentration") %>%
+  droplevels
+#drop 19 values:
+usvi_metab_filtered.df <- dplyr::anti_join(usvi_metab_summary.df, usvi_sus_metabolites_conc.df,
+                                           by = join_by(metabolite, concentration)) %>%
+  droplevels
+
+usvi_metab_filtered.df <- usvi_metab_filtered.df %>%
+  dplyr::left_join(., (usvi_metab_filtered.df %>%
+                         dplyr::group_by(metabolite) %>%
+                         dplyr::summarise(med_conc = median(concentration, na.rm = TRUE),
+                                          conc_5 = quantile(concentration, probs = 0.05, na.rm = TRUE, type = 7),
+                                          conc_95 = quantile(concentration, probs = 0.95, na.rm = TRUE, type = 7)) %>%
+                         dplyr::arrange(desc(conc_95)) %>%
+                         dplyr::mutate(grouping = c(rep(1:5, each = 10, length.out = 49))) %>%
+                         dplyr::select(metabolite, grouping)),
+                   by = join_by(metabolite), relationship = "many-to-many", multiple = "all")
+
+metab_colors <- c("#d699cf",
+                  "#43bb4e",
+                  "#a44ec9",
+                  "#74bf3e",
+                  "#6161d3",
+                  "#adb92f",
+                  "#bf3b9e",
+                  "#47c581",
+                  "#d63b83",
+                  "#4f8a29",
+                  "#d27ddf",
+                  "#9eb553",
+                  "#9384e2",
+                  "#dcae3d",
+                  "#4e62a7",
+                  "#e48c26",
+                  "#6a94db",
+                  "#e95a36",
+                  "#3abec8",
+                  "#de334d",
+                  "#59c9ab",
+                  "#be3220",
+                  "#4aa5d4",
+                  "#be5d27",
+                  "#3d9c7e",
+                  "#e86cbc",
+                  "#82bf71",
+                  "#854a98",
+                  "#96841e",
+                  "#a776b6",
+                  "#5f6913",
+                  "#cf4160",
+                  "#4e965b",
+                  "#b6507d",
+                  "#2f7038",
+                  "#e2828c",
+                  "#277257",
+                  "#e67c63",
+                  "#56642b",
+                  "#8e4f73",
+                  "#c0af5b",
+                  "#9a4555",
+                  "#7d8c42",
+                  "#a64837",
+                  "#a6b174",
+                  "#e39155",
+                  "#827233",
+                  "#d3a06f",
+                  "#af7821") %>%
+  setNames(., c(usvi_metab_filtered.df %>%
+                  dplyr::distinct(metabolite, grouping) %>%
+                  dplyr::arrange(grouping) %>%
+                  dplyr::select(metabolite) %>%
+                  tibble::deframe(.)))
+
+metab_bw_legend <- print(ggplot(data = data.frame(
+  (usvi_metab_filtered.df %>%
+     dplyr::distinct(metabolite, grouping, sampling_time) %>%
+     droplevels)),
+  aes(x = 1, y = 1, fill = metabolite, shape = sampling_time)) 
+  + geom_blank() 
+  + geom_point() 
+  + theme_void()
+  + guides(fill = guide_legend(order = 1, ncol = 5, title = "Metabolite",  direction = "vertical", override.aes = list(color = "black", shape = 23, size = 4, stroke = 1)),
+           shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
+                                override.aes = list(color = "black", stroke = 1, size = 4)),
+           color = "none")
+  + theme(legend.background = element_rect(fill = NA, colour = "grey30"))
+  + scale_discrete_manual(aesthetics = c("shape"), values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA),
+                          drop = TRUE)
+  + scale_discrete_manual(aesthetics = c("fill"), values = metab_colors, labels =names(metab_colors), 
+                          breaks = names(metab_colors), 
+                          drop = TRUE)) %>%
+  g_legend()
+
+
+for(i in seq_len(5)){
+  metab_grouping <- i
+  temp_df <- usvi_metab_filtered.df %>%
+    dplyr::filter(grouping == metab_grouping) %>%
+    droplevels
+  
+  temp_g <- print(
+    ggplot(data = temp_df)
+    + geom_boxplot(aes(x = metabolite, y = concentration, group = interaction(metabolite, site, sampling_time)), 
+                   color = "black", position = position_dodge2(padding = 0.2, preserve = "single"),
+                   outliers = FALSE, show.legend = FALSE)
+    + geom_point(aes(x = metabolite, y = concentration, fill = metabolite, group = interaction(metabolite, site, sampling_time), shape = sampling_time), 
+                 position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
+                 alpha = 1.0, size = 3)
+    + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Concentration")
+    + scale_fill_manual(values = metab_colors, labels = names(metab_colors), name = "Metabolite")
+    + scale_x_discrete(name = "Metabolite")
+    + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
+    + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
+            panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+            panel.grid = element_blank(),
+            axis.title.x = element_blank(),
+            legend.position = "bottom",
+            legend.key = element_blank(),
+            axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+            legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+            legend.text = element_text(size = 12, colour = "grey30"))
+    + facet_grid(space = "fixed", rows = NULL, cols = vars(site),
+                 drop = TRUE, scales = "free", shrink = TRUE,
+                 labeller = labeller(site = site_lookup))
+    + guides(color = "none", 
+             # fill = "none",
+             fill = guide_legend(order = 2, ncol = 2, title = "Metabolite", direction = "vertical",
+                                 override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+             shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
+                                  override.aes = list(color = "black", stroke = 1, size = 2)))
+  )
+  assign(paste0("g2_metab_", i), temp_g, envir = .GlobalEnv, inherits = TRUE)
+  rm(temp_g)
+}
+
+gpatch <- lapply(apropos("^g2_metab_.$", mode = "list"),
+                 get) %>%
+  # setNames(., names(highq_mtg_grouping_idx)[1:6]) %>%
+  purrr::reduce(., `+`) + 
+  patchwork::plot_layout(guides = "collect") &
+  theme(legend.position="none")
+
+gpatch_layout <- "
+  AADD
+  BBEE
+  CCFF
+"
+
+g2_metab_filtered <- (gpatch + metab_bw_legend) + patchwork::plot_layout(design = gpatch_layout) + patchwork::plot_annotation(title = "Concentrations of metabolites across sites and times",
+                                                                                                                              subtitle = "Removed 19 outlier values and CINAR_BC_73 prior to plotting", 
+                                                                                                                              tag_levels = "A")
+
+g2_metab_filtered
+if(!any(grepl("metab_filtered", list.files(projectpath, pattern = "usvi_.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_metab_filtered-", Sys.Date(), ".png"),
+         g2_metab_filtered, 
+         width = 16, height = 12, units = "in")
+}
+#simple, just one:
+{
+  # 
+  # 
+  # g2_mtab_conc <- print(
+  #   # ggplot(data = usvi_metab_summary.df)
+  #   ggplot(data = usvi_metab_filtered.df %>%
+  #            dplyr::filter(grouping == 1) %>%
+  #            droplevels)
+  #   + geom_boxplot(aes(x = metabolite, y = concentration, group = interaction(metabolite, site, sampling_time)), 
+  #                  color = "black", position = position_dodge2(padding = 0.2, preserve = "single"),
+  #                  outliers = FALSE, show.legend = FALSE)
+  #   + geom_point(aes(x = metabolite, y = concentration, fill = metabolite, group = interaction(metabolite, site, sampling_time), shape = sampling_time), 
+  #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
+  #                alpha = 1.0, size = 3)
+  #   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Concentration")
+  #   # + scale_fill_manual(values = pals::kelly(10), name = "Metabolite")
+  #   + scale_fill_manual(values = metab_colors, labels = names(metab_colors), name = "Metabolite")
+  #   + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
+  #   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
+  #           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+  #           panel.grid = element_blank(),
+  #           legend.position = "right",
+  #           legend.key = element_blank(),
+  #           axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+  #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+  #           legend.text = element_text(size = 12, colour = "grey30"))
+  #   + facet_grid(space = "fixed", rows = NULL, cols = vars(site),
+  #                # + facet_wrap(grouping~site, 
+  #                drop = TRUE, scales = "free", shrink = TRUE,
+  #                labeller = labeller(site = site_lookup))
+  #   # + facet_grid(sampling_time ~ site, drop = TRUE, scales = "free", space = "fixed", 
+  #   #              labeller = labeller(site = site_lookup, sampling_time = sampling_time_lookup))
+  #   + guides(color = "none", 
+  #            fill = guide_legend(order = 2, ncol = 2, title = "Metabolite", direction = "vertical",
+  #                                override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+  #            shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
+  #                                 override.aes = list(color = "black", stroke = 1, size = 2)))
+  # )
+}
+
+
+# Check glutamic acid concentrations --------------------------------------
+
+#Melissa determined that glutamic acid and o-acetyl serine derivatized fragments show up as the same peak
+#so concentrations of glutamic acid might incorporate measured o-acetyl serine if it is not independently identified in Skyline
+#we don't have o-acetyl-serine in this dataset, but...
+#do glutamic acid, cysteine, glutathione,and serine trend in any way?
+
+temp_sus_metab_idx <- c("glutamic acid", "cysteine", "glutathione", "serine")
+temp_df <- usvi_metab_summary.df %>%
+  dplyr::filter(grepl(paste0("^", temp_sus_metab_idx, collapse = "|"), metabolite)) %>%
+  dplyr::distinct(metab_deriv_label, metabolite, .keep_all = TRUE) %>%
+  dplyr::mutate(across(c(sample_id, metabolite, sampling_time, sampling_day, site, metab_deriv_label), ~factor(.x))) %>%
+  droplevels
+temp_tbl <- temp_df %>%
+  # dplyr::mutate(concentration = log2(concentration + 1)) %>%
+  tidyr::pivot_wider(., id_cols = c("metab_deriv_label", "sampling_time", "sampling_day", "site"),
+                     names_from = "metabolite", 
+                     values_from = "concentration")
+temp_lm <- lm(serine ~ `glutamic acid` - 1, temp_tbl)
+anova(temp_lm)
+summary(temp_lm) #equivalent to temp_lm$coefficients
+
+lm(`glutamic acid` ~ `serine` - 1, temp_tbl) %>%
+# lm(1/`glutamic acid` ~ `serine` - 1, temp_tbl) %>%
+  summary(.)
+lm(`cysteine 2` ~ serine - 1, temp_tbl) %>%
+  summary(.)
+lm(`glutathione 2` ~ `cysteine 2` - 1, temp_tbl) %>%
+  summary(.)
+lm(`glutathione 2` ~ `serine` - 1, temp_tbl) %>%
+  summary(.)
+
+ggplot(temp_tbl) + geom_point(aes(x = `glutamic acid`, y = serine))
+
+temp_g <- print(
+  ggplot(data = temp_df)
+  + geom_point(aes(x = interaction(site,sampling_time, sampling_day), y = concentration, fill = metabolite, group = interaction(site,sampling_time, sampling_day), shape = sampling_time),
+               position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
+               alpha = 1.0, size = 3)
+  + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Concentration", transform = "log10")
+  # + scale_fill_manual(values = metab_colors, labels = names(metab_colors), name = "Metabolite")
+  + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
+  + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
+          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+          panel.grid = element_blank(),
+          legend.position = "right",
+          legend.key = element_blank(),
+          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+          legend.text = element_text(size = 12, colour = "grey30"))
+  # + facet_grid(space = "fixed", rows = NULL, cols = vars(site),
+  #              # + facet_wrap(grouping~site,
+  #              drop = TRUE, scales = "free", shrink = TRUE,
+  #              labeller = labeller(site = site_lookup))
+  + facet_grid(.~sampling_time, drop = TRUE, scales = "free", space = "fixed",
+               labeller = labeller(sampling_time = sampling_time_lookup))
+  + guides(color = "none",
+           fill = guide_legend(order = 2, ncol = 2, title = "Metabolite", direction = "vertical",
+                               override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+           shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
+                                override.aes = list(color = "black", stroke = 1, size = 2)))
+)
+
+
+# NMDS on metabolomics profiles -------------------------------------------
+
+
 
 #calculate Bray curtis, dispersions from site*sampling_time mean, and plot NMDS 
 #first on untransformed metabolite concentrations,

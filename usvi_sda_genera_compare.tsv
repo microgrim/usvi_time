@@ -1,314 +1,793 @@
-contrast	asv_id	estimate	pval	group	site	commonid	test_type	model	sampling_time	Combo	baseline	baseMean	padj	log2FoldChange_MMSE	padj_qcutoff	pair1	pair2
-Tektite_dawn - all_peak_photo	ASV_00002	14.656685780943487	1.2897633220160405e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00002	14.602405651815051	1.327449783933823e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00003	13.340764270796035	2.5969848547273573e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00003	14.687565879184225	1.2688060120486124e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00006	14.344174927653441	1.5225002133389717e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00006	14.426512497430764	1.4573605260662589e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00007	12.686605086431586	3.6828431792344145e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00007	13.670802790028349	2.1781480129917072e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00008	14.516026164959353	1.389722383551048e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00008	14.011363692595083	1.8170913699205678e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00009	14.358917246998748	1.5106253386962314e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00009	14.393094235085115	1.4834533861438233e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00012	14.37461334554801	1.4980846864619778e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00012	14.440138945155189	1.4468541334910725e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00017	14.579643576377428	1.343581515611903e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00017	14.557908214648036	1.3591698020618483e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00023	14.406017075542835	1.4733079530075588e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00023	14.565774376020645	1.353507390493501e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00031	14.343048866260316	1.523411105846522e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00031	14.529840559461503	1.3795692328583085e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00038	13.771740090286489	2.064180287916139e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00038	14.221941557270371	1.6246507392622146e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00045	13.61748509972826	2.2408866366699037e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00045	14.586457654791264	1.3387317132891192e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00060	7.401534152027359	0.006516827589103219	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00072	13.580933044851363	2.284946316762172e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00072	14.038181175097371	1.7913611624382038e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00097	10.4055434795124	0.0012563758072780288	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00097	14.327344720610588	1.536171832509959e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00105	10.899352152355725	9.61978989556729e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00111	6.137356068823078	0.0132355067645169	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00111	13.662211974541949	2.188135855913746e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00124	11.793336734412241	5.944309625775025e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00124	13.980944327440193	1.8467283860744353e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00129	13.767434820365127	2.0689164020400072e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00129	13.612100513432424	2.2473230266132304e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00131	8.97424087960837	0.0027381231833457234	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00131	12.621259543321964	3.813842645706959e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00138	9.39357421702304	0.0021774727656074127	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00138	9.520376418373166	0.0020320289725700032	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00150	12.263726458739814	4.6184830331620917e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00150	13.651877261738424	2.2002123567931015e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00171	10.381836863886125	0.0012726102243430697	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00171	8.592430251265148	0.0033756321523720862	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00215	9.775888860986734	0.0017681522118418215	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00215	13.633450363581858	2.2219117551498148e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_00227	8.306218150724796	0.003950957391468827	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00227	11.355547548455686	7.522294099681667e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00243	8.991481678088489	0.0027124098579062524	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00251	4.5566689229954465	0.03279079139906216	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_00282	6.335707453859678	0.011833090815134431	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite_dawn - all_peak_photo	ASV_01134	9.167773907797827	0.002463140002295135	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo					Tektite_dawn	all_peak_photo
-Yawzi_dawn - all_peak_photo	ASV_01134	12.422692112088846	4.2414837155360907e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo					Yawzi_dawn	all_peak_photo
-Tektite - LB_seagrass_all	ASV_00002	38.8077578634967	4.67665512336111e-10	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00002	37.14513791638764	1.096558176528113e-9	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00003	44.84254848713669	2.135319196447035e-11	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00003	40.84569905157655	1.647354095908647e-10	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00006	46.076877487726016	1.1370251128859065e-11	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00006	41.587917149243054	1.1268757874229103e-10	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00007	36.40716089081022	1.6011387586566252e-9	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00007	36.85527153584872	1.2723160925013683e-9	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00009	47.770677409109155	4.7910441060009406e-12	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00009	44.84106114970163	2.136941767962484e-11	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00017	39.81472279504873	2.7923229129781784e-10	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00017	36.07590217126653	1.8977928587151803e-9	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00023	43.5245137876794	4.1868161688051255e-11	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00023	42.86815190504232	5.85562232433811e-11	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00031	45.43939729142472	1.5743548788299865e-11	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00031	41.31890436573349	1.2931223878101996e-10	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00038	39.9465832183682	2.6100373050253466e-10	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00038	36.80660675761299	1.304474380463195e-9	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00045	34.58313973953347	4.08428591456976e-9	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00045	31.168952298479315	2.3651884712992437e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00060	17.902886695900083	2.3246823635676846e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00060	17.584419718805616	2.7483081651472466e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00072	43.28475775891085	4.7325577581316665e-11	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00072	39.24739386088051	3.733663954973419e-10	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00097	30.037973932664563	4.2366784175039824e-8	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00097	32.0105794017588	1.5333524162206727e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00105	19.977523664675644	7.835783786411975e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00105	19.236463187634936	1.1548634742599073e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00111	22.81035516956749	1.787997222056662e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00111	21.310917527471425	3.905011745072226e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00124	34.15521930953391	5.08865735212325e-9	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00124	31.193404961946857	2.3355820475539715e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00129	39.95130792937129	2.60373166098972e-10	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00129	38.547427080036385	5.343917131453366e-10	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00131	25.7989329110802	3.788978926093762e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00131	23.891972167942534	1.0189579355514452e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00138	19.43470249670126	1.0409827230043446e-5	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00138	18.537060545488284	1.6663256689468857e-5	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00150	21.685195895654022	3.2126101320617558e-6	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00150	25.348709790434672	4.784723098259979e-7	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00171	19.502086684691662	1.0048984767562594e-5	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00171	16.359979580035976	5.237962316783117e-5	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00186	7.684680501447941	0.005569153858499381	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00186	8.93857322575998	0.0027921072842487815	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00215	34.27915122161699	4.774695109988302e-9	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00215	32.95500848863061	9.431645462546096e-9	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00227	16.538836492114253	4.766376218510214e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00227	15.787095861457988	7.088431707850508e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00243	27.1755996298466	1.857887320074716e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00243	24.815339896886186	6.309336139280753e-7	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00251	20.526930810565872	5.879814360798657e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00251	20.302130234454513	6.612691948064585e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00271	23.284965607884644	1.39687659249621e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00271	29.624578644211386	5.243581277164333e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00282	31.088610126426328	2.465136627953728e-8	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00282	29.09935311491493	6.875993953522947e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00300	16.601062063276547	4.612518452686532e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00300	16.434898818731195	5.0349672432655634e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00339	16.66061171471055	4.469954398256531e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00339	17.411024363815578	3.0107466903835217e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00348	13.474655071788717	2.4180763895219153e-4	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00348	13.447917353577797	2.452783122627923e-4	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00389	21.840140725279557	2.96335335455671e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00389	20.302154266257897	6.61260889200564e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00399	25.990237159303	3.431482600327004e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00399	26.32076116300277	2.8916350518467874e-7	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00400	12.515169787910274	4.036611035307433e-4	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00400	11.73096159654673	6.146882354991142e-4	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_00495	19.35675130072749	1.0843519596835778e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_00495	17.881314756627177	2.3511826544081834e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite - LB_seagrass_all	ASV_01134	26.215236395624487	3.054033525958211e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all					Tektite	LB_seagrass_all
-Yawzi - LB_seagrass_all	ASV_01134	26.478189086315354	2.6653050699740763e-7	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all					Yawzi	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00002	14.656685780943487	1.2897633220160405e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00002	14.602405651815051	1.327449783933823e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00002	14.713556517301724	1.25143291440859e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00002	15.048242091602965	1.0479781750114376e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00003	13.340764270796035	2.5969848547273573e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00003	14.687565879184225	1.2688060120486124e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00003	12.78646039110078	3.491371000212852e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00003	13.924031055217357	1.903492069707205e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00006	14.344174927653441	1.5225002133389717e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00006	14.426512497430764	1.4573605260662589e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00006	13.516247951091781	2.3650680261209242e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00006	13.785972138092143	2.0486015829601235e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00007	12.686605086431586	3.6828431792344145e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00007	13.670802790028349	2.1781480129917072e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00007	11.332525043874824	7.616127082829345e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00007	12.66418358012918	3.727272521094946e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00008	14.516026164959353	1.389722383551048e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00008	14.011363692595083	1.8170913699205678e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00008	14.820127237517523	1.1826652575725435e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00008	14.344620052068365	1.522140294989092e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00009	14.358917246998748	1.5106253386962314e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00009	14.393094235085115	1.4834533861438233e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00009	14.307996731943707	1.5520415415636157e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00009	14.496410883007268	1.404268403856267e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00012	14.37461334554801	1.4980846864619778e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00012	14.440138945155189	1.4468541334910725e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00012	14.237042585978452	1.6116661520284447e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00012	14.883402502005904	1.1436480633340198e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00017	14.579643576377428	1.343581515611903e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00017	14.557908214648036	1.3591698020618483e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00017	14.44496428962084	1.4431519639048607e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00017	14.72168968716358	1.246045750816145e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00023	14.406017075542835	1.4733079530075588e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00023	14.565774376020645	1.353507390493501e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00023	13.71008886084954	2.1330553959680369e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00023	14.905290191322315	1.1304553073498972e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00031	14.343048866260316	1.523411105846522e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00031	14.529840559461503	1.3795692328583085e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00031	14.842647855542586	1.1686271932302979e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00031	14.66486103932452	1.284181358878185e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00038	13.771740090286489	2.064180287916139e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00038	14.221941557270371	1.6246507392622146e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00038	12.089588523060714	5.070416303080383e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00038	14.080951478862966	1.7510820418955864e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00045	13.61748509972826	2.2408866366699037e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00045	14.586457654791264	1.3387317132891192e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00045	13.11328494193762	2.932091083920788e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00045	14.883415060262417	1.143640449611277e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00060	7.401534152027359	0.006516827589103219	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00072	13.580933044851363	2.284946316762172e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00072	14.038181175097371	1.7913611624382038e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00072	14.109020720455502	1.7251447159641044e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00072	14.30264095478929	1.5564635892871952e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00097	10.4055434795124	0.0012563758072780288	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00097	14.327344720610588	1.536171832509959e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00097	12.434628584713812	4.2144612252283386e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00097	13.925533746213295	1.901970970731111e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00105	10.899352152355725	9.61978989556729e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00105	4.191811322841384	0.04061967541378515	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00111	6.137356068823078	0.0132355067645169	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00111	13.662211974541949	2.188135855913746e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00111	4.387460560528245	0.03620419940927089	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00111	11.222715355707347	8.080218342997965e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00124	11.793336734412241	5.944309625775025e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00124	13.980944327440193	1.8467283860744353e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00124	11.816152077048168	5.871908737638975e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00124	13.89873758388224	1.9292800874795658e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00129	13.767434820365127	2.0689164020400072e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00129	13.612100513432424	2.2473230266132304e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00129	13.074419863082449	2.993559209864846e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00129	14.502408036088928	1.3998049251094994e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00131	8.97424087960837	0.0027381231833457234	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00131	12.621259543321964	3.813842645706959e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00131	10.32763956304412	0.001310527013613717	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00131	12.610418507408566	3.836026079347494e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00138	9.39357421702304	0.0021774727656074127	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00138	9.520376418373166	0.0020320289725700032	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00138	10.29801466043543	0.001331734101057018	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00138	10.805192478826612	0.0010121580122634895	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00150	12.263726458739814	4.6184830331620917e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00150	13.651877261738424	2.2002123567931015e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00150	10.766438088814683	0.0010335722530382258	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00150	13.821260943292154	2.0104827260589514e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00171	10.381836863886125	0.0012726102243430697	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00171	8.592430251265148	0.0033756321523720862	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00171	8.32171560227281	0.00391739038327876	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00171	9.349642552186726	0.00223028963428849	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00191	8.856598975013144	0.002920311862242135	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00191	12.314657601214568	4.4941514242334915e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00191	11.263572708597527	7.904293256773998e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00191	8.920063324398255	0.0028205473205959695	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00217	13.644724622890019	2.208609787788036e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00217	13.960432187074932	1.866987383092814e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00217	13.230154395684782	2.7548111857218354e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00217	14.125693136796254	1.7099221360323253e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00229	10.0837961080078	0.0014957885783671216	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00229	14.727849564456116	1.2419811774056668e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00229	13.164240451975399	2.853424253283384e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00229	14.386409452622178	1.4887290366204602e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00251	4.5566689229954465	0.03279079139906216	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00271	7.326321366776141	0.006795198813494632	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00271	12.401150859375408	4.2906932758341387e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00271	7.666789145201067	0.0056246458879201456	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00290	11.46361918069373	7.097194544765519e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00290	13.832656214779583	1.998326852141792e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00290	10.671135676261702	0.0010882028532181313	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00290	12.422083099861755	4.2428671109993676e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass_all	ASV_00307	9.394827428242182	0.0021759848454091916	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all					Tektite_dawn	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_00307	13.757153830749127	2.0802705847565095e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Tektite_peak_photo - LB_seagrass_all	ASV_00307	12.516994437983398	4.032670794429908e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all					Tektite_peak_photo	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_00307	12.117500718277316	4.9950806372677e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Yawzi_dawn - LB_seagrass_all	ASV_01140	5.08891375472546	0.02407926955985467	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all					Yawzi_dawn	LB_seagrass_all
-Yawzi_peak_photo - LB_seagrass_all	ASV_01140	7.334024828353466	0.006766137692389325	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all					Yawzi_peak_photo	LB_seagrass_all
-Tektite_dawn - LB_seagrass	ASV_00004				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	3814.6040090441165	6.845509761351791e-17	-1.2614165325955249	6.845509761351791e-17	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00004				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	3814.6040090441165	2.463464073212419e-19	-1.3526369872734612	2.463464073212419e-19	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00004				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	3814.6040090441165	5.841531212674356e-17	-1.2642886236971769	5.841531212674356e-17	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass	ASV_00008				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	5474.629168086622	7.3301716289208385e-19	1.2255070159347143	7.3301716289208385e-19	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00008				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	5474.629168086622	7.537762810695889e-24	1.3851559550790222	7.537762810695889e-24	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00008				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	5474.629168086622	3.5314332974844794e-19	1.2369177696321307	3.5314332974844794e-19	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00012				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	1821.491496947784	9.156908219570975e-31	1.8734816016090783	9.156908219570975e-31	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass_dawn	ASV_00012				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	1821.491496947784	1.287490271524618e-16	1.364370925771575	1.287490271524618e-16	Yawzi_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00012				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	2585.3783995644535	3.3425782270311313e-15	1.2661058621461414	3.3425782270311313e-15	Tektite_peak_photo	LB_seagrass_peak_photo
-Tektite_dawn - LB_seagrass	ASV_00013				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	2449.7209709780436	6.855380411718237e-13	0.9205264087647448	6.855380411718237e-13	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00013				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	2449.7209709780436	1.3475334084406417e-14	0.980982032479394	1.3475334084406417e-14	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00013				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	2449.7209709780436	9.338925478900856e-13	0.9154155464686403	9.338925478900856e-13	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass	ASV_00014				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	4492.486807685852	5.14643721222091e-14	-1.0935094846624294	5.14643721222091e-14	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00014				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	4492.486807685852	4.7487560992428555e-17	-1.2120005371097793	4.7487560992428555e-17	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00014				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	4492.486807685852	3.413300823810369e-14	-1.101835939115493	3.413300823810369e-14	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00018				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	806.9005948483502	3.298877123070831e-11	1.1955245953617093	3.298877123070831e-11	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass	ASV_00021				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	2529.6497309351917	3.3442704818009515e-12	-0.8631592609163753	3.3442704818009515e-12	Tektite_dawn	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00023				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	1222.5678682951007	6.819211580000631e-40	2.716998353245054	6.819211580000631e-40	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass_dawn	ASV_00023				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	1222.5678682951007	1.0081646498857297e-23	2.0913914089349372	1.0081646498857297e-23	Yawzi_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00023				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	1772.8935589283146	6.741754029402865e-14	1.730583707940758	6.741754029402865e-14	Tektite_peak_photo	LB_seagrass_peak_photo
-Tektite_dawn - LB_seagrass_dawn	ASV_00031				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	746.9961177607652	1.4201808867732935e-42	2.319335461443311	1.4201808867732935e-42	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass_dawn	ASV_00031				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	746.9961177607652	2.374610945280276e-29	1.9354654119908332	2.374610945280276e-29	Yawzi_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00031				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	1057.0943341711568	5.072113162151846e-11	1.4785978822290489	5.072113162151846e-11	Tektite_peak_photo	LB_seagrass_peak_photo
-Yawzi_peak_photo - LB_seagrass	ASV_00058				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	260.887616505273	3.37864505431199e-11	-1.691015405139224	3.37864505431199e-11	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00058				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	291.3638074776748	4.698655663427282e-12	-1.9029240217833552	4.698655663427282e-12	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass	ASV_00060				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	320.66579572807535	1.2962289591886228e-30	-12.109081179722985	1.2962289591886228e-30	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00060				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	320.66579572807535	6.773102602253508e-32	-12.438461178491794	6.773102602253508e-32	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00060				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	320.66579572807535	5.373967965573227e-32	-12.475931706066035	5.373967965573227e-32	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00060				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	340.4367956889421	1.2779031440526402e-25	-12.065037935272004	1.2779031440526402e-25	Tektite_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00060				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	258.92875098737863	9.511678555939892e-24	-11.96457594243748	9.511678555939892e-24	Tektite_peak_photo	LB_seagrass_peak_photo
-Yawzi_peak_photo - LB_seagrass_peak_photo	ASV_00060				Yawzi		deseq	manual_photo	peak_photo	Yawzi_p	LB_seagrass_time	258.92875098737863	6.830974189947583e-24	-11.884128915515037	6.830974189947583e-24	Yawzi_peak_photo	LB_seagrass_peak_photo
-Tektite_dawn - LB_seagrass_dawn	ASV_00072				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	128.85937824091377	1.5906824791260615e-23	3.466086030994446	1.5906824791260615e-23	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass_dawn	ASV_00072				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	128.85937824091377	1.660739181734258e-14	2.6821648727479315	1.660739181734258e-14	Yawzi_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00072				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	220.97647529234044	1.9702576090735167e-14	2.5008186259200404	1.9702576090735167e-14	Tektite_peak_photo	LB_seagrass_peak_photo
-Tektite_dawn - LB_seagrass_dawn	ASV_00105				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	112.24295595782755	3.668802362661763e-21	-7.4227077179006615	3.668802362661763e-21	Tektite_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00105				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	133.3695162191251	2.769706458623083e-26	-11.01458338348294	2.769706458623083e-26	Tektite_peak_photo	LB_seagrass_peak_photo
-Yawzi_peak_photo - LB_seagrass_peak_photo	ASV_00105				Yawzi		deseq	manual_photo	peak_photo	Yawzi_p	LB_seagrass_time	133.3695162191251	8.605066487864021e-13	-6.444116065953441	8.605066487864021e-13	Yawzi_peak_photo	LB_seagrass_peak_photo
-Tektite_dawn - LB_seagrass_dawn	ASV_00119				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	124.53824559996497	4.444637092819173e-13	1.5451892827273583	4.444637092819173e-13	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass	ASV_00129				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	92.23608341375704	5.414972860846331e-19	2.6223411687347924	5.414972860846331e-19	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00129				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	92.23608341375704	7.315021741549703e-23	2.8911048771200774	7.315021741549703e-23	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00129				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	92.23608341375704	9.089695087280408e-18	2.535298620558003	9.089695087280408e-18	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass	ASV_00131				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	109.33655079274305	2.1239727587060894e-15	-3.5940197013003665	2.1239727587060894e-15	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00131				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	109.33655079274305	6.941749551566164e-17	-3.763015772040171	6.941749551566164e-17	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00131				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	109.33655079274305	1.541813542757349e-13	-3.334613802592386	1.541813542757349e-13	Yawzi_peak_photo	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00133				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	264.93967956920716	1.6286925592533665e-13	1.0777814179317498	1.6286925592533665e-13	Tektite_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00150				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	152.164247034847	2.8890937370627354e-13	2.3115296711027593	2.8890937370627354e-13	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass	ASV_00164				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	117.78761291724963	1.0535892012934746e-20	-1.876710059705725	1.0535892012934746e-20	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00164				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	117.78761291724963	2.8633363328065373e-19	-1.7936858215184284	2.8633363328065373e-19	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00164				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	117.78761291724963	2.5035197754834167e-21	-1.8957639878453527	2.5035197754834167e-21	Yawzi_peak_photo	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00236				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	33.70506250711136	1.3141084408244388e-11	1.566175656096943	1.3141084408244388e-11	Tektite_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00271				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	41.66475495098923	6.001709195436408e-13	-3.380427677587805	6.001709195436408e-13	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass	ASV_00300				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	29.480931982896134	8.036867989207283e-13	-7.779965873709024	8.036867989207283e-13	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00300				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	29.480931982896134	1.6286925592533665e-13	-8.127224336021955	1.6286925592533665e-13	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00300				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	29.480931982896134	1.2451734496143816e-12	-7.66976706703638	1.2451734496143816e-12	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00300				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	33.51022871024016	1.1383407448430214e-14	-8.035273158078699	1.1383407448430214e-14	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass_dawn	ASV_00346				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	15.691971458664382	2.53803116523438e-13	5.5731061301622695	2.53803116523438e-13	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass	ASV_00372				Yawzi		deseq	manual_dispersion	dawn	Yawzi_d	LB_seagrass_all	17.758477034005782	6.564854752135727e-45	-24.50677303670279	6.564854752135727e-45	Yawzi_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00372				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	17.758477034005782	3.4175901187601367e-46	-24.491003891578934	3.4175901187601367e-46	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00372				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	17.758477034005782	1.674157499630373e-45	-24.525688699037488	1.674157499630373e-45	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass	ASV_00400				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	18.191391018321546	3.784313039570685e-12	-6.668754562604111	3.784313039570685e-12	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00400				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	18.191391018321546	1.000356156348134e-14	-7.449124847644715	1.000356156348134e-14	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00400				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	18.191391018321546	6.199311833663152e-15	-7.502155229252872	6.199311833663152e-15	Yawzi_peak_photo	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00429				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	7.675894850332302	5.2837832084094555e-12	3.8337312553857186	5.2837832084094555e-12	Tektite_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass	ASV_00445				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	9.411275458148166	2.4006840425892367e-11	-6.314668854288836	2.4006840425892367e-11	Tektite_dawn	LB_seagrass
-Tektite_peak_photo - LB_seagrass	ASV_00445				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	9.411275458148166	4.726705324772145e-12	-6.4310919149954975	4.726705324772145e-12	Tektite_peak_photo	LB_seagrass
-Yawzi_peak_photo - LB_seagrass	ASV_00445				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	9.411275458148166	2.8812363846258425e-12	-6.5499132240128395	2.8812363846258425e-12	Yawzi_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass	ASV_00495				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	19.31440928739398	7.682217688929595e-12	-5.187987665469494	7.682217688929595e-12	Tektite_dawn	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00495				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	19.187369372874166	4.104024668702292e-12	-5.242348546678531	4.104024668702292e-12	Tektite_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass	ASV_00524				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	29.97573957374467	1.3010044628928112e-11	2.4809651975557645	1.3010044628928112e-11	Tektite_peak_photo	LB_seagrass
-Tektite_dawn - LB_seagrass_dawn	ASV_00528				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	9.280200047264287	2.4824273217858212e-11	-6.115056933257208	2.4824273217858212e-11	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass_dawn	ASV_00608				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	10.576248931197883	3.0683860332066135e-11	-6.568888923552713	3.0683860332066135e-11	Yawzi_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass_dawn	ASV_00769				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	8.829264276818826	7.854296833103118e-12	-6.420311726762655	7.854296833103118e-12	Tektite_dawn	LB_seagrass_dawn
-Tektite_dawn - LB_seagrass_dawn	ASV_01134				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	103.95377802568314	4.942681998280029e-16	-2.69450250918497	4.942681998280029e-16	Tektite_dawn	LB_seagrass_dawn
-Yawzi_dawn - LB_seagrass_dawn	ASV_01134				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	103.95377802568314	5.703244912560437e-19	-2.9661009168005674	5.703244912560437e-19	Yawzi_dawn	LB_seagrass_dawn
-Tektite_peak_photo - LB_seagrass_peak_photo	ASV_01134				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	78.89234641015483	1.3440753576596572e-11	-2.213333797728696	1.3440753576596572e-11	Tektite_peak_photo	LB_seagrass_peak_photo
+contrast	asv_id	estimate	pval	group	site	commonid	test_type	model	sampling_time	Combo	baseline	baseMean	padj	log2FoldChange_MMSE	pair1	pair2	hold	variable	p_fdr
+Tektite_dawn - all_peak_photo	ASV_00002	14.656685780943487	1.2897633220160405e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00002	14.602405651815051	1.327449783933823e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00003	13.340764270796035	2.5969848547273573e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00003	14.687565879184225	1.2688060120486124e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00006	14.344174927653441	1.5225002133389717e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00006	14.426512497430764	1.4573605260662589e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00007	12.686605086431586	3.6828431792344145e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00007	13.670802790028349	2.1781480129917072e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00008	14.516026164959353	1.389722383551048e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00008	14.011363692595083	1.8170913699205678e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00009	14.358917246998748	1.5106253386962314e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00009	14.393094235085115	1.4834533861438233e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00012	14.37461334554801	1.4980846864619778e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00012	14.440138945155189	1.4468541334910725e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00017	14.579643576377428	1.343581515611903e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00017	14.557908214648036	1.3591698020618483e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00023	14.406017075542835	1.4733079530075588e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00023	14.565774376020645	1.353507390493501e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00031	14.343048866260316	1.523411105846522e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00031	14.529840559461503	1.3795692328583085e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00038	13.771740090286489	2.064180287916139e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00038	14.221941557270371	1.6246507392622146e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00045	13.61748509972826	2.2408866366699037e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00045	14.586457654791264	1.3387317132891192e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00060	7.401534152027359	0.006516827589103219	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00072	13.580933044851363	2.284946316762172e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00072	14.038181175097371	1.7913611624382038e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00097	10.4055434795124	0.0012563758072780288	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00097	14.327344720610588	1.536171832509959e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00105	10.899352152355725	9.61978989556729e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00111	6.137356068823078	0.0132355067645169	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00111	13.662211974541949	2.188135855913746e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00124	11.793336734412241	5.944309625775025e-4	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00124	13.980944327440193	1.8467283860744353e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00129	13.767434820365127	2.0689164020400072e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00129	13.612100513432424	2.2473230266132304e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00131	8.97424087960837	0.0027381231833457234	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00131	12.621259543321964	3.813842645706959e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00138	9.39357421702304	0.0021774727656074127	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00138	9.520376418373166	0.0020320289725700032	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00150	12.263726458739814	4.6184830331620917e-4	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00150	13.651877261738424	2.2002123567931015e-4	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00171	10.381836863886125	0.0012726102243430697	high_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00171	8.592430251265148	0.0033756321523720862	high_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00215	9.775888860986734	0.0017681522118418215	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00215	13.633450363581858	2.2219117551498148e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_00227	8.306218150724796	0.003950957391468827	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00227	11.355547548455686	7.522294099681667e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00243	8.991481678088489	0.0027124098579062524	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00251	4.5566689229954465	0.03279079139906216	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_00282	6.335707453859678	0.011833090815134431	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite_dawn - all_peak_photo	ASV_01134	9.167773907797827	0.002463140002295135	low_dawn	Tektite	dawn	rademu	auto_fit	dawn	Tektite_d	all_peak_photo				Tektite_dawn	all_peak_photo			
+Yawzi_dawn - all_peak_photo	ASV_01134	12.422692112088846	4.2414837155360907e-4	low_dawn	Yawzi	dawn	rademu	auto_fit	dawn	Yawzi_d	all_peak_photo				Yawzi_dawn	all_peak_photo			
+Tektite - LB_seagrass_all	ASV_00002	38.8077578634967	4.67665512336111e-10	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00002	37.14513791638764	1.096558176528113e-9	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00003	44.84254848713669	2.135319196447035e-11	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00003	40.84569905157655	1.647354095908647e-10	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00006	46.076877487726016	1.1370251128859065e-11	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00006	41.587917149243054	1.1268757874229103e-10	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00007	36.40716089081022	1.6011387586566252e-9	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00007	36.85527153584872	1.2723160925013683e-9	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00009	47.770677409109155	4.7910441060009406e-12	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00009	44.84106114970163	2.136941767962484e-11	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00017	39.81472279504873	2.7923229129781784e-10	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00017	36.07590217126653	1.8977928587151803e-9	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00023	43.5245137876794	4.1868161688051255e-11	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00023	42.86815190504232	5.85562232433811e-11	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00031	45.43939729142472	1.5743548788299865e-11	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00031	41.31890436573349	1.2931223878101996e-10	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00038	39.9465832183682	2.6100373050253466e-10	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00038	36.80660675761299	1.304474380463195e-9	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00045	34.58313973953347	4.08428591456976e-9	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00045	31.168952298479315	2.3651884712992437e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00060	17.902886695900083	2.3246823635676846e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00060	17.584419718805616	2.7483081651472466e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00072	43.28475775891085	4.7325577581316665e-11	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00072	39.24739386088051	3.733663954973419e-10	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00097	30.037973932664563	4.2366784175039824e-8	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00097	32.0105794017588	1.5333524162206727e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00105	19.977523664675644	7.835783786411975e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00105	19.236463187634936	1.1548634742599073e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00111	22.81035516956749	1.787997222056662e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00111	21.310917527471425	3.905011745072226e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00124	34.15521930953391	5.08865735212325e-9	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00124	31.193404961946857	2.3355820475539715e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00129	39.95130792937129	2.60373166098972e-10	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00129	38.547427080036385	5.343917131453366e-10	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00131	25.7989329110802	3.788978926093762e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00131	23.891972167942534	1.0189579355514452e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00138	19.43470249670126	1.0409827230043446e-5	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00138	18.537060545488284	1.6663256689468857e-5	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00150	21.685195895654022	3.2126101320617558e-6	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00150	25.348709790434672	4.784723098259979e-7	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00171	19.502086684691662	1.0048984767562594e-5	high_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00171	16.359979580035976	5.237962316783117e-5	high_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00186	7.684680501447941	0.005569153858499381	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00186	8.93857322575998	0.0027921072842487815	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00215	34.27915122161699	4.774695109988302e-9	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00215	32.95500848863061	9.431645462546096e-9	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00227	16.538836492114253	4.766376218510214e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00227	15.787095861457988	7.088431707850508e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00243	27.1755996298466	1.857887320074716e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00243	24.815339896886186	6.309336139280753e-7	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00251	20.526930810565872	5.879814360798657e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00251	20.302130234454513	6.612691948064585e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00271	23.284965607884644	1.39687659249621e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00271	29.624578644211386	5.243581277164333e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00282	31.088610126426328	2.465136627953728e-8	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00282	29.09935311491493	6.875993953522947e-8	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00300	16.601062063276547	4.612518452686532e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00300	16.434898818731195	5.0349672432655634e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00339	16.66061171471055	4.469954398256531e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00339	17.411024363815578	3.0107466903835217e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00348	13.474655071788717	2.4180763895219153e-4	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00348	13.447917353577797	2.452783122627923e-4	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00389	21.840140725279557	2.96335335455671e-6	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00389	20.302154266257897	6.61260889200564e-6	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00399	25.990237159303	3.431482600327004e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00399	26.32076116300277	2.8916350518467874e-7	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00400	12.515169787910274	4.036611035307433e-4	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00400	11.73096159654673	6.146882354991142e-4	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_00495	19.35675130072749	1.0843519596835778e-5	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_00495	17.881314756627177	2.3511826544081834e-5	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite - LB_seagrass_all	ASV_01134	26.215236395624487	3.054033525958211e-7	low_reef	Tektite	reef	rademu	auto_fit	all	Tektite	LB_seagrass_all				Tektite	LB_seagrass_all			
+Yawzi - LB_seagrass_all	ASV_01134	26.478189086315354	2.6653050699740763e-7	low_reef	Yawzi	reef	rademu	auto_fit	all	Yawzi	LB_seagrass_all				Yawzi	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00002	14.656685780943487	1.2897633220160405e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00002	14.602405651815051	1.327449783933823e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00002	14.713556517301724	1.25143291440859e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00002	15.048242091602965	1.0479781750114376e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00003	13.340764270796035	2.5969848547273573e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00003	14.687565879184225	1.2688060120486124e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00003	12.78646039110078	3.491371000212852e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00003	13.924031055217357	1.903492069707205e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00006	14.344174927653441	1.5225002133389717e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00006	14.426512497430764	1.4573605260662589e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00006	13.516247951091781	2.3650680261209242e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00006	13.785972138092143	2.0486015829601235e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00007	12.686605086431586	3.6828431792344145e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00007	13.670802790028349	2.1781480129917072e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00007	11.332525043874824	7.616127082829345e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00007	12.66418358012918	3.727272521094946e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00008	14.516026164959353	1.389722383551048e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00008	14.011363692595083	1.8170913699205678e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00008	14.820127237517523	1.1826652575725435e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00008	14.344620052068365	1.522140294989092e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00009	14.358917246998748	1.5106253386962314e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00009	14.393094235085115	1.4834533861438233e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00009	14.307996731943707	1.5520415415636157e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00009	14.496410883007268	1.404268403856267e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00012	14.37461334554801	1.4980846864619778e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00012	14.440138945155189	1.4468541334910725e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00012	14.237042585978452	1.6116661520284447e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00012	14.883402502005904	1.1436480633340198e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00017	14.579643576377428	1.343581515611903e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00017	14.557908214648036	1.3591698020618483e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00017	14.44496428962084	1.4431519639048607e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00017	14.72168968716358	1.246045750816145e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00023	14.406017075542835	1.4733079530075588e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00023	14.565774376020645	1.353507390493501e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00023	13.71008886084954	2.1330553959680369e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00023	14.905290191322315	1.1304553073498972e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00031	14.343048866260316	1.523411105846522e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00031	14.529840559461503	1.3795692328583085e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00031	14.842647855542586	1.1686271932302979e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00031	14.66486103932452	1.284181358878185e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00038	13.771740090286489	2.064180287916139e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00038	14.221941557270371	1.6246507392622146e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00038	12.089588523060714	5.070416303080383e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00038	14.080951478862966	1.7510820418955864e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00045	13.61748509972826	2.2408866366699037e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00045	14.586457654791264	1.3387317132891192e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00045	13.11328494193762	2.932091083920788e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00045	14.883415060262417	1.143640449611277e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00060	7.401534152027359	0.006516827589103219	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00072	13.580933044851363	2.284946316762172e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00072	14.038181175097371	1.7913611624382038e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00072	14.109020720455502	1.7251447159641044e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00072	14.30264095478929	1.5564635892871952e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00097	10.4055434795124	0.0012563758072780288	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00097	14.327344720610588	1.536171832509959e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00097	12.434628584713812	4.2144612252283386e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00097	13.925533746213295	1.901970970731111e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00105	10.899352152355725	9.61978989556729e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00105	4.191811322841384	0.04061967541378515	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00111	6.137356068823078	0.0132355067645169	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00111	13.662211974541949	2.188135855913746e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00111	4.387460560528245	0.03620419940927089	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00111	11.222715355707347	8.080218342997965e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00124	11.793336734412241	5.944309625775025e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00124	13.980944327440193	1.8467283860744353e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00124	11.816152077048168	5.871908737638975e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00124	13.89873758388224	1.9292800874795658e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00129	13.767434820365127	2.0689164020400072e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00129	13.612100513432424	2.2473230266132304e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00129	13.074419863082449	2.993559209864846e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00129	14.502408036088928	1.3998049251094994e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00131	8.97424087960837	0.0027381231833457234	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00131	12.621259543321964	3.813842645706959e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00131	10.32763956304412	0.001310527013613717	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00131	12.610418507408566	3.836026079347494e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00138	9.39357421702304	0.0021774727656074127	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00138	9.520376418373166	0.0020320289725700032	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00138	10.29801466043543	0.001331734101057018	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00138	10.805192478826612	0.0010121580122634895	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00150	12.263726458739814	4.6184830331620917e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00150	13.651877261738424	2.2002123567931015e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00150	10.766438088814683	0.0010335722530382258	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00150	13.821260943292154	2.0104827260589514e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00171	10.381836863886125	0.0012726102243430697	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00171	8.592430251265148	0.0033756321523720862	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00171	8.32171560227281	0.00391739038327876	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00171	9.349642552186726	0.00223028963428849	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00191	8.856598975013144	0.002920311862242135	low_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00191	12.314657601214568	4.4941514242334915e-4	low_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00191	11.263572708597527	7.904293256773998e-4	low_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00191	8.920063324398255	0.0028205473205959695	low_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00217	13.644724622890019	2.208609787788036e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00217	13.960432187074932	1.866987383092814e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00217	13.230154395684782	2.7548111857218354e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00217	14.125693136796254	1.7099221360323253e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00229	10.0837961080078	0.0014957885783671216	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00229	14.727849564456116	1.2419811774056668e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00229	13.164240451975399	2.853424253283384e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00229	14.386409452622178	1.4887290366204602e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00251	4.5566689229954465	0.03279079139906216	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00271	7.326321366776141	0.006795198813494632	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00271	12.401150859375408	4.2906932758341387e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00271	7.666789145201067	0.0056246458879201456	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00290	11.46361918069373	7.097194544765519e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00290	13.832656214779583	1.998326852141792e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00290	10.671135676261702	0.0010882028532181313	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00290	12.422083099861755	4.2428671109993676e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_all	ASV_00307	9.394827428242182	0.0021759848454091916	high_seagrass	Tektite	seagrass	rademu	auto_fit	dawn	Tektite_d	LB_seagrass_all				Tektite_dawn	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_00307	13.757153830749127	2.0802705847565095e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Tektite_peak_photo - LB_seagrass_all	ASV_00307	12.516994437983398	4.032670794429908e-4	high_seagrass	Tektite	seagrass	rademu	auto_fit	peak_photo	Tektite_p	LB_seagrass_all				Tektite_peak_photo	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_00307	12.117500718277316	4.9950806372677e-4	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Yawzi_dawn - LB_seagrass_all	ASV_01140	5.08891375472546	0.02407926955985467	high_seagrass	Yawzi	seagrass	rademu	auto_fit	dawn	Yawzi_d	LB_seagrass_all				Yawzi_dawn	LB_seagrass_all			
+Yawzi_peak_photo - LB_seagrass_all	ASV_01140	7.334024828353466	0.006766137692389325	high_seagrass	Yawzi	seagrass	rademu	auto_fit	peak_photo	Yawzi_p	LB_seagrass_all				Yawzi_peak_photo	LB_seagrass_all			
+Tektite_dawn - LB_seagrass_dawn	ASV_00004				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	3814.6040090441165	4.406143490473501e-18	-1.490257721427454	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00004				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	3814.6040090441165	9.159550701235505e-12	-1.2263765090571128	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00004				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	3814.6040090441165	4.966054808834765e-10	-1.1022927102609772	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass_dawn	ASV_00007				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	1724.3600526059402	6.663632762817277e-25	3.574969076965314	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00007				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	1724.3600526059402	3.8211562743231296e-14	2.711728977195471	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00007				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	1724.3600526059402	1.1989429039346515e-10	2.2732481656980803	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass_dawn	ASV_00008				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	5474.629168086622	7.940863543436306e-21	1.4740262735653877	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00008				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	5474.629168086622	6.373903886039334e-12	1.1356921631012662	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00008				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	5474.629168086622	6.521943860634543e-12	1.1144401138706168	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass_dawn	ASV_00012				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	2152.622601078631	1.827413472246075e-34	1.8444264163308746	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00012				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	2152.622601078631	1.4946302359742725e-18	1.366114586466808	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00012				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	2152.622601078631	1.9489733437872747e-13	1.1388034337792738	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass	ASV_00014				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	4492.486807685852	2.6658829880479504e-14	-1.0935094846624294	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00014				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	4492.486807685852	2.868750018897444e-17	-1.2120005371097793	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00014				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	4492.486807685852	4.194055850957608e-14	-1.101835939115493	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00014				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	4492.486807685852	3.45671325817069e-14	-1.2530576254768842	Tektite_dawn	LB_seagrass_dawn			
+Tektite_dawn - LB_seagrass	ASV_00018				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	876.1496939516667	2.532354781991148e-12	1.0411119887009197	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00018				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	876.1496939516667	5.177569754915622e-13	1.0746442648222818	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00018				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	876.1496939516667	4.356871239056788e-10	0.951350636157433	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00018				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	876.1496939516667	6.781154435500134e-12	1.1810962543371708	Tektite_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00021				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	2529.6497309351917	2.680854012250517e-10	-0.9120075617337413	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass	ASV_00058				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	260.887616505273	9.702973902393726e-11	-1.6232690428506782	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00058				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	260.887616505273	3.903351591042688e-11	-1.6634582344550752	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00058				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	260.887616505273	4.15147295529831e-11	-1.691015405139224	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00058				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	260.887616505273	2.358418569283856e-11	-1.933090003651993	Tektite_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00059				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	235.75657731577618	5.210349117740321e-12	-1.3132793641416762	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass_dawn	ASV_00060				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	320.66579572807535	1.4315810649737248e-25	-12.179200329667378	Tektite_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00060				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	320.66579572807535	9.924717985159466e-25	-12.277789920307372	Tektite_peak_photo	LB_seagrass_peak_photo			
+Yawzi_peak_photo - LB_seagrass_peak_photo	ASV_00060				Yawzi		deseq	manual_photo	peak_photo	Yawzi_p	LB_seagrass_time	320.66579572807535	1.0581855148868405e-24	-12.295810068173157	Yawzi_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass	ASV_00066				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	270.07861476749974	4.994457380039669e-10	-1.6493635968919915	Tektite_dawn	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00072				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	168.57365007164373	8.749933612622345e-26	3.447577169741511	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00072				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	168.57365007164373	1.7639928537856186e-15	2.693569545829269	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00072				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	168.57365007164373	4.988385839121217e-14	2.450500197685227	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_peak_photo - LB_seagrass	ASV_00096				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	124.88187067437865	1.817800988510555e-10	1.1930041493426342	Tektite_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00097				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	152.1110263182883	4.3280600780667826e-16	-2.257314020659281	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00097				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	152.1110263182883	7.163708680943583e-17	-2.372097057750021	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00097				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	152.1110263182883	4.966054808834765e-10	-1.7685064283452239	Tektite_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass_dawn	ASV_00105				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	131.18811141841138	1.2817250095106505e-19	-7.400492732888424	Tektite_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00105				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	131.18811141841138	8.232508032035413e-31	-11.314337066396346	Tektite_peak_photo	LB_seagrass_peak_photo			
+Yawzi_peak_photo - LB_seagrass_peak_photo	ASV_00105				Yawzi		deseq	manual_photo	peak_photo	Yawzi_p	LB_seagrass_time	131.18811141841138	1.2461958274447712e-15	-6.506903813360991	Yawzi_peak_photo	LB_seagrass_peak_photo			
+Tektite_dawn - LB_seagrass_dawn	ASV_00119				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	132.6532326083539	4.197733902980452e-13	1.5376541838504665	Tektite_dawn	LB_seagrass_dawn			
+Tektite_dawn - LB_seagrass	ASV_00129				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	92.23608341375704	2.8049859417680445e-19	2.6223411687347924	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00129				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	92.23608341375704	4.419045392255833e-23	2.8911048771200774	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00129				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	92.23608341375704	1.1168862878505837e-17	2.535298620558003	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass	ASV_00133				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	264.93967956920716	4.0198377766611295e-11	0.9603072008564942	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00133				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	264.93967956920716	9.839022498715352e-14	1.0777814179317498	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00133				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	264.93967956920716	1.6822551301544492e-10	0.9471577323466827	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00150				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	180.29647330662488	1.38692807112103e-10	2.2657602020182273	Tektite_dawn	LB_seagrass_dawn			
+Tektite_dawn - LB_seagrass_dawn	ASV_00164				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	117.78761291724963	7.068235594010326e-23	-2.2424015414191043	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00164				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	117.78761291724963	4.731582052353273e-12	-1.631085794427496	Yawzi_dawn	LB_seagrass_dawn			
+Yawzi_peak_photo - LB_seagrass_peak_photo	ASV_00164				Yawzi		deseq	manual_photo	peak_photo	Yawzi_p	LB_seagrass_time	117.78761291724963	3.5640264882185394e-10	-1.4908103485172426	Yawzi_peak_photo	LB_seagrass_peak_photo			
+Tektite_peak_photo - LB_seagrass	ASV_00236				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	33.70506250711136	7.938602311138838e-12	1.566175656096943	Tektite_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass	ASV_00251				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	39.17683041314736	1.2747653581043277e-12	-6.376299455999263	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00251				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	39.17683041314736	4.346468645152225e-10	-5.225016159831255	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00251				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	39.17683041314736	5.062848601516887e-13	-6.563991734705392	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00251				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	39.17683041314736	2.7196862664266196e-10	-6.202034190853981	Tektite_dawn	LB_seagrass_dawn			
+Tektite_dawn - LB_seagrass	ASV_00282				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	35.495882644308644	4.613376326079747e-17	-5.862500195298774	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00282				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	35.495882644308644	1.4401369680740088e-16	-5.565342210646178	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00282				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	35.495882644308644	1.463475012416588e-10	-4.185135847024516	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass	ASV_00300				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	29.480931982896134	4.163142143993801e-13	-7.779965873709024	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00300				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	29.480931982896134	9.839022498715352e-14	-8.127224336021955	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00300				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	29.480931982896134	1.5299931829572604e-12	-7.66976706703638	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00346				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	17.1952594521532	3.070879582263501e-13	5.504300478502107	Tektite_dawn	LB_seagrass_dawn			
+Yawzi_dawn - LB_seagrass	ASV_00372				Yawzi		deseq	manual_dispersion	dawn	Yawzi_d	LB_seagrass_all	17.758477034005782	4.5608464593785055e-45	-24.50677303670279	Yawzi_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00372				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	17.758477034005782	2.0645852330339828e-46	-24.491003891578934	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00372				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	17.758477034005782	2.0571026168478776e-45	-24.525688699037488	Yawzi_peak_photo	LB_seagrass			
+Yawzi_dawn - LB_seagrass_dawn	ASV_00372				Yawzi		deseq	manual_dawn	dawn	Yawzi_d	LB_seagrass_time	17.758477034005782	7.79016700831272e-36	-24.98797112324023	Yawzi_dawn	LB_seagrass_dawn			
+Tektite_peak_photo - LB_seagrass_peak_photo	ASV_00372				Tektite		deseq	manual_photo	peak_photo	Tektite_p	LB_seagrass_time	17.758477034005782	2.41722005609418e-33	-23.704906375643066	Tektite_peak_photo	LB_seagrass_peak_photo			
+Yawzi_peak_photo - LB_seagrass_peak_photo	ASV_00372				Yawzi		deseq	manual_photo	peak_photo	Yawzi_p	LB_seagrass_time	17.758477034005782	3.6682849448216205e-32	-23.84365260157824	Yawzi_peak_photo	LB_seagrass_peak_photo			
+Yawzi_peak_photo - LB_seagrass	ASV_00399				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	15.029481212136027	3.6033729099547753e-10	-6.917799872777948	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass	ASV_00400				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	18.191391018321546	1.960295120220826e-12	-6.668754562604111	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00400				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	18.191391018321546	6.04320727881864e-15	-7.449124847644715	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00400				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	18.191391018321546	7.617336241363229e-15	-7.502155229252872	Yawzi_peak_photo	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00429				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	7.675894850332302	3.1919628766344512e-12	3.8337312553857186	Tektite_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass	ASV_00445				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	9.411275458148166	1.2435676342498262e-11	-6.314668854288836	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00445				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	9.411275458148166	2.8554290231761345e-12	-6.4310919149954975	Tektite_peak_photo	LB_seagrass			
+Yawzi_peak_photo - LB_seagrass	ASV_00445				Yawzi		deseq	manual_dispersion	peak_photo	Yawzi_p	LB_seagrass_all	9.411275458148166	3.540287522458147e-12	-6.5499132240128395	Yawzi_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass_dawn	ASV_00445				Tektite		deseq	manual_dawn	dawn	Tektite_d	LB_seagrass_time	9.411275458148166	2.5569405726437466e-11	-6.75776128867906	Tektite_dawn	LB_seagrass_dawn			
+Tektite_dawn - LB_seagrass	ASV_00495				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	19.31440928739398	3.97943132362835e-12	-5.187987665469494	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00524				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	29.97573957374467	7.85944045032021e-12	2.4809651975557645	Tektite_peak_photo	LB_seagrass			
+Tektite_dawn - LB_seagrass	ASV_00528				Tektite		deseq	manual_dispersion	dawn	Tektite_d	LB_seagrass_all	8.091340414151446	8.354436643390841e-11	-5.8578573916690235	Tektite_dawn	LB_seagrass			
+Tektite_peak_photo - LB_seagrass	ASV_00848				Tektite		deseq	manual_dispersion	peak_photo	Tektite_p	LB_seagrass_all	6.828947205421178	4.346468645152225e-10	-5.981734245669925	Tektite_peak_photo	LB_seagrass			
+dawn (Yawzi - LB_seagrass)	ASV_00002						corncob	cc_da					4.268499143834945e-22				dawn	Yawzi - LB_seagrass	4.268499143834945e-22
+dawn (Tektite - LB_seagrass)	ASV_00002						corncob	cc_da					1.0006472659138903e-27				dawn	Tektite - LB_seagrass	1.0006472659138903e-27
+dawn (Yawzi - Tektite)	ASV_00003						corncob	cc_da									dawn	Yawzi - Tektite	4.884703111951536e-10
+dawn (Yawzi - LB_seagrass)	ASV_00003						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.9327393852419835e-12
+dawn (Tektite - LB_seagrass)	ASV_00003						corncob	cc_da					3.0672105786795265e-25				dawn	Tektite - LB_seagrass	3.0672105786795265e-25
+dawn (Yawzi - Tektite)	ASV_00006						corncob	cc_da									dawn	Yawzi - Tektite	7.231364448137024e-10
+dawn (Yawzi - LB_seagrass)	ASV_00006						corncob	cc_da					4.006772799597694e-17				dawn	Yawzi - LB_seagrass	4.006772799597694e-17
+dawn (Tektite - LB_seagrass)	ASV_00006						corncob	cc_da					2.251018038729284e-37				dawn	Tektite - LB_seagrass	2.251018038729284e-37
+dawn (Yawzi - Tektite)	ASV_00009						corncob	cc_da									dawn	Yawzi - Tektite	1.9527934220263957e-4
+dawn (Yawzi - LB_seagrass)	ASV_00009						corncob	cc_da					1.2108915768249236e-40				dawn	Yawzi - LB_seagrass	1.2108915768249236e-40
+dawn (Tektite - LB_seagrass)	ASV_00009						corncob	cc_da					7.976530958243623e-68				dawn	Tektite - LB_seagrass	7.976530958243623e-68
+dawn (Yawzi - Tektite)	ASV_00012						corncob	cc_da									dawn	Yawzi - Tektite	0.02851269207531681
+dawn (Yawzi - LB_seagrass)	ASV_00012						corncob	cc_da					2.729072216020704e-23				dawn	Yawzi - LB_seagrass	2.729072216020704e-23
+dawn (Tektite - LB_seagrass)	ASV_00012						corncob	cc_da					1.7352501238587997e-34				dawn	Tektite - LB_seagrass	1.7352501238587997e-34
+dawn (Yawzi - LB_seagrass)	ASV_00017						corncob	cc_da					2.819961244934797e-16				dawn	Yawzi - LB_seagrass	2.819961244934797e-16
+dawn (Tektite - LB_seagrass)	ASV_00017						corncob	cc_da					3.3072494532903356e-21				dawn	Tektite - LB_seagrass	3.3072494532903356e-21
+dawn (Yawzi - Tektite)	ASV_00023						corncob	cc_da									dawn	Yawzi - Tektite	8.287375127352697e-4
+dawn (Yawzi - LB_seagrass)	ASV_00023						corncob	cc_da					1.1479853187511983e-24				dawn	Yawzi - LB_seagrass	1.1479853187511983e-24
+dawn (Tektite - LB_seagrass)	ASV_00023						corncob	cc_da					9.283440684671726e-35				dawn	Tektite - LB_seagrass	9.283440684671726e-35
+dawn (Yawzi - LB_seagrass)	ASV_00031						corncob	cc_da					2.172734250981641e-25				dawn	Yawzi - LB_seagrass	2.172734250981641e-25
+dawn (Tektite - LB_seagrass)	ASV_00031						corncob	cc_da					3.4818193366466074e-31				dawn	Tektite - LB_seagrass	3.4818193366466074e-31
+dawn (Yawzi - Tektite)	ASV_00038						corncob	cc_da									dawn	Yawzi - Tektite	1.4969287987978396e-4
+dawn (Yawzi - LB_seagrass)	ASV_00038						corncob	cc_da					9.447663140139252e-33				dawn	Yawzi - LB_seagrass	9.447663140139252e-33
+dawn (Tektite - LB_seagrass)	ASV_00038						corncob	cc_da					3.623975492938452e-45				dawn	Tektite - LB_seagrass	3.623975492938452e-45
+dawn (Yawzi - Tektite)	ASV_00045						corncob	cc_da									dawn	Yawzi - Tektite	0.006019697986474355
+dawn (Yawzi - LB_seagrass)	ASV_00045						corncob	cc_da					2.317343504990474e-25				dawn	Yawzi - LB_seagrass	2.317343504990474e-25
+dawn (Tektite - LB_seagrass)	ASV_00045						corncob	cc_da					1.8574167266283745e-28				dawn	Tektite - LB_seagrass	1.8574167266283745e-28
+dawn (Yawzi - LB_seagrass)	ASV_00059						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.02515941668802189
+dawn (Tektite - LB_seagrass)	ASV_00059						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0022172523872795087
+dawn (Yawzi - Tektite)	ASV_00072						corncob	cc_da									dawn	Yawzi - Tektite	0.006776542366326359
+dawn (Yawzi - LB_seagrass)	ASV_00072						corncob	cc_da									dawn	Yawzi - LB_seagrass	3.632283175320855e-8
+dawn (Tektite - LB_seagrass)	ASV_00072						corncob	cc_da									dawn	Tektite - LB_seagrass	1.8739325197126423e-11
+dawn (Yawzi - Tektite)	ASV_00111						corncob	cc_da									dawn	Yawzi - Tektite	2.541733625799674e-4
+dawn (Yawzi - LB_seagrass)	ASV_00111						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.798525637956646e-11
+dawn (Tektite - LB_seagrass)	ASV_00111						corncob	cc_da					2.3295227703702355e-16				dawn	Tektite - LB_seagrass	2.3295227703702355e-16
+dawn (Yawzi - Tektite)	ASV_00124						corncob	cc_dv									dawn	Yawzi - Tektite	0.03115310405738791
+dawn (Yawzi - LB_seagrass)	ASV_00124						corncob	cc_da					4.655141362345487e-17				dawn	Yawzi - LB_seagrass	4.655141362345487e-17
+dawn (Tektite - LB_seagrass)	ASV_00124						corncob	cc_da									dawn	Tektite - LB_seagrass	1.3124317795935301e-9
+dawn (Yawzi - Tektite)	ASV_00129						corncob	cc_da									dawn	Yawzi - Tektite	0.006776542366326359
+dawn (Yawzi - LB_seagrass)	ASV_00129						corncob	cc_da									dawn	Yawzi - LB_seagrass	7.766446603640766e-7
+dawn (Tektite - LB_seagrass)	ASV_00129						corncob	cc_da									dawn	Tektite - LB_seagrass	6.385293405598252e-10
+dawn (Yawzi - LB_seagrass)	ASV_00164						corncob	cc_da					4.006772799597694e-17				dawn	Yawzi - LB_seagrass	4.006772799597694e-17
+dawn (Tektite - LB_seagrass)	ASV_00164						corncob	cc_da					1.6058824733601579e-15				dawn	Tektite - LB_seagrass	1.6058824733601579e-15
+dawn (Tektite - LB_seagrass)	ASV_00313						corncob	cc_da									dawn	Tektite - LB_seagrass	0.04016680788805839
+dawn (Yawzi - LB_seagrass)	ASV_00568						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.8044698593271035e-8
+dawn (Tektite - LB_seagrass)	ASV_00568						corncob	cc_da									dawn	Tektite - LB_seagrass	2.223728444219705e-6
+dawn (Yawzi - LB_seagrass)	ASV_00783						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.6501478680663406e-4
+dawn (Yawzi - LB_seagrass)	ASV_00018						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.20961183159963e-7
+dawn (Tektite - LB_seagrass)	ASV_00018						corncob	cc_da									dawn	Tektite - LB_seagrass	6.044958180526331e-8
+dawn (Yawzi - LB_seagrass)	ASV_00337						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.01357921069306689
+dawn (Tektite - LB_seagrass)	ASV_00337						corncob	cc_da									dawn	Tektite - LB_seagrass	2.6420868322191266e-10
+dawn (Tektite - LB_seagrass)	ASV_00349						corncob	cc_da									dawn	Tektite - LB_seagrass	0.040168792670623954
+dawn (Tektite - LB_seagrass)	ASV_00429						corncob	cc_da									dawn	Tektite - LB_seagrass	0.04925261243952864
+dawn (Yawzi - Tektite)	ASV_00004						corncob	cc_da									dawn	Yawzi - Tektite	0.02026038582527253
+dawn (Yawzi - LB_seagrass)	ASV_00004						corncob	cc_da					3.3736963214563e-15				dawn	Yawzi - LB_seagrass	3.3736963214563e-15
+dawn (Tektite - LB_seagrass)	ASV_00004						corncob	cc_da					9.707785832205014e-24				dawn	Tektite - LB_seagrass	9.707785832205014e-24
+dawn (Yawzi - Tektite)	ASV_00007						corncob	cc_da									dawn	Yawzi - Tektite	0.006019697986474355
+dawn (Yawzi - LB_seagrass)	ASV_00007						corncob	cc_da					3.265537999844299e-21				dawn	Yawzi - LB_seagrass	3.265537999844299e-21
+dawn (Tektite - LB_seagrass)	ASV_00007						corncob	cc_da					1.6930807167240248e-31				dawn	Tektite - LB_seagrass	1.6930807167240248e-31
+dawn (Yawzi - LB_seagrass)	ASV_00008						corncob	cc_da					6.508743029001257e-16				dawn	Yawzi - LB_seagrass	6.508743029001257e-16
+dawn (Tektite - LB_seagrass)	ASV_00008						corncob	cc_da					3.0672105786795265e-25				dawn	Tektite - LB_seagrass	3.0672105786795265e-25
+dawn (Yawzi - Tektite)	ASV_00013						corncob	cc_dv									dawn	Yawzi - Tektite	0.04520811681596263
+dawn (Yawzi - LB_seagrass)	ASV_00013						corncob	cc_da					4.3111086873391774e-14				dawn	Yawzi - LB_seagrass	4.3111086873391774e-14
+dawn (Tektite - LB_seagrass)	ASV_00013						corncob	cc_da									dawn	Tektite - LB_seagrass	9.76900675587527e-12
+dawn (Yawzi - Tektite)	ASV_00014						corncob	cc_da									dawn	Yawzi - Tektite	0.04406453708414166
+dawn (Yawzi - LB_seagrass)	ASV_00014						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.4090442717422263e-9
+dawn (Tektite - LB_seagrass)	ASV_00014						corncob	cc_da					8.734574089417442e-16				dawn	Tektite - LB_seagrass	8.734574089417442e-16
+dawn (Yawzi - Tektite)	ASV_00021						corncob	cc_da									dawn	Yawzi - Tektite	0.006776542366326359
+dawn (Yawzi - LB_seagrass)	ASV_00021						corncob	cc_dv									dawn	Yawzi - LB_seagrass	1.0092677021628048e-8
+dawn (Tektite - LB_seagrass)	ASV_00021						corncob	cc_da									dawn	Tektite - LB_seagrass	0.033070807373231544
+dawn (Yawzi - Tektite)	ASV_00036						corncob	cc_da									dawn	Yawzi - Tektite	0.006776542366326359
+dawn (Yawzi - LB_seagrass)	ASV_00036						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.1981298278163486e-7
+dawn (Tektite - LB_seagrass)	ASV_00036						corncob	cc_da									dawn	Tektite - LB_seagrass	1.3085137731499475e-13
+dawn (Yawzi - LB_seagrass)	ASV_00053						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.01048491830061664
+dawn (Yawzi - LB_seagrass)	ASV_00057						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0010456735654232926
+dawn (Tektite - LB_seagrass)	ASV_00057						corncob	cc_da									dawn	Tektite - LB_seagrass	3.460349387816747e-5
+dawn (Yawzi - LB_seagrass)	ASV_00058						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.007432087935211e-5
+dawn (Tektite - LB_seagrass)	ASV_00058						corncob	cc_da									dawn	Tektite - LB_seagrass	2.413645776086885e-9
+dawn (Yawzi - LB_seagrass)	ASV_00093						corncob	cc_da					7.718750262564975e-15				dawn	Yawzi - LB_seagrass	7.718750262564975e-15
+dawn (Tektite - LB_seagrass)	ASV_00093						corncob	cc_da					1.9525056788907526e-16				dawn	Tektite - LB_seagrass	1.9525056788907526e-16
+dawn (Yawzi - Tektite)	ASV_00096						corncob	cc_dv									dawn	Yawzi - Tektite	0.024480870000427066
+dawn (Yawzi - LB_seagrass)	ASV_00096						corncob	cc_da					2.004368560304166e-16				dawn	Yawzi - LB_seagrass	2.004368560304166e-16
+dawn (Tektite - LB_seagrass)	ASV_00096						corncob	cc_da									dawn	Tektite - LB_seagrass	8.428274377187006e-6
+dawn (Yawzi - Tektite)	ASV_00097						corncob	cc_dv									dawn	Yawzi - Tektite	0.024480870000427066
+dawn (Yawzi - LB_seagrass)	ASV_00097						corncob	cc_da					5.67374918767219e-38				dawn	Yawzi - LB_seagrass	5.67374918767219e-38
+dawn (Tektite - LB_seagrass)	ASV_00097						corncob	cc_da									dawn	Tektite - LB_seagrass	1.4835378920207905e-11
+dawn (Yawzi - LB_seagrass)	ASV_00103						corncob	cc_da									dawn	Yawzi - LB_seagrass	9.528488177692149e-7
+dawn (Tektite - LB_seagrass)	ASV_00103						corncob	cc_da									dawn	Tektite - LB_seagrass	0.00011050151193734828
+dawn (Yawzi - LB_seagrass)	ASV_00105						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.69497652365154e-12
+dawn (Tektite - LB_seagrass)	ASV_00105						corncob	cc_da									dawn	Tektite - LB_seagrass	4.4500813034766624e-7
+dawn (Yawzi - LB_seagrass)	ASV_00119						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.823885089703764e-10
+dawn (Tektite - LB_seagrass)	ASV_00119						corncob	cc_da					3.454227335926113e-14				dawn	Tektite - LB_seagrass	3.454227335926113e-14
+dawn (Yawzi - Tektite)	ASV_00125						corncob	cc_dv									dawn	Yawzi - Tektite	0.03115310405738791
+dawn (Yawzi - LB_seagrass)	ASV_00125						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.0891878256460963e-5
+dawn (Tektite - LB_seagrass)	ASV_00125						corncob	cc_da									dawn	Tektite - LB_seagrass	4.0406902260729514e-7
+dawn (Yawzi - LB_seagrass)	ASV_00130						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.4881610913281527e-8
+dawn (Tektite - LB_seagrass)	ASV_00130						corncob	cc_da									dawn	Tektite - LB_seagrass	1.3597732761994881e-11
+dawn (Yawzi - LB_seagrass)	ASV_00131						corncob	cc_da					1.8626514965284656e-22				dawn	Yawzi - LB_seagrass	1.8626514965284656e-22
+dawn (Tektite - LB_seagrass)	ASV_00131						corncob	cc_da									dawn	Tektite - LB_seagrass	2.1625105851223797e-13
+dawn (Yawzi - LB_seagrass)	ASV_00133						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.2004291969676717e-8
+dawn (Tektite - LB_seagrass)	ASV_00133						corncob	cc_da									dawn	Tektite - LB_seagrass	1.8739325197126423e-11
+dawn (Yawzi - LB_seagrass)	ASV_00138						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.01357921069306689
+dawn (Tektite - LB_seagrass)	ASV_00138						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0026166723560996172
+dawn (Yawzi - Tektite)	ASV_00146						corncob	cc_dv									dawn	Yawzi - Tektite	0.0035087044475175986
+dawn (Yawzi - LB_seagrass)	ASV_00146						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.20961183159963e-7
+dawn (Tektite - LB_seagrass)	ASV_00146						corncob	cc_da									dawn	Tektite - LB_seagrass	3.4840519467677615e-4
+dawn (Yawzi - LB_seagrass)	ASV_00150						corncob	cc_da									dawn	Yawzi - LB_seagrass	4.840944375535139e-7
+dawn (Tektite - LB_seagrass)	ASV_00150						corncob	cc_da									dawn	Tektite - LB_seagrass	7.291457939975218e-9
+dawn (Yawzi - LB_seagrass)	ASV_00153						corncob	cc_da									dawn	Yawzi - LB_seagrass	6.064508524663119e-5
+dawn (Tektite - LB_seagrass)	ASV_00153						corncob	cc_da									dawn	Tektite - LB_seagrass	5.239515797005857e-7
+dawn (Yawzi - LB_seagrass)	ASV_00155						corncob	cc_da									dawn	Yawzi - LB_seagrass	3.17277807219652e-5
+dawn (Tektite - LB_seagrass)	ASV_00155						corncob	cc_da									dawn	Tektite - LB_seagrass	1.0757315592220467e-8
+dawn (Yawzi - LB_seagrass)	ASV_00186						corncob	cc_da									dawn	Yawzi - LB_seagrass	3.890165845373186e-9
+dawn (Tektite - LB_seagrass)	ASV_00186						corncob	cc_da									dawn	Tektite - LB_seagrass	6.333938454567392e-4
+dawn (Yawzi - LB_seagrass)	ASV_00209						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.265959497070194e-6
+dawn (Tektite - LB_seagrass)	ASV_00209						corncob	cc_da									dawn	Tektite - LB_seagrass	0.001787664409918782
+dawn (Yawzi - LB_seagrass)	ASV_00215						corncob	cc_da					2.0598034247611352e-30				dawn	Yawzi - LB_seagrass	2.0598034247611352e-30
+dawn (Tektite - LB_seagrass)	ASV_00215						corncob	cc_da									dawn	Tektite - LB_seagrass	3.398817601012856e-13
+dawn (Yawzi - LB_seagrass)	ASV_00227						corncob	cc_da									dawn	Yawzi - LB_seagrass	4.459163062137614e-9
+dawn (Tektite - LB_seagrass)	ASV_00227						corncob	cc_da									dawn	Tektite - LB_seagrass	7.142441433236278e-5
+dawn (Yawzi - Tektite)	ASV_00229						corncob	cc_dv									dawn	Yawzi - Tektite	0.009864932729347475
+dawn (Yawzi - LB_seagrass)	ASV_00229						corncob	cc_dv									dawn	Yawzi - LB_seagrass	1.0606843795292188e-4
+dawn (Yawzi - LB_seagrass)	ASV_00236						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.4954381772632475e-4
+dawn (Tektite - LB_seagrass)	ASV_00236						corncob	cc_da									dawn	Tektite - LB_seagrass	2.058249597812965e-6
+dawn (Yawzi - LB_seagrass)	ASV_00243						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.4929852642018298e-6
+dawn (Tektite - LB_seagrass)	ASV_00243						corncob	cc_da									dawn	Tektite - LB_seagrass	1.0552754939586922e-4
+dawn (Yawzi - LB_seagrass)	ASV_00251						corncob	cc_da									dawn	Yawzi - LB_seagrass	3.5388629223560957e-6
+dawn (Tektite - LB_seagrass)	ASV_00251						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0011302548475655072
+dawn (Yawzi - LB_seagrass)	ASV_00260						corncob	cc_da									dawn	Yawzi - LB_seagrass	7.766446603640766e-7
+dawn (Tektite - LB_seagrass)	ASV_00260						corncob	cc_da									dawn	Tektite - LB_seagrass	4.0406902260729514e-7
+dawn (Yawzi - Tektite)	ASV_00269						corncob	cc_da									dawn	Yawzi - Tektite	0.0011477304519978155
+dawn (Yawzi - LB_seagrass)	ASV_00269						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.040285464774506216
+dawn (Yawzi - LB_seagrass)	ASV_00271						corncob	cc_da					1.9436522923854246e-15				dawn	Yawzi - LB_seagrass	1.9436522923854246e-15
+dawn (Tektite - LB_seagrass)	ASV_00271						corncob	cc_da									dawn	Tektite - LB_seagrass	4.951574374561762e-6
+dawn (Yawzi - LB_seagrass)	ASV_00282						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.3600923165027184e-6
+dawn (Tektite - LB_seagrass)	ASV_00282						corncob	cc_da									dawn	Tektite - LB_seagrass	4.111449296087791e-6
+dawn (Yawzi - LB_seagrass)	ASV_00300						corncob	cc_da									dawn	Yawzi - LB_seagrass	4.6907671561498585e-7
+dawn (Yawzi - LB_seagrass)	ASV_00321						corncob	cc_da									dawn	Yawzi - LB_seagrass	5.1452399346574785e-5
+dawn (Tektite - LB_seagrass)	ASV_00321						corncob	cc_da									dawn	Tektite - LB_seagrass	1.0177213936133453e-4
+dawn (Yawzi - LB_seagrass)	ASV_00361						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.3056482934287337e-9
+dawn (Tektite - LB_seagrass)	ASV_00361						corncob	cc_da									dawn	Tektite - LB_seagrass	0.007292120940373827
+dawn (Yawzi - LB_seagrass)	ASV_00389						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.8044698593271035e-8
+dawn (Tektite - LB_seagrass)	ASV_00389						corncob	cc_da									dawn	Tektite - LB_seagrass	3.317203763431109e-5
+dawn (Yawzi - LB_seagrass)	ASV_00469						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.04955877000273555
+dawn (Tektite - LB_seagrass)	ASV_00469						corncob	cc_da									dawn	Tektite - LB_seagrass	0.040168792670623954
+dawn (Yawzi - LB_seagrass)	ASV_00495						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.0651401810038946e-5
+dawn (Tektite - LB_seagrass)	ASV_00495						corncob	cc_da									dawn	Tektite - LB_seagrass	2.170469733627315e-6
+dawn (Yawzi - LB_seagrass)	ASV_00524						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.045965673133252484
+dawn (Tektite - LB_seagrass)	ASV_00524						corncob	cc_da									dawn	Tektite - LB_seagrass	0.006923965127721919
+dawn (Yawzi - LB_seagrass)	ASV_00528						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.2085401902906517e-4
+dawn (Tektite - LB_seagrass)	ASV_00528						corncob	cc_da									dawn	Tektite - LB_seagrass	1.069886922854797e-4
+dawn (Yawzi - LB_seagrass)	ASV_00570						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.009972937295912405
+dawn (Yawzi - LB_seagrass)	ASV_00614						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.019382182908465346
+dawn (Tektite - LB_seagrass)	ASV_00614						corncob	cc_da									dawn	Tektite - LB_seagrass	2.0053625261154395e-4
+dawn (Yawzi - Tektite)	ASV_00624						corncob	cc_dv									dawn	Yawzi - Tektite	0.015089274837724535
+dawn (Yawzi - LB_seagrass)	ASV_00624						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.3047738407350262e-8
+dawn (Yawzi - LB_seagrass)	ASV_00661						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.9545871663878922e-4
+dawn (Tektite - LB_seagrass)	ASV_00661						corncob	cc_da									dawn	Tektite - LB_seagrass	1.0543408045234766e-4
+dawn (Yawzi - LB_seagrass)	ASV_00837						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.8905736939134657e-6
+dawn (Tektite - LB_seagrass)	ASV_00837						corncob	cc_da									dawn	Tektite - LB_seagrass	5.223361975635644e-4
+dawn (Yawzi - LB_seagrass)	ASV_00848						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0014770013370490177
+dawn (Tektite - LB_seagrass)	ASV_00848						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0022979174707737564
+dawn (Yawzi - LB_seagrass)	ASV_00851						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.005938129118316421
+dawn (Tektite - LB_seagrass)	ASV_00851						corncob	cc_da									dawn	Tektite - LB_seagrass	0.008508649830033608
+dawn (Yawzi - LB_seagrass)	ASV_00882						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.02515941668802189
+dawn (Yawzi - LB_seagrass)	ASV_01015						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.044657991847916405
+dawn (Tektite - LB_seagrass)	ASV_01015						corncob	cc_da									dawn	Tektite - LB_seagrass	0.001234506293413971
+dawn (Yawzi - LB_seagrass)	ASV_01134						corncob	cc_da					1.2161080429382186e-27				dawn	Yawzi - LB_seagrass	1.2161080429382186e-27
+dawn (Tektite - LB_seagrass)	ASV_01134						corncob	cc_da									dawn	Tektite - LB_seagrass	1.3944591051876002e-9
+dawn (Yawzi - LB_seagrass)	ASV_01140						corncob	cc_da									dawn	Yawzi - LB_seagrass	9.522291409146912e-5
+dawn (Tektite - LB_seagrass)	ASV_01140						corncob	cc_da									dawn	Tektite - LB_seagrass	4.382233830157976e-8
+dawn (Yawzi - LB_seagrass)	ASV_01583						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.017679742307658917
+dawn (Yawzi - LB_seagrass)	ASV_01729						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.008894211000720484
+dawn (Tektite - LB_seagrass)	ASV_01729						corncob	cc_da									dawn	Tektite - LB_seagrass	0.006506720836046921
+dawn (Yawzi - LB_seagrass)	ASV_02219						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.040285464774506216
+dawn (Yawzi - LB_seagrass)	ASV_02305						corncob	cc_da									dawn	Yawzi - LB_seagrass	5.489303550271576e-5
+dawn (Tektite - LB_seagrass)	ASV_02305						corncob	cc_da									dawn	Tektite - LB_seagrass	3.004371789127974e-4
+dawn (Yawzi - LB_seagrass)	ASV_00015						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.767012911427225e-10
+dawn (Tektite - LB_seagrass)	ASV_00015						corncob	cc_da									dawn	Tektite - LB_seagrass	8.668387414627024e-12
+dawn (Yawzi - LB_seagrass)	ASV_00064						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.4522341613204375e-11
+dawn (Tektite - LB_seagrass)	ASV_00064						corncob	cc_da									dawn	Tektite - LB_seagrass	1.0757315592220467e-8
+dawn (Tektite - LB_seagrass)	ASV_00177						corncob	cc_da									dawn	Tektite - LB_seagrass	0.006178319479767842
+dawn (Tektite - LB_seagrass)	ASV_00346						corncob	cc_da									dawn	Tektite - LB_seagrass	0.042465193196124025
+dawn (Yawzi - LB_seagrass)	ASV_00360						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0011695830857024684
+dawn (Yawzi - LB_seagrass)	ASV_00609						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.015511232526021046
+dawn (Tektite - LB_seagrass)	ASV_00654						corncob	cc_da									dawn	Tektite - LB_seagrass	0.03971753151965515
+dawn (Yawzi - LB_seagrass)	ASV_01202						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.03257120247530439
+dawn (Yawzi - LB_seagrass)	ASV_02093						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.04044833615732848
+dawn (Tektite - LB_seagrass)	ASV_02093						corncob	cc_da									dawn	Tektite - LB_seagrass	0.007401520064776086
+dawn (Yawzi - LB_seagrass)	ASV_02345						corncob	cc_da									dawn	Yawzi - LB_seagrass	8.557177021248575e-4
+dawn (Tektite - LB_seagrass)	ASV_02345						corncob	cc_da									dawn	Tektite - LB_seagrass	0.026927989232335248
+dawn (Yawzi - Tektite)	ASV_00080						corncob	cc_dv									dawn	Yawzi - Tektite	0.03995444753974725
+dawn (Yawzi - LB_seagrass)	ASV_00080						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0204180305994735
+dawn (Yawzi - Tektite)	ASV_00168						corncob	cc_dv									dawn	Yawzi - Tektite	0.009864932729347475
+dawn (Yawzi - LB_seagrass)	ASV_00168						corncob	cc_dv									dawn	Yawzi - LB_seagrass	0.0029237016246567867
+dawn (Yawzi - Tektite)	ASV_00307						corncob	cc_dv									dawn	Yawzi - Tektite	0.024480870000427066
+dawn (Yawzi - LB_seagrass)	ASV_00307						corncob	cc_dv									dawn	Yawzi - LB_seagrass	0.040328291494251114
+dawn (Yawzi - LB_seagrass)	ASV_00019						corncob	cc_dv									dawn	Yawzi - LB_seagrass	0.027976066655789042
+dawn (Tektite - LB_seagrass)	ASV_00019						corncob	cc_da									dawn	Tektite - LB_seagrass	0.007801390059047628
+dawn (Yawzi - LB_seagrass)	ASV_00040						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.124607473113994e-4
+dawn (Yawzi - LB_seagrass)	ASV_00042						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0149514343470807
+dawn (Yawzi - LB_seagrass)	ASV_00060						corncob	cc_da									dawn	Yawzi - LB_seagrass	3.3874605923021405e-8
+dawn (Yawzi - LB_seagrass)	ASV_00066						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0036811189946242932
+dawn (Tektite - LB_seagrass)	ASV_00066						corncob	cc_da									dawn	Tektite - LB_seagrass	3.549865076000947e-5
+dawn (Yawzi - LB_seagrass)	ASV_00084						corncob	cc_dv									dawn	Yawzi - LB_seagrass	0.03660886305436841
+dawn (Yawzi - LB_seagrass)	ASV_00147						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.025062148532774546
+dawn (Yawzi - LB_seagrass)	ASV_00317						corncob	cc_da									dawn	Yawzi - LB_seagrass	2.971238733113808e-4
+dawn (Tektite - LB_seagrass)	ASV_00317						corncob	cc_da									dawn	Tektite - LB_seagrass	0.024878009913519007
+dawn (Yawzi - LB_seagrass)	ASV_00339						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.017106791009937804
+dawn (Tektite - LB_seagrass)	ASV_00339						corncob	cc_da									dawn	Tektite - LB_seagrass	0.019561949231325145
+dawn (Yawzi - LB_seagrass)	ASV_00399						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.02180982980999638
+dawn (Tektite - LB_seagrass)	ASV_00399						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0420064928961921
+dawn (Yawzi - LB_seagrass)	ASV_00400						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.007308245060607004
+dawn (Tektite - LB_seagrass)	ASV_00400						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0043472489301182304
+dawn (Yawzi - LB_seagrass)	ASV_00445						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.00984200796157501
+dawn (Yawzi - LB_seagrass)	ASV_00451						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0015098800717087597
+dawn (Tektite - LB_seagrass)	ASV_00451						corncob	cc_da									dawn	Tektite - LB_seagrass	0.014163705120923813
+dawn (Yawzi - LB_seagrass)	ASV_00650						corncob	cc_da									dawn	Yawzi - LB_seagrass	1.823885089703764e-10
+dawn (Tektite - LB_seagrass)	ASV_00650						corncob	cc_da									dawn	Tektite - LB_seagrass	3.65197218155936e-4
+dawn (Yawzi - LB_seagrass)	ASV_00712						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.013277064541467503
+dawn (Tektite - LB_seagrass)	ASV_00712						corncob	cc_da									dawn	Tektite - LB_seagrass	0.00489537614649225
+dawn (Yawzi - LB_seagrass)	ASV_00769						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.014382096986693672
+dawn (Yawzi - LB_seagrass)	ASV_00829						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.03257120247530439
+dawn (Yawzi - LB_seagrass)	ASV_00833						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.02515941668802189
+dawn (Tektite - LB_seagrass)	ASV_00833						corncob	cc_da									dawn	Tektite - LB_seagrass	0.01621721647897894
+dawn (Yawzi - LB_seagrass)	ASV_00967						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.030467400223974397
+dawn (Yawzi - LB_seagrass)	ASV_00975						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.005574046915837563
+dawn (Yawzi - LB_seagrass)	ASV_01119						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.01221816305967583
+dawn (Yawzi - LB_seagrass)	ASV_01319						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.002166754551378216
+dawn (Tektite - LB_seagrass)	ASV_01319						corncob	cc_da									dawn	Tektite - LB_seagrass	0.015597097647352754
+dawn (Yawzi - LB_seagrass)	ASV_01399						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.022572950130853878
+dawn (Yawzi - LB_seagrass)	ASV_01427						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0017191753858201695
+dawn (Tektite - LB_seagrass)	ASV_01427						corncob	cc_da									dawn	Tektite - LB_seagrass	0.026927989232335248
+dawn (Yawzi - LB_seagrass)	ASV_01571						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.031263606167942076
+dawn (Tektite - LB_seagrass)	ASV_01571						corncob	cc_da									dawn	Tektite - LB_seagrass	0.03971753151965515
+dawn (Yawzi - LB_seagrass)	ASV_01660						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.019367430389533823
+dawn (Tektite - LB_seagrass)	ASV_01660						corncob	cc_da									dawn	Tektite - LB_seagrass	0.008051164890945131
+dawn (Yawzi - LB_seagrass)	ASV_01740						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.048887849745441865
+dawn (Tektite - LB_seagrass)	ASV_01740						corncob	cc_da									dawn	Tektite - LB_seagrass	0.01751202363248545
+dawn (Yawzi - LB_seagrass)	ASV_01787						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0021814016483411914
+dawn (Yawzi - LB_seagrass)	ASV_01910						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.0356274607574182
+dawn (Yawzi - LB_seagrass)	ASV_02032						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.017984366660570725
+dawn (Tektite - LB_seagrass)	ASV_02032						corncob	cc_da									dawn	Tektite - LB_seagrass	0.04791198947182585
+dawn (Yawzi - LB_seagrass)	ASV_02127						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.015606982082484915
+dawn (Tektite - LB_seagrass)	ASV_02127						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0018250220855469076
+dawn (Yawzi - LB_seagrass)	ASV_02190						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.030467400223974397
+dawn (Tektite - LB_seagrass)	ASV_02190						corncob	cc_da									dawn	Tektite - LB_seagrass	0.015597097647352754
+dawn (Yawzi - LB_seagrass)	ASV_02725						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.013277064541467503
+dawn (Tektite - LB_seagrass)	ASV_02725						corncob	cc_da									dawn	Tektite - LB_seagrass	2.448375309939826e-4
+dawn (Yawzi - LB_seagrass)	ASV_02936						corncob	cc_da									dawn	Yawzi - LB_seagrass	0.001764584340992667
+dawn (Tektite - LB_seagrass)	ASV_02936						corncob	cc_da									dawn	Tektite - LB_seagrass	0.033256260168263815
+dawn (Tektite - LB_seagrass)	ASV_00001						corncob	cc_da									dawn	Tektite - LB_seagrass	0.026927989232335248
+dawn (Tektite - LB_seagrass)	ASV_00277						corncob	cc_da									dawn	Tektite - LB_seagrass	0.010211052139754203
+dawn (Tektite - LB_seagrass)	ASV_00359						corncob	cc_da									dawn	Tektite - LB_seagrass	0.03497447113485315
+dawn (Tektite - LB_seagrass)	ASV_00507						corncob	cc_da									dawn	Tektite - LB_seagrass	0.008051164890945131
+dawn (Tektite - LB_seagrass)	ASV_00562						corncob	cc_da									dawn	Tektite - LB_seagrass	0.04509486572089417
+dawn (Tektite - LB_seagrass)	ASV_00644						corncob	cc_da									dawn	Tektite - LB_seagrass	0.040168792670623954
+dawn (Tektite - LB_seagrass)	ASV_00776						corncob	cc_da									dawn	Tektite - LB_seagrass	0.011318563752581574
+dawn (Tektite - LB_seagrass)	ASV_00801						corncob	cc_da									dawn	Tektite - LB_seagrass	0.02465129059386935
+dawn (Tektite - LB_seagrass)	ASV_01239						corncob	cc_da									dawn	Tektite - LB_seagrass	0.0420064928961921
+dawn (Tektite - LB_seagrass)	ASV_02380						corncob	cc_da									dawn	Tektite - LB_seagrass	0.042465193196124025
+dawn (Tektite - LB_seagrass)	ASV_02748						corncob	cc_da									dawn	Tektite - LB_seagrass	0.024256629817989796
+peak_photo (Yawzi - LB_seagrass)	ASV_00002						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.5925251964200556e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00002						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.564323154563838e-5
+peak_photo (Yawzi - Tektite)	ASV_00003						corncob	cc_da									peak_photo	Yawzi - Tektite	0.015419124323641528
+peak_photo (Yawzi - LB_seagrass)	ASV_00003						corncob	cc_da					2.362873718402493e-53				peak_photo	Yawzi - LB_seagrass	2.362873718402493e-53
+peak_photo (Tektite - LB_seagrass)	ASV_00003						corncob	cc_da					8.274971931425665e-64				peak_photo	Tektite - LB_seagrass	8.274971931425665e-64
+peak_photo (Yawzi - Tektite)	ASV_00006						corncob	cc_da									peak_photo	Yawzi - Tektite	0.04587897793437046
+peak_photo (Yawzi - LB_seagrass)	ASV_00006						corncob	cc_da					6.941347834630044e-31				peak_photo	Yawzi - LB_seagrass	6.941347834630044e-31
+peak_photo (Tektite - LB_seagrass)	ASV_00006						corncob	cc_da					5.320896914173483e-53				peak_photo	Tektite - LB_seagrass	5.320896914173483e-53
+peak_photo (Yawzi - Tektite)	ASV_00009						corncob	cc_da									peak_photo	Yawzi - Tektite	0.009808725248329781
+peak_photo (Yawzi - LB_seagrass)	ASV_00009						corncob	cc_da					4.7829645828916976e-29				peak_photo	Yawzi - LB_seagrass	4.7829645828916976e-29
+peak_photo (Tektite - LB_seagrass)	ASV_00009						corncob	cc_da					7.847405942305184e-41				peak_photo	Tektite - LB_seagrass	7.847405942305184e-41
+peak_photo (Yawzi - LB_seagrass)	ASV_00012						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.6351051366127084e-9
+peak_photo (Tektite - LB_seagrass)	ASV_00012						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.8084206245757637e-11
+peak_photo (Yawzi - LB_seagrass)	ASV_00017						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.7643067501240863e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00017						corncob	cc_da									peak_photo	Tektite - LB_seagrass	6.16619984973822e-5
+peak_photo (Yawzi - Tektite)	ASV_00023						corncob	cc_dv									peak_photo	Yawzi - Tektite	0.009432355415309353
+peak_photo (Yawzi - LB_seagrass)	ASV_00023						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	9.930688990291737e-8
+peak_photo (Tektite - LB_seagrass)	ASV_00023						corncob	cc_da									peak_photo	Tektite - LB_seagrass	9.19930355879633e-9
+peak_photo (Yawzi - LB_seagrass)	ASV_00031						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.2194088602402911e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00031						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.5035203382051924e-6
+peak_photo (Yawzi - LB_seagrass)	ASV_00038						corncob	cc_da					3.487632012881218e-18				peak_photo	Yawzi - LB_seagrass	3.487632012881218e-18
+peak_photo (Tektite - LB_seagrass)	ASV_00038						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.180076718586914e-13
+peak_photo (Yawzi - Tektite)	ASV_00045						corncob	cc_dv									peak_photo	Yawzi - Tektite	0.0021486378370124235
+peak_photo (Yawzi - LB_seagrass)	ASV_00045						corncob	cc_da					2.446582216783138e-20				peak_photo	Yawzi - LB_seagrass	2.446582216783138e-20
+peak_photo (Tektite - LB_seagrass)	ASV_00045						corncob	cc_da									peak_photo	Tektite - LB_seagrass	9.637278879298859e-13
+peak_photo (Yawzi - LB_seagrass)	ASV_00059						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	3.694929578138566e-8
+peak_photo (Tektite - LB_seagrass)	ASV_00059						corncob	cc_da									peak_photo	Tektite - LB_seagrass	4.0099635441060195e-8
+peak_photo (Yawzi - LB_seagrass)	ASV_00072						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.6381818897904114e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00072						corncob	cc_da									peak_photo	Tektite - LB_seagrass	4.38277290606669e-7
+peak_photo (Yawzi - LB_seagrass)	ASV_00111						corncob	cc_da					5.399087773621471e-30				peak_photo	Yawzi - LB_seagrass	5.399087773621471e-30
+peak_photo (Tektite - LB_seagrass)	ASV_00111						corncob	cc_da					3.281813143107388e-14				peak_photo	Tektite - LB_seagrass	3.281813143107388e-14
+peak_photo (Yawzi - LB_seagrass)	ASV_00124						corncob	cc_da					1.1744200691260942e-24				peak_photo	Yawzi - LB_seagrass	1.1744200691260942e-24
+peak_photo (Tektite - LB_seagrass)	ASV_00124						corncob	cc_da					6.44654017902599e-18				peak_photo	Tektite - LB_seagrass	6.44654017902599e-18
+peak_photo (Yawzi - LB_seagrass)	ASV_00129						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	6.636098806411805e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00129						corncob	cc_da									peak_photo	Tektite - LB_seagrass	6.544083279931448e-6
+peak_photo (Yawzi - LB_seagrass)	ASV_00164						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.1158845467399818e-7
+peak_photo (Tektite - LB_seagrass)	ASV_00164						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.039588205124564e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00441						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.03589924932185102
+peak_photo (Tektite - LB_seagrass)	ASV_00568						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.004890659361852952
+peak_photo (Yawzi - LB_seagrass)	ASV_00018						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.2942803606786347e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00018						corncob	cc_da									peak_photo	Tektite - LB_seagrass	2.952625129519851e-6
+peak_photo (Yawzi - Tektite)	ASV_00337						corncob	cc_dv									peak_photo	Yawzi - Tektite	0.0010691670968507976
+peak_photo (Yawzi - LB_seagrass)	ASV_00337						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0015280429710278279
+peak_photo (Yawzi - LB_seagrass)	ASV_00392						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.0027938564489211745
+peak_photo (Tektite - LB_seagrass)	ASV_00392						corncob	cc_dv									peak_photo	Tektite - LB_seagrass	0.009621672187221725
+peak_photo (Yawzi - Tektite)	ASV_00094						corncob	cc_dv									peak_photo	Yawzi - Tektite	0.022734691826218584
+peak_photo (Yawzi - LB_seagrass)	ASV_00094						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.0035778555321228285
+peak_photo (Yawzi - Tektite)	ASV_00429						corncob	cc_da									peak_photo	Yawzi - Tektite	0.009808725248329781
+peak_photo (Tektite - LB_seagrass)	ASV_00429						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.013202993423419416
+peak_photo (Yawzi - LB_seagrass)	ASV_00004						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	8.275479973381056e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00004						corncob	cc_da									peak_photo	Tektite - LB_seagrass	3.798029809098068e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00007						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.7643067501240863e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00007						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.039588205124564e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00008						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.5027669236310025e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00008						corncob	cc_da									peak_photo	Tektite - LB_seagrass	6.5933519051526885e-6
+peak_photo (Yawzi - LB_seagrass)	ASV_00013						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.0463128358263769e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00013						corncob	cc_da									peak_photo	Tektite - LB_seagrass	3.7643029172611216e-6
+peak_photo (Yawzi - LB_seagrass)	ASV_00014						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	3.169194914296611e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00014						corncob	cc_da									peak_photo	Tektite - LB_seagrass	6.16619984973822e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00021						corncob	cc_da					6.038112801651284e-14				peak_photo	Yawzi - LB_seagrass	6.038112801651284e-14
+peak_photo (Tektite - LB_seagrass)	ASV_00021						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.2227273554492144e-9
+peak_photo (Yawzi - LB_seagrass)	ASV_00036						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	3.02398171162204e-13
+peak_photo (Tektite - LB_seagrass)	ASV_00036						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.180076718586914e-13
+peak_photo (Yawzi - LB_seagrass)	ASV_00053						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.0931039587175676e-8
+peak_photo (Tektite - LB_seagrass)	ASV_00053						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.0496956429874055e-7
+peak_photo (Yawzi - LB_seagrass)	ASV_00057						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.029473131946013895
+peak_photo (Yawzi - LB_seagrass)	ASV_00058						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0038521993018625473
+peak_photo (Tektite - LB_seagrass)	ASV_00058						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.010144682217039694
+peak_photo (Yawzi - LB_seagrass)	ASV_00093						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.743048094455311e-10
+peak_photo (Tektite - LB_seagrass)	ASV_00093						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.8362754882993765e-13
+peak_photo (Yawzi - LB_seagrass)	ASV_00096						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.010055822472499e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00096						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.408973177987916e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00097						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	3.418057597048113e-8
+peak_photo (Tektite - LB_seagrass)	ASV_00097						corncob	cc_da									peak_photo	Tektite - LB_seagrass	2.151511280837821e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00103						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.01168872995907626
+peak_photo (Yawzi - LB_seagrass)	ASV_00105						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	4.819121050922803e-10
+peak_photo (Yawzi - LB_seagrass)	ASV_00119						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0028886329091817285
+peak_photo (Tektite - LB_seagrass)	ASV_00119						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.45301626141503e-4
+peak_photo (Yawzi - LB_seagrass)	ASV_00125						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.016718003931235743
+peak_photo (Tektite - LB_seagrass)	ASV_00125						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.002084601721161549
+peak_photo (Yawzi - LB_seagrass)	ASV_00130						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.011644488169665509
+peak_photo (Yawzi - LB_seagrass)	ASV_00131						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.5070006644293395e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00131						corncob	cc_da									peak_photo	Tektite - LB_seagrass	2.580804791623408e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00133						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.1158845467399818e-7
+peak_photo (Tektite - LB_seagrass)	ASV_00133						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.1948113396276043e-7
+peak_photo (Yawzi - LB_seagrass)	ASV_00138						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.003785701333209137
+peak_photo (Tektite - LB_seagrass)	ASV_00138						corncob	cc_da									peak_photo	Tektite - LB_seagrass	3.8366252403623726e-4
+peak_photo (Yawzi - LB_seagrass)	ASV_00146						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.958824359956837e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00146						corncob	cc_da									peak_photo	Tektite - LB_seagrass	3.798029809098068e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00150						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.010221882804686154
+peak_photo (Yawzi - LB_seagrass)	ASV_00153						corncob	cc_dv									peak_photo	Yawzi - LB_seagrass	0.020936419065635658
+peak_photo (Tektite - LB_seagrass)	ASV_00153						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03822865550525059
+peak_photo (Yawzi - LB_seagrass)	ASV_00155						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.038980483145600583
+peak_photo (Tektite - LB_seagrass)	ASV_00155						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.010144682217039694
+peak_photo (Yawzi - LB_seagrass)	ASV_00186						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.002246830605499219
+peak_photo (Yawzi - LB_seagrass)	ASV_00191						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.002246830605499219
+peak_photo (Tektite - LB_seagrass)	ASV_00191						corncob	cc_da									peak_photo	Tektite - LB_seagrass	3.8366252403623726e-4
+peak_photo (Yawzi - LB_seagrass)	ASV_00209						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.013826261552084499
+peak_photo (Tektite - LB_seagrass)	ASV_00209						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.009037651334796254
+peak_photo (Yawzi - LB_seagrass)	ASV_00215						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	5.081635761672789e-13
+peak_photo (Tektite - LB_seagrass)	ASV_00215						corncob	cc_da									peak_photo	Tektite - LB_seagrass	1.7653236574233516e-7
+peak_photo (Yawzi - LB_seagrass)	ASV_00227						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.03811660632841379
+peak_photo (Tektite - LB_seagrass)	ASV_00227						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.006492807149374556
+peak_photo (Yawzi - LB_seagrass)	ASV_00229						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.018388920872325177
+peak_photo (Tektite - LB_seagrass)	ASV_00229						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.036093790928134445
+peak_photo (Yawzi - LB_seagrass)	ASV_00236						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.7643067501240863e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00236						corncob	cc_da									peak_photo	Tektite - LB_seagrass	2.1855584540588212e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00243						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0015134790544364272
+peak_photo (Tektite - LB_seagrass)	ASV_00243						corncob	cc_da									peak_photo	Tektite - LB_seagrass	8.779252476496678e-4
+peak_photo (Yawzi - LB_seagrass)	ASV_00251						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.6290270536873365e-6
+peak_photo (Tektite - LB_seagrass)	ASV_00251						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.003076605135496843
+peak_photo (Yawzi - LB_seagrass)	ASV_00260						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.013056120036428687
+peak_photo (Tektite - LB_seagrass)	ASV_00260						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.02139412114010955
+peak_photo (Yawzi - LB_seagrass)	ASV_00269						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.7345155951471822e-4
+peak_photo (Yawzi - LB_seagrass)	ASV_00271						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0013424460826394606
+peak_photo (Yawzi - LB_seagrass)	ASV_00282						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	8.440637355263394e-9
+peak_photo (Tektite - LB_seagrass)	ASV_00282						corncob	cc_da									peak_photo	Tektite - LB_seagrass	3.736297537690751e-6
+peak_photo (Yawzi - LB_seagrass)	ASV_00300						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	8.376830266067834e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00321						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	5.585823614128423e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00321						corncob	cc_da									peak_photo	Tektite - LB_seagrass	7.253664971014202e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00361						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.01958207550252765
+peak_photo (Tektite - LB_seagrass)	ASV_00361						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03777158618608794
+peak_photo (Yawzi - LB_seagrass)	ASV_00389						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0034689681976705355
+peak_photo (Tektite - LB_seagrass)	ASV_00389						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.002042170433962402
+peak_photo (Yawzi - LB_seagrass)	ASV_00469						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.03479840753707071
+peak_photo (Tektite - LB_seagrass)	ASV_00469						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03031240987046351
+peak_photo (Yawzi - LB_seagrass)	ASV_00495						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0011715854570623443
+peak_photo (Tektite - LB_seagrass)	ASV_00495						corncob	cc_da									peak_photo	Tektite - LB_seagrass	5.324590658886073e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00524						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	6.833786314372909e-6
+peak_photo (Tektite - LB_seagrass)	ASV_00524						corncob	cc_da									peak_photo	Tektite - LB_seagrass	5.510679219727403e-9
+peak_photo (Yawzi - LB_seagrass)	ASV_00525						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.03946214500204972
+peak_photo (Tektite - LB_seagrass)	ASV_00525						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.030457995753982756
+peak_photo (Yawzi - LB_seagrass)	ASV_00528						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.017539894087986247
+peak_photo (Yawzi - LB_seagrass)	ASV_00570						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.04481730572231369
+peak_photo (Yawzi - LB_seagrass)	ASV_00614						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.011353536372593395
+peak_photo (Tektite - LB_seagrass)	ASV_00614						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.014694804817141603
+peak_photo (Yawzi - LB_seagrass)	ASV_00624						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.010818813821854104
+peak_photo (Tektite - LB_seagrass)	ASV_00624						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03449636736494224
+peak_photo (Yawzi - LB_seagrass)	ASV_00661						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	6.48341962134807e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00661						corncob	cc_da									peak_photo	Tektite - LB_seagrass	5.5910830068890744e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_00709						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0025550659187435717
+peak_photo (Yawzi - LB_seagrass)	ASV_00837						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.011949197742452919
+peak_photo (Tektite - LB_seagrass)	ASV_00837						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.003145473968738627
+peak_photo (Yawzi - LB_seagrass)	ASV_00848						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0010190018917250905
+peak_photo (Yawzi - LB_seagrass)	ASV_00851						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.016071067290444184
+peak_photo (Yawzi - LB_seagrass)	ASV_00882						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0011558622315769812
+peak_photo (Yawzi - LB_seagrass)	ASV_00899						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.011604128471399048
+peak_photo (Tektite - LB_seagrass)	ASV_00899						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.007995579346830517
+peak_photo (Yawzi - LB_seagrass)	ASV_00917						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.2194088602402911e-5
+peak_photo (Tektite - LB_seagrass)	ASV_00917						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.002714605070183424
+peak_photo (Yawzi - LB_seagrass)	ASV_01015						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.009760789746566172
+peak_photo (Yawzi - LB_seagrass)	ASV_01134						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	1.2250399752983323e-8
+peak_photo (Tektite - LB_seagrass)	ASV_01134						corncob	cc_da									peak_photo	Tektite - LB_seagrass	4.700363647025044e-10
+peak_photo (Yawzi - LB_seagrass)	ASV_01140						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	3.170849383998445e-7
+peak_photo (Yawzi - LB_seagrass)	ASV_01583						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0038521993018625473
+peak_photo (Tektite - LB_seagrass)	ASV_01583						corncob	cc_da									peak_photo	Tektite - LB_seagrass	9.227668434991872e-5
+peak_photo (Yawzi - LB_seagrass)	ASV_01729						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.0013424460826394606
+peak_photo (Tektite - LB_seagrass)	ASV_01729						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.015205239400200308
+peak_photo (Yawzi - LB_seagrass)	ASV_02096						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.018666242959810578
+peak_photo (Yawzi - LB_seagrass)	ASV_02219						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.04989607978891247
+peak_photo (Yawzi - LB_seagrass)	ASV_02305						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	2.1172829376301794e-5
+peak_photo (Tektite - LB_seagrass)	ASV_02305						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.02654201189352249
+peak_photo (Yawzi - LB_seagrass)	ASV_02718						corncob	cc_da									peak_photo	Yawzi - LB_seagrass	0.011996854253906099
+peak_photo (Tektite - LB_seagrass)	ASV_00015						corncob	cc_dv									peak_photo	Tektite - LB_seagrass	0.044732258906067524
+peak_photo (Tektite - LB_seagrass)	ASV_00064						corncob	cc_da									peak_photo	Tektite - LB_seagrass	5.289412017778269e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00177						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03449636736494224
+peak_photo (Tektite - LB_seagrass)	ASV_00217						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.003145473968738627
+peak_photo (Tektite - LB_seagrass)	ASV_00346						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.045477146088273704
+peak_photo (Tektite - LB_seagrass)	ASV_00360						corncob	cc_da									peak_photo	Tektite - LB_seagrass	6.570635928080614e-4
+peak_photo (Tektite - LB_seagrass)	ASV_00367						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.04286830405719181
+peak_photo (Tektite - LB_seagrass)	ASV_00530						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.04631056480659397
+peak_photo (Tektite - LB_seagrass)	ASV_00609						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03822865550525059
+peak_photo (Tektite - LB_seagrass)	ASV_00654						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.03449636736494224
+peak_photo (Tektite - LB_seagrass)	ASV_00993						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.02951971507745549
+peak_photo (Tektite - LB_seagrass)	ASV_01180						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.023711285561880895
+peak_photo (Tektite - LB_seagrass)	ASV_01202						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.012376410987680367
+peak_photo (Tektite - LB_seagrass)	ASV_01217						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.04631056480659397
+peak_photo (Tektite - LB_seagrass)	ASV_01448						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.04139945015058381
+peak_photo (Tektite - LB_seagrass)	ASV_02093						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.04286830405719181
+peak_photo (Tektite - LB_seagrass)	ASV_02345						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.04631056480659397
+peak_photo (Tektite - LB_seagrass)	ASV_02722						corncob	cc_da									peak_photo	Tektite - LB_seagrass	0.01662245620606639
+LB_seagrass (peak_photo - dawn)	ASV_00002						corncob	cc_da									LB_seagrass	peak_photo - dawn	0.015660186318201028
+LB_seagrass (peak_photo - dawn)	ASV_00012						corncob	cc_da									LB_seagrass	peak_photo - dawn	7.526359371551695e-4
+LB_seagrass (peak_photo - dawn)	ASV_00023						corncob	cc_da									LB_seagrass	peak_photo - dawn	0.014641198368727633
+LB_seagrass (peak_photo - dawn)	ASV_00031						corncob	cc_da									LB_seagrass	peak_photo - dawn	0.035610714713336364
+LB_seagrass (peak_photo - dawn)	ASV_00783						corncob	cc_da									LB_seagrass	peak_photo - dawn	0.02332101284718983
+Tektite (peak_photo - dawn)	ASV_00568						corncob	cc_da									Tektite	peak_photo - dawn	9.86951839022641e-4
+Tektite (peak_photo - dawn)	ASV_00018						corncob	cc_dv									Tektite	peak_photo - dawn	0.02688740711230246
+Tektite (peak_photo - dawn)	ASV_00337						corncob	cc_dv									Tektite	peak_photo - dawn	0.016863452181817475
+Tektite (peak_photo - dawn)	ASV_00349						corncob	cc_da									Tektite	peak_photo - dawn	0.030998388955806404
+Tektite (peak_photo - dawn)	ASV_00392						corncob	cc_da									Tektite	peak_photo - dawn	0.005231628154367044
+Yawzi (peak_photo - dawn)	ASV_00002						corncob	cc_da									Yawzi	peak_photo - dawn	0.03781801743115925
+Yawzi (peak_photo - dawn)	ASV_00003						corncob	cc_da									Yawzi	peak_photo - dawn	3.276950310829873e-4
+Yawzi (peak_photo - dawn)	ASV_00006						corncob	cc_da									Yawzi	peak_photo - dawn	0.021631433292616457
+Yawzi (peak_photo - dawn)	ASV_00009						corncob	cc_da									Yawzi	peak_photo - dawn	0.0034531522121732947
+Yawzi (peak_photo - dawn)	ASV_00012						corncob	cc_da									Yawzi	peak_photo - dawn	0.021631433292616457
+Yawzi (peak_photo - dawn)	ASV_00017						corncob	cc_da									Yawzi	peak_photo - dawn	0.015398498822223406
+Yawzi (peak_photo - dawn)	ASV_00023						corncob	cc_da									Yawzi	peak_photo - dawn	2.211781699426595e-4
+Yawzi (peak_photo - dawn)	ASV_00031						corncob	cc_da									Yawzi	peak_photo - dawn	0.04165381746923609
+Yawzi (peak_photo - dawn)	ASV_00038						corncob	cc_da									Yawzi	peak_photo - dawn	0.0015910280721142841
+Yawzi (peak_photo - dawn)	ASV_00045						corncob	cc_da									Yawzi	peak_photo - dawn	6.607181650298424e-5
+Yawzi (peak_photo - dawn)	ASV_00059						corncob	cc_da									Yawzi	peak_photo - dawn	0.0034531522121732947
+Yawzi (peak_photo - dawn)	ASV_00072						corncob	cc_da									Yawzi	peak_photo - dawn	8.743535611597255e-5
+Yawzi (peak_photo - dawn)	ASV_00111						corncob	cc_da									Yawzi	peak_photo - dawn	4.7825987500225785e-4
+Yawzi (peak_photo - dawn)	ASV_00124						corncob	cc_da									Yawzi	peak_photo - dawn	0.029163283692724234
+Yawzi (peak_photo - dawn)	ASV_00129						corncob	cc_da									Yawzi	peak_photo - dawn	9.128472697583988e-4
+Yawzi (peak_photo - dawn)	ASV_00164						corncob	cc_da									Yawzi	peak_photo - dawn	8.743535611597255e-5
+Yawzi (peak_photo - dawn)	ASV_00313						corncob	cc_da									Yawzi	peak_photo - dawn	0.023877673351356876
+Yawzi (peak_photo - dawn)	ASV_00441						corncob	cc_da									Yawzi	peak_photo - dawn	0.014760789292771819
+Yawzi (peak_photo - dawn)	ASV_00568						corncob	cc_da									Yawzi	peak_photo - dawn	0.004658491146433902

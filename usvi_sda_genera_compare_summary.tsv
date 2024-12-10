@@ -1,63 +1,164 @@
-asv_id	Tektite_dawn - all_peak_photo	Yawzi_dawn - all_peak_photo	Tektite - LB_seagrass_all	Yawzi - LB_seagrass_all	Tektite_dawn - LB_seagrass_all	Yawzi_dawn - LB_seagrass_all	Tektite_peak_photo - LB_seagrass_all	Yawzi_peak_photo - LB_seagrass_all	Tektite_dawn - LB_seagrass	Tektite_peak_photo - LB_seagrass	Yawzi_peak_photo - LB_seagrass	Tektite_dawn - LB_seagrass_dawn	Yawzi_dawn - LB_seagrass_dawn	Tektite_peak_photo - LB_seagrass_peak_photo	Yawzi_peak_photo - LB_seagrass_peak_photo	Yawzi_dawn - LB_seagrass	test_type	Domain	Phylum	Class	Order	Family	Genus
-ASV_00002	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia
-ASV_00003	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	HIMB11
-ASV_00004									deseq	deseq	deseq						deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group
-ASV_00006	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae
-ASV_00007	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Prochlorococcus MIT9313
-ASV_00008	rademu	rademu			rademu	rademu	rademu	rademu	deseq	deseq	deseq						both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade
-ASV_00009	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae
-ASV_00012	rademu	rademu			rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade II	Clade II
-ASV_00013									deseq	deseq	deseq						deseq	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina
-ASV_00014									deseq	deseq	deseq						deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group
-ASV_00017	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group
-ASV_00018												deseq					deseq	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	Coraliomargarita
-ASV_00021									deseq								deseq	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae
-ASV_00023	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib
-ASV_00031	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)
-ASV_00038	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Formosa
-ASV_00045	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS7 marine group	NS7 marine group
-ASV_00058											deseq	deseq					deseq	Bacteria	Actinobacteriota	Acidimicrobia	Microtrichales	Microtrichaceae	Sva0996 marine group
-ASV_00060		rademu	rademu	rademu		rademu			deseq	deseq	deseq	deseq		deseq	deseq		both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Litorimicrobium
-ASV_00072	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq	deseq	deseq			both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade IV	Clade IV
-ASV_00097	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Tenacibaculum
-ASV_00105		rademu	rademu	rademu		rademu		rademu				deseq		deseq	deseq		both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Nitrincolaceae	Marinobacterium
-ASV_00111	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Pseudomonadales	Pseudomonadales
-ASV_00119												deseq					deseq	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Porticoccaceae	SAR92 clade
-ASV_00124	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Sphingobacteriales	NS11-12 marine group	NS11-12 marine group
-ASV_00129	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	deseq	deseq	deseq						both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Ectothiorhodospirales	Ectothiorhodospiraceae	Ectothiorhodospiraceae
-ASV_00131	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	deseq	deseq	deseq						both	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Thalassobius
-ASV_00133										deseq							deseq	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rickettsiales	S25-593	S25-593
-ASV_00138	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Spongiibacteraceae	BD1-7 clade
-ASV_00150	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu				deseq					both	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	MB11C04 marine group
-ASV_00164									deseq	deseq	deseq						deseq	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Chitinophagales	Chitinophagales
-ASV_00171	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Puniceispirillales	SAR116 clade	Candidatus Puniceispirillum
-ASV_00186			rademu	rademu													rademu	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidaceae	Bacteroides
-ASV_00191					rademu	rademu	rademu	rademu									rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria
-ASV_00215	rademu	rademu	rademu	rademu													rademu	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae
-ASV_00217					rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Coxiellales	Coxiellaceae	Coxiella
-ASV_00227	rademu	rademu	rademu	rademu													rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Photobacterium
-ASV_00229					rademu	rademu	rademu	rademu									rademu	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Cyclobacteriaceae
-ASV_00236										deseq							deseq	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Thiotrichales	Thiotrichaceae	Thiotrichaceae
-ASV_00243		rademu	rademu	rademu													rademu	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Winogradskyella
-ASV_00251		rademu	rademu	rademu		rademu											rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Alteromonadaceae
-ASV_00271			rademu	rademu	rademu	rademu		rademu				deseq					both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Halieaceae	Luminiphilus
-ASV_00282		rademu	rademu	rademu													rademu	Bacteria	Desulfobacterota	Desulfobulbia	Desulfobulbales	Desulfocapsaceae	Desulfocapsaceae
-ASV_00290					rademu	rademu	rademu	rademu									rademu	Bacteria	Planctomycetota	OM190	OM190	OM190	OM190
-ASV_00300			rademu	rademu					deseq	deseq	deseq	deseq					both	Bacteria	Actinobacteriota	Actinobacteria	Micrococcales	Microbacteriaceae	Candidatus Aquiluna
-ASV_00307					rademu	rademu	rademu	rademu									rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Burkholderiales	Methylophilaceae	OM43 clade
-ASV_00339			rademu	rademu													rademu	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Aestuariibacter
-ASV_00346												deseq					deseq	Bacteria	Chloroflexi	Dehalococcoidia	SAR202 clade	SAR202 clade	SAR202 clade
-ASV_00348			rademu	rademu													rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Aestuariicoccus
-ASV_00372										deseq	deseq					deseq	deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Mesoflavibacter
-ASV_00389			rademu	rademu													rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Holosporales	Holosporaceae	Holosporaceae
-ASV_00399			rademu	rademu													rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Celeribacter
-ASV_00400			rademu	rademu					deseq	deseq	deseq						both	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Thiomicrospirales	Thiomicrospiraceae	Thiomicrorhabdus
-ASV_00429										deseq							deseq	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group III	Marine Group III	Marine Group III
-ASV_00445									deseq	deseq	deseq						deseq	Bacteria	Cyanobacteria	Cyanobacteria	Cyanobacteriales	Oscillatoriaceae	Oscillatoriaceae
-ASV_00495			rademu	rademu					deseq			deseq					both	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Crocinitomicaceae	Crocinitomix
-ASV_00524										deseq							deseq	Bacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria
-ASV_00528												deseq					deseq	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Lewinella
-ASV_00608													deseq				deseq	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Prevotellaceae	Prevotellaceae UCG-004
-ASV_00769												deseq					deseq	Bacteria	Firmicutes	Clostridia	Lachnospirales	Lachnospiraceae	Cellulosilyticum
-ASV_01134	rademu	rademu	rademu	rademu								deseq	deseq	deseq			both	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	Woesearchaeales	Woesearchaeales
-ASV_01140						rademu		rademu									rademu	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	SCGC AAA011-D5	SCGC AAA011-D5
+asv_id	dawn (Tektite - LB_seagrass)	Tektite_dawn - all_peak_photo	Yawzi_dawn - all_peak_photo	Tektite - LB_seagrass_all	Yawzi - LB_seagrass_all	Tektite_dawn - LB_seagrass_all	Yawzi_dawn - LB_seagrass_all	Tektite_peak_photo - LB_seagrass_all	Yawzi_peak_photo - LB_seagrass_all	dawn (Yawzi - LB_seagrass)	peak_photo (Yawzi - LB_seagrass)	peak_photo (Tektite - LB_seagrass)	LB_seagrass (peak_photo - dawn)	Yawzi (peak_photo - dawn)	dawn (Yawzi - Tektite)	peak_photo (Yawzi - Tektite)	Tektite_dawn - LB_seagrass_dawn	Yawzi_dawn - LB_seagrass_dawn	Tektite_peak_photo - LB_seagrass_peak_photo	Tektite_dawn - LB_seagrass	Tektite_peak_photo - LB_seagrass	Yawzi_peak_photo - LB_seagrass	Tektite (peak_photo - dawn)	Yawzi_peak_photo - LB_seagrass_peak_photo	Yawzi_dawn - LB_seagrass	test_type	Domain	Phylum	Class	Order	Family	Genus	taxonomy
+ASV_00001	corncob																									corncob	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	Cyanobacteria;Synechococcus CC9902
+ASV_00002	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob	corncob	corncob												rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	Alphaproteobacteria;SAR11 Clade Ia
+ASV_00003	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob	corncob										rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	HIMB11	Alphaproteobacteria;HIMB11
+ASV_00004	corncob									corncob	corncob	corncob			corncob		deseq	deseq	deseq							deseq_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	Bacteroidia;NS4 marine group
+ASV_00006	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob	corncob										rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	Bacteroidia;Cryomorphaceae
+ASV_00007	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob			corncob		deseq	deseq	deseq							all	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Prochlorococcus MIT9313	Cyanobacteria;Prochlorococcus MIT9313
+ASV_00008	corncob	rademu	rademu			rademu	rademu	rademu	rademu	corncob	corncob	corncob					deseq	deseq	deseq							all	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	Gammaproteobacteria;SAR86 clade
+ASV_00009	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob	corncob										rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	Bacteroidia;Flavobacteriaceae
+ASV_00012	corncob	rademu	rademu			rademu	rademu	rademu	rademu	corncob	corncob	corncob	corncob	corncob	corncob		deseq	deseq	deseq							all	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	Alphaproteobacteria;SAR11 Clade II
+ASV_00013	corncob									corncob	corncob	corncob			corncob											corncob	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina	Acidimicrobia;Candidatus Actinomarina
+ASV_00014	corncob									corncob	corncob	corncob			corncob		deseq			deseq	deseq	deseq				deseq_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	Bacteroidia;NS5 marine group
+ASV_00015	corncob									corncob		corncob														corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	Alphaproteobacteria;SAR116 clade
+ASV_00017	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob												rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	Alphaproteobacteria;AEGEAN-169 marine group
+ASV_00018	corncob									corncob	corncob	corncob					deseq			deseq	deseq	deseq	corncob			deseq_corncob	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	Coraliomargarita	Verrucomicrobiae;Coraliomargarita
+ASV_00019	corncob									corncob																corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS2b marine group	Bacteroidia;NS2b marine group
+ASV_00021	corncob									corncob	corncob	corncob			corncob				deseq							deseq_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	Alphaproteobacteria;Rhodobacteraceae
+ASV_00023	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob	corncob	corncob	corncob	corncob										rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib	Alphaproteobacteria;SAR11 Clade Ib
+ASV_00031	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob	corncob	corncob												rademu_corncob	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Bacteria;Marinimicrobia (SAR406 clade)
+ASV_00036	corncob									corncob	corncob	corncob			corncob											corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	Bacteroidia;NS9 marine group
+ASV_00038	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob											rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Formosa	Bacteroidia;Formosa
+ASV_00040										corncob																corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	Gammaproteobacteria;OM60(NOR5) clade
+ASV_00042										corncob																corncob	Bacteria	Firmicutes	Clostridia	Clostridiales	Clostridiaceae	Clostridium sensu stricto 1	Clostridia;Clostridium sensu stricto 1
+ASV_00045	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob	corncob										rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS7 marine group	NS7 marine group	Bacteroidia;NS7 marine group
+ASV_00053										corncob	corncob	corncob														corncob	Bacteria	Planctomycetota	Phycisphaerae	Phycisphaerales	Phycisphaeraceae	Urania-1B-19 marine sediment group	Phycisphaerae;Urania-1B-19 marine sediment group
+ASV_00057	corncob									corncob	corncob															corncob	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	Thermoplasmata;Marine Group II
+ASV_00058	corncob									corncob	corncob	corncob					deseq			deseq	deseq	deseq				deseq_corncob	Bacteria	Actinobacteriota	Acidimicrobia	Microtrichales	Microtrichaceae	Sva0996 marine group	Acidimicrobia;Sva0996 marine group
+ASV_00059	corncob									corncob	corncob	corncob		corncob					deseq							deseq_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Ascidiaceihabitans	Alphaproteobacteria;Ascidiaceihabitans
+ASV_00060			rademu	rademu	rademu		rademu			corncob							deseq		deseq					deseq		all	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Litorimicrobium	Alphaproteobacteria;Litorimicrobium
+ASV_00064	corncob									corncob		corncob														corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhizobiales	Stappiaceae	Stappiaceae	Alphaproteobacteria;Stappiaceae
+ASV_00066	corncob									corncob										deseq						deseq_corncob	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Cyanobium PCC-6307	Cyanobacteria;Cyanobium PCC-6307
+ASV_00072	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob		deseq	deseq	deseq							all	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade IV	Clade IV	Alphaproteobacteria;SAR11 Clade IV
+ASV_00080										corncob					corncob											corncob	Bacteria	Bacteroidota	Rhodothermia	Balneolales	Balneolaceae	Balneola	Rhodothermia;Balneola
+ASV_00084										corncob																corncob	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Marinoscillum	Bacteroidia;Marinoscillum
+ASV_00093	corncob									corncob	corncob	corncob														corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Defluviicoccales	Defluviicoccales	Defluviicoccales	Alphaproteobacteria;Defluviicoccales
+ASV_00094											corncob					corncob										corncob	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Cyanobiaceae	Cyanobacteria;Cyanobiaceae
+ASV_00096	corncob									corncob	corncob	corncob			corncob						deseq					deseq_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	KI89A clade	KI89A clade	Gammaproteobacteria;KI89A clade
+ASV_00097	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob			corncob		deseq	deseq	deseq							all	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Tenacibaculum	Bacteroidia;Tenacibaculum
+ASV_00103	corncob									corncob	corncob															corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Parvibaculales	PS1 clade	PS1 clade	Alphaproteobacteria;PS1 clade
+ASV_00105	corncob		rademu	rademu	rademu		rademu		rademu	corncob	corncob						deseq		deseq					deseq		all	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Nitrincolaceae	Marinobacterium	Gammaproteobacteria;Marinobacterium
+ASV_00111	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob											rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Pseudomonadales	Pseudomonadales	Gammaproteobacteria;Pseudomonadales
+ASV_00119	corncob									corncob	corncob	corncob					deseq									deseq_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Porticoccaceae	SAR92 clade	Gammaproteobacteria;SAR92 clade
+ASV_00124	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob											rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Sphingobacteriales	NS11-12 marine group	NS11-12 marine group	Bacteroidia;NS11-12 marine group
+ASV_00125	corncob									corncob	corncob	corncob			corncob											corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	SAR11 clade	Clade III	Clade III	Alphaproteobacteria;SAR11 Clade III
+ASV_00129	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob		corncob	corncob					deseq	deseq	deseq				all	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Ectothiorhodospirales	Ectothiorhodospiraceae	Ectothiorhodospiraceae	Gammaproteobacteria;Ectothiorhodospiraceae
+ASV_00130	corncob									corncob	corncob															corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	OM182 clade	OM182 clade	Gammaproteobacteria;OM182 clade
+ASV_00131	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob														rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Thalassobius	Alphaproteobacteria;Thalassobius
+ASV_00133	corncob									corncob	corncob	corncob								deseq	deseq	deseq				deseq_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rickettsiales	S25-593	S25-593	Alphaproteobacteria;S25-593
+ASV_00138	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob	corncob														rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Spongiibacteraceae	BD1-7 clade	Gammaproteobacteria;BD1-7 clade
+ASV_00146	corncob									corncob	corncob	corncob			corncob											corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Burkholderiales	MWH-UniP1 aquatic group	MWH-UniP1 aquatic group	Gammaproteobacteria;MWH-UniP1 aquatic group
+ASV_00147										corncob																corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Vibrio	Gammaproteobacteria;Vibrio
+ASV_00150	corncob	rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu	corncob	corncob						deseq									all	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	MB11C04 marine group	Verrucomicrobiae;MB11C04 marine group
+ASV_00153	corncob									corncob	corncob	corncob														corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Pseudohongiellaceae	Pseudohongiella	Gammaproteobacteria;Pseudohongiella
+ASV_00155	corncob									corncob	corncob	corncob														corncob	Bacteria	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	Bacteria;SAR324 clade(Marine group B)
+ASV_00164	corncob									corncob	corncob	corncob		corncob			deseq	deseq						deseq		deseq_corncob	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Chitinophagales	Chitinophagales	Bacteroidia;Chitinophagales
+ASV_00168										corncob					corncob											corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Litoricolaceae	Litoricola	Gammaproteobacteria;Litoricola
+ASV_00171		rademu	rademu	rademu	rademu	rademu	rademu	rademu	rademu																	rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Puniceispirillales	SAR116 clade	Candidatus Puniceispirillum	Alphaproteobacteria;Candidatus Puniceispirillum
+ASV_00177	corncob											corncob														corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Pseudoalteromonadaceae	Pseudoalteromonas	Gammaproteobacteria;Pseudoalteromonas
+ASV_00186	corncob			rademu	rademu					corncob	corncob															rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidaceae	Bacteroides	Bacteroidia;Bacteroides
+ASV_00191						rademu	rademu	rademu	rademu		corncob	corncob														rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Proteobacteria;Alphaproteobacteria
+ASV_00209	corncob									corncob	corncob	corncob														corncob	Bacteria	Verrucomicrobiota	Kiritimatiellae	Kiritimatiellales	Kiritimatiellaceae	R76-B128	Kiritimatiellae;R76-B128
+ASV_00215	corncob	rademu	rademu	rademu	rademu					corncob	corncob	corncob														rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae	Bacteroidia;Saprospiraceae
+ASV_00217						rademu	rademu	rademu	rademu			corncob														rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Coxiellales	Coxiellaceae	Coxiella	Gammaproteobacteria;Coxiella
+ASV_00227	corncob	rademu	rademu	rademu	rademu					corncob	corncob	corncob														rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Photobacterium	Gammaproteobacteria;Photobacterium
+ASV_00229						rademu	rademu	rademu	rademu	corncob	corncob	corncob			corncob											rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Cyclobacteriaceae	Bacteroidia;Cyclobacteriaceae
+ASV_00236	corncob									corncob	corncob	corncob									deseq					deseq_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Thiotrichales	Thiotrichaceae	Thiotrichaceae	Gammaproteobacteria;Thiotrichaceae
+ASV_00243	corncob		rademu	rademu	rademu					corncob	corncob	corncob														rademu_corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Winogradskyella	Bacteroidia;Winogradskyella
+ASV_00251	corncob		rademu	rademu	rademu		rademu			corncob	corncob	corncob					deseq			deseq	deseq	deseq				all	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Alteromonadaceae	Gammaproteobacteria;Alteromonadaceae
+ASV_00260	corncob									corncob	corncob	corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriales	Flavobacteriales	Bacteroidia;Flavobacteriales
+ASV_00269										corncob	corncob				corncob											corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Enterobacterales	Enterobacterales	Gammaproteobacteria;Enterobacterales
+ASV_00271	corncob			rademu	rademu	rademu	rademu		rademu	corncob	corncob															rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Halieaceae	Luminiphilus	Gammaproteobacteria;Luminiphilus
+ASV_00277	corncob																									corncob	Bacteria	Planctomycetota	Planctomycetes	Pirellulales	Pirellulaceae	Rubripirellula	Planctomycetes;Rubripirellula
+ASV_00282	corncob		rademu	rademu	rademu					corncob	corncob	corncob								deseq	deseq	deseq				all	Bacteria	Desulfobacterota	Desulfobulbia	Desulfobulbales	Desulfocapsaceae	Desulfocapsaceae	Desulfobulbia;Desulfocapsaceae
+ASV_00290						rademu	rademu	rademu	rademu																	rademu	Bacteria	Planctomycetota	OM190	OM190	OM190	OM190	Planctomycetota;OM190
+ASV_00300				rademu	rademu					corncob	corncob									deseq	deseq	deseq				all	Bacteria	Actinobacteriota	Actinobacteria	Micrococcales	Microbacteriaceae	Candidatus Aquiluna	Actinobacteria;Candidatus Aquiluna
+ASV_00307						rademu	rademu	rademu	rademu	corncob					corncob											rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Burkholderiales	Methylophilaceae	OM43 clade	Gammaproteobacteria;OM43 clade
+ASV_00313	corncob													corncob												corncob	Bacteria	Planctomycetota	Planctomycetes	Pirellulales	Pirellulaceae	Pirellulaceae	Planctomycetes;Pirellulaceae
+ASV_00317	corncob									corncob																corncob	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Verrucomicrobiales	DEV007	DEV007	Verrucomicrobiae;DEV007
+ASV_00321	corncob									corncob	corncob	corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Aureicoccus	Bacteroidia;Aureicoccus
+ASV_00337	corncob									corncob	corncob					corncob							corncob			corncob	Bacteria	Desulfobacterota	Desulfuromonadia	Bradymonadales	Bradymonadales	Bradymonadales	Desulfuromonadia;Bradymonadales
+ASV_00339	corncob			rademu	rademu					corncob																rademu_corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Aestuariibacter	Gammaproteobacteria;Aestuariibacter
+ASV_00346	corncob											corncob					deseq									deseq_corncob	Bacteria	Chloroflexi	Dehalococcoidia	SAR202 clade	SAR202 clade	SAR202 clade	Dehalococcoidia;SAR202 clade
+ASV_00348				rademu	rademu																					rademu	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Aestuariicoccus	Alphaproteobacteria;Aestuariicoccus
+ASV_00349	corncob																						corncob			corncob	Bacteria	Fusobacteriota	Fusobacteria	Fusobacteriales	Fusobacteriaceae	Propionigenium	Fusobacteria;Propionigenium
+ASV_00359	corncob																									corncob	Bacteria	Myxococcota	Myxococcia	Myxococcales	Myxococcaceae	P3OB-42	Myxococcia;P3OB-42
+ASV_00360										corncob		corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Fabibacter	Bacteroidia;Fabibacter
+ASV_00361	corncob									corncob	corncob	corncob														corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Gammaproteobacteria	Gammaproteobacteria	Gammaproteobacteria	Proteobacteria;Gammaproteobacteria
+ASV_00367												corncob														corncob	Bacteria	Firmicutes	Clostridia	Lachnospirales	Lachnospiraceae	Lachnospiraceae	Clostridia;Lachnospiraceae
+ASV_00372																		deseq	deseq		deseq	deseq		deseq	deseq	deseq	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Mesoflavibacter	Bacteroidia;Mesoflavibacter
+ASV_00389	corncob			rademu	rademu					corncob	corncob	corncob														rademu_corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Holosporales	Holosporaceae	Holosporaceae	Alphaproteobacteria;Holosporaceae
+ASV_00392											corncob	corncob											corncob			corncob	Bacteria	Bdellovibrionota	Oligoflexia	Oligoflexales	Oligoflexaceae	Oligoflexaceae	Oligoflexia;Oligoflexaceae
+ASV_00399	corncob			rademu	rademu					corncob												deseq				all	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Celeribacter	Alphaproteobacteria;Celeribacter
+ASV_00400	corncob			rademu	rademu					corncob										deseq	deseq	deseq				all	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Thiomicrospirales	Thiomicrospiraceae	Thiomicrorhabdus	Gammaproteobacteria;Thiomicrorhabdus
+ASV_00429	corncob											corncob				corncob					deseq					deseq_corncob	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group III	Marine Group III	Marine Group III	Thermoplasmata;Marine Group III
+ASV_00441											corncob			corncob												corncob	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Verrucomicrobiales	Rubritaleaceae	Rubritalea	Verrucomicrobiae;Rubritalea
+ASV_00445										corncob							deseq			deseq	deseq	deseq				deseq_corncob	Bacteria	Cyanobacteria	Cyanobacteria	Cyanobacteriales	Oscillatoriaceae	Oscillatoriaceae	Cyanobacteria;Oscillatoriaceae
+ASV_00451	corncob									corncob																corncob	Bacteria	Bdellovibrionota	Bdellovibrionia	Bacteriovoracales	Bacteriovoracaceae	Bacteriovoracaceae	Bdellovibrionia;Bacteriovoracaceae
+ASV_00469	corncob									corncob	corncob	corncob														corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Caulobacterales	Hyphomonadaceae	Hyphomonadaceae	Alphaproteobacteria;Hyphomonadaceae
+ASV_00495	corncob			rademu	rademu					corncob	corncob	corncob								deseq						all	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Crocinitomicaceae	Crocinitomix	Bacteroidia;Crocinitomix
+ASV_00507	corncob																									corncob	Bacteria	Dadabacteria	Dadabacteria	Dadabacteriales	Dadabacteriales	Dadabacteriales	Dadabacteria;Dadabacteriales
+ASV_00524	corncob									corncob	corncob	corncob									deseq					deseq_corncob	Bacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Margulisbacteria	Bacteria;Margulisbacteria
+ASV_00525											corncob	corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavicella	Bacteroidia;Flavicella
+ASV_00528	corncob									corncob	corncob									deseq						deseq_corncob	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Lewinella	Bacteroidia;Lewinella
+ASV_00530												corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Prolixibacteraceae	Roseimarinus	Bacteroidia;Roseimarinus
+ASV_00562	corncob																									corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Tannerellaceae	Macellibacteroides	Bacteroidia;Macellibacteroides
+ASV_00568	corncob									corncob		corncob		corncob									corncob			corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidales	Bacteroidales	Bacteroidia;Bacteroidales
+ASV_00570										corncob	corncob															corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Caulobacterales	Hyphomonadaceae	Ponticaulis	Alphaproteobacteria;Ponticaulis
+ASV_00609										corncob		corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Actibacter	Bacteroidia;Actibacter
+ASV_00614	corncob									corncob	corncob	corncob														corncob	Bacteria	Myxococcota	Polyangia	Polyangiales	Sandaracinaceae	Sandaracinaceae	Polyangia;Sandaracinaceae
+ASV_00624										corncob	corncob	corncob			corncob											corncob	Bacteria	Bacteria	Bacteria	Bacteria	Bacteria	Bacteria	Bacteria
+ASV_00644	corncob																									corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Caulobacterales	Hyphomonadaceae	Hirschia	Alphaproteobacteria;Hirschia
+ASV_00650	corncob									corncob																corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidia	Bacteroidia	Bacteroidia	Bacteroidota;Bacteroidia
+ASV_00654	corncob											corncob														corncob	Bacteria	Firmicutes	Bacilli	Acholeplasmatales	Acholeplasmataceae	Acholeplasma	Bacilli;Acholeplasma
+ASV_00661	corncob									corncob	corncob	corncob														corncob	Bacteria	Verrucomicrobiota	Kiritimatiellae	WCHB1-41	WCHB1-41	WCHB1-41	Kiritimatiellae;WCHB1-41
+ASV_00709											corncob															corncob	Bacteria	Firmicutes	Bacilli	Entomoplasmatales	Entomoplasmatales Incertae Sedis	Candidatus Hepatoplasma	Bacilli;Candidatus Hepatoplasma
+ASV_00712	corncob									corncob																corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Gammaproteobacteria Incertae Sedis	Unknown Family	Unknown Family	Gammaproteobacteria;Unknown Family
+ASV_00769										corncob																corncob	Bacteria	Firmicutes	Clostridia	Lachnospirales	Lachnospiraceae	Cellulosilyticum	Clostridia;Cellulosilyticum
+ASV_00776	corncob																									corncob	Bacteria	Planctomycetota	Phycisphaerae	Phycisphaerales	Phycisphaeraceae	SM1A02	Phycisphaerae;SM1A02
+ASV_00783										corncob			corncob													corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Muribaculaceae	Muribaculaceae	Bacteroidia;Muribaculaceae
+ASV_00801	corncob																									corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Nonlabens	Bacteroidia;Nonlabens
+ASV_00829										corncob																corncob	Bacteria	Desulfobacterota	Desulfobacteria	Desulfobacterales	Desulfosarcinaceae	Sva0081 sediment group	Desulfobacteria;Sva0081 sediment group
+ASV_00833	corncob									corncob																corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Halieaceae	Parahaliea	Gammaproteobacteria;Parahaliea
+ASV_00837	corncob									corncob	corncob	corncob														corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Micavibrionales	Micavibrionaceae	Micavibrionaceae	Alphaproteobacteria;Micavibrionaceae
+ASV_00848	corncob									corncob	corncob										deseq					deseq_corncob	Bacteria	Campylobacterota	Campylobacteria	Campylobacterales	Sulfurovaceae	Sulfurovum	Campylobacteria;Sulfurovum
+ASV_00851	corncob									corncob	corncob															corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Sphingomonadales	Sphingomonadaceae	Sphingomonadaceae	Alphaproteobacteria;Sphingomonadaceae
+ASV_00882										corncob	corncob															corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Pseudomonadales	Halieaceae	Halieaceae	Gammaproteobacteria;Halieaceae
+ASV_00899											corncob	corncob														corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rickettsiales	Fokiniaceae	MD3-55	Alphaproteobacteria;MD3-55
+ASV_00917											corncob	corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Amoebophilaceae	Amoebophilaceae	Bacteroidia;Amoebophilaceae
+ASV_00967										corncob																corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhizobiales	Rhizobiales	Rhizobiales	Alphaproteobacteria;Rhizobiales
+ASV_00975										corncob																corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rhizobiales	Rhizobiaceae	Rhizobiaceae	Alphaproteobacteria;Rhizobiaceae
+ASV_00993												corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Zeaxanthinibacter	Bacteroidia;Zeaxanthinibacter
+ASV_01015	corncob									corncob	corncob															corncob	Bacteria	Actinobacteriota	Acidimicrobia	Microtrichales	Microtrichaceae	Microtrichaceae	Acidimicrobia;Microtrichaceae
+ASV_01119										corncob																corncob	Bacteria	Alphaproteobacteria	Alphaproteobacteria	Rickettsiales	SM2D12	SM2D12	Alphaproteobacteria;SM2D12
+ASV_01134	corncob	rademu	rademu	rademu	rademu					corncob	corncob	corncob														rademu_corncob	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	Woesearchaeales	Woesearchaeales	Nanoarchaeia;Woesearchaeales
+ASV_01140	corncob						rademu		rademu	corncob	corncob															rademu_corncob	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	SCGC AAA011-D5	SCGC AAA011-D5	Nanoarchaeia;SCGC AAA011-D5
+ASV_01180												corncob														corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Francisellales	Francisellaceae	Francisellaceae	Gammaproteobacteria;Francisellaceae
+ASV_01202										corncob		corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Aureispira	Bacteroidia;Aureispira
+ASV_01217												corncob														corncob	Bacteria	Gemmatimonadota	PAUC43f marine benthic group	PAUC43f marine benthic group	PAUC43f marine benthic group	PAUC43f marine benthic group	Gemmatimonadota;PAUC43f marine benthic group
+ASV_01239	corncob																									corncob	Bacteria	Gammaproteobacteria	Gammaproteobacteria	Steroidobacterales	Woeseiaceae	Woeseia	Gammaproteobacteria;Woeseia
+ASV_01319	corncob									corncob																corncob	Bacteria	Cyanobacteria	Vampirivibrionia	Gastranaerophilales	Gastranaerophilales	Gastranaerophilales	Vampirivibrionia;Gastranaerophilales
+ASV_01399										corncob																corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Marinifilaceae	Marinifilaceae	Bacteroidia;Marinifilaceae
+ASV_01427	corncob									corncob																corncob	Bacteria	Chloroflexi	Anaerolineae	Anaerolineales	Anaerolineaceae	Anaerolineaceae	Anaerolineae;Anaerolineaceae
+ASV_01448												corncob														corncob	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Vicingus	Bacteroidia;Vicingus
+ASV_01571	corncob									corncob																corncob	Bacteria	Acidobacteriota	Thermoanaerobaculia	Thermoanaerobaculales	Thermoanaerobaculaceae	Subgroup 10	Thermoanaerobaculia;Subgroup 10
+ASV_01583										corncob	corncob	corncob														corncob	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	GW2011_GWC1_47_15	GW2011_GWC1_47_15	Nanoarchaeia;GW2011_GWC1_47_15
+ASV_01660	corncob									corncob																corncob	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinales	Actinomarinales	Acidimicrobia;Actinomarinales
+ASV_01729	corncob									corncob	corncob	corncob														corncob	Bacteria	Campylobacterota	Campylobacteria	Campylobacterales	Sulfurimonadaceae	Sulfurimonas	Campylobacteria;Sulfurimonas
+ASV_01740	corncob									corncob																corncob	Bacteria	Planctomycetota	Planctomycetes	Pirellulales	Pirellulaceae	Rhodopirellula	Planctomycetes;Rhodopirellula
+ASV_01787										corncob																corncob	Bacteria	Firmicutes	Bacilli	Mycoplasmatales	Mycoplasmataceae	Mycoplasma	Bacilli;Mycoplasma
+ASV_01910										corncob																corncob	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Methylacidiphilales	Methylacidiphilaceae	Methylacidiphilaceae	Verrucomicrobiae;Methylacidiphilaceae
+ASV_02032	corncob									corncob																corncob	Bacteria	Dependentiae	Babeliae	Babeliales	Babeliales	Babeliales	Babeliae;Babeliales
+ASV_02093	corncob									corncob		corncob														corncob	Bacteria	Verrucomicrobiota	Omnitrophia	Omnitrophales	Omnitrophaceae	Candidatus Omnitrophus	Omnitrophia;Candidatus Omnitrophus
+ASV_02096											corncob															corncob	Bacteria	Planctomycetota	vadinHA49	vadinHA49	vadinHA49	vadinHA49	Planctomycetota;vadinHA49
+ASV_02127	corncob									corncob																corncob	Bacteria	Latescibacterota	Latescibacterota	Latescibacterota	Latescibacterota	Latescibacterota	Bacteria;Latescibacterota
+ASV_02190	corncob									corncob																corncob	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cytophagales	Cytophagales	Bacteroidia;Cytophagales
+ASV_02219										corncob	corncob															corncob	Bacteria	Planctomycetota	Planctomycetes	Pirellulales	Pirellulaceae	Blastopirellula	Planctomycetes;Blastopirellula
+ASV_02305	corncob									corncob	corncob	corncob														corncob	Bacteria	Patescibacteria	Gracilibacteria	Gracilibacteria	Gracilibacteria	Gracilibacteria	Patescibacteria;Gracilibacteria
+ASV_02345	corncob									corncob		corncob														corncob	Bacteria	Patescibacteria	Gracilibacteria	Absconditabacteriales (SR1)	Absconditabacteriales (SR1)	Absconditabacteriales (SR1)	Gracilibacteria;Absconditabacteriales (SR1)
+ASV_02380	corncob																									corncob	Bacteria	Acidobacteriota	Subgroup 22	Subgroup 22	Subgroup 22	Subgroup 22	Acidobacteriota;Subgroup 22
+ASV_02718											corncob															corncob	Archaea	Nanoarchaeota	Nanoarchaeia	Woesearchaeales	SCGC AAA286-E23	SCGC AAA286-E23	Nanoarchaeia;SCGC AAA286-E23
+ASV_02722												corncob														corncob	Bacteria	Patescibacteria	Gracilibacteria	Candidatus Peribacteria	Candidatus Peribacteria	Candidatus Peribacteria	Gracilibacteria;Candidatus Peribacteria
+ASV_02725	corncob									corncob																corncob	Bacteria	Patescibacteria	Gracilibacteria	JGI 0000069-P22	JGI 0000069-P22	JGI 0000069-P22	Gracilibacteria;JGI 0000069-P22
+ASV_02748	corncob																									corncob	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidetes BD2-2	Bacteroidetes BD2-2	Bacteroidia;Bacteroidetes BD2-2
+ASV_02936	corncob									corncob																corncob	Archaea	Crenarchaeota	Bathyarchaeia	Bathyarchaeia	Bathyarchaeia	Bathyarchaeia	Crenarchaeota;Bathyarchaeia
