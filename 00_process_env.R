@@ -128,7 +128,44 @@ noaa_lb_tide_df <- readr::read_delim(paste0("/Users/sharongrim/projects/apprill/
 #ALl of the hobo time seems to be in GMT, given that lumens begins to increase around 11:00:00 each day which is ~7:00am in USVI
 #so offset the times by 4hours:
 
-hobo_df <- readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_temporal/", "Tektite_Temporal_Study_SJ_Jan21.csv"),
+#it looks like at MIS, we used HOBOs deployed at multiple depths to 23m below surface to measure light
+#Hobos record in Lux or Lumens, which is not easily translated to PAR
+#to get the full light field, we also used multiple light profilers: Hyperspectral, LiCor, C-OPs
+#the CONVERSION of the reported Hobo light in Lux, to uE was as follows:
+
+#at 23m depth, only blue-green PAR was available as determined by the Blackbird hyperspectral profiler. 
+#in July 2016, Blackbird measured ~75uE of available light almost entirely in Blue-Green wavelengths
+#HOBOs measured light at 23m depth on those same days as ~996 lux
+#so the light-profile/depth specific conversion was:
+#Lux/54/0.245142572 = available PAR at 23m depth
+#in this case, 996/54/.245142572 = 75 uE
+
+#in MIS the attenuation coefficients averaged -0.132840405 (range: -0.161106824, -0.101399784)
+
+
+hobo_df <- readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_temporal/", "Tektite_Temporal_Study_SJ_Jan21_0-lux.csv"),
+                             delim = ",", quote = "", skip = 2, comment = "#", show_col_types = FALSE, col_names = FALSE) %>%
+  setNames(., c("order", "date_ast", "temp", "lux")) %>%
+  # dplyr::mutate(date_ast = lubridate::parse_date_time(date_gmt, c("%m/%d/%y %I:%M:%S Op", "mdy"), tz = "AST")) %>%
+  droplevels %>%
+  dplyr::mutate(site = "Tektite") %>%
+  bind_rows(., (readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_temporal/", "Yawzi_Temporal_Study_SJ_Jan21_0-lux.csv"),
+                                  delim = ",", quote = "", skip = 2, comment = "#", show_col_types = FALSE, col_names = FALSE) %>%
+                  setNames(., c("order", "date_ast", "temp", "lux")) %>%
+                  # dplyr::mutate(date_ast = lubridate::parse_date_time(date_gmt, c("%m/%d/%y %I:%M:%S Op", "mdy"), tz = "AST")) %>%
+                  droplevels %>%
+                  dplyr::mutate(site = "Yawzi")),
+            (readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_temporal/", "Seagrass_Temporal_Study_SJ_Jan21_0-lux.csv"),
+                               delim = ",", quote = "", skip = 2, comment = "#", show_col_types = FALSE, col_names = FALSE) %>%
+               setNames(., c("order", "date_ast", "temp", "lux")) %>%
+               # dplyr::mutate(date_ast = lubridate::parse_date_time(date_gmt, c("%m/%d/%y %I:%M:%S Op", "mdy"), tz = "AST")) %>%
+               droplevels %>%
+               dplyr::mutate(site = "LB_seagrass"))) %>%
+  dplyr::mutate(date_ast = lubridate::parse_date_time(date_ast, c("%m/%d/%y %I:%M:%S Op", "mdy"), tz = "GMT")) %>%
+  # dplyr::mutate(date_ast = lubridate::with_tz(date_ast, tz = "America/Virgin")) %>%
+  tidyr::separate_wider_delim(., date_ast, names = c("day", "time"), delim = " ", too_few = "align_start", too_many = "merge", cols_remove = FALSE)
+
+hobo_df2 <- readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_temporal/", "Tektite_Temporal_Study_SJ_Jan21.csv"),
                              delim = ",", quote = "", skip = 2, comment = "#", show_col_types = FALSE, col_names = FALSE) %>%
   setNames(., c("order", "date_gmt", "temp", "lumens")) %>%
   dplyr::mutate(date_ast = lubridate::parse_date_time(date_gmt, c("%m/%d/%y %I:%M:%S Op", "mdy"), tz = "GMT")) %>%
@@ -149,7 +186,12 @@ hobo_df <- readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_tem
   dplyr::mutate(date_ast = lubridate::with_tz(date_ast, tz = "America/Virgin")) %>%
   tidyr::separate_wider_delim(., date_ast, names = c("day", "time"), delim = " ", too_few = "align_start", too_many = "merge", cols_remove = FALSE)
 
+hobo_df <- hobo_df %>%
+  dplyr::left_join(., hobo_df2 %>% dplyr::select(order, site, lumens, temp))
 
+if(!file.exists(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv"))){
+  readr::write_delim(hobo_df, paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv", ".gz"), delim = "\t", col_names = TRUE)
+}
 
 # Plot tide data from LB --------------------------------------------------
 noaa_lb_tide_filtered_df <- noaa_lb_tide_df %>%

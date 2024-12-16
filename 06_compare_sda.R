@@ -1,4 +1,4 @@
-# 06b_compare_sda.R
+# 06_compare_sda.R
 
 # Resource allocation time ------------------------------------------------
 

@@ -314,7 +314,7 @@ usvi_sw_genus.tbl <- phyloseq::otu_table(ps_usvi_filtered) %>%
   dplyr::left_join(., usvi_sw_genus.taxa.df,
                    by = join_by(Domain, Phylum, Class, Order, Family, Genus)) %>%
   dplyr::relocate(asv_id) %>%
-  dplyr::select(-c(Domain, Phylum, Class, Order, Family, Genus)) %>%
+  dplyr::select(-c(Domain, Phylum, Class, Order, Family, Genus, taxonomy)) %>%
   droplevels  %>%
   tibble::column_to_rownames(var = "asv_id") %>%
   dplyr::slice(which(rowSums(.) > 0)) %>%
@@ -386,8 +386,8 @@ temp_res_cc <- try(corncob::differentialTest(formula = ~ site + sampling_day,
                                              data = temp_ps,
                                              fdr = "fdr",
                                              fdr_cutoff = set.alpha), silent = TRUE)
-plot(temp_res_cc, level = "Genus")
-summary(temp_res_cc)
+# plot(temp_res_cc, level = "Genus")
+# summary(temp_res_cc)
 #pull out the coefficients for each significant taxon in each site or sampling day:
 
 
@@ -402,10 +402,12 @@ for(i in seq_len(length(temp_res_cc[["significant_taxa"]]))){
 
 
 
+
 #so the corncob test implements a fdr_cutoff, but is it fair?
 q_value <- 0.10
 padj_cutoff <- temp_res_cc[["p"]] %>%
   p.adjust(., method = "BH") %>% #multiple testing corrections, "BH" is an alias for "fdr" accordiong to p.adjust()
+  na.omit(.) %>%
   ashr::qval.from.lfdr(.) %>%
   unlist %>%
   quantile(., probs = q_value, na.rm = TRUE, names = FALSE,type = 7)
@@ -416,6 +418,9 @@ temp_df <- tibble::enframe(temp_res_cc[["p"]], name = "asv_id", value = "p") %>%
   dplyr::left_join(., tibble::enframe(temp_res_cc[["p_fdr"]], name = "asv_id", value = "p_fdr")) %>%
   dplyr::mutate(p_cc = dplyr::case_when(p_fdr <= set.alpha ~ p_fdr,
                                          .default = NA))
+
+
+
 
 #using corncob's implementation of multiple test correction and p < 0.05, we have 114 significant genera
 
@@ -479,7 +484,63 @@ g <- print(
   + geom_hline(yintercept = 0, linetype = "dashed", color = "darkgray")
   + facet_grid(.~variable)
 )
+
+temp_df2 <- temp_res_cc_df %>%
+  dplyr::filter(condition == unique(temp_res_cc_list$condition)[2]) %>%
+  dplyr::select(asv_id, Estimate, StdError, p_bh_adj, p_cc) %>%
+  dplyr::arrange(Estimate) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+  tidyr::pivot_longer(., cols = starts_with("p_"),
+                      names_to = "parameter",
+                      values_to = "value") %>%
+  dplyr::mutate(Estimate = dplyr::case_when(!is.na(value) ~ Estimate,
+                                            .default = NA),
+                StdError = dplyr::case_when(!is.na(value) ~ StdError,
+                                            .default = NA)) %>%
+  dplyr::mutate(parameter = factor(parameter, levels = c("p_cc", "p_bh_adj"), labels = c("corncob's adjusted p-value", "ashr adjusted p-value"))) %>%
+  droplevels 
+
+temp_list <- temp_df2 %>%
+  split(., f = .$parameter) %>%
+  map(., ~.x %>%
+        tidyr::drop_na(value) %>%
+        dplyr::select(Estimate) %>%
+        tibble::deframe(.))
   
+t.test(temp_list[[1]], temp_list[[2]])
+kruskal.test(temp_list)
+  
+
+temp_g1 <- print(ggplot(data = temp_df2)
+                + theme_bw()
+                + geom_histogram(aes(x = Estimate, fill = parameter), color = "black", bins = 10)
+                + scale_y_continuous(name = "Number of coefficients")
+                + facet_wrap(.~parameter)
+                + guides(fill = "none")
+)
+temp_g2 <- print(ggplot(data = temp_df2)
+                + theme_bw()
+                + geom_errorbar(aes(x = asv_id, ymin = Estimate-StdError, ymax = Estimate+StdError), color = "black", width = .3, position=position_dodge(.9)) 
+                + geom_point(aes(x = asv_id, y = Estimate, fill = parameter), shape = 21)
+                + coord_flip()
+                + guides(fill = "none")
+                # + scale_y_continuous(name = "Number of coefficients")
+                + facet_wrap(.~parameter)
+)
+
+temp_g3 <- print(ggplot(data = temp_df2)
+                 + theme_bw()
+                 + geom_histogram(aes(x = StdError, fill = parameter), color = "black", bins = 10)
+                 + scale_y_continuous(name = "Number of coefficients")
+                 + facet_wrap(.~parameter)
+                 + guides(fill = "none")
+)
+
+temp_g <- temp_g1 / temp_g2
+ggsave(paste0(projectpath, "/", "modeled_estimates_from_corncob", ".png"),
+       temp_g,
+       width = 10, height = 10, units = "in")
+
 # Full scale corncob ------------------------------------------------------
 
 
@@ -689,6 +750,69 @@ for(i in ps_objects){
 #want to see one plotted?
 
 # plot(`cc_dt_res_ps_usvi_filtered_agglom-site-sampling_time_list`[["Yawzi (peak_photo - dawn)"]][["cc_da"]], level = "Genus")
+
+
+#let's plot the p-values and their adjusted
+temp_df1 <- `cc_dt_res_ps_usvi_filtered_agglom-site-sampling_time_list`[["Yawzi (peak_photo - dawn)"]][["cc_da"]][["p"]] %>%
+  tibble::enframe(name = "asv_id", value = "p_val") %>%
+  dplyr::mutate(p_adj = p.adjust(p_val, method = "BH")) %>%
+  tidyr::drop_na(.) %>%
+  dplyr::mutate(q_val = ashr::qval.from.lfdr((p_val)),
+                q_adj = ashr::qval.from.lfdr((p_adj))) %>%
+  droplevels
+temp_df <- temp_df1 %>%
+  dplyr::select(- starts_with("q_")) %>%
+  tidyr::pivot_longer(., cols = !c("asv_id"),
+                      names_to = "parameter",
+                      values_to = "value") %>%
+  dplyr::mutate(type = "p_values") %>%
+  bind_rows(., (temp_df1 %>%
+                  dplyr::select(asv_id,starts_with("q_")) %>%
+                  tidyr::pivot_longer(., cols = !c("asv_id"),
+                                      names_to = "parameter",
+                                      values_to = "value") %>%
+                  dplyr::mutate(type = "q_values") %>%
+                  droplevels)) %>%
+  dplyr::mutate(parameter = factor(parameter, levels = c("p_val", "p_adj", "q_val", "q_adj"))) %>%
+  droplevels
+temp_df_labels <- temp_df %>%
+  dplyr::group_by(parameter) %>%
+  dplyr::reframe(quant_05 = quantile(value, probs = 0.05, na.rm = TRUE),
+                 quant_10 = quantile(value, probs = 0.10, na.rm = TRUE)) %>%
+  tidyr::pivot_longer(., cols = !c("parameter"),
+                      names_to = "quantile",
+                      values_to = "value")
+
+temp_g <- print(ggplot(data = temp_df)
+                + theme_bw()
+                + geom_histogram(aes(x = value, fill = parameter), color = "black", bins = 10)
+                + facet_wrap(.~parameter)
+)
+temp_g1 <- print(ggplot(data = temp_df %>%
+                          dplyr::filter(type == "p_values"))
+                 # + geom_boxplot(aes(x = parameter, y = value, fill = parameter), outliers = TRUE, outlier.shape = NA)
+                 + geom_violin(aes(x = parameter, y = value, fill = parameter), draw_quantiles = c(0.05, 0.1))
+                 + geom_hline(aes(yintercept = 0.05), color = "black")
+                 + geom_hline(aes(yintercept = 0.10), color = "maroon")
+                 + scale_y_continuous(transform = "log10", name = "Values")
+)
+temp_g2 <- print(ggplot(data = temp_df %>%
+                          dplyr::filter(type == "q_values"))
+                 # + geom_boxplot(aes(x = parameter, y = value, fill = parameter), outliers = TRUE, outlier.shape = NA)
+                 + geom_violin(aes(x = parameter, y = value, fill = parameter), draw_quantiles = c(0.05, 0.1))
+                 + geom_crossbar(data = temp_df_labels %>% dplyr::filter(grepl("q", parameter)), 
+                                 aes(x = parameter, y = value, ymin = value, ymax = value), color = "black")
+                 + geom_text(data = temp_df_labels %>% dplyr::filter(grepl("q", parameter)),
+                             aes(x = parameter, y = value, label = quantile), nudge_x = 0.05)
+                 + scale_y_continuous(transform = "log10", name = "Values", labels = scales::label_number_auto())
+                 # + geom_hline(aes(yintercept = 0.05), color = "black")
+                 # + geom_hline(aes(yintercept = 0.10), color = "maroon")
+)
+
+temp_g <- temp_g / (temp_g1 + temp_g2)
+ggsave(paste0(projectpath, "/", "modeled_p_values_from_corncob", ".png"),
+       temp_g,
+       width = 10, height = 10, units = "in")
 
 # Summarize corncob results -----------------------------------------------
 

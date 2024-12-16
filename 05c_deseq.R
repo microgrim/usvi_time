@@ -1,4 +1,4 @@
-# 06_de_asv.R
+# 05c_deseq.R
 
 # Resource allocation time ------------------------------------------------
 
@@ -161,8 +161,8 @@ F_deseq_frac <- function(counts, mdata, mdata_filter, deseq_design, prefix,
   mod_mat <- model.matrix(eval(deseq_design),
                           data = metadata)
   
-  if(length(grep("0", colSums(mod_mat))) > 0){ #none of these should be 0--if so, you need to fix your design/metadata coding
-    idx <- names(colSums(mod_mat))[grep("0", colSums(mod_mat))]
+  if(length(which(colSums(mod_mat) == 0)) > 0){ #none of these should be 0--if so, you need to fix your design/metadata coding
+    idx <- names(colSums(mod_mat))[which(colSums(mod_mat) == 0)]
     idx <- cli::cli_vec(idx)
     cli::cli_alert_warning("One or more groups in the comparison does not have enough replicates:", wrap = TRUE)
     cli::cli_bullets_raw(idx)
