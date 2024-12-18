@@ -81,6 +81,7 @@ library(patchwork)
 library(viridisLite)
 library(pals)
 library(scales)
+library(PERMANOVA)
 
 
 
@@ -102,7 +103,8 @@ set.seed(48105)
 
 
 # find existing processed files -------------------------------------------
-to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa", "usvi_hobo_light_temp")
+to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa", "usvi_prok_decontam_idx", "usvi_hobo_light_temp_filtered.df")
+
 
 for(file in to_import){
   if(!exists(file, envir = .GlobalEnv)){
@@ -137,6 +139,17 @@ if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))
   cli::cli_alert_warning("Please process the metabolomics sample data previously.")
 }
 
+if(ncol(usvi_prok_decontam_idx) == 1){
+  usvi_prok_decontam_idx <- usvi_prok_decontam_idx %>%
+    tidyr::separate_wider_delim(1, names = c("asv_id", "keep"), delim = " ", cols_remove = TRUE, too_few = "align_start")
+}
+
+usvi_prok_asvs.taxa <- usvi_prok_asvs.taxa %>%
+  dplyr::left_join(., usvi_prok_decontam_idx, by = join_by(asv_id)) %>%
+  dplyr::filter(keep == TRUE) %>%
+  dplyr::select(-keep) %>%
+  droplevels
+
 #replace NA in taxonomy with last known level
 
 usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
@@ -146,10 +159,12 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
   dplyr::mutate(Family = coalesce(Family, Order)) %>%
   dplyr::mutate(Genus = coalesce(Genus, Family)) %>%
   dplyr::mutate(Species = coalesce(Species, Genus)) %>%
+  dplyr::mutate(across(everything(), ~factor(.x))) %>%
   dplyr::relocate(asv_id) %>%
   dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
                                           grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
                                           .default = Phylum)) %>%
+  
   droplevels
 
 
@@ -185,28 +200,230 @@ usvi_metabolomics_long.df <- readr::read_delim(paste0(projectpath, "/", "USVI202
 #in this case, 996/54/.245142572 = 75 uE
 
 #in MIS the attenuation coefficients averaged -0.132840405 (range: -0.161106824, -0.101399784)
-metabolomics_sample_metadata %>%
-  dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
-  dplyr::group_by(site, day, sampling_time) %>%
-  dplyr::summarise(depth = mean(depth))
+#calculate depths and assign sampling_time windows before subsetting for dawn and peak_photo
+# metabolomics_sample_metadata %>%
+#   dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+#   dplyr::group_by(site, day, sampling_time) %>%
+#   dplyr::summarise(depth = mean(depth))
 
-usvi_hobo_light_temp_filtered.df <- usvi_hobo_light_temp %>%
-  dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
-  dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
-  # dplyr::mutate(PAR = (lux/54)) %>%
-  # dplyr::left_join(., metabolomics_sample_metadata %>%
-  #                    dplyr::mutate(day = lubridate::ymd(sampling_date, "%y-%m-%d")) %>%
-  #                    dplyr::group_by(site) %>%
-  #                    dplyr::summarise(depth = mean(depth))) %>%
-  # dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
-  # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
-  tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
-                      names_to = "parameter",
-                      values_to = "value") %>%
-  dplyr::group_by(site) %>%
-  # dplyr::slice_head(prop = 0.9) %>%
-  droplevels 
+if(!exists("usvi_hobo_light_temp_filtered.df", envir = .GlobalEnv)){
+  if(file.exists(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv.gz"))){
+    usvi_hobo_light_temp <- readr::read_delim(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv.gz"))
+    
+    interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 11:00:00", tz = "America/Virgin")) 
+    interval_vector_peak <- list(interval,
+                                 lubridate::int_shift(interval, days(1)),
+                                 lubridate::int_shift(interval, days(2)),
+                                 lubridate::int_shift(interval, days(3)),
+                                 lubridate::int_shift(interval, days(4)),
+                                 lubridate::int_shift(interval, days(5)))
+    
+    interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 04:00:00", tz = "America/Virgin")) 
+    interval_vector_dawn <- list(interval,
+                                 lubridate::int_shift(interval, days(1)),
+                                 lubridate::int_shift(interval, days(2)),
+                                 lubridate::int_shift(interval, days(3)),
+                                 lubridate::int_shift(interval, days(4)),
+                                 lubridate::int_shift(interval, days(5)))
+    
+    usvi_hobo_light_temp_filtered.df <- usvi_hobo_light_temp %>%
+      dplyr::mutate(date_ast = lubridate::force_tz(date_ast, tzone = "America/Virgin")) %>%
+      dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
+      dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
+      dplyr::rowwise(.) %>%
+      dplyr::mutate(sampling_time = dplyr::case_when(date_ast %within% interval_vector_peak ~ "peak_photo",
+                                                     date_ast %within% interval_vector_dawn ~ "dawn",
+                                                     .default = NA)) %>%
+      dplyr::mutate(sampling_time = factor(sampling_time)) %>%
+      dplyr::left_join(., metabolomics_sample_metadata %>%
+                         dplyr::rowwise(.) %>%
+                         dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+                         dplyr::group_by(site, day, sampling_time) %>%
+                         dplyr::summarise(depth = mean(depth)), by = join_by(site, day, sampling_time)) %>%
+      dplyr::group_by(site, day) %>%
+      tidyr::fill(depth, .direction = "downup") %>%
+      dplyr::mutate(PAR = (lux/54)) %>%
+      dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
+      tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
+                          # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
+                          names_to = "parameter",
+                          values_to = "value") %>%
+      dplyr::group_by(site) %>%
+      dplyr::slice_head(prop = 0.9) %>%
+      droplevels
+    
+    readr::write_delim(usvi_hobo_light_temp_filtered.df, paste0(projectpath, "/", "usvi_hobo_light_temp_filtered.df", ".tsv.gz"),
+                       delim = "\t", col_names = TRUE, num_threads = nthreads)
+  }
+}
 
+usvi_light_temp_metadata.df <- bind_rows(
+  (usvi_hobo_light_temp_filtered.df %>%
+     dplyr::group_by(site, day, sampling_time, parameter) %>%
+     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, sampling_time,parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
+     droplevels)) %>%
+  tidyr::drop_na(.) %>%
+  dplyr::left_join(., metabolomics_sample_metadata %>%
+                     dplyr::rowwise(.) %>%
+                     dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+                     dplyr::group_by(site, day, sampling_time, sampling_day) %>%
+                     dplyr::summarise(depth = mean(depth)), by = join_by(site, day, sampling_time)) %>%
+  dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
+  dplyr::mutate(replicate = rep(c(rep(1:3, 4),
+                                  rep(1:3, 4),
+                                  rep(1:3, 4)), 10)) %>%
+  tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
+                     names_from = "parameter",
+                     values_from = "max") %>%
+  # dplyr::rowwise(.) %>%
+  # dplyr::mutate(PAR2 = (lux/54)) %>%
+  # dplyr::mutate(PAR2 = PAR2/exp(-0.13*(depth - 23))) %>%
+  # dplyr::ungroup(.) %>%
+  dplyr::select(-replicate) %>%
+  dplyr::arrange(site, sampling_time, sampling_day) %>%
+  dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+                                  sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+                                  sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
+  dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
+  droplevels
+
+
+#if you did not calculate PAR for each specific depth and sampling_time window at each site and time, subset for the dawn and peak photo windows:
+{
+  # usvi_hobo_light_temp_expanded.df <- usvi_hobo_light_temp %>%
+  #   dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
+  #   dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
+  #   dplyr::left_join(., metabolomics_sample_metadata %>%
+  #                      dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+  #                      dplyr::group_by(site, day) %>%
+  #                      dplyr::summarise(depth = mean(depth))) %>%
+  #   dplyr::group_by(site, day) %>%
+  #   tidyr::fill(depth, .direction = "downup") %>%
+  #   dplyr::mutate(PAR = (lux/54)) %>%
+  #   dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
+  #   tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
+  #                       # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
+  #                       names_to = "parameter",
+  #                       values_to = "value") %>%
+  #   dplyr::group_by(site) %>%
+  #   dplyr::slice_head(prop = 0.9) %>%
+  #   droplevels
+  # 
+  # # temp_df <- bind_rows(
+  # usvi_light_temp_metadata.df <- bind_rows(
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 05:00:00"), ymd_hms("2021-01-22 08:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
+  #      dplyr::mutate(sampling_day = "Day1") %>%
+  #      dplyr::mutate(sampling_time = "dawn") %>%
+  #      droplevels), 
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 11:00:00"), ymd_hms("2021-01-22 14:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day1") %>%
+  #      dplyr::mutate(sampling_time = "peak_photo") %>%
+  #      droplevels),
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 05:00:00"), ymd_hms("2021-01-23 08:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day2") %>%
+  #      dplyr::mutate(sampling_time = "dawn") %>%
+  #      droplevels), 
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 11:00:00"), ymd_hms("2021-01-23 14:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day2") %>%
+  #      dplyr::mutate(sampling_time = "peak_photo") %>%
+  #      droplevels),
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 05:00:00"), ymd_hms("2021-01-24 08:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day3") %>%
+  #      dplyr::mutate(sampling_time = "dawn") %>%
+  #      droplevels), 
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 11:00:00"), ymd_hms("2021-01-24 14:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day3") %>%
+  #      dplyr::mutate(sampling_time = "peak_photo") %>%
+  #      droplevels),
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 05:00:00"), ymd_hms("2021-01-25 08:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day4") %>%
+  #      dplyr::mutate(sampling_time = "dawn") %>%
+  #      droplevels), 
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 11:00:00"), ymd_hms("2021-01-25 14:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day4") %>%
+  #      dplyr::mutate(sampling_time = "peak_photo") %>%
+  #      droplevels),
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 05:00:00"), ymd_hms("2021-01-26 08:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day5") %>%
+  #      dplyr::mutate(sampling_time = "dawn") %>%
+  #      droplevels), 
+  #   (usvi_hobo_light_temp_expanded.df %>%
+  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 11:00:00"), ymd_hms("2021-01-26 14:00:00"))) %>%
+  #      dplyr::group_by(site, day, parameter) %>%
+  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+  #      dplyr::mutate(sampling_day = "Day5") %>%
+  #      dplyr::mutate(sampling_time = "peak_photo") %>%
+  #      droplevels)
+  # ) %>%
+  #   dplyr::left_join(., metabolomics_sample_metadata %>%
+  #                      dplyr::group_by(site, sampling_day, sampling_time) %>%
+  #                      dplyr::summarise(depth = mean(depth)),
+  #                    by = join_by(site, sampling_day, sampling_time)) %>%
+  #   dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
+  #   dplyr::mutate(replicate = rep(c(rep(1:3, 4),
+  #                                   rep(1:3, 4),
+  #                                   rep(1:3, 4)), 10)) %>%
+  #   tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
+  #                      names_from = "parameter",
+  #                      values_from = "max") %>%
+  #   dplyr::rowwise(.) %>%
+  #   dplyr::mutate(PAR = (lux/54)) %>%
+  #   dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
+  #   dplyr::ungroup(.) %>%
+  #   dplyr::select(-replicate) %>%
+  #   dplyr::arrange(site, sampling_time, sampling_day) %>%
+  #   dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+  #                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+  #                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
+  #   dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
+  #   droplevels
+}
 
 
 temp_g <- print(
@@ -219,124 +436,6 @@ temp_g <- print(
   + scale_fill_manual(values = site_colors)
   + theme(axis.text.x = element_text(angle = 90))
 )
-
-
-usvi_light_temp_metadata.df <- bind_rows(
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 05:00:00"), ymd_hms("2021-01-22 08:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
-     dplyr::mutate(sampling_day = "Day1") %>%
-     dplyr::mutate(sampling_time = "dawn") %>%
-     droplevels), 
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 11:00:00"), ymd_hms("2021-01-22 14:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day1") %>%
-     dplyr::mutate(sampling_time = "peak_photo") %>%
-     droplevels),
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 05:00:00"), ymd_hms("2021-01-23 08:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day2") %>%
-     dplyr::mutate(sampling_time = "dawn") %>%
-     droplevels), 
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 11:00:00"), ymd_hms("2021-01-23 14:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day2") %>%
-     dplyr::mutate(sampling_time = "peak_photo") %>%
-     droplevels),
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 05:00:00"), ymd_hms("2021-01-24 08:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day3") %>%
-     dplyr::mutate(sampling_time = "dawn") %>%
-     droplevels), 
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 11:00:00"), ymd_hms("2021-01-24 14:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day3") %>%
-     dplyr::mutate(sampling_time = "peak_photo") %>%
-     droplevels),
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 05:00:00"), ymd_hms("2021-01-25 08:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day4") %>%
-     dplyr::mutate(sampling_time = "dawn") %>%
-     droplevels), 
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 11:00:00"), ymd_hms("2021-01-25 14:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day4") %>%
-     dplyr::mutate(sampling_time = "peak_photo") %>%
-     droplevels),
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 05:00:00"), ymd_hms("2021-01-26 08:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day5") %>%
-     dplyr::mutate(sampling_time = "dawn") %>%
-     droplevels), 
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 11:00:00"), ymd_hms("2021-01-26 14:00:00"))) %>%
-     dplyr::group_by(site, day, parameter) %>%
-     # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-     dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-     dplyr::mutate(sampling_day = "Day5") %>%
-     dplyr::mutate(sampling_time = "peak_photo") %>%
-     droplevels)
-) %>%
-  dplyr::left_join(., metabolomics_sample_metadata %>%
-                     dplyr::group_by(site, sampling_day, sampling_time) %>%
-                     dplyr::summarise(depth = mean(depth)),
-                   by = join_by(site, sampling_day, sampling_time)) %>%
-  dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
-  dplyr::mutate(replicate = rep(c(rep(1:3, 3),
-                                  rep(1:3, 3),
-                                  rep(1:3, 3)), 10)) %>%
-  # dplyr::mutate(replicate = rep(c(rep(1:3, 4),
-  #                                 rep(1:3, 4),
-  #                                 rep(1:3, 4)), 10)) %>%
-  tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
-                     names_from = "parameter",
-                     values_from = "max") %>%
-  dplyr::rowwise(.) %>%
-  dplyr::mutate(PAR = (lux/54)) %>%
-  dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::select(-replicate) %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
-  dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
-                              sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
-                              sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
-  dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
-  droplevels
 
 # Global labellers/renamers -----------------------------------------------
 
@@ -526,8 +625,11 @@ meta.microb <- metabolomics_sample_metadata %>%
   dplyr::mutate(sample_id = factor(sample_id, levels = colnames(usvi_sw_genus.tbl))) %>%
   dplyr::arrange(sample_id) %>%
   tidyr::drop_na(.) %>%
-  dplyr::mutate(grouping2 = paste0(grouping, "_", sampling_day)) %>%
+  dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
   dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
+  dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
+                grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
+                grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day1")) %>%
   tibble::column_to_rownames(var = "sample_id") %>%
   droplevels
 
@@ -540,13 +642,16 @@ meta.metab <- metabolomics_sample_metadata %>%
   dplyr::ungroup(.) %>%
   dplyr::filter(metab_deriv_label %in% colnames(usvi_metabolomics.tbl)) %>%
   dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
-  dplyr::mutate(grouping2 = paste0(grouping, "_", sampling_day)) %>%
+  dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
   dplyr::select(sample_id, colnames(meta.microb)) %>%
   dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = colnames(usvi_metabolomics.tbl))) %>%
   droplevels %>%
   dplyr::arrange(metab_deriv_label) %>%
   tidyr::drop_na(.) %>%
   dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
+  dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
+                grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
+                grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
   tibble::column_to_rownames(var = "metab_deriv_label") %>%
   droplevels
 
@@ -727,7 +832,7 @@ adonis_asv.res <- with(meta.microb, adonis2(data = meta.microb, method = "bray",
                                             # dist_usvi_asv.d ~ site*sampling_time*sampling_day, strata = sampling_day, #Pr for site:sampling_time = 0.102; site:sampling_time:sampling_day: 0.134
                                             # dist_usvi_asv.d ~ site*sampling_time*sampling_day, strata = site, #Pr for site:sampling_time = 0.038; site:sampling_time:sampling_day: 0.051
                                             # dist_usvi_asv.d ~ sampling_time*sampling_day*site, strata = site, #Pr for sampling_time:site = 0.064; sampling_time:sampling_day:site: 0.053
-                                            dist_usvi_asv.d ~ sampling_day*sampling_time, strata = site, #Pr for sampling_time:site = 0.064; sampling_time:sampling_day:site: 0.053
+                                            dist_usvi_asv.d ~ sampling_time*sampling_day, strata = site, #Pr for sampling_time:site = 0.064; sampling_time:sampling_day:site: 0.053
                                             parallel = nthreads, by = "terms"))
 
 adonis_asv.res
@@ -911,12 +1016,95 @@ pn_usvi_asv.mat <- usvi_sw_asv.tbl %>%
 pn_usvi_asv.bc <- pn_usvi_asv.mat %>%
   PERMANOVA::DistContinuous(., coef = "Bray_Curtis")
 
-
+#for PERMANOVA,
+#can't use in option 'group' one of the Effects' levels
 pn_usvi_asv.res <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc, 
-                                        seed = 48105, nperm = 999, PostHoc = "fdr",
-                     # C = meta.microb, 
-                     group = meta.microb$grouping2)
+                                        group = meta.microb$grouping, #6 contrasts: site.sampling_time
+                                        seed = 48105, nperm = 999, PostHoc = "fdr")
 pn_usvi_asv.res
+
+pn_usvi_asv_day.res <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc, 
+                                        group = meta.microb$grouping2, #30 contrasts: site.sampling_time.sampling_day
+                                        # group = meta.microb$grouping, #6 contrasts: site.sampling_time
+                                        seed = 48105, nperm = 999, PostHoc = "fdr")
+pn_usvi_asv_day.res
+
+
+#going deeper into PERMANOVA package:
+
+#try buildingthe contrast matrix from scratch:
+contrast_mat_order <- meta.microb %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::select(grouping) %>%
+  dplyr::mutate(label = grouping) %>%
+  dplyr::mutate(label = as.numeric(label)) %>%
+  droplevels
+
+treatments <- factor(contrast_mat_order[["label"]], labels = unique(contrast_mat_order[["grouping"]]))
+contrasts(treatments) <- meta.microb[rownames(contrast_mat_order),] %>%
+  dplyr::select(site, sampling_time, grouping) %>%
+  dplyr::distinct(.) %>%
+  dplyr::mutate(value = 1) %>%
+  tidyr::pivot_wider(., id_cols = NULL,
+                     names_from = c("grouping"),
+                     values_from = "value",
+                     values_fill = 0) %>%
+  dplyr::mutate(site = as.numeric(site) - 1,
+                # grouping =as.numeric(grouping),
+                sampling_time = as.numeric(sampling_time) -1) %>%
+  droplevels %>%
+  dplyr::distinct(.) %>%
+  as.matrix(.)
+
+
+#build 0 intercept model and use limma to make contrast matrix
+mod_mat <- model.matrix(~0 + treatments)
+colnames(mod_mat) <- levels(treatments)
+rownames(mod_mat) <- rownames(contrast_mat_order)
+
+library(limma)
+cmtx <- limma::makeContrasts( "LB_seagrass.peak_photo-LB_seagrass.dawn", "Tektite.peak_photo-Tektite.dawn", "Yawzi.peak_photo-Yawzi.dawn",
+                              "Tektite.dawn-LB_seagrass.dawn", "Yawzi.dawn-LB_seagrass.dawn", "Yawzi.dawn-Tektite.dawn",
+                              "Tektite.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-Tektite.peak_photo",
+                              levels= mod_mat )
+
+pn_C <- t(cmtx) #this is so it is amenable to PERMANOVA functions
+
+interaction_effects <- data.frame(label = c("LB_seagrass.peak_photo-LB_seagrass.dawn", "Tektite.peak_photo-Tektite.dawn", "Yawzi.peak_photo-Yawzi.dawn",
+                                            "Tektite.dawn-LB_seagrass.dawn", "Yawzi.dawn-LB_seagrass.dawn", "Yawzi.dawn-Tektite.dawn",
+                                            "Tektite.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-Tektite.peak_photo"),
+                                  to_test = c("sampling_time", "sampling_time", "sampling_time",
+                                              "site", "site", "site",
+                                              "site", "site", "site")) %>%
+  dplyr::arrange(rownames(pn_C)) %>%
+  dplyr::mutate(relabel = factor(label),
+                retest = factor(to_test)) %>%
+  dplyr::mutate(retest = as.numeric(retest)) %>%
+  dplyr::mutate(relabel = as.numeric(relabel))
+# pn_Effects <- factor(interaction_effects[["relabel"]], labels = unique(interaction_effects[["label"]]))
+pn_Effects <- factor(interaction_effects[["retest"]], labels = unique(interaction_effects[["to_test"]]))
+
+data_mat <- usvi_sw_asv.tbl %>% 
+  dplyr::select(rownames(contrast_mat_order)) %>%
+  t() %>%
+  PERMANOVA::IniTransform(., transform = 4) %>% #column centering: columns are ASVs, remove the column means
+  PERMANOVA::DistContinuous(., coef = "Bray_Curtis")
+
+pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(data_mat,
+                                         group = contrast_mat_order$grouping, 
+                                         C = pn_C, 
+                                         Effects = pn_Effects,
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
+summary(pn_usvi_asv.res2)
+
+
+#try MANOVA?
+mn_usvi_asv.res <- PERMANOVA::MANOVA(data_mat[["Data"]], Group = contrast_mat_order$grouping, 
+                  C = pn_C, 
+                  Effects = pn_Effects,
+                  InitialTransform = 4, Contrasts = TRUE)
+summary(mn_usvi_asv.res)
+
 
 
 
@@ -926,12 +1114,27 @@ pn_usvi_asv.res
 # )
 # pn_usvi_asv.contrast <- contr.sum(levels(meta.microb$grouping), contrasts = FALSE, sparse = FALSE)
 # colnames(pn_usvi_asv.contrast) <- levels(meta.microb$grouping)
+cH <- contr.sum(levels(meta.microb$grouping), contrasts = TRUE, sparse = FALSE)
+# apply(cH, 2, sum)
+# crossprod(cH)
 
-pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("site", "sampling_time", "sampling_day")])
+
+pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("site", "sampling_time", "sampling_day")], MaxOrderIter = 3)
+#what does the contrast matrix look like?
+# #pulling out the contrasts matrix doesn't work as well:
+# pn_C <- pn_usvi_asv.contrast[["Contrasts"]]
+# colnames(pn_C) <- levels(pn_usvi_asv.contrast[["Groups"]])
+# rownames(pn_C) <- pn_usvi_asv.contrast[["Effects"]]
+# apply(pn_C, 2, sum)
+# # pn_Effects <- factor(c(1:6))
+# # levels(pn_Effects) <- levels(pn_usvi_asv.contrast[["Effects"]])
+# pn_Effects <- levels(pn_usvi_asv.contrast[["Effects"]])
+
 pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
-                                        seed = 48105, nperm = 999, PostHoc = "fdr",
-                                        C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
-                                        group = meta.microb$grouping2)
+                                         group = meta.microb$grouping2, #site.sampling_time.sampling_day
+                                         # group = meta.microb$site, #can't use in group one of the Effects levels
+                                         C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
 summary(pn_usvi_asv.res2)
 # Effects 
 # Explained     Residual df Num df Denom       F-exp p-value p-value adj.
@@ -943,11 +1146,11 @@ summary(pn_usvi_asv.res2)
 # sampling_time*sampling_day -8.095247e+37 1.147236e+35      4       58  -10231.639   0.867        0.993
 # Total                       4.106122e+38 1.147236e+35     21       58    9885.249   0.067        0.067
 
-pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("site", "sampling_time")])
+pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("site", "sampling_time")], MaxOrderIter = 3)
 pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
-                                         seed = 48105, nperm = 999, PostHoc = "fdr",
+                                         group = meta.microb$grouping, #site.sampling_time
                                          C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
-                                         group = meta.microb$grouping)
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
 # Effects 
 # Explained     Residual df Num df Denom      F-exp p-value p-value adj.
 # site               -2.840383e+38 1.384244e+39      2       82  -8.412945   0.563        0.658
@@ -955,11 +1158,16 @@ pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
 # site*sampling_time -2.898833e+38 1.384244e+39      2       82  -8.586069   0.621        0.658
 # Total              -9.735171e+38 1.384244e+39      5       82 -11.533863   0.845        0.845
 
-pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("grouping", "sampling_day")])
+#when using ConstructContrasts to build the effects levels, they seem only to be able to design pairs:
+pn_usvi_asv.contrast[["Effects"]]
+#sampling_time sampling_day site sampling_time*sampling_day sampling_time*site sampling_day*site
+
+
+pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("grouping", "sampling_day")], MaxOrderIter = 3)
 pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
-                                        seed = 48105, nperm = 999, PostHoc = "fdr",
-                                        C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
-                                        group = meta.microb$grouping2)
+                                         group = meta.microb$grouping2, 
+                                         C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
 # Effects 
 # Explained     Residual df Num df Denom      F-exp p-value p-value adj.
 # grouping              -5.784676e+38 1.147236e+35      5       58 -58490.336   0.968        0.968
@@ -981,10 +1189,13 @@ pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("sampling_
 #                                          seed = 48105, nperm = 999, PostHoc = "fdr",
 #                                          # C = pn_C, Effects = pn_Effects,
 #                                          group = meta.microb$grouping)
+
+contrasts(meta.microb$grouping, contrasts = FALSE)
+
 pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
-                                         seed = 48105, nperm = 999, PostHoc = "fdr",
+                                         group = meta.microb$grouping2,
                                          C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
-                                         group = meta.microb$grouping2)
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
 # Effects 
 # Explained     Residual df Num df Denom       F-exp p-value p-value adj.
 # sampling_time              -3.875917e+38 1.147236e+35      1       58 -195951.925   0.984        0.984
@@ -994,8 +1205,146 @@ pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
 # sampling_time*site         -2.898182e+38 1.147236e+35      2       58  -73260.636   0.967        0.984
 # sampling_day*site           3.384847e+38 1.147236e+35      8       58   21390.660   0.076        0.152
 # Total                       4.106122e+38 1.147236e+35     21       58    9885.249   0.067        0.067
+
+
+
+pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("site", "sampling_time")], MaxOrderIter = 3)
+# pn_usvi_asv.contrast <- PERMANOVA::ConstructContrasts(meta.microb[, c("site", "sampling_day")], MaxOrderIter = 3)
+# crossprod(pn_usvi_asv.contrast[["Contrasts"]])
+# apply(pn_usvi_asv.contrast[["Contrasts"]], 2, sum)
+
+pn_usvi_asv.res2 <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
+                                         group = meta.microb$grouping, 
+                                         C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
+
+pn_usvi_asv.res <- PERMANOVA::PERMANOVA(pn_usvi_asv.bc,
+                                         group = meta.microb$sampling_time, 
+                                        # C = pn_usvi_asv.contrast[["Contrasts"]], Effects = pn_usvi_asv.contrast[["Effects"]],
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
+
+
 summary(pn_usvi_asv.res2)
+
+
+# mn_usvi_asv.res <- PERMANOVA::MANOVA(Y = pn_usvi_asv.bc[["D"]], InitialTransform = 4,
+#                      Group = meta.microb$grouping, 
+#                      C = pn_usvi_asv.contrast[["Contrasts"]], 
+#                      # M = 
+#                      Contrasts = TRUE)
+# summary(mn_usvi_asv.res)
+
+
+#construct a matrix for contrasts:
+# treatments <- factor(c(1,1,2,2,3,3,4,4,5,5,6,6),labels=c("LB_seagrass.dawn", "LB_seagrass.peak_photo", "Tektite.dawn", "Tektite.peak_photo", "Yawzi.dawn", "Yawzi.peak_photo"))
+# contrasts(treatments) <- cbind(site=c(0,0,1,1,2,2), sampling_time=c(0,1,0,1,0,1), `LB_seagrass.peak_photo` = c(0,1,0,0,0,0), `Tektite.peak_photo`=c(0,0,0,1,0,0), `Yawzi.peak_photo`=c(0,0,0,0,0,1))
+# mod_mat <- model.matrix(~treatments)
+# colnames(mod_mat) <- c("Intercept","site","sampling_time","LB_seagrass.peak_photo","Tektite.peak_photo","Yawzi.peak_photo")
+# # rownames(mod_mat) <- as.character(treatments) #this is the order of the rows, but assigning rownames is not helpful
+
+#include the days, not that it really matters:
+# treatments <- factor(c(rep(1, 5),rep(2, 5),rep(3, 5),rep(4, 5),rep(5, 5),rep(6,5)), labels=c("LB_seagrass.dawn", "LB_seagrass.peak_photo", "Tektite.dawn", "Tektite.peak_photo", "Yawzi.dawn", "Yawzi.peak_photo"))
+# contrasts(treatments) <- cbind(site=c(0,0,1,1,2,2), sampling_time=c(0,1,0,1,0,1), `LB_seagrass.peak_photo` = c(0,1,0,0,0,0), `Tektite.peak_photo`=c(0,0,0,1,0,0), `Yawzi.peak_photo`=c(0,0,0,0,0,1))
+
+# treatments <- factor(as.numeric(meta.microb[["grouping"]]), labels = unique(meta.microb[["grouping"]]))
+contrast_mat_order <- meta.microb %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::select(grouping) %>%
+  dplyr::mutate(label = grouping) %>%
+  dplyr::mutate(label = as.numeric(label)) %>%
+  droplevels
+treatments <- factor(contrast_mat_order[["label"]], labels = unique(contrast_mat_order[["grouping"]]))
+
+contrasts(treatments) <- meta.microb[rownames(contrast_mat_order),] %>%
+# contrasts(treatments) <- meta.microb %>%
+#   tibble::rownames_to_column(var = "sample_id") %>%
+  # dplyr::arrange(site, sampling_time, sample_id) %>%
+  dplyr::select(site, sampling_time, grouping) %>%
+  dplyr::distinct(.) %>%
+  dplyr::mutate(value = 1) %>%
+  tidyr::pivot_wider(., id_cols = NULL,
+                     names_from = c("grouping"),
+                     values_from = "value",
+                     values_fill = 0) %>%
+  dplyr::mutate(site = as.numeric(site) - 1,
+                # grouping =as.numeric(grouping),
+                sampling_time = as.numeric(sampling_time) -1) %>%
+  droplevels %>%
+  dplyr::distinct(.) %>%
+  as.matrix(.)
+
+
+#0 intercept
+mod_mat <- model.matrix(~0 + treatments)
+colnames(mod_mat) <- levels(treatments)
+rownames(mod_mat) <- rownames(contrast_mat_order)
+
+library(limma)
+cmtx <- limma::makeContrasts( "LB_seagrass.peak_photo-LB_seagrass.dawn", "Tektite.peak_photo-Tektite.dawn", "Yawzi.peak_photo-Yawzi.dawn",
+                              "Tektite.dawn-LB_seagrass.dawn", "Yawzi.dawn-LB_seagrass.dawn", "Yawzi.dawn-Tektite.dawn",
+                              "Tektite.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-Tektite.peak_photo",
+                              levels= mod_mat )
+# data_mat <- dist_usvi_asv.mat[rownames(contrast_mat_order),]
+data_mat <- usvi_sw_asv.tbl %>%
+  dplyr::select(rownames(contrast_mat_order)) %>%
+  apply(., 2, function(x) log2(x + 1))
+
+fit <- limma::lmFit(data_mat, mod_mat) %>%
+# fit <- limma::lmFit(data_mat, ) %>%
+  limma::contrasts.fit(., contrasts=cmtx, coefficients=NULL)
+fit2 <- eBayes(fit)
+topTable(fit2,coef=2)
+volcanoplot(fit2,coef=2,highlight=2)
+
+limma.res <- decideTests(fit2, method="nestedF", adjust.method="fdr", p.value = 0.05)
+summary(limma.res)
+
+
+
+pn_Effects <- factor(colnames(cmtx)) %>%as.numeric
+levels(pn_Effects) <- colnames(cmtx)
+# pn_Effects <- factor(c(1, 2, 3))
+# levels(pn_Effects) <- c("site", "sampling_time", "interaction")
+
+data_mat <- usvi_sw_asv.tbl %>% 
+  dplyr::select(rownames(contrast_mat_order)) %>%
+  t() %>%
+  PERMANOVA::IniTransform(., transform = 4) %>% #column centering: columns are ASVs, remove the column means
+  PERMANOVA::DistContinuous(., coef = "Bray_Curtis")
+
+cmtx <- ConstructContrasts(meta.microb[rownames(contrast_mat_order), c("site", "sampling_time")], MaxOrderIter=3)
+pn_usvi_asv.res3 <- PERMANOVA::PERMANOVA(data_mat,
+                                         group = contrast_mat_order$grouping, 
+                                         C = cmtx[["Contrasts"]], Effects=cmtx[["Effects"]],
+                                         # C = t(cmtx), 
+                                         # Effects = pn_Effects,
+                                         seed = 48105, nperm = 999, PostHoc = "fdr")
+summary(pn_usvi_asv.res3)
+
+
+
+
+# #construct a 5row x 6col matrix for each contrast to compare:
+# mod_mat <- model.matrix(~0 + levels(meta.microb$grouping))
+# colnames(mod_mat) <- c("LB_seagrass.dawn", "LB_seagrass.peak_photo", "Tektite.dawn", "Tektite.peak_photo", "Yawzi.dawn", "Yawzi.peak_photo")
+# # mod_mat <- model.matrix(~levels(meta.microb$grouping))
+# # colnames(mod_mat) <- c("Intercept", "Tektite.dawn", "Yawzi.dawn", "LB_seagrass.peak_photo", "Tektite.peak_photo", "Yawzi.peak_photo")
 # 
+# rownames(mod_mat) <- c("LB_seagrass.dawn", "Tektite.dawn", "Yawzi.dawn", "LB_seagrass.peak_photo", "Tektite.peak_photo", "Yawzi.peak_photo")
+# 
+# c("LB_seagrass.dawn", "Tektite.dawn", "Yawzi.dawn", "LB_seagrass.peak_photo", "Tektite.peak_photo", "Yawzi.peak_photo")
+# cH <- tibble::tribble(
+#   ~"LB_seagrass.dawn", ~"Tektite.dawn", ~"Yawzi.dawn", ~"LB_seagrass.peak_photo", ~"Tektite.peak_photo", ~"Yawzi.peak_photo",
+#   1, 0, 0, 0, 0, 0,
+#   0, 1, 0, 0, 0, 0,
+#   0, 0, 1, 0, 0, 0,
+#   0, 0, 0, 1, 0, 0,
+#   0, 0, 0, 0, 1, 0
+# ) %>%
+#   as.matrix(.)
+# rownames(cH) <- c("LB_seagrass.dawn", "Tektite.dawn", "Yawzi.dawn", "LB_seagrass.peak_photo", "Tektite.peak_photo")
+# 
+# # 
 # pn_usvi_asv.contrast <- contr.treatment(levels(meta.microb$grouping), base = 1, contrasts = TRUE, sparse = FALSE)
 
 # mod_mat <- model.matrix(~0 + site + sampling_time + sampling_day + site:sampling_time:sampling_day,
@@ -1041,3 +1390,59 @@ summary(pn_usvi_asv.res2)
 
 # pn_usvi.effects <- factor(c(1,2,3))
 # levels(pn_usvi.effects) <- c("site", "sampling_time", "sampling_day")
+
+
+
+
+###tngent:
+#using Limma to detect SDA ASVs between pairs
+
+contrast_mat_order <- meta.microb %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::select(grouping) %>%
+  dplyr::mutate(label = grouping) %>%
+  dplyr::mutate(label = as.numeric(label)) %>%
+  droplevels
+treatments <- factor(contrast_mat_order[["label"]], labels = unique(contrast_mat_order[["grouping"]]))
+
+contrasts(treatments) <- meta.microb[rownames(contrast_mat_order),] %>%
+  dplyr::select(site, sampling_time, grouping) %>%
+  dplyr::distinct(.) %>%
+  dplyr::mutate(value = 1) %>%
+  tidyr::pivot_wider(., id_cols = NULL,
+                     names_from = c("grouping"),
+                     values_from = "value",
+                     values_fill = 0) %>%
+  dplyr::mutate(site = as.numeric(site) - 1,
+                sampling_time = as.numeric(sampling_time) -1) %>%
+  droplevels %>%
+  dplyr::distinct(.) %>%
+  as.matrix(.)
+
+
+#0 intercept
+mod_mat <- model.matrix(~0 + treatments)
+colnames(mod_mat) <- levels(treatments)
+rownames(mod_mat) <- rownames(contrast_mat_order)
+
+library(limma)
+cmtx <- limma::makeContrasts( "LB_seagrass.peak_photo-LB_seagrass.dawn", "Tektite.peak_photo-Tektite.dawn", "Yawzi.peak_photo-Yawzi.dawn",
+                              "Tektite.dawn-LB_seagrass.dawn", "Yawzi.dawn-LB_seagrass.dawn", "Yawzi.dawn-Tektite.dawn",
+                              "Tektite.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-LB_seagrass.peak_photo", "Yawzi.peak_photo-Tektite.peak_photo",
+                              levels= mod_mat )
+
+data_mat <- usvi_sw_asv.tbl %>%
+  dplyr::select(rownames(contrast_mat_order)) %>%
+  apply(., 2, function(x) log2(x + 1))
+
+fit <- limma::lmFit(data_mat, mod_mat) %>%
+  limma::contrasts.fit(., contrasts=cmtx, coefficients=NULL)
+fit2 <- eBayes(fit)
+topTable(fit2,coef=2)
+volcanoplot(fit2,coef=2,highlight=2)
+
+limma.res <- decideTests(fit2, method="nestedF", adjust.method="fdr", p.value = 0.05)
+summary(limma.res)
+
+
+

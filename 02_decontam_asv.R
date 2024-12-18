@@ -1,7 +1,6 @@
 # 02_asv_analysis.R
 
 # Resource allocation time ------------------------------------------------
-
 if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
   cat("Preparing resource allocations.")
   source(paste0(getwd(), "/", "00_resource_allocation.R"), local = FALSE,
@@ -70,6 +69,8 @@ if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
   }
   
 }
+# Load additional packages ------------------------------------------------
+
 
 library(tidyverse)
 library(phyloseq)
@@ -140,6 +141,45 @@ temporal_lookup <- list(sampling_time = c("dawn", "peak_photo", NA),
                         site = c("Tektite", "Yawzi", "LB_seagrass", NA),
                         sample_type = c("seawater", "control_extraction", "control_pcr", "control_seq"))
 
+if(file.exists(paste0(projectpath, "/", "usvi_metadata.txt"))){
+  
+  sample_metadata <- readr::read_delim(paste0(projectpath, "/", "usvi_metadata.txt"),
+                                       delim = "\t",
+                                       quote = "",
+                                       col_names = TRUE,
+                                       show_col_types = FALSE,
+                                       num_threads = nthreads) %>%
+    # sample_metadata <- metadata %>%
+    dplyr::mutate(batch = dplyr::case_when((sample_ID %in% c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235")) ~ "1",
+                                           .default = "2")) %>%
+    dplyr::mutate(dna_conc = dplyr::case_when(!grepl("seawater", sample_type) & is.na(dna_conc) ~ 0.001,
+                                              .default = dna_conc)) %>%
+    dplyr::mutate(is.neg = dplyr::case_when((sample_type == "seawater") ~ FALSE,
+                                            .default = TRUE))
+  #maybe randomize potential dna concentrations for the 8 samples extracted during the Spike-in project that did not get DNA concentration quantified
+  if(any(is.na(sample_metadata$dna_conc))){
+    seawater_dna_conc <- sample_metadata %>%
+      dplyr::filter(grepl("seawater", sample_type)) %>%
+      dplyr::select(dna_conc) %>%
+      droplevels %>%
+      unlist
+    
+    seawater_dna_prob <- quantile(seawater_dna_conc, probs = seq(0.25, 1, 0.25), na.rm = TRUE, names = TRUE)
+    
+    set.seed(48105)
+    temp_conc <- data.frame(sample_id = c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235"),
+                            dna_conc = F_random_sampler(8, x = seawater_dna_conc, seawater_dna_prob)) %>%
+      dplyr::mutate(dna_conc = as.numeric(dna_conc))
+    sample_metadata <- sample_metadata %>%
+      dplyr::left_join(., temp_conc, by = join_by("sample_ID" == "sample_id")) %>%
+      dplyr::mutate(dna_conc = across(starts_with("dna_conc")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      
+      droplevels
+  }
+  
+}
+
 if(file.exists(paste0(projectpath, "/", "usvi_metadata_tidy.txt"))){
   metadata <- readr::read_delim(paste0(projectpath, "/", "usvi_metadata_tidy.txt"),
                                 delim = "\t",
@@ -152,40 +192,7 @@ if(file.exists(paste0(projectpath, "/", "usvi_metadata_tidy.txt"))){
   #Metab_180, Metab_182, Metab_199, Metab_219, Metab_224, Metab_231, Metab_233, Metab_235
   # c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235")
   
-sample_metadata <- readr::read_delim(paste0(projectpath, "/", "usvi_metadata.txt"),
-                                     delim = "\t",
-                                     quote = "",
-                                     col_names = TRUE,
-                                     show_col_types = FALSE,
-                                     num_threads = nthreads) %>%
-# sample_metadata <- metadata %>%
-  dplyr::mutate(batch = dplyr::case_when((sample_ID %in% c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235")) ~ "1",
-                                         .default = "2")) %>%
-  dplyr::mutate(dna_conc = dplyr::case_when(!grepl("seawater", sample_type) & is.na(dna_conc) ~ 0.001,
-                                            .default = dna_conc)) %>%
-  dplyr::mutate(is.neg = dplyr::case_when((sample_type == "seawater") ~ FALSE,
-                                          .default = TRUE))
-#maybe randomize potential dna concentrations for the 8 samples extracted during the Spike-in project that did not get DNA concentration quantified
-if(any(is.na(sample_metadata$dna_conc))){
-  seawater_dna_conc <- sample_metadata %>%
-    dplyr::filter(grepl("seawater", sample_type)) %>%
-    dplyr::select(dna_conc) %>%
-    droplevels %>%
-    unlist
-  
-  seawater_dna_prob <- quantile(seawater_dna_conc, probs = seq(0.25, 1, 0.25), na.rm = TRUE, names = TRUE)
-  
-  set.seed(48105)
-  temp_conc <- data.frame(sample_id = c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235"),
-                          dna_conc = F_random_sampler(8, x = seawater_dna_conc, seawater_dna_prob)) %>%
-    dplyr::mutate(dna_conc = as.numeric(dna_conc))
-  sample_metadata <- sample_metadata %>%
-    dplyr::left_join(., temp_conc, by = join_by("sample_ID" == "sample_id")) %>%
-    dplyr::mutate(dna_conc = across(starts_with("dna_conc")) %>% purrr::reduce(coalesce)) %>%
-    dplyr::select(-ends_with(c(".x", ".y"))) %>%
 
-    droplevels
-}
 
 metadata <- sample_metadata %>%
   dplyr::select(contains("sampl"), site) %>%
@@ -1044,7 +1051,7 @@ labeller_is.neg <- c(`TRUE` = "negative control",
 labeller_contaminant <- c(`TRUE` = "potential contaminant", 
                           `FALSE` = "not flagged as contaminant")
 
-#these ASVs were flagged through DADA2 as potential contaminants.
+#these ASVs were flagged through decontam as potential contaminants.
 # species_contam_both: ASV_00267 and all ASVs of the same taxonomy (through freq and prev) (1)
 # species_contam_only_prev: all others in prevalence that were present in negative controls (10 total)
 # species_contam_neither: all others that were present in as many negative control samples as in seawater, or flagged through prevalence because not present at all in seawater (10)
@@ -1144,7 +1151,21 @@ drop_species_asvs.df <- plot_potential_contam.df %>%
   droplevels
 
 
+#how many different species?
+temp_df <- usvi_prok_asvs.df %>%
+  dplyr::filter(asv_id %in% drop_species_asvs.df[["asv_id"]]) %>%
+  dplyr::filter(grepl("Metab_", sample_ID) & !grepl("Metab_K", sample_ID))%>%
+  tidyr::pivot_wider(., id_cols = "asv_id",
+                     names_from = "sample_ID",
+                     values_from = "counts") %>%
+  otu_to_taxonomy(., drop_species_asvs.df, level = "Species")
 
+temp_mat <- temp_df %>% 
+  dplyr::left_join(., usvi_prok_filled.taxa.df, relationship = "many-to-many", multiple = "first") %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  dplyr::select(starts_with("Metab"))
+range(rowSums(temp_mat))
+range(colSums(temp_mat))
 
 #remove the contaminant asvs
 drop_species_asvs_idx <- drop_species_asvs.df %>%

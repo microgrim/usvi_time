@@ -189,6 +189,24 @@ hobo_df2 <- readr::read_delim(paste0("/Users/sharongrim/projects/apprill/usvi_te
 hobo_df <- hobo_df %>%
   dplyr::left_join(., hobo_df2 %>% dplyr::select(order, site, lumens, temp))
 
+
+#to look at intervals of time:
+# interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 11:00:00", tz = "America/Virgin")) 
+# interval_vector_peak <- list(interval,
+#                              lubridate::int_shift(interval, days(1)),
+#                              lubridate::int_shift(interval, days(2)),
+#                              lubridate::int_shift(interval, days(3)),
+#                              lubridate::int_shift(interval, days(4)),
+#                              lubridate::int_shift(interval, days(5)))
+# 
+# interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 04:00:00", tz = "America/Virgin")) 
+# interval_vector_dawn <- list(interval,
+#                              lubridate::int_shift(interval, days(1)),
+#                              lubridate::int_shift(interval, days(2)),
+#                              lubridate::int_shift(interval, days(3)),
+#                              lubridate::int_shift(interval, days(4)),
+#                              lubridate::int_shift(interval, days(5)))
+
 if(!file.exists(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv"))){
   readr::write_delim(hobo_df, paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv", ".gz"), delim = "\t", col_names = TRUE)
 }

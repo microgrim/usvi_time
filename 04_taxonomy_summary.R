@@ -177,14 +177,14 @@ sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
   setNames(., names(sampling_day_lookup))
 
 # find existing processed files -------------------------------------------
-to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa")
+to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa", "usvi_prok_decontam_idx")
 
 for(file in to_import){
   if(!exists(file, envir = .GlobalEnv)){
     namevar <- file
     if(file.exists(paste0(projectpath, "/", namevar, ".tsv", ".gz"))){
       cli::cli_alert_info("Importing this dataset: {namevar}")
-      temp_df <- readr::read_delim(paste0(projectpath, "/", namevar, ".tsv", ".gz"),
+      temp_df <- readr::read_delim(paste0(projectpath, "/", namevar, ".tsv", ".gz"), 
                                    col_names = TRUE, show_col_types = FALSE, delim = "\t", num_threads = nthreads)
       assign(paste0(namevar), temp_df, envir = .GlobalEnv)
       rm(temp_df)
@@ -195,6 +195,24 @@ for(file in to_import){
   }
 }
 
+if(ncol(usvi_prok_decontam_idx) == 1){
+  usvi_prok_decontam_idx <- usvi_prok_decontam_idx %>%
+    tidyr::separate_wider_delim(1, names = c("asv_id", "keep"), delim = " ", cols_remove = TRUE, too_few = "align_start")
+}
+
+usvi_prok_asvs.taxa <- usvi_prok_asvs.taxa %>%
+  dplyr::left_join(., usvi_prok_decontam_idx, by = join_by(asv_id)) %>%
+  dplyr::filter(keep == TRUE) %>%
+  dplyr::select(-keep) %>%
+  droplevels
+
+usvi_prok_asvs.df <- usvi_prok_asvs.df %>%
+  dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
+  droplevels
+usvi_prok_asvs.df %>%
+  dplyr::filter(grepl("Metab_", sample_ID)) %>%
+  dplyr::filter(!grepl("Metab_K", sample_ID)) %>%
+  dplyr::summarise(num_seqs = sum(counts), num_samples = length(unique(.$sample_ID)))
 #replace NA in taxonomy with last known level
 
 usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
@@ -213,7 +231,6 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
   droplevels
 
 
-
 if(!exists("ps_usvi", envir = .GlobalEnv)){
   if(file.exists(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))){
     # ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_phyloseq", ".rds"))
@@ -227,6 +244,7 @@ if(!exists("ps_usvi", envir = .GlobalEnv)){
 # Summarize sequencing effort ---------------------------------------------
 
 usvi_seq_summary.df <- ps_usvi %>%
+  phyloseq::subset_samples(., sample_type == "seawater") %>%
   phyloseq::otu_table(.) %>%
   as.data.frame %>%
   dplyr::slice(which(rowSums(.) > 0)) %>%
@@ -245,6 +263,43 @@ usvi_seq_summary.df <- ps_usvi %>%
                 # sampling_date = factor(sampling_date, levels = temporal_lookup[["sampling_date"]]),
                 sampling_day = factor(sampling_day, levels = temporal_lookup[["sampling_day"]])) %>%
   droplevels
+
+usvi_seq_summary.df %>%
+  dplyr::group_by(site, sampling_time) %>%
+  dplyr::summarise(across(contains("total_seqs"), list(mean = mean, min = min, max = max, median = median))) %>%
+  droplevels
+# sampling_time total_seqs_mean total_seqs_min total_seqs_max total_seqs_median
+#   1 dawn                   85480.          13942         118596             85640
+# 2 peak_photo             89229.          18535         114556             93335
+
+temp_list <- usvi_seq_summary.df %>%
+  dplyr::select(sample_id, site, sampling_time, total_seqs) %>%
+  split(., f = interaction(.$site, .$sampling_time)) %>%
+  map(., ~.x %>%
+        dplyr::select(total_seqs) %>%
+        tibble::deframe(.))
+
+kruskal.test(temp_list)
+# Kruskal-Wallis rank sum test
+# 
+# data:  temp_list
+# Kruskal-Wallis chi-squared = 4.8814, df = 5, p-value = 0.4305
+
+
+usvi_seq_summary.tsv <- usvi_seq_summary.df %>%
+  dplyr::arrange(site, sampling_day, sampling_time, sample_order) %>%
+  dplyr::select(sample_id, site, sampling_day, sampling_time, sample_order, total_seqs) %>%
+  dplyr::mutate(sampling_time = recode(sampling_time, !!!sampling_time_lookup)) %>%
+  # dplyr::mutate(sampling_time = dplyr::case_when(grepl("peak", sampling_time) ~ "afternoon", .default = sampling_time)) %>%
+  dplyr::mutate(site = recode(site, !!!site_lookup)) %>%
+  droplevels
+
+if(!file.exists(paste0(projectpath, "/", "usvi_seq_summary.tsv", ".gz"))){
+  
+  readr::write_delim(usvi_seq_summary.tsv, paste0(projectpath, "/", "usvi_seq_summary.tsv", ".gz"),
+                     delim = "\t", col_names = TRUE)
+  
+}
 
 temp_df <- ps_usvi %>%
   phyloseq::subset_samples(., sample_type == "seawater") %>%
@@ -266,6 +321,8 @@ usvi_seq_summary.df %>%
   dplyr::group_by(sample_type, site) %>%
   dplyr::summarise(mean = mean(total_seqs),
                    max = max(total_seqs))
+usvi_seq_summary.df %>%
+  dplyr::summarise(num_seqs = sum(total_seqs))
 
 #note that the following samples were sequenced in a separate run:
 #Metab_180, Metab_182, Metab_199, Metab_219, Metab_224, Metab_231, Metab_233, Metab_235

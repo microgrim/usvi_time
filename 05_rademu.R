@@ -136,14 +136,14 @@ if(file.exists(paste0(projectpath, "/", "usvi_metadata_tidy.txt"))){
 
 
 # find existing processed files -------------------------------------------
-to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa")
+to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa", "usvi_prok_decontam_idx")
 
 for(file in to_import){
   if(!exists(file, envir = .GlobalEnv)){
     namevar <- file
     if(file.exists(paste0(projectpath, "/", namevar, ".tsv", ".gz"))){
       cli::cli_alert_info("Importing this dataset: {namevar}")
-      temp_df <- readr::read_delim(paste0(projectpath, "/", namevar, ".tsv", ".gz"),
+      temp_df <- readr::read_delim(paste0(projectpath, "/", namevar, ".tsv", ".gz"), 
                                    col_names = TRUE, show_col_types = FALSE, delim = "\t", num_threads = nthreads)
       assign(paste0(namevar), temp_df, envir = .GlobalEnv)
       rm(temp_df)
@@ -153,6 +153,36 @@ for(file in to_import){
     }
   }
 }
+if(ncol(usvi_prok_decontam_idx) == 1){
+  usvi_prok_decontam_idx <- usvi_prok_decontam_idx %>%
+    tidyr::separate_wider_delim(1, names = c("asv_id", "keep"), delim = " ", cols_remove = TRUE, too_few = "align_start")
+}
+usvi_prok_asvs.taxa <- usvi_prok_asvs.taxa %>%
+  dplyr::left_join(., usvi_prok_decontam_idx, by = join_by(asv_id)) %>%
+  droplevels
+temp_df <- usvi_prok_asvs.taxa %>%
+  dplyr::filter(keep == FALSE) %>%
+  droplevels
+  
+#replace NA in taxonomy with last known level
+
+usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
+  dplyr::filter(keep == TRUE) %>%
+  dplyr::select(-keep) %>%
+  dplyr::mutate(Phylum = coalesce(Phylum, Domain)) %>%
+  dplyr::mutate(Class = coalesce(Class, Phylum)) %>%
+  dplyr::mutate(Order = coalesce(Order, Class)) %>%
+  dplyr::mutate(Family = coalesce(Family, Order)) %>%
+  dplyr::mutate(Genus = coalesce(Genus, Family)) %>%
+  dplyr::mutate(Species = coalesce(Species, Genus)) %>%
+  dplyr::mutate(across(everything(), ~factor(.x))) %>%
+  dplyr::relocate(asv_id) %>%
+  dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+                                          grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+                                          .default = Phylum)) %>%
+  
+  droplevels
+
 
 if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))){
   metabolomics_sample_metadata <- readr::read_delim(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"), delim = "\t", col_names = TRUE, show_col_types = FALSE)
@@ -160,20 +190,27 @@ if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))
   cli::cli_alert_warning("Please process the metabolomics sample data previously.")
 }
 
+
 #replace NA in taxonomy with last known level
 
 usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
+  dplyr::left_join(., usvi_prok_decontam_idx, by = join_by(asv_id)) %>%
+  dplyr::filter(keep == TRUE) %>%
+  dplyr::select(-keep) %>%
   dplyr::mutate(Phylum = coalesce(Phylum, Domain)) %>%
   dplyr::mutate(Class = coalesce(Class, Phylum)) %>%
   dplyr::mutate(Order = coalesce(Order, Class)) %>%
   dplyr::mutate(Family = coalesce(Family, Order)) %>%
   dplyr::mutate(Genus = coalesce(Genus, Family)) %>%
   dplyr::mutate(Species = coalesce(Species, Genus)) %>%
+  dplyr::mutate(across(everything(), ~factor(.x))) %>%
   dplyr::relocate(asv_id) %>%
   dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
                                           grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
                                           .default = Phylum)) %>%
+  
   droplevels
+
 
 
 

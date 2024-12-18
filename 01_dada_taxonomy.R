@@ -198,14 +198,34 @@ if(!file.exists(paste0(projectpath, "/", "usvi_nochim_asvs.df", ".tsv", ".gz")))
 
 
 # Remove any non-bact and arch sequences ----------------------------------
+#how many chloroplast, mito, euk?
+drop <- c("Chloroplast", "mitochondria", "eukary")
+usvi_euk_asvs.taxa.df <- usvi_nochim_asvs.taxa.df %>%
+  dplyr::filter(if_any(c("Domain":"Species"), ~grepl(paste0(drop, collapse = "|"), .x, ignore.case = TRUE))) %>%
+  droplevels
 
+usvi_nochim_asvs.df <- readr::read_delim(paste0(projectpath, "/", "usvi_nochim_asvs.df", ".tsv.gz"),
+                                            delim = "\t", col_names = TRUE, num_threads = nthreads, show_col_types = FALSE)
+usvi_euk_asvs.df <- usvi_nochim_asvs.df %>%
+  dplyr::filter(asv_id %in% usvi_euk_asvs.taxa.df[["asv_id"]]) %>%
+  droplevels
+temp_mat2 <- usvi_euk_asvs.df %>%
+  dplyr::filter(grepl("Metab_", sample_ID) & !grepl("Metab_K", sample_ID))%>%
+  tidyr::pivot_wider(., id_cols = "asv_id",
+                     names_from = "sample_ID",
+                     values_from = "counts") %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  dplyr::select(starts_with("Metab")) 
+range(rowSums(temp_mat2))
+range(colSums(temp_mat2))
+sum(temp_mat2)
 
 #drop any chlorphyll, mitochondria, eukaryotic sequences
 if(!exists("usvi_prok_asvs.taxa.df", envir = .GlobalEnv) & file.exists(paste0(projectpath, "/", "usvi_prok_asvs.taxa.tsv", ".gz"))){
   usvi_prok_asvs.taxa.df <- readr::read_delim(paste0(projectpath, "/", "usvi_prok_asvs.taxa.tsv", ".gz"),
                                                delim = "\t", col_names = TRUE, num_threads = nthreads, show_col_types = FALSE)
 } else if(!file.exists(paste0(projectpath, "/", "usvi_prok_asvs.taxa.tsv", ".gz")) & exists("usvi_nochim_asvs.taxa.df", envir = .GlobalEnv)){
-  drop <- c("Chloroplast", "mitochondria", "eukary")
+  
   usvi_prok_asvs.taxa.df <- usvi_nochim_asvs.taxa.df %>%
     # dplyr::filter(if_all(c("Kingdom":"Species"), ~!grepl(paste0(drop, collapse = "|"), .x, ignore.case = TRUE))) %>%
     dplyr::filter(if_all(c("Domain":"Species"), ~!grepl(paste0(drop, collapse = "|"), .x, ignore.case = TRUE))) %>%
