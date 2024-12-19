@@ -1,6 +1,6 @@
 # 07_taxa_metabolites_nmds.R
 
-#evaluate realtionships to metabolites
+#evaluate metabolome and microbiomes via NMDS
 
 # Resource allocation time ------------------------------------------------
 
@@ -131,7 +131,6 @@ for(file in to_import){
 
 if(!exists("ps_usvi", envir = .GlobalEnv)){
   if(file.exists(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))){
-    # ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_phyloseq", ".rds"))
     ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))
   } else {
     cli::cli_alert_warning("Please process the USVI data through Phyloseq.")
@@ -189,7 +188,6 @@ site_lookup <- data.frame(site = c("LB_seagrass", "Tektite", "Yawzi", "control_e
                                     "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%
   tibble::deframe(.)
 site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
-  # site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
   setNames(., names(site_lookup))
 sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
                                    label = c("Dawn", "Peak photosynthesis")) %>%
@@ -295,15 +293,9 @@ sample_relabel2 <- metabolomics_sample_metadata %>%
   dplyr::select(sample_id, metab_deriv_label) %>%
   dplyr::mutate(metab_deriv_label = dplyr::case_when(metab_deriv_label %in% potential_metab_outliers_idx ~ paste0(metab_deriv_label, "*"),
                                                      .default = metab_deriv_label)) %>%
-  # tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time), sep = "_", remove = TRUE)  %>%
   tibble::deframe(.)
-# nutrients_seawater.df <- ps_usvi %>%
-#   phyloseq::sample_data(.) %>%
-#   tibble::as_tibble(rownames = "sample_id") %>%
-#   dplyr::filter(grepl("seawater", sample_type)) %>%
-#   droplevels
 
-cinar_npoc_tn.df <- readxl::read_excel(paste0("/Users/sharongrim/projects/apprill/usvi_temporal/CINAR_NPOCandTNdata.2022.04.06.xlsx")) %>%
+cinar_npoc_tn.df <- readxl::read_excel(paste0(dirname(projectpath), "/CINAR_NPOCandTNdata.2022.04.06.xlsx")) %>%
   dplyr::mutate(doc_label = dplyr::case_when(grepl("CINAR", filename) ~ stringr::str_remove_all(filename, "CINAR_"),
                                              .default = filename)) %>%
   droplevels
@@ -314,7 +306,6 @@ usvi_npoc_tn.df <- ps_usvi %>%
   dplyr::filter(grepl("seawater", sample_type)) %>%
   droplevels %>%
   dplyr::select(sample_id, sample_type, site, sampling_date, sampling_time, sampling_day, doc_label) %>%
-  # dplyr::select(sample_id, sample_type, site, sampling_date, sampling_time, sampling_day, contains("metab"), doc_label) %>%
   dplyr::mutate(doc_label = factor(doc_label)) %>%
   dplyr::left_join(., metadata %>%
                      dplyr::select(sample_id, sample_order, sample_order_all),
@@ -323,7 +314,6 @@ usvi_npoc_tn.df <- ps_usvi %>%
                      dplyr::filter(grepl("CINAR", filename)) %>%
                      dplyr::select(filename, `NPOC(uM)`, `TN(uM)`, doc_label) %>%
                      dplyr::mutate(doc_label = factor(doc_label)) %>%
-                     # dplyr::mutate(doc_label = as.numeric(doc_label)) %>%
                      droplevels,
                    by = join_by(doc_label)) %>%
   dplyr::rename(NPOC = "NPOC(uM)",
@@ -375,7 +365,6 @@ g_nuts1 <- print(ggplot(data = usvi_npoc_tn.df %>%
                    position = position_jitterdodge(jitter.width = 0.1),
                    shape = 21)
       + theme_bw()
-      # + facet_wrap(nutrient ~ site, drop = TRUE, scales = "free", 
       + facet_grid(nutrient ~ site, drop = TRUE, scales = "free", space = "free_x",
                    labeller = labeller(site = site_lookup))
       + scale_x_discrete(labels = sample_relabel, name = "Sample time")
@@ -388,20 +377,14 @@ g_nuts1 <- print(ggplot(data = usvi_npoc_tn.df %>%
 
 g_nuts2 <- print(ggplot(data = usvi_npoc_tn.df %>%
                           dplyr::distinct(sample_id, nutrient, .keep_all = TRUE) %>%
-                    # dplyr::filter(!grepl("73|43", metab_deriv_label)) %>%
                     droplevels)
            + geom_boxplot(aes(x = sample_id, y = concentration, fill = sampling_time, group = interaction(sampling_day, sampling_time)))
-           + geom_point(aes(x = sample_id,
-                            y = concentration, fill = sampling_time, 
-                            group = interaction(sampling_day, sampling_time)), 
-                        position = position_jitterdodge(jitter.width = 0.1),
+           + geom_point(aes(x = sample_id, y = concentration, fill = sampling_time, group = interaction(sampling_day, sampling_time)), 
+                        position = position_jitterdodge(jitter.width = 0.1, seed= 48105),
                         shape = 21)
            + theme_bw()
-           + geom_text(aes(label = potential_outlier, x = sample_id, 
-                           y = potential_outlier_y,
-                           # y = concentration*0.7,
-                           group = interaction(sampling_day, sampling_time)),
-                                       stat = "identity", position = position_jitter(width = 0.1, height = 0), size =5,
+           + geom_text(aes(label = potential_outlier, x = sample_id, y = potential_outlier_y, group = interaction(sampling_day, sampling_time)),
+                                       stat = "identity", position = position_jitter(width = 0.1, height = 0, seed = 48105), size =5,
                                        colour = "black", fontface = "bold")
            + scale_fill_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
            + facet_grid(nutrient ~ site, drop = TRUE, scales = "free", space = "fixed", 
@@ -625,7 +608,6 @@ for(i in seq_len(5)){
 
 gpatch <- lapply(apropos("^g2_metab_.$", mode = "list"),
                  get) %>%
-  # setNames(., names(highq_mtg_grouping_idx)[1:6]) %>%
   purrr::reduce(., `+`) + 
   patchwork::plot_layout(guides = "collect") &
   theme(legend.position="none")
@@ -690,66 +672,63 @@ if(!any(grepl("metab_filtered", list.files(projectpath, pattern = "usvi_.*.png")
 
 # Check glutamic acid concentrations --------------------------------------
 
+#tangent:
 #Melissa determined that glutamic acid and o-acetyl serine derivatized fragments show up as the same peak
 #so concentrations of glutamic acid might incorporate measured o-acetyl serine if it is not independently identified in Skyline
 #we don't have o-acetyl-serine in this dataset, but...
 #do glutamic acid, cysteine, glutathione,and serine trend in any way?
 
-temp_sus_metab_idx <- c("glutamic acid", "cysteine", "glutathione", "serine")
-temp_df <- usvi_metab_summary.df %>%
-  dplyr::filter(grepl(paste0("^", temp_sus_metab_idx, collapse = "|"), metabolite)) %>%
-  dplyr::distinct(metab_deriv_label, metabolite, .keep_all = TRUE) %>%
-  dplyr::mutate(across(c(sample_id, metabolite, sampling_time, sampling_day, site, metab_deriv_label), ~factor(.x))) %>%
-  droplevels
-temp_tbl <- temp_df %>%
-  # dplyr::mutate(concentration = log2(concentration + 1)) %>%
-  tidyr::pivot_wider(., id_cols = c("metab_deriv_label", "sampling_time", "sampling_day", "site"),
-                     names_from = "metabolite", 
-                     values_from = "concentration")
-temp_lm <- lm(serine ~ `glutamic acid` - 1, temp_tbl)
-anova(temp_lm)
-summary(temp_lm) #equivalent to temp_lm$coefficients
-
-lm(`glutamic acid` ~ `serine` - 1, temp_tbl) %>%
-# lm(1/`glutamic acid` ~ `serine` - 1, temp_tbl) %>%
-  summary(.)
-lm(`cysteine 2` ~ serine - 1, temp_tbl) %>%
-  summary(.)
-lm(`glutathione 2` ~ `cysteine 2` - 1, temp_tbl) %>%
-  summary(.)
-lm(`glutathione 2` ~ `serine` - 1, temp_tbl) %>%
-  summary(.)
-
-ggplot(temp_tbl) + geom_point(aes(x = `glutamic acid`, y = serine))
-
-temp_g <- print(
-  ggplot(data = temp_df)
-  + geom_point(aes(x = interaction(site,sampling_time, sampling_day), y = concentration, fill = metabolite, group = interaction(site,sampling_time, sampling_day), shape = sampling_time),
-               position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
-               alpha = 1.0, size = 3)
-  + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Concentration", transform = "log10")
-  # + scale_fill_manual(values = metab_colors, labels = names(metab_colors), name = "Metabolite")
-  + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
-  + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-          panel.grid = element_blank(),
-          legend.position = "right",
-          legend.key = element_blank(),
-          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-          legend.text = element_text(size = 12, colour = "grey30"))
-  # + facet_grid(space = "fixed", rows = NULL, cols = vars(site),
-  #              # + facet_wrap(grouping~site,
-  #              drop = TRUE, scales = "free", shrink = TRUE,
-  #              labeller = labeller(site = site_lookup))
-  + facet_grid(.~sampling_time, drop = TRUE, scales = "free", space = "fixed",
-               labeller = labeller(sampling_time = sampling_time_lookup))
-  + guides(color = "none",
-           fill = guide_legend(order = 2, ncol = 2, title = "Metabolite", direction = "vertical",
-                               override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-           shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
-                                override.aes = list(color = "black", stroke = 1, size = 2)))
-)
+{
+  # temp_sus_metab_idx <- c("glutamic acid", "cysteine", "glutathione", "serine")
+  # temp_df <- usvi_metab_summary.df %>%
+  #   dplyr::filter(grepl(paste0("^", temp_sus_metab_idx, collapse = "|"), metabolite)) %>%
+  #   dplyr::distinct(metab_deriv_label, metabolite, .keep_all = TRUE) %>%
+  #   dplyr::mutate(across(c(sample_id, metabolite, sampling_time, sampling_day, site, metab_deriv_label), ~factor(.x))) %>%
+  #   droplevels
+  # temp_tbl <- temp_df %>%
+  #   tidyr::pivot_wider(., id_cols = c("metab_deriv_label", "sampling_time", "sampling_day", "site"),
+  #                      names_from = "metabolite", 
+  #                      values_from = "concentration")
+  # temp_lm <- lm(serine ~ `glutamic acid` - 1, temp_tbl)
+  # anova(temp_lm)
+  # summary(temp_lm) #equivalent to temp_lm$coefficients
+  # 
+  # lm(`glutamic acid` ~ `serine` - 1, temp_tbl) %>%
+  #   summary(.)
+  # lm(`cysteine 2` ~ serine - 1, temp_tbl) %>%
+  #   summary(.)
+  # lm(`glutathione 2` ~ `cysteine 2` - 1, temp_tbl) %>%
+  #   summary(.)
+  # lm(`glutathione 2` ~ `serine` - 1, temp_tbl) %>%
+  #   summary(.)
+  # 
+  # ggplot(temp_tbl) + geom_point(aes(x = `glutamic acid`, y = serine))
+  # 
+  # temp_g <- print(
+  #   ggplot(data = temp_df)
+  #   + geom_point(aes(x = interaction(site,sampling_time, sampling_day), y = concentration, fill = metabolite, group = interaction(site,sampling_time, sampling_day), shape = sampling_time),
+  #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
+  #                alpha = 1.0, size = 3)
+  #   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Concentration", transform = "log10")
+  #   + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
+  #   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
+  #           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+  #           panel.grid = element_blank(),
+  #           legend.position = "right",
+  #           legend.key = element_blank(),
+  #           axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+  #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+  #           legend.text = element_text(size = 12, colour = "grey30"))
+  #   + facet_grid(.~sampling_time, drop = TRUE, scales = "free", space = "fixed",
+  #                labeller = labeller(sampling_time = sampling_time_lookup))
+  #   + guides(color = "none",
+  #            fill = guide_legend(order = 2, ncol = 2, title = "Metabolite", direction = "vertical",
+  #                                override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+  #            shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
+  #                                 override.aes = list(color = "black", stroke = 1, size = 2)))
+  # )
+  # 
+}
 
 
 # NMDS on metabolomics profiles -------------------------------------------
@@ -778,8 +757,6 @@ temp_g <- print(
                      by = c("label" = "metab_deriv_label")) %>%
     #add labels:
     dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-    # dplyr::mutate(text_label = dplyr::case_when((grepl("73|43|44|42|70|74|69|67|71|101|108|105", label) | label %in% potential_metab_outliers_idx)~ label,
-                                                # dplyr::mutate(text_label = dplyr::case_when(grepl("73|43|44|42|70|74|69|67|71|101|108|105", label) ~ label,
                                                 .default = NA)) %>%
     droplevels
   nmds_metab_log2_df <- usvi_metabolomics.df %>%
@@ -800,64 +777,22 @@ temp_g <- print(
                      by = c("label" = "metab_deriv_label")) %>%
     #add labels:
     dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-    # dplyr::mutate(text_label = dplyr::case_when(grepl("73|43|44|42|70|74|69|67|71|101|108|105", label) ~ label,
                                                 .default = NA)) %>%
     droplevels
   
 
 
   ylim <- bind_rows(nmds_metab_df, nmds_metab_log2_df) %>%
-  # ylim <- nmds_metab_df %>%
     dplyr::filter(!grepl("ASV", type)) %>%
     dplyr::select(NMDS2) %>%
     simplify
   xlim <- bind_rows(nmds_metab_df, nmds_metab_log2_df) %>%
-  # xlim <- nmds_metab_df %>%
     dplyr::filter(!grepl("ASV", type)) %>%
     dplyr::select(NMDS1) %>%
     simplify
   nmds_lims <- list(ylim = c(round(min(ylim), digits = 4), round(max(ylim), digits = 4)) * 1.1,
                     xlim = c(round(min(xlim), digits = 4), round(max(xlim), digits = 4)) * 1.1)
-  # g3 <- (ggplot(data = nmds_metab_df,
-  #              aes(x = NMDS1, y = NMDS2))
-  # + theme(text = element_text(size=14))
-  # + geom_point(data = (nmds_metab_df %>%
-  #                                 dplyr::filter(type == "sample") %>%
-  #                                 droplevels),
-  #                       aes(fill = site, shape = addNA(sampling_time)), color = "black",
-  #                       size = 5, stroke = 2, alpha = 1)
-  # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-  #                             direction = "both", segment.color = NA, seed = 123,
-  #                             force = 1, force_pull = 1,
-  #                             point.padding = unit(0.01, "npc"),
-  #                             box.padding = unit(0.01, "npc"),
-  #                             colour = "black", fontface = "bold")
-  #   # + geom_text(aes(label = text_label, x = NMDS1, vjust = "outward", hjust = "center", y = NMDS2),
-  #   #             position = "dodge",
-  #   #             check_overlap = TRUE, colour = "grey10", fontface = "bold")
-  # + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
-  # + scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
-  # + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-  #                  panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-  #                  panel.grid = element_blank(),
-  #                  legend.position = "bottom",
-  #                  legend.key = element_blank(),
-  #                  legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-  #                  legend.text = element_text(size = 12, colour = "grey30"))
-  # + guides(color = "none",
-  #                   fill = guide_legend(order = 2, ncol = 1, title = "Site", direction = "vertical",
-  #                                       override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-  #                   shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
-  #                                        override.aes = list(color = "black", stroke = 1, size = 2)))
-  # + coord_cartesian(ylim = nmds_lims[["ylim"]],
-  #                            xlim = nmds_lims[["xlim"]],
-  #                            expand = TRUE)
-  # )
-  # g3 + facet_grid(. ~ site, drop = TRUE, scales = "free", space = "fixed", 
-  #                     labeller = labeller(site = site_lookup))  + coord_cartesian(ylim = nmds_lims[["ylim"]],
-  #                                                                                 xlim = nmds_lims[["xlim"]],
-  #                                                                                 expand = TRUE)
-  # print(g3)
+  
   
   g3_ell <- (ggplot(data = nmds_metab_df,
                 aes(x = NMDS1, y = NMDS2))
@@ -868,12 +803,7 @@ temp_g <- print(
                       aes(shape = site, fill = addNA(sampling_time)), color = "black",
                       size = 5, stroke = 2, alpha = 1)
          + ggrepel::geom_text_repel(aes(label = gsub("CINAR_BC_", "", label), x = NMDS1, y = NMDS2),
-         # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-                                     direction = "both", segment.color = NA, seed = 123,
-                                     force = 1, force_pull = 1,
-                                     point.padding = unit(0.01, "npc"),
-                                     box.padding = unit(0.01, "npc"),
-                                     colour = "black", fontface = "bold")
+                                     direction = "both", segment.color = NA, seed = 48105, force = 1, force_pull = 1, point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "black", fontface = "bold")
          + stat_ellipse(aes(color = sampling_time,  group = interaction(site, sampling_time)), 
                         type = "norm", 
                         level = 0.95,
@@ -909,16 +839,10 @@ temp_g <- print(
                           aes(shape = site, fill = addNA(sampling_time)), color = "black",
                           size = 5, stroke = 2, alpha = 1)
              + ggrepel::geom_text_repel(aes(label = gsub("CINAR_BC_", "", label), x = NMDS1, y = NMDS2),
-                                             # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-                                         direction = "both", segment.color = NA, seed = 123,
-                                         force = 1, force_pull = 1,
-                                         point.padding = unit(0.01, "npc"),
-                                         box.padding = unit(0.01, "npc"),
-                                         colour = "black", fontface = "bold")
+                                         direction = "both", segment.color = NA, seed = 48105,
+                                         force = 1, force_pull = 1, point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "black", fontface = "bold")
              + stat_ellipse(aes(color = sampling_time,  group = interaction(site, sampling_time)), 
-                            type = "norm", 
-                            level = 0.95,
-                            geom = "polygon", alpha = 0.05, show.legend = FALSE)
+                            type = "norm", level = 0.95, geom = "polygon", alpha = 0.05, show.legend = FALSE)
              + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
              + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
              + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
@@ -964,14 +888,12 @@ usvi_metab.meta <- metabolomics_sample_metadata %>%
   dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
   dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site) %>%
   dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
-  # dplyr::select(!c(contains("label"), contains("dna_"))) %>%
   tibble::column_to_rownames(., var = "metab_deriv_label") %>%
   droplevels
 
 dist_usvi_metab.d <- vegan::vegdist(usvi_metab.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
 dist_usvi_metab.df <- vegan::betadisper(dist_usvi_metab.d, type = "median",
                                        usvi_metab.meta$grouping) %>%
-                                        # interaction(usvi_metab.meta$site, usvi_metab.meta$sampling_time)) %>%
   purrr::pluck("distances") %>%
   tibble::enframe(value = "dissimilarity", name = "metab_deriv_label") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -980,8 +902,6 @@ dist_usvi_metab.df <- vegan::betadisper(dist_usvi_metab.d, type = "median",
                          droplevels),
                    by = c("metab_deriv_label" = "metab_deriv_label")) %>%
   dplyr::mutate(potential_outlier = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", metab_deriv_label) | metab_deriv_label %in% potential_metab_outliers_idx)~ stringr::str_remove_all(metab_deriv_label, "CINAR_BC_"),  
-  # dplyr::mutate(potential_outlier = dplyr::case_when((grepl("73|43|44|42|70|74|69|67|71|101|108|105", metab_deriv_label) | metab_deriv_label %in% potential_metab_outliers_idx)~ metab_deriv_label,
-  # dplyr::mutate(potential_outlier = dplyr::case_when(metab_deriv_label %in% potential_metab_outliers_idx ~ metab_deriv_label,
                                                      .default = NA)) %>%
   dplyr::mutate(not_outlier = dplyr::case_when(is.na(potential_outlier) ~ stringr::str_remove_all(metab_deriv_label, "CINAR_BC_"),  
                                                .default = NA)) %>%
@@ -989,9 +909,7 @@ dist_usvi_metab.df <- vegan::betadisper(dist_usvi_metab.d, type = "median",
 dist_usvi_metab_log2.d <- vegan::vegdist(usvi_metab_log2.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
 dist_usvi_metab_log2.df <- vegan::betadisper(dist_usvi_metab_log2.d, 
                                              type = "median", #this is default
-                                             # type = "centroid",
                                              usvi_metab.meta$grouping) %>%
-                                             # interaction(usvi_metab.meta$site, usvi_metab.meta$sampling_time)) %>%
   purrr::pluck("distances") %>%
   tibble::enframe(value = "dissimilarity", name = "metab_deriv_label") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -1014,9 +932,7 @@ g3_disp <- print(
                  show.legend = FALSE, outliers = FALSE)
   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
-               # position = position_jitter(width = 0.75, seed = 48105, height = 0),
                alpha = 1.0, size = 3)
-  # + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
   + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
   + scale_y_continuous(expand = expansion(mult = c(0.1,0.1)), name = "Bray-Curtis dissimilarity")
@@ -1030,7 +946,6 @@ g3_disp <- print(
                                  y = dissimilarity, fill = sampling_time,
                                  group = interaction(site, sampling_time)), size =4,
                              stat = "identity",  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-                             # min.segment.length = 0.1, segment.colour = "black", arrow = arrow(length = unit(0.02, "npc")), direction = "y", box.padding = 1,
                              seed = 48105, 
                              colour = "black", fontface = "bold")
   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
@@ -1060,9 +975,7 @@ g3_log2_disp <- print(
                  show.legend = FALSE, outliers = FALSE)
   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
-               # position = position_jitter(width = 0.75, seed = 48105, height = 0),
                alpha = 1.0, size = 3)
-  # + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
   + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Bray-Curtis dissimilarity")
@@ -1070,15 +983,12 @@ g3_log2_disp <- print(
   + ggrepel::geom_text_repel(aes(label = not_outlier, x = site, 
                                  y = dissimilarity, fill = sampling_time,
                                  group = interaction(site, sampling_time)), size =4, seed = 48105,
-                             # stat = "identity",  
                              position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
                              colour = "grey", fontface = "bold")
   + ggrepel::geom_text_repel(aes(label = potential_outlier, x = site,
                                  y = dissimilarity, fill = sampling_time,
                                  group = interaction(site, sampling_time)), size =4, seed = 48105,
-                             # stat = "identity",  
                              position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-                             # min.segment.length = 0.1, segment.colour = "black", arrow = arrow(length = unit(0.02, "npc")), seed = 48105, direction = "y", box.padding = 1,
                              colour = "black", fontface = "bold")
   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
@@ -1095,45 +1005,6 @@ g3_log2_disp <- print(
            shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
                                 override.aes = list(color = "black", stroke = 1, size = 2)))
 )
-
-
-# in NMDS, CINAR_BC_81A clusters with Tektite and Yawzi samples
-# and CINAR_BC_81B clusters with LB_seagrass samples
-
-
-# in NMDS, CINAR_BC_73 (a peak photo LB_seagrass sample) also clusters with Tektite and Yawzi samples
-# and CINAR_BC_43 (a peak photo Tektite sample) clusters closer to LB_seagrass samples than with other Tektite peak photo samples
-
-# but in the long dataset, CINAR_BC_73 is associated with LB_seagrass Metab_280
-# and CINAR_BC_43 is associated with Tektite Metab_236
-#does CINAR_BC_43 look like the BC replicates for Metab_227 (CINAR_BC_44) and Metab_224 (CINAR_BC_42)?
-# does CINAR_BC_73 look like BC replicates for Metab_286 (CINAR_BC_70) and Metab_289 (CINAR_BC_74)?
-
-
-nmds_metab_df %>%
-  dplyr::arrange(sampling_day) %>%
-  # dplyr::filter(grepl("Yawzi", site))
-  # dplyr::filter(grepl("LB", site))
-  dplyr::filter(grepl("Tektite", site))
-  # dplyr::filter(grepl("42|43|44|70|73|74", label))
-
-#LB_seagrass: CINAR_BC_70 and CINAR_BC_74 have NMDS1 < 0 and NMDS2 < 0, whereas CINAR_BC_73 NMDS1 > 0
-#Tektite: CINAR_BC_43 has NMDS2 < 0, whereas CINAR_BC_42 and CINAR_BC_44 have NMDS2 > 0
-
-# CINAR_BC_73 is supposed to be LB peak_photo Metab_280 
-# Metab_280, Metab_286, and Metab_289 are in the same quadrant together
-
-# CINAR_BC_43 is supposed to be Tektite peak_photo Metab_236 but looks like 
-# Metab_227 and Metab_236 are at least in the same quadrant
-
-#another sample, CINAR_BC_69 (Yawzi peak photo corresponding to Metab_274), is suspiciously clustered away from its other replicates (CINAR_BC_67, Metab_271) (CINAR_BC_71, Metab_269)
-#another sample, CINAR_BC_105 (Tektite dawn, Metab_321) clusters away from other dawn samples (Metab_321, Metab_315, CINAR_BC_101, CINAR_BC_108)
-
-# #what if we arranged by NMDS1 and NMDS2 and see where BC_73 and BC_43 align?
-# temp_df <- nmds_metab_df %>% 
-#   dplyr::arrange(NMDS2, NMDS1)
-
-
 
 #run NMDS on just sites' metabolomes
 {
@@ -1196,7 +1067,6 @@ temp_nmds_metab_log2_df <- bind_rows(temp_df1, temp_df2, temp_df3) %>%
                    by = c("label" = "metab_deriv_label")) %>%
   #add labels:
   dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-                                              # dplyr::mutate(text_label = dplyr::case_when(grepl("73|43|44|42|70|74|69|67|71|101|108|105", label) ~ label,
                                               .default = NA)) %>%
   droplevels
 }
@@ -1258,7 +1128,6 @@ temp_nmds_metab_df <- bind_rows(temp_df1, temp_df2, temp_df3) %>%
                    by = c("label" = "metab_deriv_label")) %>%
   #add labels:
   dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-                                              # dplyr::mutate(text_label = dplyr::case_when(grepl("73|43|44|42|70|74|69|67|71|101|108|105", label) ~ label,
                                               .default = NA)) %>%
   droplevels
 }
@@ -1272,16 +1141,10 @@ g3_log2_lb_ell <- (ggplot(data = temp_nmds_metab_log2_df,
                              aes(shape = site, fill = addNA(sampling_time)), color = "black",
                              size = 5, stroke = 2, alpha = 1)
                 + ggrepel::geom_text_repel(aes(label = gsub("CINAR_BC_", "", label), x = NMDS1, y = NMDS2),
-                                           # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-                                           direction = "both", segment.color = NA, seed = 123,
-                                           force = 1, force_pull = 1,
-                                           point.padding = unit(0.01, "npc"),
-                                           box.padding = unit(0.01, "npc"),
-                                           colour = "black", fontface = "bold")
-                + stat_ellipse(aes(color = sampling_time,  group = interaction(site, sampling_time)), 
-                               type = "t", 
-                               level = 0.95,
-                               geom = "polygon", alpha = 0.05, show.legend = FALSE)
+                                           direction = "both", segment.color = NA, seed = 48105, force = 1, force_pull = 1,
+                                           point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "black", fontface = "bold")
+                + stat_ellipse(aes(color = sampling_time,  group = interaction(site, sampling_time)), type = "t", 
+                               level = 0.95, geom = "polygon", alpha = 0.05, show.legend = FALSE)
                 + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
                 + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
                 + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
@@ -1299,9 +1162,6 @@ g3_log2_lb_ell <- (ggplot(data = temp_nmds_metab_log2_df,
                                              override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
                          shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
                                               override.aes = list(color = "black", stroke = 1, size = 2)))
-                # + coord_cartesian(ylim = nmds_lims[["ylim"]],
-                #                   xlim = nmds_lims[["xlim"]],
-                #                   expand = TRUE)
 )
 print(g3_log2_lb_ell)
 
@@ -1314,16 +1174,10 @@ g3_lb_ell <- (ggplot(data = temp_nmds_metab_df,
                                 aes(shape = site, fill = addNA(sampling_time)), color = "black",
                                 size = 5, stroke = 2, alpha = 1)
                    + ggrepel::geom_text_repel(aes(label = gsub("CINAR_BC_", "", label), x = NMDS1, y = NMDS2),
-                                              # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-                                              direction = "both", segment.color = NA, seed = 123,
-                                              force = 1, force_pull = 1,
-                                              point.padding = unit(0.01, "npc"),
-                                              box.padding = unit(0.01, "npc"),
-                                              colour = "black", fontface = "bold")
+                                              direction = "both", segment.color = NA, seed = 48105, force = 1, force_pull = 1,
+                                              point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "black", fontface = "bold")
                    + stat_ellipse(aes(color = sampling_time,  group = interaction(site, sampling_time)), 
-                                  type = "t", 
-                                  level = 0.95,
-                                  geom = "polygon", alpha = 0.05, show.legend = FALSE)
+                                  type = "t", level = 0.95, geom = "polygon", alpha = 0.05, show.legend = FALSE)
                    + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
                    + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
                    + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
@@ -1341,16 +1195,11 @@ g3_lb_ell <- (ggplot(data = temp_nmds_metab_df,
                                                 override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
                             shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
                                                  override.aes = list(color = "black", stroke = 1, size = 2)))
-                   # + coord_cartesian(ylim = nmds_lims[["ylim"]],
-                   #                   xlim = nmds_lims[["xlim"]],
-                   #                   expand = TRUE)
 )
 print(g3_lb_ell)
 
 
-# g3 <- (g3_disp + ggtitle("Community dissimilarity distance from site average") + guides(fill = "none", shape = "none")) / (g3_ell + ggtitle("NMDS by site and sampling time")) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Untransformed metabolite concentrations")
 g3 <- (g3_disp + ggtitle("Community dissimilarity distance from site average") + guides(fill = "none", shape = "none")) / (g3_lb_ell + ggtitle("NMDS by site and sampling time")) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Untransformed metabolite concentrations")
-# g3_log2 <- (g3_log2_disp + ggtitle("Community dissimilarity distance from site average" ) + guides(fill = "none", shape = "none")) / (g3_log2_ell + ggtitle("NMDS by site and sampling time")) + patchwork::plot_layout(guides = "collect") +  patchwork::plot_annotation(title = "Log2(x + 1) transformed metabolite concentrations")
 g3_log2 <- (g3_log2_disp + ggtitle("Community dissimilarity distance from site average" ) + guides(fill = "none", shape = "none")) / (g3_log2_lb_ell + ggtitle("NMDS by site and sampling time")) + patchwork::plot_layout(guides = "collect") +  patchwork::plot_annotation(title = "Log2(x + 1) transformed metabolite concentrations")
 
 print(g3)
@@ -1428,7 +1277,6 @@ temp_df1 <- usvi_metabolomics.df %>%
                 .default = NA) %>%
   #add labels:
   dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-                                              # dplyr::mutate(text_label = dplyr::case_when(grepl("73|43|44|42|70|74|69|67|71|101|108|105", label) ~ label,
                                               .default = NA)) %>%
   droplevels
 temp_g <- (ggplot(data = temp_df1,
@@ -1447,35 +1295,23 @@ temp_g <- (ggplot(data = temp_df1,
                                                 dplyr::filter(type == "metabolite") %>%
                                                 droplevels),
                                       aes(label = label, x = NMDS1, y = NMDS2, size = wt),
-                                      # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-                                      direction = "both", segment.color = NA, seed = 123,
-                                      force = 1, force_pull = 1, 
-                                      point.padding = unit(0.01, "npc"),
-                                      box.padding = unit(0.01, "npc"),
-                                      colour = "grey", fontface = "bold")
+                                      direction = "both", segment.color = NA, seed = 48105, force = 1, force_pull = 1, point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "grey", fontface = "bold")
            + geom_point(data = (temp_df1 %>%
                                   dplyr::filter(type == "sample") %>%
                                   droplevels),
                         aes(shape = site, fill = addNA(sampling_time)), color = "black",
                         size = 5, stroke = 2, alpha = 1)
-           
            + ggrepel::geom_text_repel(data = (temp_df1 %>%
                                                 dplyr::filter(type == "sample") %>%
                                                 droplevels),
                                       aes(label = gsub("CINAR_BC_", "", label), x = NMDS1, y = NMDS2),
-                                      # + ggrepel::geom_label_repel(aes(label = text_label, x = NMDS1, y = NMDS2),
-                                      direction = "both", segment.color = NA, seed = 123,
-                                      force = 1, force_pull = 1,
-                                      point.padding = unit(0.01, "npc"),
-                                      box.padding = unit(0.01, "npc"),
-                                      colour = "black", fontface = "bold")
+                                      direction = "both", segment.color = NA, seed = 48105, force = 1, force_pull = 1,
+                                      point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "black", fontface = "bold")
            + stat_ellipse(data = (temp_df1 %>%
                                     dplyr::filter(type == "sample") %>%
                                     droplevels),
                           aes(color = sampling_time,  group = interaction(site, sampling_time)), 
-                          type = "t", 
-                          level = 0.95,
-                          geom = "polygon", alpha = 0.05, show.legend = FALSE)
+                          type = "t", level = 0.95, geom = "polygon", alpha = 0.05, show.legend = FALSE)
               + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
               + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
               + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
@@ -1494,9 +1330,6 @@ temp_g <- (ggplot(data = temp_df1,
                                            override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
                        shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
                                             override.aes = list(color = "black", stroke = 1, size = 2)))
-              # + coord_cartesian(ylim = nmds_lims[["ylim"]],
-              #                   xlim = nmds_lims[["xlim"]],
-              #                   expand = TRUE)
 )
 print(temp_g)
 
@@ -1539,7 +1372,6 @@ meta.seawater <- ps_usvi %>%
   tibble::as_tibble(rownames = "sample_id") %>%
   dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
   dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
-  # dplyr::select(sample_id, sampling_time, sampling_day, site, contains("fcm")) %>%
   dplyr::select(!c(contains("label"), contains("dna_"))) %>%
   tibble::column_to_rownames(., var = "sample_id") %>%
   droplevels
@@ -1569,14 +1401,14 @@ nmds_asv_df <- (ggplot2::fortify(env.sw)) %>%
   droplevels
 
 }
-
-nmds_asv_df %>%
-  dplyr::arrange(sampling_day) %>%
-  dplyr::filter(grepl("peak_photo", sampling_time)) %>%
-  # dplyr::filter(grepl("280|286|289|236|227|224", label))
-  # dplyr::filter(grepl("LB", site))
-  dplyr::filter(grepl("Tektite", site))
-# dplyr::filter(grepl("Yawzi", site))
+# 
+# nmds_asv_df %>%
+#   dplyr::arrange(sampling_day) %>%
+#   dplyr::filter(grepl("peak_photo", sampling_time)) %>%
+#   # dplyr::filter(grepl("280|286|289|236|227|224", label))
+#   # dplyr::filter(grepl("LB", site))
+#   dplyr::filter(grepl("Tektite", site))
+# # dplyr::filter(grepl("Yawzi", site))
 
 #if anything, Metab_227 and Metab_236 are at least in the same quadrant, and Metab_224 is not proximal to them
 # and Metab_280, Metab_286, and Metab_289 are in the same quadrant together
@@ -1604,11 +1436,9 @@ nmds_asv_df %>%
          + geom_point(data = (nmds_asv_df %>%
                                 dplyr::filter(type == "sample") %>%
                                 droplevels),
-                      aes(fill = site, shape = sampling_time), color = "black",
-                      size = 5, stroke = 2, alpha = 1)
+                      aes(fill = site, shape = sampling_time), color = "black", size = 5, stroke = 2, alpha = 1)
          + geom_text(aes(label = text_label, x = NMDS1, vjust = "outward", hjust = "center", y = NMDS2),
-                     position = "dodge",
-                     check_overlap = TRUE, colour = "grey10", fontface = "bold")
+                     position = "dodge", check_overlap = TRUE, colour = "grey10", fontface = "bold")
          + scale_shape_manual(values = c(22, 21), labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
          + scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))
          + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
