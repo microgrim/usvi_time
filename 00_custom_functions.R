@@ -3,6 +3,12 @@
 #custom functions for your R analyses
 
 
+# functions for pretty number labeling ------------------------------------
+
+
+scaleFUN2 <- function(x) sprintf("%.2f", x)
+scaleFUN1 <- function(x) sprintf("%.1f", x)
+scaleFUN0 <- function(x) sprintf("%.0f", x)
 # Generate a random number using provided observation and quantiles -------
 
 
@@ -36,6 +42,26 @@ F_random_sampler <- function(n, x, prob){
   sample(mod_melt, n, replace = TRUE)
 }
 
+# Desaturate a set of colors ----------------------------------------------
+
+F_desaturate <- function(x, l_start) {
+  #x is your vector of colors to desaturate
+  #l_start: starting value for the luminance (optional, defaults to 80)
+  if(!missing(l_start)){
+    # l_start <- l_start
+    l_start <- rep_len(c(seq.int(l_start, 30, length.out = 3)), length(x))
+  } else {
+    l_start <- rep.int(80, length(x))
+  }
+  
+  y <- seq(10, 10*length(x), 10)
+  temp_pal <- NULL
+  for(i in seq_len(length(y))){
+    temp_pal <- c(temp_pal, muted(x[1], l = l_start[i], c = y[i]))
+  }
+  names(temp_pal) <- names(x)
+  return(temp_pal)
+}
 
 # Relabund ----------------------------------------------------------------
 

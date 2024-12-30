@@ -362,7 +362,8 @@ if(!exists("ps_usvi", envir = .GlobalEnv)){
                                                       taxa_are_rows=TRUE),
                                   phyloseq::sample_data(sample_metadata %>%
                                                           tibble::column_to_rownames(var = "sample_ID")),
-                                  phyloseq::tax_table(usvi_prok_asvs.taxa %>%
+                                  phyloseq::tax_table(usvi_prok_filled.taxa.df %>%
+                                  # phyloseq::tax_table(usvi_prok_asvs.taxa %>%
                                                         dplyr::select(-sequence) %>%
                                                         droplevels %>%
                                                         tibble::column_to_rownames(var = "asv_id") %>%
@@ -386,7 +387,7 @@ set_thresholds <- c(0.1, 0.5) %>%
 # starting with ASV level is not broad enough
 #use species-level abundances, and amplicon/DNA concentrastions
 
-
+# ps_usvi_samples_species <- ps_usvi %>%
 ps_usvi_samples_species <- phyloseq::phyloseq(phyloseq::otu_table((usvi_prok_asvs.df %>%
                                                                      tidyr::pivot_wider(., id_cols = c("asv_id"),
                                                                                         names_from = "sample_ID",
@@ -411,12 +412,11 @@ decon_usvi_species_combo.df <- decontam::isContaminant(ps_usvi_samples_species,
                                                        batch = sample_data(ps_usvi_samples_species)$batch,
                                                        threshold = set_thresholds[["freq"]],
                                                        conc = "dna_conc",
-                                                       # conc = "product_conc",
                                                        neg = "is.neg")
 # table(decon_usvi_species_combo.df$contaminant)
-# FALSE  TRUE 
-# 1170    33  #threshold = 0.1, method = "minimum", using dna_conc
-# 1194     9  #threshold = 0.1, method = "combined", using dna_conc
+# # FALSE  TRUE 
+# # 1170    33  #threshold = 0.1, method = "minimum", using dna_conc
+# # 1194     9  #threshold = 0.1, method = "combined", using dna_conc
 
 # rownames(decon_usvi_species_combo.df)[(which(decon_usvi_species_combo.df$contaminant))]
 # "ASV_00033" "ASV_00081" "ASV_00090" "ASV_00267" "ASV_00434" "ASV_01660" "ASV_03083" "ASV_05175" "ASV_06080"
@@ -476,102 +476,37 @@ potential_contam_species.taxa <- decon_usvi_species_combo.df %>%
   dplyr::filter(potential_contaminant > 0 | contaminant | !is.na(contam_freq) | !is.na(contam_prev)) %>%
   droplevels
   
-
+#though 48 were flagged as potential contaminants,
+#9 species-level taxa are potential contaminants based on freq and prevalence
 
 # Plot contaminants -------------------------------------------------------
 
-
-
-#plot the relative abundances of these potential contaminant ASVs alongside legitimate taxa:
-#" a noncontaminant sequence feature for which frequency is expected to be independent of 
-# the input DNA concentration.
-# a contaminant sequence feature, for which frequency is expected to be inversely proportional
-# to input DNA concentration, as contaminating DNA will make up a larger fraction of the total DNA in samples with very little total DNA." 
-
-
+#use this to examine the distribution of taxa that were flagged as contaminants
+#compared to genuine taxa
 #add three ASVs we know are legitimate taxa:
 biol_asv_idx <- c("ASV_00001", "ASV_00002", "ASV_00007")
 
 species_contam_both <- potential_contam_species.taxa %>%
   dplyr::filter(!is.na(contam_freq) & !is.na(contam_prev)) %>%
-  dplyr::select(asv_id) %>%
-  droplevels %>%
-  unlist %>%
-  as.character
+  dplyr::select(asv_id) %>% droplevels %>% unlist %>% as.character
 
 species_contam_only_prev <- potential_contam_species.taxa %>%
   dplyr::filter(contaminant) %>%
   dplyr::filter(!is.na(contam_prev)) %>%
   dplyr::filter(!(asv_id %in% species_contam_both)) %>%
   tidyr::drop_na(p) %>%
-  dplyr::select(asv_id) %>%
-  droplevels %>%
-  unlist %>%
-  as.character
+  dplyr::select(asv_id) %>% droplevels %>% unlist %>% as.character
 
 species_contam_only_freq <- potential_contam_species.taxa %>%
   dplyr::filter(contaminant) %>%
   dplyr::filter(!is.na(contam_freq)) %>%
   dplyr::filter(!(asv_id %in% species_contam_both)) %>%
   tidyr::drop_na(p) %>%
-  dplyr::select(asv_id) %>%
-  droplevels %>%
-  unlist %>%
-  as.character
+  dplyr::select(asv_id) %>% droplevels %>% unlist %>% as.character
 
 species_contam_neither <- setdiff(potential_contam_species.taxa[["asv_id"]], c(species_contam_only_freq, species_contam_only_prev,species_contam_both))
 
-{
-  temp_df <- ps_usvi_samples_species %>% 
-    phyloseq::transform_sample_counts(., function(OTU) OTU/sum(OTU)) %>%
-    phyloseq::otu_table(.) %>%
-    as.data.frame %>%
-    tibble::as_tibble(rownames = "asv_id") %>%
-    dplyr::filter(asv_id %in% c(potential_contam_species.taxa[["asv_id"]], biol_asv_idx)) %>%
-    tibble::column_to_rownames(var = "asv_id") %>%
-    t() %>%
-    as.matrix()
-  
-  temp_df2 <- sample_data(ps_usvi_samples_species) %>%
-    tibble::as_tibble(rownames = "sample_id") %>%
-    dplyr::select(sample_id, is.neg, contains("conc"), contains("fcm")) %>%
-    dplyr::select(-c("fcm_label")) %>%
-    tibble::column_to_rownames(var = "sample_id")
-  
-  logd <- log(seq(min(temp_df2[, "dna_conc"], na.rm = TRUE), max(temp_df2[, "dna_conc"], na.rm = TRUE), length.out=1000))
-  logc <- log(seq(min(temp_df2[, "product_conc"], na.rm = TRUE), max(temp_df2[, "product_conc"], na.rm = TRUE), length.out=1000))
-  
-  contam_model <- NULL
-  asv <- NULL
-  for(asv in colnames(temp_df)){
-    newdata <- data.frame(asv_id = asv, 
-                          logd = logd, conc_dna = exp(logd),
-                          logc = logc, conc_prod = exp(logc))
-    freq <- temp_df[, asv]
-    neg <- temp_df2[, "is.neg"]
-    conc_dna <- temp_df2[, "dna_conc"]
-    conc_prod <- temp_df2[, "product_conc"]
-    
-    df <- data.frame(logc=log(conc_prod), logd = log(conc_dna), logf=log(freq))
-    df <- df[freq>0 & (!neg | is.na(neg)),]
-    if(nrow(df) > 0 & sum(freq>0)>1) {
-      lm2 <- lm(logf~offset(-1*logd), data=df)
-      lm1 <- lm(logf~offset(-1*logc), data=df)
-      lm0 <- lm(logf~1, data=df)
-      newdata$contam.dna <- exp(predict(lm2, newdata=newdata))
-      newdata$contam.pcr <- exp(predict(lm1, newdata=newdata))
-      newdata$non.contam <- exp(predict(lm0, newdata=newdata))
-    } else {
-      newdata$contam.dna <- NA
-      newdata$contam.pcr <- NA
-      newdata$non.contam <- NA
-    }
-    contam_model[[asv]] <- newdata
-  }
-  contam_model <- do.call(rbind, contam_model)
-}
-
-plot_potential_contam.df <- ps_usvi_samples_species %>% 
+plot_potential_contam.df <- ps_usvi_samples_species %>%
   phyloseq::transform_sample_counts(., function(OTU) OTU/sum(OTU)) %>%
   phyloseq::otu_table(.) %>%
   as.data.frame %>%
@@ -593,96 +528,26 @@ plot_potential_contam.df <- ps_usvi_samples_species %>%
   dplyr::left_join(., potential_contam_species.taxa %>%
                      dplyr::select(asv_id, contam_freq, contam_prev), by = join_by(asv_id), relationship = "many-to-many")
 
-species_groupings <- list(biol_asv_idx, species_contam_only_prev, species_contam_only_freq, species_contam_both, species_contam_neither) %>%
-  setNames(., c("biol_asv_idx", "species_contam_only_prev", "species_contam_only_freq", "species_contam_both", "species_contam_neither"))
 
+#plot the relative abundances of these potential contaminant ASVs alongside legitimate taxa:
+#" a noncontaminant sequence feature for which frequency is expected to be independent of 
+# the input DNA concentration.
+# a contaminant sequence feature, for which frequency is expected to be inversely proportional
+# to input DNA concentration, as contaminating DNA will make up a larger fraction of the total DNA in samples with very little total DNA." 
 
-#set up the vectors of ASVs flagegd as potential contaminants
 {
-# potential_contam_idx <- union(rownames(decon_usvi_prev.df)[(which(decon_usvi_prev.df$contaminant))], rownames(decon_usvi_freq.df)[(which(decon_usvi_freq.df$contaminant))])
-# 
-# potential_contam_usvi_asvs.taxa <- decon_usvi_prev.df %>%
-#   tibble::rownames_to_column(var = "asv_id") %>%
-#   dplyr::select(asv_id, prev, p.prev) %>%
-#   dplyr::left_join(., decon_usvi_freq.df %>%
-#                      tibble::rownames_to_column(var = "asv_id") %>%
-#                      dplyr::select(asv_id, freq, p.freq), 
-#                    by = join_by(asv_id)) %>%
-#   dplyr::left_join(., decon_usvi_combo.df %>%
-#                      tibble::rownames_to_column(var = "asv_id") %>%
-#                      dplyr::select(asv_id, p, contaminant),
-#                    by = join_by(asv_id)) %>%
-#   dplyr::mutate(contam_freq = dplyr::case_when(p.freq < set_thresholds[["freq"]] ~ "freq", 
-#                                                .default = NA)) %>%
-#   dplyr::mutate(contam_prev = dplyr::case_when(p.prev < set_thresholds[["prev"]] ~ "prev",
-#                                                .default = NA)) %>%
-#     dplyr::filter(asv_id %in% potential_contam_idx) %>%
-#   dplyr::left_join(., usvi_prok_filled.taxa.df, by = join_by(asv_id)) %>%
-#   droplevels
-
-#   asv_contam_either <- potential_contam_usvi_asvs.taxa %>%
-#     dplyr::filter(asv_id %in% potential_contam_idx) %>%
-#     dplyr::filter(!is.na(contam_freq) & !is.na(contam_prev)) %>%
-#     # dplyr::filter(!is.na(contam_freq) | !is.na(contam_prev)) %>%
-#     dplyr::filter(contaminant) %>%
-#     tidyr::drop_na(p) %>%
-#     dplyr::select(asv_id) %>%
-#     droplevels %>%
-#     unlist %>%
-#     as.character
-#   
-#   asv_contam_only_prev <- potential_contam_usvi_asvs.taxa %>%
-#     dplyr::filter(contaminant) %>%
-#     dplyr::filter(!is.na(contam_prev)) %>%
-#     dplyr::filter(!(asv_id %in% asv_contam_either)) %>%
-#     tidyr::drop_na(p) %>%
-#     dplyr::select(asv_id) %>%
-#     droplevels %>%
-#     unlist %>%
-#     as.character
-#   
-# asv_contam_only_freq <- potential_contam_usvi_asvs.taxa %>%
-#   dplyr::filter(contaminant) %>%
-#   dplyr::filter(!is.na(contam_freq)) %>%
-#   dplyr::filter(!(asv_id %in% asv_contam_either)) %>%
-#   tidyr::drop_na(p) %>%
-#   dplyr::select(asv_id) %>%
-#   droplevels %>%
-#   unlist %>%
-#   as.character
-# 
-# # asv_contam_neither <- setdiff(potential_contam_idx, c(asv_contam_only_prev, asv_contam_only_freq, asv_contam_either))
-#   
-# asv_contam_neither <- potential_contam_usvi_asvs.taxa %>%
-#   dplyr::filter(asv_id %in% potential_contam_idx) %>%
-#   dplyr::filter(!contaminant) %>%
-#   # dplyr::filter(is.na(contam_freq) & is.na(contam_prev)) %>%
-#   dplyr::select(asv_id) %>%
-#   droplevels %>%
-#   unlist %>%
-#   as.character
-}
-
-
-#plot the models:
-{
-  # temp_df <- ps_usvi_samples %>% 
+  # temp_df <- ps_usvi_samples_species %>% 
   #   phyloseq::transform_sample_counts(., function(OTU) OTU/sum(OTU)) %>%
   #   phyloseq::otu_table(.) %>%
   #   as.data.frame %>%
   #   tibble::as_tibble(rownames = "asv_id") %>%
-  #   dplyr::filter(asv_id %in% c(potential_contam_idx, biol_asv_idx)) %>%
+  #   dplyr::filter(asv_id %in% c(potential_contam_species.taxa[["asv_id"]], biol_asv_idx)) %>%
   #   tibble::column_to_rownames(var = "asv_id") %>%
   #   t() %>%
   #   as.matrix()
   # 
-  # temp_df2 <- sample_data(ps_usvi_samples) %>%
+  # temp_df2 <- sample_data(ps_usvi_samples_species) %>%
   #   tibble::as_tibble(rownames = "sample_id") %>%
-  #   # dplyr::left_join(., temp_conc, by = join_by(sample_id)) %>%
-  #   # dplyr::mutate(dna_conc = across(starts_with("dna_conc")) %>% purrr::reduce(coalesce)) %>%
-  #   # dplyr::select(-ends_with(c(".x", ".y"))) %>%
-  #   # dplyr::mutate(across(!c("sample_id", "is.neg"), ~dplyr::case_when((.x > 0) ~ log(.x),
-  #   #                                                      .default = NA))) %>%
   #   dplyr::select(sample_id, is.neg, contains("conc"), contains("fcm")) %>%
   #   dplyr::select(-c("fcm_label")) %>%
   #   tibble::column_to_rownames(var = "sample_id")
@@ -692,8 +557,6 @@ species_groupings <- list(biol_asv_idx, species_contam_only_prev, species_contam
   # 
   # contam_model <- NULL
   # asv <- NULL
-  # # for(asv in c("ASV_00078", "ASV_00139")){
-  # # for(asv in colnames(temp_df)[6:8]){
   # for(asv in colnames(temp_df)){
   #   newdata <- data.frame(asv_id = asv, 
   #                         logd = logd, conc_dna = exp(logd),
@@ -704,13 +567,7 @@ species_groupings <- list(biol_asv_idx, species_contam_only_prev, species_contam
   #   conc_prod <- temp_df2[, "product_conc"]
   #   
   #   df <- data.frame(logc=log(conc_prod), logd = log(conc_dna), logf=log(freq))
-  #   # df <- data.frame(logc=conc_prod, 
-  #   #                  # logd = conc_dna, 
-  #   #                  logf=freq)
   #   df <- df[freq>0 & (!neg | is.na(neg)),]
-  #   # df <- df[!neg | is.na(neg),]
-  #   # df <- df[freq>0,]
-  #   # df <- log(df)
   #   if(nrow(df) > 0 & sum(freq>0)>1) {
   #     lm2 <- lm(logf~offset(-1*logd), data=df)
   #     lm1 <- lm(logf~offset(-1*logc), data=df)
@@ -726,163 +583,117 @@ species_groupings <- list(biol_asv_idx, species_contam_only_prev, species_contam
   #   contam_model[[asv]] <- newdata
   # }
   # contam_model <- do.call(rbind, contam_model)
-}
-
-#set up dataframe with relative abundances of potential contaminants
-{
-# plot_potential_contam.df <- ps_usvi_samples %>% 
-#   phyloseq::transform_sample_counts(., function(OTU) OTU/sum(OTU)) %>%
-#   phyloseq::otu_table(.) %>%
-#   as.data.frame %>%
-#   tibble::as_tibble(rownames = "asv_id") %>%
-#   dplyr::filter(asv_id %in% c(potential_contam_idx, biol_asv_idx)) %>%
-#   tidyr::pivot_longer(., cols = !c("asv_id"),
-#                       names_to = "sample_id",
-#                       values_to = "taxon_abundance") %>%
-#   dplyr::left_join(., sample_data(ps_usvi_samples) %>%
-#                      tibble::as_tibble(rownames = "sample_id") %>%
-#                      dplyr::select(sample_id, sample_type, contains("conc"), site, contains("fcm"), batch,  is.neg) %>%
-#                      dplyr::mutate(modeled_dna_conc = dplyr::case_when((sample_id %in% c("Metab_180", "Metab_182", "Metab_199", "Metab_219", "Metab_224", "Metab_231", "Metab_233", "Metab_235")) ~ "modeled",
-#                                                                        sample_type != "seawater" ~ "modeled",
-#                                                                        .default = "measured")) %>%
-#                      # dplyr::left_join(., temp_conc, by = join_by(sample_id)) %>%
-#                      # dplyr::mutate(dna_conc = across(starts_with("dna_conc")) %>% purrr::reduce(coalesce)) %>%
-#                      # dplyr::select(-ends_with(c(".x", ".y"))) %>%
-#                      droplevels, by = "sample_id") %>%
-#                      # dplyr::rowwise(.) %>%
-#                      # dplyr::mutate(dna_conc = dplyr::case_when(sample_type == "seawater" & is.na(dna_conc) ~ F_random_sampler(1, seawater_dna_conc, seawater_dna_prob),
-#                      #                                           sample_type != "seawater" & is.na(dna_conc) ~ 0,
-#                      #                                           .default = dna_conc)), by = "sample_id") %>%
-#                      # dplyr::mutate(across(contains("conc"), ~dplyr::case_when(sample_type == "seawater" & is.na(.x) ~ F_random_sampler(1, seawater_dna_conc, seawater_dna_prob),
-#                      #                                                          sample_type != "seawater" & is.na(.x) ~ 0,
-#                      #                                                          .default = .x))), by = "sample_id") %>%
-#   dplyr::mutate(contaminant = dplyr::case_when(asv_id %in% biol_asv_idx ~ FALSE,
-#                                                .default = TRUE)) %>%
-#   dplyr::mutate(across(c(is.neg, contaminant), ~as.factor(.x))) %>%
-#   dplyr::left_join(., potential_contam_usvi_asvs.taxa %>%
-#                      dplyr::select(asv_id, contam_freq, contam_prev), by = join_by(asv_id), relationship = "many-to-many")
-
-# asv_groupings <- list(biol_asv_idx, asv_contam_only_prev, asv_contam_only_freq, asv_contam_either, asv_contam_neither) %>%
-#   setNames(., c("biol_asv_idx", "asv_contam_only_prev", "asv_contam_only_freq", "asv_contam_either", "asv_contam_neither"))
-}
-
-# for(i in names(asv_groupings)[1]){
-for(i in names(species_groupings)){
-  temp_idx <- get(i, inherits = TRUE)
   
-  g1_temp <- (ggplot(data = plot_potential_contam.df %>%
-                       dplyr::filter(asv_id %in% temp_idx))
-              + geom_point(aes(x = dna_conc, y = taxon_abundance, fill = is.neg, shape = contaminant, color = modeled_dna_conc), size = 3, show.legend = TRUE)
-              + geom_line(data = contam_model %>%
-                            dplyr::filter(asv_id %in% temp_idx) %>%
-                            droplevels, aes(x = conc_dna, y = contam.dna), color="red", linetype="solid", show.legend = FALSE)
-              + geom_line(data = contam_model %>%
-                            dplyr::filter(asv_id %in% temp_idx) %>%
-                            droplevels, aes(x = conc_dna, y = non.contam), color="black", linetype="dashed",  show.legend = FALSE)
-              + theme_bw()
-              + scale_fill_manual(values = c("pink", "forestgreen"),
-                                  breaks = c(TRUE, FALSE), drop = FALSE,
-                                  labels = c("negative control", "seawater"))
-              + scale_color_manual(values = c("black", "grey", "black"),
-                                  breaks = c("measured", "modeled", NA), drop = FALSE,
-                                  labels = c("measured", "modeled", NA))
-              + scale_shape_manual(values = c(21, 22), drop = FALSE,
-                                   breaks = c(TRUE, FALSE),
-                                   labels = c("yes", "no"))
-              + facet_wrap(~asv_id, scales = "fixed")
-              + scale_x_continuous(transform = scales::log10_trans(),
-                                   name = "DNA concentration (ng/uL)", labels = scales::number)
-              + scale_y_continuous(transform = scales::log10_trans(),
-                                   limits = c(NA, 1),
-                                   name = "Relative abundance", labels = scales::percent)
-              + theme(panel.grid.minor.x = element_blank(),
-                      panel.grid.minor.y = element_blank())
-              + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sample type",  direction = "vertical", override.aes = list(color = "black", shape = 23, linetype = NA)),
-                       shape = guide_legend(order =2, ncol = 1, title = "Flagged as contaminant", override.aes = list(color = "black", fill = "white", linetype = NA)), 
-                       color = guide_legend(order =3, ncol = 1, title = "Modeled DNA concentrations", override.aes = list(shape = 21, fill = "forestgreen", linetype = NA)))
-  )
-  assign(paste0("g1_dna_", i), g1_temp, envir = .GlobalEnv)
-  g1_temp <- (ggplot(data = plot_potential_contam.df %>%
-                       dplyr::filter(asv_id %in% temp_idx))
-              + geom_point(aes(x = product_conc, y = taxon_abundance, fill = is.neg, shape = contaminant, color = modeled_dna_conc), color = "black", size = 3, show.legend = TRUE)
-              + geom_line(data = contam_model %>%
-                            dplyr::filter(asv_id %in% temp_idx) %>%
-                            droplevels, aes(x = conc_prod, y = contam.pcr), color="red", linetype="solid", show.legend = FALSE)
-              + geom_line(data = contam_model %>%
-                            dplyr::filter(asv_id %in% temp_idx) %>%
-                            droplevels, aes(x = conc_prod, y = non.contam), color="black", linetype="dashed",  show.legend = FALSE)
-              + theme_bw()
-              + scale_fill_manual(values = c("pink", "forestgreen"),
-                                  breaks = c(TRUE, FALSE), drop = FALSE,
-                                  labels = c("negative control", "seawater"))
-              + scale_color_manual(values = c("black", "grey", "black"),
-                                   breaks = c("measured", "modeled", NA), drop = FALSE,
-                                   labels = c("measured", "modeled", NA))
-              + scale_shape_manual(values = c(21, 22), drop = FALSE,
-                                   breaks = c(TRUE, FALSE),
-                                   labels = c("yes", "no"))
-              + facet_wrap(~asv_id, scales = "fixed")
-              + scale_x_continuous(transform = scales::log10_trans(),
-                                   name = "Amplicon Concentration (ng/uL)", labels = scales::number)
-              + scale_y_continuous(transform = scales::log10_trans(),
-                                   limits = c(NA, 1),
-                                   name = "Relative abundance", labels = scales::percent)
-              + theme(panel.grid.minor.x = element_blank(),
-                      panel.grid.minor.y = element_blank())
-              + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sample type",  direction = "vertical", override.aes = list(color = "black", shape = 23, linetype = NA)),
-                       shape = guide_legend(order =2, ncol = 1, title = "Flagged as contaminant", override.aes = list(color = "black", fill = "white", linetype = NA)), 
-                       color = guide_legend(order =3, ncol = 1, title = "Modeled DNA concentrations", override.aes = list(shape = 21, fill = "forestgreen", linetype = NA)))
-  )
-  assign(paste0("g1_pcr_", i), g1_temp, envir = .GlobalEnv)
-  rm(g1_temp)
-  rm(temp_idx)
+
+  # species_groupings <- list(biol_asv_idx, species_contam_only_prev, species_contam_only_freq, species_contam_both, species_contam_neither) %>%
+  #   setNames(., c("biol_asv_idx", "species_contam_only_prev", "species_contam_only_freq", "species_contam_both", "species_contam_neither"))
+  # 
+# 
+#   for(i in names(species_groupings)){
+#     temp_idx <- get(i, inherits = TRUE)
+#     
+#     g1_temp <- (ggplot(data = plot_potential_contam.df %>%
+#                          dplyr::filter(asv_id %in% temp_idx))
+#                 + geom_point(aes(x = dna_conc, y = taxon_abundance, fill = is.neg, shape = contaminant, color = modeled_dna_conc), size = 3, show.legend = TRUE)
+#                 + geom_line(data = contam_model %>%
+#                               dplyr::filter(asv_id %in% temp_idx) %>%
+#                               droplevels, aes(x = conc_dna, y = contam.dna), color="red", linetype="solid", show.legend = FALSE)
+#                 + geom_line(data = contam_model %>%
+#                               dplyr::filter(asv_id %in% temp_idx) %>%
+#                               droplevels, aes(x = conc_dna, y = non.contam), color="black", linetype="dashed",  show.legend = FALSE)
+#                 + theme_bw()
+#                 + scale_fill_manual(values = c("pink", "forestgreen"),
+#                                     breaks = c(TRUE, FALSE), drop = FALSE,
+#                                     labels = c("negative control", "seawater"))
+#                 + scale_color_manual(values = c("black", "grey", "black"),
+#                                      breaks = c("measured", "modeled", NA), drop = FALSE,
+#                                      labels = c("measured", "modeled", NA))
+#                 + scale_shape_manual(values = c(21, 22), drop = FALSE,
+#                                      breaks = c(TRUE, FALSE),
+#                                      labels = c("yes", "no"))
+#                 + facet_wrap(~asv_id, scales = "fixed")
+#                 + scale_x_continuous(transform = scales::log10_trans(),
+#                                      name = "DNA concentration (ng/uL)", labels = scales::number)
+#                 + scale_y_continuous(transform = scales::log10_trans(),
+#                                      limits = c(NA, 1),
+#                                      name = "Relative abundance", labels = scales::percent)
+#                 + theme(panel.grid.minor.x = element_blank(),
+#                         panel.grid.minor.y = element_blank())
+#                 + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sample type",  direction = "vertical", override.aes = list(color = "black", shape = 23, linetype = NA)),
+#                          shape = guide_legend(order =2, ncol = 1, title = "Flagged as contaminant", override.aes = list(color = "black", fill = "white", linetype = NA)), 
+#                          color = guide_legend(order =3, ncol = 1, title = "Modeled DNA concentrations", override.aes = list(shape = 21, fill = "forestgreen", linetype = NA)))
+#     )
+#     assign(paste0("g1_dna_", i), g1_temp, envir = .GlobalEnv)
+#     g1_temp <- (ggplot(data = plot_potential_contam.df %>%
+#                          dplyr::filter(asv_id %in% temp_idx))
+#                 + geom_point(aes(x = product_conc, y = taxon_abundance, fill = is.neg, shape = contaminant, color = modeled_dna_conc), color = "black", size = 3, show.legend = TRUE)
+#                 + geom_line(data = contam_model %>%
+#                               dplyr::filter(asv_id %in% temp_idx) %>%
+#                               droplevels, aes(x = conc_prod, y = contam.pcr), color="red", linetype="solid", show.legend = FALSE)
+#                 + geom_line(data = contam_model %>%
+#                               dplyr::filter(asv_id %in% temp_idx) %>%
+#                               droplevels, aes(x = conc_prod, y = non.contam), color="black", linetype="dashed",  show.legend = FALSE)
+#                 + theme_bw()
+#                 + scale_fill_manual(values = c("pink", "forestgreen"),
+#                                     breaks = c(TRUE, FALSE), drop = FALSE,
+#                                     labels = c("negative control", "seawater"))
+#                 + scale_color_manual(values = c("black", "grey", "black"),
+#                                      breaks = c("measured", "modeled", NA), drop = FALSE,
+#                                      labels = c("measured", "modeled", NA))
+#                 + scale_shape_manual(values = c(21, 22), drop = FALSE,
+#                                      breaks = c(TRUE, FALSE),
+#                                      labels = c("yes", "no"))
+#                 + facet_wrap(~asv_id, scales = "fixed")
+#                 + scale_x_continuous(transform = scales::log10_trans(),
+#                                      name = "Amplicon Concentration (ng/uL)", labels = scales::number)
+#                 + scale_y_continuous(transform = scales::log10_trans(),
+#                                      limits = c(NA, 1),
+#                                      name = "Relative abundance", labels = scales::percent)
+#                 + theme(panel.grid.minor.x = element_blank(),
+#                         panel.grid.minor.y = element_blank())
+#                 + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sample type",  direction = "vertical", override.aes = list(color = "black", shape = 23, linetype = NA)),
+#                          shape = guide_legend(order =2, ncol = 1, title = "Flagged as contaminant", override.aes = list(color = "black", fill = "white", linetype = NA)), 
+#                          color = guide_legend(order =3, ncol = 1, title = "Modeled DNA concentrations", override.aes = list(shape = 21, fill = "forestgreen", linetype = NA)))
+#     )
+#     assign(paste0("g1_pcr_", i), g1_temp, envir = .GlobalEnv)
+#     rm(g1_temp)
+#     rm(temp_idx)
+#   }
+#   
+#   g_biol_asv_idx <- apropos("^g1_.*biol_asv_idx$", mode = "list") %>%
+#     lapply(., get) %>%
+#     purrr::reduce(., `%+%`)  + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Not contaminant", tag_levels = "A")
+#   g_species_contam_only_prev <- apropos("^g1_.*species_contam_only_prev$", mode = "list") %>%
+#     lapply(., get) %>%
+#     purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged by prevalence", tag_levels = "A")
+#   g_species_contam_both <- apropos("^g1_.*species_contam_both$", mode = "list") %>%
+#     lapply(., get) %>%
+#     purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged in both prevalence and frequency", tag_levels = "A")
+#   g_species_contam_neither <- apropos("^g1_.*species_contam_neither$", mode = "list") %>%
+#     lapply(., get) %>%
+#     purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged in one but not the other", tag_levels = "A")
+#   g_species_contam_only_freq <- apropos("^g1_.*species_contam_only_freq$", mode = "list") %>%
+#     lapply(., get) %>%
+#     purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged by frequency", tag_levels = "A")
+#   
+#   
+#   ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_bio-", Sys.Date(), ".png"),
+#          g_biol_asv_idx,
+#          width = 12, height = 6, units = "in")
+#   ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_both-", Sys.Date(), ".png"),
+#          g_species_contam_both,
+#          width = 12, height = 6, units = "in")
+#   ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_prev-", Sys.Date(), ".png"),
+#          g_species_contam_only_prev,
+#          width = 16, height = 12, units = "in")
+#   ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_nei-", Sys.Date(), ".png"),
+#          g_species_contam_neither,
+#          width = 16, height = 12, units = "in")
+#   ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_freq-", Sys.Date(), ".png"),
+#          g_species_contam_only_freq,
+#          width = 16, height = 12, units = "in")
+
 }
-
-g_biol_asv_idx <- apropos("^g1_.*biol_asv_idx$", mode = "list") %>%
-  lapply(., get) %>%
-  purrr::reduce(., `%+%`)  + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Not contaminant", tag_levels = "A")
-# g_asv_contam_only_prev <- apropos("^g1_.*asv_contam_only_prev$", mode = "list") %>%
-g_species_contam_only_prev <- apropos("^g1_.*species_contam_only_prev$", mode = "list") %>%
-  lapply(., get) %>%
-  purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged by prevalence", tag_levels = "A")
-# g_asv_contam_either <- apropos("^g1_.*asv_contam_either$", mode = "list") %>%
-g_species_contam_both <- apropos("^g1_.*species_contam_both$", mode = "list") %>%
-  lapply(., get) %>%
-  purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged in both prevalence and frequency", tag_levels = "A")
-# g_asv_contam_neither <- apropos("^g1_.*asv_contam_neither$", mode = "list") %>%
-g_species_contam_neither <- apropos("^g1_.*species_contam_neither$", mode = "list") %>%
-  lapply(., get) %>%
-  purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged in one but not the other", tag_levels = "A")
-# g_asv_contam_only_freq <- apropos("^g1_.*asv_contam_only_freq$", mode = "list") %>%
-g_species_contam_only_freq <- apropos("^g1_.*species_contam_only_freq$", mode = "list") %>%
-  lapply(., get) %>%
-  purrr::reduce(., `%+%`) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Flagged by frequency", tag_levels = "A")
-
-
-# ggsave(paste0(projectpath, "/", "usvi_asvs_potential_contaminants_bio-", Sys.Date(), ".png"),
-ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_bio-", Sys.Date(), ".png"),
-       g_biol_asv_idx,
-       width = 12, height = 6, units = "in")
-# ggsave(paste0(projectpath, "/", "usvi_asvs_potential_contaminants_ei-", Sys.Date(), ".png"),
-#        g_asv_contam_either,
-ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_both-", Sys.Date(), ".png"),
-       g_species_contam_both,
-       width = 12, height = 6, units = "in")
-# ggsave(paste0(projectpath, "/", "usvi_asvs_potential_contaminants_prev-", Sys.Date(), ".png"),
-#        g_asv_contam_only_prev,
-ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_prev-", Sys.Date(), ".png"),
-       g_species_contam_only_prev,
-       width = 16, height = 12, units = "in")
-# ggsave(paste0(projectpath, "/", "usvi_asvs_potential_contaminants_nei-", Sys.Date(), ".png"),
-#        g_asv_contam_neither,
-ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_nei-", Sys.Date(), ".png"),
-       g_species_contam_neither,
-       width = 16, height = 12, units = "in")
-# ggsave(paste0(projectpath, "/", "usvi_asvs_potential_contaminants_freq-", Sys.Date(), ".png"),
-#        g_asv_contam_only_freq,
-ggsave(paste0(projectpath, "/", "usvi_species_potential_contaminants_freq-", Sys.Date(), ".png"),
-       g_species_contam_only_freq,
-       width = 16, height = 12, units = "in")
 
 
 
@@ -902,51 +713,11 @@ ps_usvi_samples <- phyloseq::phyloseq(phyloseq::otu_table((usvi_prok_asvs.df %>%
                                                     droplevels %>%
                                                     tibble::column_to_rownames(var = "asv_id") %>%
                                                     as.matrix)) %>%
-  phyloseq::subset_samples(., grepl("seawater|pcr|extraction", sample_type))
-# 
-# decon_usvi_freq.df <- decontam::isContaminant(ps_usvi_samples, method = "frequency",
-#                                               threshold = set_thresholds[["freq"]],
-#                                               batch = sample_data(ps_usvi_samples)$batch,
-#                                               conc = "dna_conc")
-#                                               # conc = "product_conc")
-# 
-#using just the concentration of amplicon products in the seawater and control samples:
-# table(decon_usvi_freq.df$contaminant)
-# #all togehter
-# # FALSE  TRUE
-# # 12928    52  #threshold = 0.1 default 
-# 
-# #when doing it by batches:
-# #FALSE  TRUE 
-# # 12917    63   #threshold = 0.1 default
-# 
-## using the concentration of extracted DNA (with 0.001 as dummy conc for controls, and random samplingfor the seawater extracted preivously)
-# # FALSE  TRUE
-# # 12898    82    #threshold = 0.1 default
+  phyloseq::subset_samples(., grepl("seawater|pcr|extraction", sample_type)) %>%
+  phyloseq::filter_taxa(function(x) sum(x) > 0, TRUE) # remove ASVs not present in any samples
 
-# head(which(decon_usvi_freq.df$contaminant))
-# 33  42  58  78  87 147 #using amplicon
-#  85 134 228 264 343 359 #using DNAconcentration
+#12664 ASVs remain in the dataset
 
-# plot_frequency(ps_usvi_samples, taxa_names(ps_usvi_samples)[c(1,33)], conc="product_conc") +
-#   xlab("Amplicon DNA Concentration")
-# #the solid red line shows the modeled frequency of a contaminant if its proportional to the DNA conc
-# #the dashed black line shows the modeled frequency of a noncontaminant with frequency independent of DNA conc
-# 
-# plot_frequency(ps_usvi_samples, taxa_names(ps_usvi_samples)[c(1,85,134)], conc="dna_conc") +
-#   xlab("extracted DNA Concentration")
-
-
-# #now look at the qualification of control samples
-# decon_usvi_prev.df <- decontam::isContaminant(ps_usvi_samples, method = "prevalence",
-#                                               batch = sample_data(ps_usvi_samples)$batch,
-#                                               threshold = set_thresholds[["prev"]],
-#                                               neg = "is.neg")
-#using batches yields the same # of results as not specifying batches
-# table(decon_usvi_prev.df$contaminant)
-# # FALSE  TRUE 
-# # 12969    11  #when thershold = 0.1
-# # 12961    19 #when treshold = 0.5
 
 decon_usvi_combo.df <- decontam::isContaminant(ps_usvi_samples,
                                                method = "minimum",
@@ -956,10 +727,10 @@ decon_usvi_combo.df <- decontam::isContaminant(ps_usvi_samples,
                                               conc = "dna_conc",
                                               # conc = "product_conc",
                                               neg = "is.neg")
-table(decon_usvi_combo.df$contaminant)
-# FALSE  TRUE
-# 12950    30  #thresold = 0.1, method = "combined" using dna_conc
-# 12896    84 # threshold = 0.1, method = "minimum" using dna_conc
+# table(decon_usvi_combo.df$contaminant)
+# # FALSE  TRUE
+# # 12950    30  #thresold = 0.1, method = "combined" using dna_conc
+# # 12896    84 # threshold = 0.1, method = "minimum" using dna_conc
 
 
 {
@@ -990,8 +761,9 @@ potential_contam_asvs.taxa <- decon_usvi_combo.df %>%
   dplyr::left_join(., usvi_prok_filled.taxa.df, by = join_by(asv_id)) %>%
   dplyr::relocate(asv_id, pa.pos, pa.neg, potential_contaminant, contaminant, Domain:Species) %>%
   dplyr::filter((potential_contaminant > 0)) %>%
-  # dplyr::filter(potential_contaminant > 0 | contaminant | !is.na(contam_freq) | !is.na(contam_prev)) %>%
   droplevels
+
+#103 ASVs flagged as potential contaminants
 
 #drop any ASVs that, after quality filtering for species-level abundances, were not considered contaminants
 #also drop any ASVs matching taxonomy to the biological asvs control group
@@ -1020,6 +792,7 @@ temp_df <- potential_contam_species.taxa %>%
   dplyr::arrange(asv_id)
 
 #these are potential contaminant ASVs:
+#145 in total
 potential_contam_asvs.df <- potential_contam_species.taxa %>%
   dplyr::filter(potential_contaminant > 0) %>%
   dplyr::select(asv_id, c(Domain:Species)) %>%
@@ -1149,9 +922,10 @@ drop_species_asvs.df <- plot_potential_contam.df %>%
   dplyr::arrange(asv_id) %>%
   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
   droplevels
-
+#339 ASVs are to be dropped as potential contaminants
 
 #how many different species?
+#104 species
 temp_df <- usvi_prok_asvs.df %>%
   dplyr::filter(asv_id %in% drop_species_asvs.df[["asv_id"]]) %>%
   dplyr::filter(grepl("Metab_", sample_ID) & !grepl("Metab_K", sample_ID))%>%
@@ -1160,12 +934,19 @@ temp_df <- usvi_prok_asvs.df %>%
                      values_from = "counts") %>%
   otu_to_taxonomy(., drop_species_asvs.df, level = "Species")
 
+#how abundant are they?
 temp_mat <- temp_df %>% 
   dplyr::left_join(., usvi_prok_filled.taxa.df, relationship = "many-to-many", multiple = "first") %>%
   tibble::column_to_rownames(var = "asv_id") %>%
   dplyr::select(starts_with("Metab"))
 range(rowSums(temp_mat))
+# [1]    0 1451
+#so one ASV contributed at most 1451 sequences
 range(colSums(temp_mat))
+# [1]   0 509
+#maximum contribution of the 339 potential contaminant ASVs to any sample, was 509 sequences
+sum(temp_mat)
+#in total, 7617 counts attributed to the 339 potential contaminant ASVs
 
 #remove the contaminant asvs
 drop_species_asvs_idx <- drop_species_asvs.df %>%
@@ -1194,7 +975,9 @@ ps_usvi_decontam <- phyloseq::phyloseq(phyloseq::otu_table((usvi_prok_asvs.df %>
                                                     tibble::column_to_rownames(var = "asv_id") %>%
                                                     as.matrix)) %>%
   phyloseq::prune_taxa(drop_species_asvs_idx, .) %>%
+  phyloseq::subset_samples(., sample_type == "seawater") %>%
   phyloseq::filter_taxa(function(x) sum(x) > 0, TRUE) # remove ASVs not present in any samples
+
 
 readr::write_rds(ps_usvi_decontam, paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"), compress = "gz")
 
@@ -1202,5 +985,5 @@ drop_species_asvs_idx <- drop_species_asvs_idx %>%
   tibble::enframe(name = "asv_id", value = "keep")
 
 readr::write_delim(drop_species_asvs_idx, 
-                   paste0(projectpath, "/", "usvi_prok_decontam_idx", ".tsv"),
-                   col_names = FALSE)
+                   paste0(projectpath, "/", "usvi_prok_decontam_idx", ".tsv.gz"),
+                   col_names = TRUE)

@@ -832,7 +832,7 @@ adonis_asv.res <- with(meta.microb, adonis2(data = meta.microb, method = "bray",
                                             # dist_usvi_asv.d ~ site*sampling_time*sampling_day, strata = sampling_day, #Pr for site:sampling_time = 0.102; site:sampling_time:sampling_day: 0.134
                                             # dist_usvi_asv.d ~ site*sampling_time*sampling_day, strata = site, #Pr for site:sampling_time = 0.038; site:sampling_time:sampling_day: 0.051
                                             # dist_usvi_asv.d ~ sampling_time*sampling_day*site, strata = site, #Pr for sampling_time:site = 0.064; sampling_time:sampling_day:site: 0.053
-                                            dist_usvi_asv.d ~ sampling_time*sampling_day, strata = site, #Pr for sampling_time:site = 0.064; sampling_time:sampling_day:site: 0.053
+                                            dist_usvi_asv.d ~ sampling_time/sampling_day, strata = site, #Pr for sampling_time:sampling_day = 0.152; sampling_time = 0.001, sampling_day = 0.001
                                             parallel = nthreads, by = "terms"))
 
 adonis_asv.res
