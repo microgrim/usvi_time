@@ -166,7 +166,7 @@ site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
   # site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
   setNames(., names(site_lookup))
 sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
-                                   label = c("Dawn", "Peak photosynthesis")) %>%
+                                   label = c("Dawn", "Afternoon")) %>%
   tibble::deframe(.)
 sampling_time_colors <- pals::ocean.haline(n = length(sampling_time_lookup)) %>%
   setNames(., names(sampling_time_lookup))
@@ -1345,6 +1345,10 @@ usvi_filtered_taxonomy_rank_genus_relabund.df %>%
   dplyr::summarise(total_relabund = sum(rel_abund)) %>%
   dplyr::arrange(total_relabund) #min: 88.8%
 
+
+
+
+
 # taxonomy_colors <- taxonomy_colors.df %>%
 #   dplyr::select(taxonomy, color) %>%
 #   tibble::deframe(.)
@@ -1659,13 +1663,23 @@ usvi_filtered_taxonomy_rank_genus_summary.tbl <- usvi_filtered_taxonomy_rank_gen
                      dplyr::distinct(asv_id, .keep_all = TRUE) %>%
                      dplyr::group_by(taxonomy, Genus) %>%
                      dplyr::summarise(`Abundant ASVs` = length(asv_id)) %>%
-                     tidyr::drop_na(.)) %>%
+                     tidyr::drop_na(.),
+                   by = join_by(taxonomy, Genus)) %>%
+  dplyr::left_join(., (usvi_filtered_taxonomy_rank_genus_relabund.df %>% #what is the mean relative abundance of the most abundant ASV in each taxon?
+      dplyr::group_by(asv_id, taxonomy) %>%
+      dplyr::summarise(`Mean relative abundance of top ASV` = mean(rel_abund)) %>%
+      dplyr::arrange(desc(`Mean relative abundance of top ASV`)) %>% 
+      dplyr::ungroup(.) %>%
+        dplyr::select(taxonomy, `Mean relative abundance of top ASV`) %>%
+      dplyr::distinct(taxonomy, .keep_all = TRUE)),
+      by = join_by(taxonomy)) %>%
   dplyr::mutate(`Abundant ASVs` = nafill(`Abundant ASVs`, fill = 0)) %>%
   dplyr::left_join(., temp_df, by = join_by(taxonomy)) %>%
   dplyr::mutate(Class = stringr::str_extract(taxonomy, paste0(taxonomy_rank_class_idx, collapse = "|"))) %>%
   dplyr::relocate(Class, .before = Genus) %>%
   dplyr::ungroup(.) %>%
-  dplyr::arrange(desc(`Mean relative abundance of abundant ASVs`)) %>%
+  # dplyr::arrange(desc(`Mean relative abundance of abundant ASVs`)) %>%
+  dplyr::arrange(desc(`Mean relative abundance of top ASV`)) %>%
   dplyr::rowwise(.) %>%
   dplyr::mutate(across(contains("relative abundance"), scales::percent, scale = 1, accuracy = 0.01)) %>%
   droplevels

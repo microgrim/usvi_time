@@ -1,53 +1,53 @@
-taxonomy	Class	Genus	Total ASVs	Abundant ASVs	Mean relative abundance of all ASVs	Mean relative abundance of abundant ASVs
-Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Synechococcus CC9902	Cyanobacteria	Synechococcus CC9902	26	4	2.95%	5.69%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;HIMB11	Alphaproteobacteria	HIMB11	2	1	2.92%	3.43%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade I;Clade Ia	Alphaproteobacteria	Clade Ia	34	3	1.55%	3.40%
-Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Prochlorococcus MIT9313	Cyanobacteria	Prochlorococcus MIT9313	8	1	1.31%	2.09%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Cryomorphaceae;Cryomorphaceae	Bacteroidia	Cryomorphaceae	46	3	0.52%	1.83%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;SAR86 clade;SAR86 clade	Gammaproteobacteria	SAR86 clade	49	3	0.42%	1.59%
-Bacteria;Actinobacteriota;Acidimicrobia;Actinomarinales;Actinomarinaceae;Candidatus Actinomarina	Acidimicrobia	Candidatus Actinomarina	10	2	0.87%	1.44%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;NS4 marine group	Bacteroidia	NS4 marine group	19	3	0.50%	1.32%
-Bacteria;Verrucomicrobiota;Verrucomicrobiae;Opitutales;Puniceicoccaceae;Coraliomargarita	Verrucomicrobiae	Coraliomargarita	11	1	0.61%	1.11%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodospirillales;AEGEAN-169 marine group;AEGEAN-169 marine group	Alphaproteobacteria	AEGEAN-169 marine group	33	2	0.38%	1.10%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;Flavobacteriaceae	Bacteroidia	Flavobacteriaceae	92	2	0.45%	1.10%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade II;Clade II	Alphaproteobacteria	Clade II	44	2	0.26%	1.10%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;NS2b marine group	Bacteroidia	NS2b marine group	6	1	0.38%	1.01%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Puniceispirillales;SAR116 clade;SAR116 clade	Alphaproteobacteria	SAR116 clade	53	2	0.25%	1.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;Rhodobacteraceae	Alphaproteobacteria	Rhodobacteraceae	78	2	0.43%	0.97%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas	Gammaproteobacteria	Stenotrophomonas	2	1	0.90%	0.91%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;Litorimicrobium	Alphaproteobacteria	Litorimicrobium	1	1	0.82%	0.82%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade I;Clade Ib	Alphaproteobacteria	Clade Ib	24	2	0.49%	0.80%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;NS5 marine group	Bacteroidia	NS5 marine group	47	6	0.34%	0.77%
-Bacteria;Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade)	NA	Marinimicrobia (SAR406 clade)	81	1	0.14%	0.61%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;NS9 marine group;NS9 marine group	Bacteroidia	NS9 marine group	34	1	0.14%	0.54%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;Formosa	Bacteroidia	Formosa	2	1	0.44%	0.51%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Halieaceae;OM60(NOR5) clade	Gammaproteobacteria	OM60(NOR5) clade	20	1	0.29%	0.48%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;NS7 marine group;NS7 marine group	Bacteroidia	NS7 marine group	12	1	0.24%	0.42%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas	Gammaproteobacteria	Pseudomonas	14	4	0.28%	0.42%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Enterobacterales;Alteromonadaceae;Alteromonas	Gammaproteobacteria	Alteromonas	1	1	0.35%	0.35%
-Bacteria;Actinobacteriota;Acidimicrobia;Microtrichales;Microtrichaceae;Sva0996 marine group	Acidimicrobia	Sva0996 marine group	21	1	0.20%	0.28%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Nitrincolaceae;Marinobacterium	Gammaproteobacteria	Marinobacterium	6	1	0.24%	0.26%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter	Gammaproteobacteria	Acinetobacter	8	1	0.16%	0.23%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadales;Pseudomonadales	Gammaproteobacteria	Pseudomonadales	64	1	0.09%	0.20%
-Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Cyanobium PCC-6307	Cyanobacteria	Cyanobium PCC-6307	3	0	0.16%	0.00%
-Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Cyanobiaceae	Cyanobacteria	Cyanobiaceae	7	0	0.15%	0.00%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Enterobacterales;Vibrionaceae;Vibrio	Gammaproteobacteria	Vibrio	27	0	0.08%	0.00%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Coxiellales;Coxiellaceae;Coxiella	Gammaproteobacteria	Coxiella	145	0	0.02%	0.00%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;KI89A clade;KI89A clade	Gammaproteobacteria	KI89A clade	12	0	0.10%	0.00%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Ectothiorhodospirales;Ectothiorhodospiraceae;Ectothiorhodospiraceae	Gammaproteobacteria	Ectothiorhodospiraceae	9	0	0.08%	0.00%
-Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Porticoccaceae;SAR92 clade	Gammaproteobacteria	SAR92 clade	7	0	0.09%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhizobiales;Stappiaceae;Stappiaceae	Alphaproteobacteria	Stappiaceae	13	0	0.17%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Parvibaculales;PS1 clade;PS1 clade	Alphaproteobacteria	PS1 clade	12	0	0.13%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;Ascidiaceihabitans	Alphaproteobacteria	Ascidiaceihabitans	6	0	0.15%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rickettsiales;S25-593;S25-593	Alphaproteobacteria	S25-593	24	0	0.07%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Defluviicoccales;Defluviicoccales;Defluviicoccales	Alphaproteobacteria	Defluviicoccales	18	0	0.09%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade III;Clade III	Alphaproteobacteria	Clade III	8	0	0.08%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade IV;Clade IV	Alphaproteobacteria	Clade IV	3	0	0.18%	0.00%
-Bacteria;Alphaproteobacteria;Alphaproteobacteria;Alphaproteobacteria;Alphaproteobacteria;Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	407	0	0.02%	0.00%
-Bacteria;Bacteroidota;Bacteroidia;Chitinophagales;Chitinophagales;Chitinophagales	Bacteroidia	Chitinophagales	57	0	0.05%	0.00%
-Bacteria;Bacteroidota;Bacteroidia;Cytophagales;Cyclobacteriaceae;Marinoscillum	Bacteroidia	Marinoscillum	22	0	0.11%	0.00%
-Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;Tenacibaculum	Bacteroidia	Tenacibaculum	15	0	0.10%	0.00%
-Bacteria;Bacteroidota;Bacteroidia;Chitinophagales;Saprospiraceae;Saprospiraceae	Bacteroidia	Saprospiraceae	115	0	0.03%	0.00%
-Bacteria;Bacteroidota;Bacteroidia;Sphingobacteriales;NS11-12 marine group;NS11-12 marine group	Bacteroidia	NS11-12 marine group	14	0	0.08%	0.00%
-Archaea;Thermoplasmatota;Thermoplasmata;Marine Group II;Marine Group II;Marine Group II	Thermoplasmata	Marine Group II	23	0	0.12%	0.00%
-Bacteria;Verrucomicrobiota;Verrucomicrobiae;Opitutales;Puniceicoccaceae;MB11C04 marine group	Verrucomicrobiae	MB11C04 marine group	16	0	0.06%	0.00%
+taxonomy	Class	Genus	Total ASVs	Abundant ASVs	Mean relative abundance of top ASV	Mean relative abundance of all ASVs	Mean relative abundance of abundant ASVs
+Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Synechococcus CC9902	Cyanobacteria	Synechococcus CC9902	26	4	20.57%	2.95%	5.69%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade I;Clade Ia	Alphaproteobacteria	Clade Ia	34	3	5.45%	1.55%	3.40%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;HIMB11	Alphaproteobacteria	HIMB11	2	1	3.43%	2.92%	3.43%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;NS4 marine group	Bacteroidia	NS4 marine group	19	3	3.27%	0.50%	1.32%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Cryomorphaceae;Cryomorphaceae	Bacteroidia	Cryomorphaceae	46	3	2.52%	0.52%	1.83%
+Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Prochlorococcus MIT9313	Cyanobacteria	Prochlorococcus MIT9313	8	1	2.09%	1.31%	2.09%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;SAR86 clade;SAR86 clade	Gammaproteobacteria	SAR86 clade	49	3	2.07%	0.42%	1.59%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;Flavobacteriaceae	Bacteroidia	Flavobacteriaceae	92	2	1.91%	0.45%	1.10%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade II;Clade II	Alphaproteobacteria	Clade II	44	2	1.62%	0.26%	1.10%
+Bacteria;Actinobacteriota;Acidimicrobia;Actinomarinales;Actinomarinaceae;Candidatus Actinomarina	Acidimicrobia	Candidatus Actinomarina	10	2	1.57%	0.87%	1.44%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;NS5 marine group	Bacteroidia	NS5 marine group	47	6	1.53%	0.34%	0.77%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Puniceispirillales;SAR116 clade;SAR116 clade	Alphaproteobacteria	SAR116 clade	53	2	1.34%	0.25%	1.00%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodospirillales;AEGEAN-169 marine group;AEGEAN-169 marine group	Alphaproteobacteria	AEGEAN-169 marine group	33	2	1.30%	0.38%	1.10%
+Bacteria;Verrucomicrobiota;Verrucomicrobiae;Opitutales;Puniceicoccaceae;Coraliomargarita	Verrucomicrobiae	Coraliomargarita	11	1	1.11%	0.61%	1.11%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;NS2b marine group	Bacteroidia	NS2b marine group	6	1	1.01%	0.38%	1.01%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;Rhodobacteraceae	Alphaproteobacteria	Rhodobacteraceae	78	2	0.98%	0.43%	0.97%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade I;Clade Ib	Alphaproteobacteria	Clade Ib	24	2	0.94%	0.49%	0.80%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas	Gammaproteobacteria	Stenotrophomonas	2	1	0.91%	0.90%	0.91%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas	Gammaproteobacteria	Pseudomonas	14	4	0.87%	0.28%	0.42%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;Litorimicrobium	Alphaproteobacteria	Litorimicrobium	1	1	0.82%	0.82%	0.82%
+Bacteria;Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade)	NA	Marinimicrobia (SAR406 clade)	81	1	0.61%	0.14%	0.61%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;NS9 marine group;NS9 marine group	Bacteroidia	NS9 marine group	34	1	0.54%	0.14%	0.54%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;Formosa	Bacteroidia	Formosa	2	1	0.51%	0.44%	0.51%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Halieaceae;OM60(NOR5) clade	Gammaproteobacteria	OM60(NOR5) clade	20	1	0.48%	0.29%	0.48%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;NS7 marine group;NS7 marine group	Bacteroidia	NS7 marine group	12	1	0.42%	0.24%	0.42%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Enterobacterales;Alteromonadaceae;Alteromonas	Gammaproteobacteria	Alteromonas	1	1	0.35%	0.35%	0.35%
+Archaea;Thermoplasmatota;Thermoplasmata;Marine Group II;Marine Group II;Marine Group II	Thermoplasmata	Marine Group II	23	0	0.31%	0.12%	0.00%
+Bacteria;Actinobacteriota;Acidimicrobia;Microtrichales;Microtrichaceae;Sva0996 marine group	Acidimicrobia	Sva0996 marine group	21	1	0.28%	0.20%	0.28%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhizobiales;Stappiaceae;Stappiaceae	Alphaproteobacteria	Stappiaceae	13	0	0.26%	0.17%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Nitrincolaceae;Marinobacterium	Gammaproteobacteria	Marinobacterium	6	1	0.26%	0.24%	0.26%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rhodobacterales;Rhodobacteraceae;Ascidiaceihabitans	Alphaproteobacteria	Ascidiaceihabitans	6	0	0.24%	0.15%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter	Gammaproteobacteria	Acinetobacter	8	1	0.23%	0.16%	0.23%
+Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Cyanobium PCC-6307	Cyanobacteria	Cyanobium PCC-6307	3	0	0.22%	0.16%	0.00%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade IV;Clade IV	Alphaproteobacteria	Clade IV	3	0	0.21%	0.18%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadales;Pseudomonadales	Gammaproteobacteria	Pseudomonadales	64	1	0.20%	0.09%	0.20%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Rickettsiales;S25-593;S25-593	Alphaproteobacteria	S25-593	24	0	0.19%	0.07%	0.00%
+Bacteria;Bacteroidota;Bacteroidia;Cytophagales;Cyclobacteriaceae;Marinoscillum	Bacteroidia	Marinoscillum	22	0	0.17%	0.11%	0.00%
+Bacteria;Cyanobacteria;Cyanobacteria;Synechococcales;Cyanobiaceae;Cyanobiaceae	Cyanobacteria	Cyanobiaceae	7	0	0.16%	0.15%	0.00%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Defluviicoccales;Defluviicoccales;Defluviicoccales	Alphaproteobacteria	Defluviicoccales	18	0	0.16%	0.09%	0.00%
+Bacteria;Bacteroidota;Bacteroidia;Flavobacteriales;Flavobacteriaceae;Tenacibaculum	Bacteroidia	Tenacibaculum	15	0	0.15%	0.10%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;KI89A clade;KI89A clade	Gammaproteobacteria	KI89A clade	12	0	0.15%	0.10%	0.00%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Parvibaculales;PS1 clade;PS1 clade	Alphaproteobacteria	PS1 clade	12	0	0.14%	0.13%	0.00%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;Alphaproteobacteria;Alphaproteobacteria;Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	407	0	0.14%	0.02%	0.00%
+Bacteria;Bacteroidota;Bacteroidia;Chitinophagales;Saprospiraceae;Saprospiraceae	Bacteroidia	Saprospiraceae	115	0	0.13%	0.03%	0.00%
+Bacteria;Bacteroidota;Bacteroidia;Sphingobacteriales;NS11-12 marine group;NS11-12 marine group	Bacteroidia	NS11-12 marine group	14	0	0.13%	0.08%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Enterobacterales;Vibrionaceae;Vibrio	Gammaproteobacteria	Vibrio	27	0	0.13%	0.08%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Ectothiorhodospirales;Ectothiorhodospiraceae;Ectothiorhodospiraceae	Gammaproteobacteria	Ectothiorhodospiraceae	9	0	0.13%	0.08%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Pseudomonadales;Porticoccaceae;SAR92 clade	Gammaproteobacteria	SAR92 clade	7	0	0.13%	0.09%	0.00%
+Bacteria;Alphaproteobacteria;Alphaproteobacteria;SAR11 clade;Clade III;Clade III	Alphaproteobacteria	Clade III	8	0	0.12%	0.08%	0.00%
+Bacteria;Bacteroidota;Bacteroidia;Chitinophagales;Chitinophagales;Chitinophagales	Bacteroidia	Chitinophagales	57	0	0.12%	0.05%	0.00%
+Bacteria;Verrucomicrobiota;Verrucomicrobiae;Opitutales;Puniceicoccaceae;MB11C04 marine group	Verrucomicrobiae	MB11C04 marine group	16	0	0.10%	0.06%	0.00%
+Bacteria;Gammaproteobacteria;Gammaproteobacteria;Coxiellales;Coxiellaceae;Coxiella	Gammaproteobacteria	Coxiella	145	0	0.05%	0.02%	0.00%
