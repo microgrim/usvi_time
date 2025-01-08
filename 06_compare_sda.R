@@ -841,6 +841,11 @@ usvi_sda_asvs_relabund.df <- usvi_prok_asvs.df %>%
                    by = join_by(sample_id), relationship = "many-to-many", multiple = "all") %>%
   droplevels
 
+#for now (20250110)
+#plot only those SDA ASVs from the contrasts:
+#Yawzi dawn vs afternoon, Tektite dawn vs afternoon, LB dawn vs afternoon
+
+
 {
   
   # usvi_sda_genera_shared_samples.df <- usvi_sda_genera_compare.df %>%

@@ -267,80 +267,14 @@ color_resample_list <- c("#e6d1eb",
                           "#d6c6ac")
 
 
-# Global variables --------------------------------------------------------
+# Fancy stuff -------------------------------------------------------------
 
 
-set.alpha <- 0.05
-set.seed(48105)
 
-model_dispersion_lookup <- data.frame(v1 = c("manual_dispersion", 
-                                             "manual_dawn", "manual_photo", "auto_dawn", "auto_photo",
-                                             "auto_dispersion"),
-                                      label = c("All LB seagrass, manual dispersion",
-                                                "Dawn LB seagrass, manual dispersion",
-                                                "Peak photo LB seagrass, manual dispersion",
-                                                "Dawn LB seagrass, auto dispersion",
-                                                "Peak photo LB seagrass, auto dispersion",
-                                                "All LB seagrass, auto dispersion")) %>%
-  tibble::deframe(.)
+no_progress <- function() {} #your placeholder function for progress reporting
+
+idx_samples <- function(x) grep("samples", names(x), value = TRUE)
+coalesce2 <- function(x, y, sep = ".") ifelse(x == y, coalesce(x, y, sep = sep), paste0(x, "_vs_", y))
 
 
-group_labels_lookup <- c("Tektite_d" = "Tektite dawn",
-                         "Tektite_p" = "Tektite peak photo",
-                         "Yawzi_d" = "Yawzi dawn",
-                         "Yawzi_p" = "Yawzi peak photo",
-                         "LB_seagrass_d" = "LB seagrass dawn",
-                         "LB_seagrass_p" = "LB seagrass peak photo",
-                         "Tektite" = "Tektite",
-                         "Yawzi" = "Yawzi",
-                         "LB_seagrass" = "LB seagrass")
 
-group_labels_colors <- viridisLite::turbo(length(group_labels_lookup)) %>%
-  setNames(., names(group_labels_lookup))
-
-site_lookup <- data.frame(site = c("LB_seagrass", "Tektite", "Yawzi", "control_extraction", "control_pcr", "control_seq"),
-                          label = c("Lameshur Bay seagrass", "Tektite Reef", "Yawzi Reef",
-                                    "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%
-  dplyr::mutate(label = stringr::str_wrap(label, width = 16)) %>%
-  tibble::deframe(.)
-site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
-  # site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
-  setNames(., names(site_lookup))
-sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
-                                   label = c("Dawn", "Peak photosynthesis")) %>%
-  tibble::deframe(.)
-sampling_time_colors <- pals::ocean.haline(n = length(sampling_time_lookup)) %>%
-  setNames(., names(sampling_time_lookup))
-sampling_day_lookup <- data.frame(sampling_day = c("Day1", "Day2", "Day3", "Day4", "Day5"),
-                                  label = c("20210122", "20210123", "20210124", "20210125", "20210126")) %>%
-  tibble::deframe(.)
-sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
-  setNames(., names(sampling_day_lookup))
-
-# usvi_genera_relabel <- usvi_prok_filled.taxa.df %>%
-#   dplyr::mutate(across(everything(), ~stringr::str_replace_all(.x, " clade", ""))) %>%
-#   dplyr::rowwise(.) %>%
-#   dplyr::mutate(first = dplyr::case_when((Order == Genus) ~ Class,
-#                                          .default = Order)) %>%
-#   dplyr::mutate(first = dplyr::case_when((Class == Order) ~ NA,
-#                                          (Class != Phylum) ~ Phylum,
-#                                          grepl(paste0(c("Synechococcales"), collapse = "|"), first) ~ NA,
-#                                          .default = first)) %>%
-#   dplyr::mutate(second = dplyr::case_when((Order == Genus) ~ Order,
-#                                           .default = Genus)) %>%
-#   dplyr::mutate(taxa_label = dplyr::case_when(!is.na(first) ~ paste0(first, "; ", second),
-#                                               .default = second)) %>%
-#   dplyr::select(asv_id, taxa_label) %>%
-#   tibble::deframe(.)
-# 
-global_labeller <- labeller(
-  # model2 = model_dispersion_lookup,
-  model = model_dispersion_lookup,
-  Combo = group_labels_lookup,
-  site = site_lookup,
-  sampling_day = sampling_day_lookup,
-  sampling_time = sampling_time_lookup,
-  # asv_id = usvi_genera_relabel,
-  .multi_line = TRUE,
-  .default = label_both
-)
