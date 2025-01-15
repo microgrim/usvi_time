@@ -13,21 +13,34 @@ model_dispersion_lookup <- data.frame(v1 = c("manual_dispersion",
                                                 "Dawn LB seagrass, auto dispersion",
                                                 "Peak photo LB seagrass, auto dispersion",
                                                 "All LB seagrass, auto dispersion")) %>%
+  bind_rows(., data.frame(v1 = c("manual_lameshur", "manual_yawzi", "manual_tektite", "manual_reef",
+                                 "auto_lameshur", "auto_yawzi",
+                                 "auto_tektite", "auto_reef"),
+                          label = c("Dawn LB seagrass, manual dispersion", "Dawn Yawzi, manual dispersion", "Dawn Tektite, manual dispersion", "Tektite, manual dispersion",
+                                    "Dawn LB seagrass, auto dispersion", "Dawn Yawzi, auto dispersion", "Dawn Tektite, auto dispersion", "Tektite, auto dispersion"))) %>%
   tibble::deframe(.)
 
 
 group_labels_lookup <- c("Tektite_d" = "Tektite dawn",
-                         "Tektite_p" = "Tektite peak photo",
+                         "Tektite_p" = "Tektite afternoon",
                          "Yawzi_d" = "Yawzi dawn",
-                         "Yawzi_p" = "Yawzi peak photo",
-                         "LB_seagrass_d" = "LB seagrass dawn",
-                         "LB_seagrass_p" = "LB seagrass peak photo",
+                         "Yawzi_p" = "Yawzi afternoon",
+                         "LB_seagrass_d" = "Lameshur Bay seagrass dawn",
+                         "LB_seagrass_p" = "Lameshur Bay seagrass afternoon",
                          "Tektite" = "Tektite",
                          "Yawzi" = "Yawzi",
-                         "LB_seagrass" = "LB seagrass")
+                         "LB_seagrass" = "Lameshur Bay seagrass")
 
 group_labels_colors <- viridisLite::turbo(length(group_labels_lookup)) %>%
   setNames(., names(group_labels_lookup))
+
+variable_labels_lookup <- c("Tektite - LB_seagrass" = "Tektite and Lameshur Bay seagrass",
+                         "Yawzi - LB_seagrass" = "Yawzi and Lameshur Bay seagrass",
+                         "Yawzi - Tektite" = "Yawzi and Tektite Reefs",
+                         "peak_photo - dawn" = "afternoon and dawn")
+
+variable_labels_colors <- viridisLite::turbo(length(variable_labels_lookup)) %>%
+  setNames(., names(variable_labels_lookup))
 
 site_lookup <- data.frame(site = c("LB_seagrass", "Yawzi", "Tektite",  "control_extraction", "control_pcr", "control_seq"),
                           label = c("Lameshur Bay seagrass", "Yawzi Reef", "Tektite Reef", 

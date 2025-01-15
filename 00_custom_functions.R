@@ -278,3 +278,7 @@ coalesce2 <- function(x, y, sep = ".") ifelse(x == y, coalesce(x, y, sep = sep),
 
 
 
+t_pseudolog10 <- scales::new_transform("pseudolog10", 
+                                       function(x)( log10(x+1)), 
+                                       function(x)( 10^(x) - 1), 
+                                       domain = c(0, Inf))
