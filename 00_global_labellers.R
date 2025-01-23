@@ -42,6 +42,26 @@ variable_labels_lookup <- c("Tektite - LB_seagrass" = "Tektite and Lameshur Bay 
 variable_labels_colors <- viridisLite::turbo(length(variable_labels_lookup)) %>%
   setNames(., names(variable_labels_lookup))
 
+contrast_labels_lookup <- data.frame(v1 = c("LB_seagrass (peak_photo - dawn)", 
+                                            "Yawzi (peak_photo - dawn)", 
+                                            "Tektite (peak_photo - dawn)", 
+                                            "dawn (Yawzi - LB_seagrass)",
+                                            "dawn (Tektite - LB_seagrass)",
+                                            "dawn (Yawzi - Tektite)",
+                                            "peak_photo (Yawzi - LB_seagrass)",
+                                            "peak_photo (Tektite - LB_seagrass)",
+                                            "peak_photo (Yawzi - Tektite)"),
+                                     label = c("LB_seagrass (afternoon - dawn)", 
+                                               "Yawzi (afternoon - dawn)", 
+                                               "Tektite (afternoon - dawn)", 
+                                               "dawn (Yawzi - LB_seagrass)",
+                                               "dawn (Tektite - LB_seagrass)",
+                                               "dawn (Yawzi - Tektite)",
+                                               "afternoon (Yawzi - LB_seagrass)",
+                                               "afternoon (Tektite - LB_seagrass)",
+                                               "afternoon (Yawzi - Tektite)")) %>%
+  tibble::deframe(.)
+
 site_lookup <- data.frame(site = c("LB_seagrass", "Yawzi", "Tektite",  "control_extraction", "control_pcr", "control_seq"),
                           label = c("Lameshur Bay seagrass", "Yawzi Reef", "Tektite Reef", 
                                     "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%

@@ -328,6 +328,7 @@ global_labeller <- labeller(
   sampling_day = sampling_day_lookup,
   sampling_time = sampling_time_lookup,
   asv_id = usvi_genera_relabel,
+  contrast = contrast_labels_lookup,
   .multi_line = TRUE,
   .default = label_wrap_gen(25, multi_line = TRUE)
   # .default = label_value

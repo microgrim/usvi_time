@@ -76,4 +76,19 @@ f_projectpath <- function() {
 # if(interactive()) try(f_projectpath())
 # try(f_projectpath())
 
+# User input to proceed with code chunk -----------------------------------
 
+
+f_run_chunk <- function() {
+  #run 'try(f_run_chunk())' to set variable 'execchunk' to TRUE or FALSE
+  #after running this function, use 'if(execchunk){}' to run a code chunk within the curly braces
+  ANSWER <- readline("Do you want to run this chunk? ")
+  if (substr(ANSWER, 1, 1) != "y"){
+    assign("execchunk", FALSE, envir = .GlobalEnv, inherits = TRUE)
+    stop("Skipping the code chunk.")
+  } else {
+    #do the code chunk
+    cli::cli_alert_info("Running the code chunk... \n") 
+    assign("execchunk", TRUE, envir = .GlobalEnv, inherits = TRUE)
+  }
+}

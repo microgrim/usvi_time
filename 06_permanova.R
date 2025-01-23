@@ -160,19 +160,38 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
   droplevels
 
 
-usvi_metabolomics.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_wideFormat_noMetadata.csv"),
-                                          col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads)
-colnames(usvi_metabolomics.df)[1] <- "metab_deriv_label"
+# Read in metabolites -----------------------------------------------------
 
-
-#there are samples "CINAR_BC_81A" and "CINAR_BC_81B" in the metabolomics dataset 
-#and in the metadata, there are two DNA samples associated with "Deriv_81": Metab_219 (LB_seagrass dawn) and Metab_319 (tektite dawn)
-
-usvi_metabolomics_long.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_longFormat_wMetadata.csv"), 
-                                               col_select = c(2:last_col()),
-                                               col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads) %>%
-  dplyr::mutate(sample_id = paste0("Metab_", DNA_no))
-
+if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
+  temp_list <- readr::read_rds(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))
+  list2env(temp_list, envir = .GlobalEnv)
+  rm(temp_list)
+} else {
+  usvi_metabolomics.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_wideFormat_noMetadata.csv"),
+                                            col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads)
+  colnames(usvi_metabolomics.df)[1] <- "metab_deriv_label"
+  
+  
+  
+  #there are samples "CINAR_BC_81A" and "CINAR_BC_81B" in the metabolomics dataset 
+  #and in the metadata, there are two DNA samples associated with "Deriv_81": Metab_219 (LB_seagrass dawn) and Metab_319 (tektite dawn)
+  
+  usvi_metabolomics_long.df <- readr::read_delim(paste0(projectpath, "/", "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_longFormat_wMetadata.csv"), 
+                                                 col_select = c(2:last_col()),
+                                                 col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads) %>%
+    dplyr::mutate(sample_id = paste0("Metab_", DNA_no))
+  
+  # long metabolomics dataset from Brianna confirms that CINAR_BC_81A is the BC sample associated with Tektite Metab_319
+  # and CINAR_BC_81B is the BC sample associated with LB_seagrass Metab_219
+  
+  if(!file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
+    temp_list <- list(usvi_metabolomics.df, usvi_metabolomics_long.df) %>%
+      setNames(., c("usvi_metabolomics.df", "usvi_metabolomics_long.df"))
+    readr::write_rds(temp_list, paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))
+    rm(temp_list)
+  }
+  
+}
 
 
 
@@ -421,58 +440,58 @@ usvi_light_temp_metadata.df <- bind_rows(
 }
 # 
 # 
-g1_par <- print(
-  ggplot(data = usvi_hobo_light_temp_filtered.df %>%
-           dplyr::filter(grepl("PAR", parameter)),
-         aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
-  + geom_point(shape = 19, size = 1)
-  + geom_line(show.legend = FALSE)
-  + theme_bw()
-  + facet_grid(site~., labeller = labeller(site = site_lookup),
-               scales = "fixed")
-  + scale_y_continuous(name = expression(paste("PAR (\U00B5 mol photons", ~m^-2 ~s^-1, ")")))
-  + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + theme(axis.text.x = element_text(angle = 90),
-          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-          panel.grid = element_blank(),
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          legend.key = element_blank(),
-          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-          legend.text = element_text(size = 12, colour = "grey30"))
-)
-g1_temp <- print(
-  ggplot(data = usvi_hobo_light_temp_filtered.df %>%
-           dplyr::filter(grepl("temp", parameter)),
-         aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
-  + geom_point(shape = 19, size = 1)
-  + geom_line(show.legend = FALSE)
-  + theme_bw()
-  + facet_grid(site~., labeller = labeller(site = site_lookup),
-               scales = "fixed")
-  + scale_y_continuous(name = expression(paste("Temperature (˚C)")))
-  + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + theme(axis.text.x = element_text(angle = 90),
-          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-          panel.grid = element_blank(),
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          legend.key = element_blank(),
-          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-          legend.text = element_text(size = 12, colour = "grey30"))
-)
-
-gpatch <- g1_par + g1_temp + patchwork::plot_annotation(title = "Physicochemical parameters", subtitle ="Measured in USVI sites via HOBO loggers", tag_levels = "A")
-gpatch
-ggsave(paste0(projectpath, "/", "usvi_light_temp-", Sys.Date(), ".png"),
-       gpatch,
-       width = 10, height = 8, units = "in")
+# g1_par <- print(
+#   ggplot(data = usvi_hobo_light_temp_filtered.df %>%
+#            dplyr::filter(grepl("PAR", parameter)),
+#          aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
+#   + geom_point(shape = 19, size = 1)
+#   + geom_line(show.legend = FALSE)
+#   + theme_bw()
+#   + facet_grid(site~., labeller = labeller(site = site_lookup),
+#                scales = "fixed")
+#   + scale_y_continuous(name = expression(paste("PAR (\U00B5 mol photons", ~m^-2 ~s^-1, ")")))
+#   + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+#                           drop = TRUE)
+#   + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+#                           drop = TRUE)
+#   + theme(axis.text.x = element_text(angle = 90),
+#           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+#           panel.grid = element_blank(),
+#           axis.title.x = element_blank(),
+#           legend.position = "none",
+#           legend.key = element_blank(),
+#           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+#           legend.text = element_text(size = 12, colour = "grey30"))
+# )
+# g1_temp <- print(
+#   ggplot(data = usvi_hobo_light_temp_filtered.df %>%
+#            dplyr::filter(grepl("temp", parameter)),
+#          aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
+#   + geom_point(shape = 19, size = 1)
+#   + geom_line(show.legend = FALSE)
+#   + theme_bw()
+#   + facet_grid(site~., labeller = labeller(site = site_lookup),
+#                scales = "fixed")
+#   + scale_y_continuous(name = expression(paste("Temperature (˚C)")))
+#   + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+#                           drop = TRUE)
+#   + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+#                           drop = TRUE)
+#   + theme(axis.text.x = element_text(angle = 90),
+#           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+#           panel.grid = element_blank(),
+#           axis.title.x = element_blank(),
+#           legend.position = "none",
+#           legend.key = element_blank(),
+#           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+#           legend.text = element_text(size = 12, colour = "grey30"))
+# )
+# 
+# gpatch <- g1_par + g1_temp + patchwork::plot_annotation(title = "Physicochemical parameters", subtitle ="Measured in USVI sites via HOBO loggers", tag_levels = "A")
+# gpatch
+# ggsave(paste0(projectpath, "/", "usvi_light_temp-", Sys.Date(), ".png"),
+#        gpatch,
+#        width = 10, height = 8, units = "in")
 
 
 # Global labellers/renamers -----------------------------------------------
@@ -953,7 +972,9 @@ dist_usvi_asv.df %>%
                    max_dist = max(dissimilarity, na.rm = TRUE)) %>%
   dplyr::mutate(across(contains("dist"), list(rescaled = ~.x/max(dist_usvi_asv.df[["dissimilarity"]]))))
 
-
+dist_usvi_asv.df %>%
+  dplyr::group_by(site) %>%
+  TukeyHSD(.)
 # site        avg_dist min_dist max_dist avg_dist_rescaled min_dist_rescaled max_dist_rescaled
 # <chr>          <dbl>    <dbl>    <dbl>             <dbl>             <dbl>             <dbl>
 #   1 LB_seagrass   0.138   0.00266    0.482             0.286           0.00553             1    
