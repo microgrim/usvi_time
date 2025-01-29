@@ -1713,3 +1713,29 @@ print(
                # labeller = labeller(site = site_lookup),
                parameter ~ .)
   )
+
+
+# Make fasta file of sequences to make phylogenetic tree ------------------
+
+
+#in R:
+
+usvi_seqs_idx <- ps_usvi %>%
+  phyloseq::subset_samples(., sample_type == "seawater") %>%
+  phyloseq::filter_taxa(function(x) sum(x) > 0, TRUE) %>% # remove ASVs not present in any samples
+  phyloseq::otu_table(.) %>%
+  as.data.frame(.) %>%
+  tibble::rownames_to_column(var = "asv_id") %>%
+  dplyr::select(asv_id) %>%
+  dplyr::right_join(., usvi_prok_asvs.taxa, by = join_by(asv_id)) %>%
+# usvi_seqs_idx <- usvi_prok_asvs.taxa %>%
+#   dplyr::filter(asv_id %in% usvi_seqs_idx ) %>%
+  droplevels %>%
+  dplyr::select(asv_id, sequence) %>%
+  dplyr::mutate(abundance = 1)
+  # dplyr::select(asv_id, sequence) %>%
+  # simplify
+  # tibble::deframe(.)
+library(dada2)
+dada2::uniquesToFasta(usvi_seqs_idx, paste0(projectpath, "/", "usvi_prok_asvs.fna"), ids = usvi_seqs_idx[["asv_id"]], mode = "w")
+

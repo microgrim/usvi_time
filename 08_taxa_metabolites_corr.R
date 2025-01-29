@@ -1811,6 +1811,63 @@ temp_df <- spearman.test.df %>%
   dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
   droplevels
 
+
+# output list of SDA/sig ASVs ---------------------------------------------
+
+
+#write out the list of ASVs that were significant, to make a tree:
+#SDA ASVs:
+temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_sda_asvs_compare_summary-.*.tsv"))
+usvi_sda_asvs_compare_summary.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+                                                      delim = "\t", col_names = TRUE, na = "", show_col_types = FALSE)
+rm(temp_file)
+
+
+usvi_sig_seqs_idx <- temp_df %>%  
+  # dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
+  # tidyr::drop_na(estimate) %>%
+  # dplyr::summarise(num_results = length(estimate), .by = "asv_id") %>%
+  # dplyr::filter(num_results > 1) %>%
+  dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+  droplevels %>%
+  dplyr::bind_rows(., usvi_sda_asvs_compare_summary.df %>%
+                     dplyr::filter(test_type == "all") %>%
+                     droplevels %>%
+                     dplyr::distinct(asv_id, .keep_all = FALSE)) %>%
+  dplyr::distinct(asv_id) %>%
+  droplevels
+
+usvi_sig_seqs_key.list <- usvi_prok_asvs.taxa %>%
+  dplyr::select(-sequence) %>%
+  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(
+    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+  dplyr::relocate(contains("_id"), taxonomy) %>%
+  dplyr::select(-c(final_taxonomy)) %>%
+  droplevels %>%
+  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+  dplyr::filter(asv_id %in% usvi_sig_seqs_idx[["asv_id"]]) %>%
+  dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
+  droplevels %>%
+  # tidyr::nest(., .by = c("taxonomy", Domain:Genus), .key = "asvs") %>%
+  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
+  dplyr::left_join(., usvi_prok_asvs.taxa, by = join_by(asv_id)) %>%
+  droplevels %>%
+  dplyr::select(asv_id, sequence) %>%
+  dplyr::arrange(asv_id) %>%
+  dplyr::mutate(abundance = 1) %>%
+  droplevels
+
+
+
+library(dada2)
+dada2::uniquesToFasta(usvi_sig_seqs_key.list, paste0(projectpath, "/", "usvi_prok_sig_asvs.fna"), ids = usvi_sig_seqs_key.list[["asv_id"]], mode = "w")
+
 # temp_df %>% dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
 
 ##look at only the strongest correlations
@@ -1889,6 +1946,7 @@ spearman.sig.strong.metab.list <- temp_df %>%
         dplyr::distinct(asv_id, .keep_all = FALSE) %>%
         unlist %>%
         as.character)
+
 
 spearman.sig_corr_asvs_idx_list <- NULL
 spearman.sig_strong_corr_asvs_idx_list <- NULL
@@ -2001,10 +2059,13 @@ if(!any(grepl("spearman_strong_corr_summar", list.files(projectpath, pattern = "
 
 # Plot the heatmaps of correlations ---------------------------------------
 
+as.hclust(dend_metab) %>%
+  cutree(., k = 2) %>%
+  tibble::enframe(name = "metabolite", value = "grouping")
 
-# as.hclust(dend_asv) %>%
-#   cutree(., k = 2) %>%
-#   tibble::enframe(name = "asv_id", value = "grouping")
+as.hclust(dend_asv) %>%
+  cutree(., k = 2) %>%
+  tibble::enframe(name = "asv_id", value = "grouping")
 
 #try to plot the number of significant correlations across each row (ASV) and column (metabolite):
 # temp_spearman.df <- spearman.test.strong.filtered.list[[9]] %>%
@@ -2131,7 +2192,8 @@ if(!any(grepl("spearman_strong_corr_summar", list.files(projectpath, pattern = "
 #            color = "none")
 #   + coord_flip()
 # )
-
+try(f_run_chunk())
+if(execchunk) {
 for(i in seq_len(length(spearman.test.strong.filtered.list))){
 # for(i in seq_len(2)){
   namevar <- names(spearman.test.strong.filtered.list)[i] %>%
@@ -2195,7 +2257,7 @@ for(i in seq_len(length(spearman.test.strong.filtered.list))){
   rm(namevar)
 }
 
-
+}
 
 
 

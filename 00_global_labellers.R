@@ -51,14 +51,14 @@ contrast_labels_lookup <- data.frame(v1 = c("LB_seagrass (peak_photo - dawn)",
                                             "peak_photo (Yawzi - LB_seagrass)",
                                             "peak_photo (Tektite - LB_seagrass)",
                                             "peak_photo (Yawzi - Tektite)"),
-                                     label = c("LB_seagrass (afternoon - dawn)", 
+                                     label = c("Lameshur Bay (afternoon - dawn)", 
                                                "Yawzi (afternoon - dawn)", 
                                                "Tektite (afternoon - dawn)", 
-                                               "dawn (Yawzi - LB_seagrass)",
-                                               "dawn (Tektite - LB_seagrass)",
+                                               "dawn (Yawzi - Lameshur Bay)",
+                                               "dawn (Tektite - Lameshur Bay)",
                                                "dawn (Yawzi - Tektite)",
-                                               "afternoon (Yawzi - LB_seagrass)",
-                                               "afternoon (Tektite - LB_seagrass)",
+                                               "afternoon (Yawzi - Lameshur Bay)",
+                                               "afternoon (Tektite - Lameshur Bay)",
                                                "afternoon (Yawzi - Tektite)")) %>%
   tibble::deframe(.)
 
@@ -79,5 +79,7 @@ sampling_day_lookup <- data.frame(sampling_day = c("Day1", "Day2", "Day3", "Day4
   tibble::deframe(.)
 sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
   setNames(., names(sampling_day_lookup))
+
+enriched_labels_lookup <- c(site_lookup, sampling_time_lookup, group_labels_lookup)
 
 usvi_sus_metabolites_idx <- data.frame(metabolites = c("2'deoxyguanosine", "HMP", "adenosine", "inosine", "pyridoxine"))
