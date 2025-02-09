@@ -133,6 +133,44 @@ P_summary_taxonomy_bar <- function(dataset, x, y, z, facet_form) {
   g
 }
 
+P_filtered_summary_bar <- function(dataset, x, y, z, facet_form) {
+  #dataset is: relative abundances of taxa across samples
+  #x: sample_label, sample_order, some combination of Day and sampling time
+  #y: relative abundance
+  #z: taxonomy
+  #facet_form: e.g. ". ~ site"
+  
+  if(exists("facet_form", inherits = TRUE)){
+    # facet_form <- deparse(substitute(facet_form))
+    facet_form <- rlang::parse_expr(facet_form)
+  }
+  
+  g <- ggplot(data = dataset, aes(y = {{y}},
+                                  x = {{x}},
+                                  fill = {{z}},
+                                  group = {{z}}))
+  g <- g + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
+  g <- g + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
+  g <- g + theme_bw()
+  g <- g + scale_x_discrete(name = "Sampling time")
+  g <- g + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Relative abundance (%)")
+  g <- g + scale_discrete_manual(aesthetics = c("fill", "color"), 
+                                 values = taxonomy_filt_genus_colors, 
+                                 breaks = taxonomy_filt_genus_colors_lookup,
+                                 labels = names(taxonomy_filt_genus_colors_lookup),
+                                 drop = TRUE)
+  g <- g + facet_grid(scales = "free", space = "free",
+                      labeller = global_labeller,
+                      eval(facet_form))
+  g <- g + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
+                 strip.text.x = element_text(angle = 0),
+                 strip.text.y = element_text(angle = 0))
+  g <- g + coord_cartesian(ylim = c(0,100), expand = FALSE)
+  g <- g+ guides(fill = guide_legend(order = 2, ncol = 1, title = "Taxonomy", direction = "vertical",
+                                     override.aes = list(stroke = 1, color = "black"), position = "right"),
+                 color = "none")
+  g
+}
 
 # Read in metadata --------------------------------------------------------
 
@@ -148,33 +186,7 @@ if(file.exists(paste0(projectpath, "/", "usvi_metadata_tidy.txt"))){
 }
 
 
-# Import color scheme -----------------------------------------------------
 
-
-temporal_lookup <- list(sampling_time = c("dawn", "peak_photo", NA),
-                        sampling_day = c("Day1", "Day2", "Day3", "Day4", "Day5", NA),
-                        sampling_date = c(20210122, 20210123, 20210124, 20210125, 20210126, NA),
-                        site = c("Tektite", "Yawzi", "LB_seagrass", NA),
-                        sample_type = c("seawater", "control_extraction", "control_pcr", "control_seq"))
-
-
-site_lookup <- data.frame(site = c("LB_seagrass", "Tektite", "Yawzi", "control_extraction", "control_pcr", "control_seq"),
-                          label = c("Lameshur Bay seagrass", "Tektite Reef", "Yawzi Reef",
-                                    "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%
-  tibble::deframe(.)
-site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
-  # site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
-  setNames(., names(site_lookup))
-sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
-                                   label = c("Dawn", "Afternoon")) %>%
-  tibble::deframe(.)
-sampling_time_colors <- pals::ocean.haline(n = length(sampling_time_lookup)) %>%
-  setNames(., names(sampling_time_lookup))
-sampling_day_lookup <- data.frame(sampling_day = c("Day1", "Day2", "Day3", "Day4", "Day5"),
-                                  label = c("20210122", "20210123", "20210124", "20210125", "20210126")) %>%
-  tibble::deframe(.)
-sampling_day_colors <- pals::ocean.thermal(n = length(sampling_day_lookup)) %>%
-  setNames(., names(sampling_day_lookup))
 
 # find existing processed files -------------------------------------------
 to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa", "usvi_prok_decontam_idx")
@@ -252,6 +264,55 @@ if(!exists("ps_usvi", envir = .GlobalEnv)){
   }
 }
 
+
+# Global labellers/renamers -----------------------------------------------
+
+
+if(file.exists(paste0(getwd(), "/", "00_global_labellers.R"))){
+  cat("Loading project-wide labellers and lookups.")
+  source(paste0(getwd(), "/", "00_global_labellers.R"), local = FALSE,
+         echo = FALSE, verbose = getOption("verbose"), prompt.echo = getOption("prompt"))
+} 
+
+usvi_genera_relabel <- usvi_prok_asvs.taxa %>%
+  dplyr::select(-sequence) %>%
+  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(
+    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+  dplyr::relocate(contains("_id"), taxonomy) %>%
+  dplyr::select(-c(final_taxonomy)) %>%
+  droplevels %>%
+  # dplyr::arrange(taxonomy) %>%
+  # dplyr::mutate(across(contains("_id"), ~factor(.x, levels = unique(.x)))) %>%
+  # droplevels
+  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>% dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>% dplyr::select(asv_id, taxonomy) %>% tibble::deframe(.)
+
+global_labeller <- labeller(
+  # model2 = model_dispersion_lookup,
+  model = model_dispersion_lookup,
+  Combo = group_labels_lookup,
+  site = site_lookup,
+  sampling_day = sampling_day_lookup,
+  sampling_time = sampling_time_lookup,
+  asv_id = usvi_genera_relabel,
+  .multi_line = TRUE,
+  .default = label_wrap_gen(25, multi_line = TRUE)
+  # .default = label_value
+)
+
+if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
+  if(file.exists(paste0(projectpath, "/", "annotation_taxa_colors_list.rds"))){
+    annotation_taxa_colors_list <- readr::read_rds(paste0(projectpath, "/", "annotation_taxa_colors_list.rds"))
+  } else {
+    cli::cli_alert_warning("Please prepare a list of colors for taxonomy.")
+  }
+}
+
 # Summarize sequencing effort ---------------------------------------------
 
 usvi_seq_summary.df <- ps_usvi %>%
@@ -269,10 +330,10 @@ usvi_seq_summary.df <- ps_usvi %>%
                          dplyr::select(sample_id, sample_type, sampling_time, sampling_day, site, contains("sample_order"))),
                    by = join_by(sample_id)) %>%
   dplyr::mutate(across(contains("sampl"), ~factor(.x))) %>%
-  dplyr::mutate(sample_type = factor(sample_type, levels = temporal_lookup[["sample_type"]]),
-                sampling_time = factor(sampling_time, levels = temporal_lookup[["sampling_time"]]),
+  dplyr::mutate(sampling_time = factor(sampling_time, levels = names(sampling_time_lookup)),
+                # sample_type = factor(sample_type, levels = temporal_lookup[["sample_type"]]),
                 # sampling_date = factor(sampling_date, levels = temporal_lookup[["sampling_date"]]),
-                sampling_day = factor(sampling_day, levels = temporal_lookup[["sampling_day"]])) %>%
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup))) %>%
   droplevels
 
 usvi_seq_summary.df %>%
@@ -286,16 +347,16 @@ usvi_seq_summary.df %>%
 
 #how many ASVs remain in here after filtering for non-zero ASVs in seawater samples only?
 
-#across the dataset:
-ps_usvi %>%
-  phyloseq::subset_samples(., sample_type == "seawater") %>%
-  phyloseq::otu_table(.) %>%
-  as.data.frame %>%
-  dplyr::slice(which(rowSums(.) > 0)) %>%
-  tibble::rownames_to_column(var = "asv_id") %>%
-  dplyr::summarise(total_ASVs = length(asv_id))
-# total_ASVs
-# 1      12350
+# #across the dataset:
+# ps_usvi %>%
+#   phyloseq::subset_samples(., sample_type == "seawater") %>%
+#   phyloseq::otu_table(.) %>%
+#   as.data.frame %>%
+#   dplyr::slice(which(rowSums(.) > 0)) %>%
+#   tibble::rownames_to_column(var = "asv_id") %>%
+#   dplyr::summarise(total_ASVs = length(asv_id))
+# # total_ASVs
+# # 1      12350
 
 temp_df <- ps_usvi %>%
   phyloseq::subset_samples(., sample_type == "seawater") %>%
@@ -311,18 +372,18 @@ temp_df <- ps_usvi %>%
   tidyr::drop_na(abundance) %>%
   dplyr::group_by(sample_id) %>%
   dplyr::summarise(total_ASVs = length(asv_id))
-range(temp_df[["total_ASVs"]])
-# [1] 169 827
-usvi_seq_summary.df %>%
-  # dplyr::group_by(sample_type, site, sampling_time) %>%
-  dplyr::group_by(sample_type, site) %>%
-  dplyr::summarise(mean = mean(total_seqs),
-                   max = max(total_seqs))
-usvi_seq_summary.df %>%
-  dplyr::summarise(num_seqs = sum(total_seqs))
-# num_seqs
-# <dbl>
-#   1  7854297
+# range(temp_df[["total_ASVs"]])
+# # [1] 169 827
+# usvi_seq_summary.df %>%
+#   # dplyr::group_by(sample_type, site, sampling_time) %>%
+#   dplyr::group_by(sample_type, site) %>%
+#   dplyr::summarise(mean = mean(total_seqs),
+#                    max = max(total_seqs))
+# usvi_seq_summary.df %>%
+#   dplyr::summarise(num_seqs = sum(total_seqs))
+# # num_seqs
+# # <dbl>
+# #   1  7854297
 
 #are sequencing depths significantly different between sites sand sampling times?
 temp_list <- usvi_seq_summary.df %>%
@@ -332,11 +393,11 @@ temp_list <- usvi_seq_summary.df %>%
         dplyr::select(total_seqs) %>%
         tibble::deframe(.))
 
-kruskal.test(temp_list)
-# Kruskal-Wallis rank sum test
-# 
-# data:  temp_list
-# Kruskal-Wallis chi-squared = 4.8814, df = 5, p-value = 0.4305
+# kruskal.test(temp_list)
+# # Kruskal-Wallis rank sum test
+# # 
+# # data:  temp_list
+# # Kruskal-Wallis chi-squared = 4.8814, df = 5, p-value = 0.4305
 
 
 usvi_seq_summary.tsv <- usvi_seq_summary.df %>%
@@ -436,248 +497,251 @@ if(!any(grepl("seqcount", list.files(projectpath, pattern = "usvi_.*.png")))){
 
 # Broadly summarize at phylum, class, order levels ------------------------
 
-
-#make relative abundance tables at specific taxonomic levels
-keep <- c("Phylum", "Class", "Order", "Family", "Genus")
-
-for(taxlevel in keep){
-  namevar <- stringr::str_to_lower(taxlevel)
-  temp_df <- phyloseq::transform_sample_counts(ps_usvi, function(x) x/sum(x)*100) %>%
-    phyloseq::subset_samples(., sample_type == "seawater") %>%
-    phyloseq::filter_taxa(., function(x) sum(x) > 0, TRUE) %>%
-    phyloseq::otu_table(.) %>%
-    as.data.frame %>%
-    dplyr::mutate(TotAbund = rowSums(.)) %>%
-    dplyr::arrange(desc(TotAbund)) %>%
-    dplyr::select(-TotAbund) %>%
-    tibble::rownames_to_column(var = "asv_id") %>%
-    otu_to_taxonomy(dataset = .,
-                    level = {{taxlevel}},
-                    taxonomy = usvi_prok_filled.taxa.df) %>%
-    tidyr::pivot_longer(.,
-                        cols = !c(1:all_of({{taxlevel}})),
-                        names_to = "sample_id", 
+if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))){
+  usvi_taxonomy_filtered_list <- readr::read_rds(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
+  list2env(usvi_taxonomy_filtered_list)
+} else {
+  #make relative abundance tables at specific taxonomic levels
+  keep <- c("Phylum", "Class", "Order", "Family", "Genus")
+  
+  for(taxlevel in keep){
+    namevar <- stringr::str_to_lower(taxlevel)
+    temp_df <- phyloseq::transform_sample_counts(ps_usvi, function(x) x/sum(x)*100) %>%
+      phyloseq::subset_samples(., sample_type == "seawater") %>%
+      phyloseq::filter_taxa(., function(x) sum(x) > 0, TRUE) %>%
+      phyloseq::otu_table(.) %>%
+      as.data.frame %>%
+      dplyr::mutate(TotAbund = rowSums(.)) %>%
+      dplyr::arrange(desc(TotAbund)) %>%
+      dplyr::select(-TotAbund) %>%
+      tibble::rownames_to_column(var = "asv_id") %>%
+      otu_to_taxonomy(dataset = .,
+                      level = {{taxlevel}},
+                      taxonomy = usvi_prok_filled.taxa.df) %>%
+      tidyr::pivot_longer(.,
+                          cols = !c(1:all_of({{taxlevel}})),
+                          names_to = "sample_id", 
+                          values_to = "relabund") %>%
+      droplevels
+    
+    assign(paste0("usvi_", namevar, ".df"), temp_df, envir = .GlobalEnv)
+    rm(temp_df)
+  }
+  
+  
+  
+  
+  
+  #now work backwards to keep the class, order, family related to the top5 genera
+  keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
+  
+  #look at the genera that constitute 10% or more across all biological samples
+  usvi_genus_over10.df <- usvi_genus.df %>%
+    dplyr::semi_join(., usvi_seq_summary.df %>% #use only biological samples to filter taxonomic levels
+                       dplyr::filter(sample_type == "seawater") %>%
+                       dplyr::select(sample_id) %>%
+                       droplevels, by = join_by(sample_id)) %>%
+    tidyr::pivot_wider(., id_cols = all_of(keep_tax),
+                       names_from = "sample_id",
+                       values_fill = 0,
+                       values_from = "relabund") %>%
+    tidyr::unite("taxonomy", c(all_of(keep_tax)), sep = ";", remove = TRUE) %>%
+    dplyr::relocate(taxonomy) %>%
+    tibble::column_to_rownames(var = "taxonomy") %>%
+    dplyr::slice(which(rowSums(.) >= 10)) %>%
+    t()
+  
+  usvi_genus_over10.df <- usvi_genus_over10.df %>%
+    # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
+    bind_cols("sample_id" = rownames(usvi_genus_over10.df),
+              .,
+              "Other taxa" = (100 - rowSums(usvi_genus_over10.df))) %>%
+    tidyr::pivot_longer(., cols = !c("sample_id"),
+                        names_to = "taxonomy",
                         values_to = "relabund") %>%
+    dplyr::arrange(desc(relabund)) %>%
+    dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
+    tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
     droplevels
- 
-  assign(paste0("usvi_", namevar, ".df"), temp_df, envir = .GlobalEnv)
-  rm(temp_df)
-}
-
-
-
-
-
-#now work backwards to keep the class, order, family related to the top5 genera
-keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
-
-#look at the genera that constitute 10% or more across all biological samples
-usvi_genus_over10.df <- usvi_genus.df %>%
-  dplyr::semi_join(., usvi_seq_summary.df %>% #use only biological samples to filter taxonomic levels
-                     dplyr::filter(sample_type == "seawater") %>%
-                     dplyr::select(sample_id) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  tidyr::pivot_wider(., id_cols = all_of(keep_tax),
-                     names_from = "sample_id",
-                     values_fill = 0,
-                     values_from = "relabund") %>%
-  tidyr::unite("taxonomy", c(all_of(keep_tax)), sep = ";", remove = TRUE) %>%
-  dplyr::relocate(taxonomy) %>%
-  tibble::column_to_rownames(var = "taxonomy") %>%
-  dplyr::slice(which(rowSums(.) >= 10)) %>%
-  t()
-
-usvi_genus_over10.df <- usvi_genus_over10.df %>%
-  # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
-  bind_cols("sample_id" = rownames(usvi_genus_over10.df),
-            .,
-            "Other taxa" = (100 - rowSums(usvi_genus_over10.df))) %>%
-  tidyr::pivot_longer(., cols = !c("sample_id"),
-                      names_to = "taxonomy",
-                      values_to = "relabund") %>%
-  dplyr::arrange(desc(relabund)) %>%
-  dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
-  tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
-  droplevels
-length(unique(usvi_genus_over10.df[["Genus"]]))
-length(unique(usvi_genus_over10.df[["Family"]]))
-#43 families constitute genera with 10% or more realtive abundance
-usvi_genus_over10.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
-
-#use the top genera 10% or more of all sequences to further filter.
-usvi_filtered_genus.df <- usvi_genus_over10.df
-
-keep_tax2 <- rev(rev(keep_tax)[-1])
-usvi_family_filtered.df <- usvi_filtered_genus.df %>%
-  dplyr::filter(!grepl("Other taxa", Domain)) %>%
-  dplyr::select(all_of(keep_tax2)) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  droplevels %>%
-  dplyr::inner_join(., usvi_family.df,
-                    by = join_by(!!!keep_tax2),
-                    relationship = "many-to-many", multiple = "all") %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = keep_tax2,
-                     names_from = "sample_id",
-                     values_fill = 0,
-                     values_from = "relabund") %>%
-  tidyr::unite("taxonomy", c(all_of(keep_tax2)), sep = ";", remove = TRUE) %>%
-  dplyr::relocate(taxonomy) %>%
-  tibble::column_to_rownames(var = "taxonomy") %>%
-  dplyr::slice(which(rowSums(.) >= 5)) %>%
-  # droplevels
-  t()
-usvi_family_filtered.df <- usvi_family_filtered.df %>%
-  # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
-  bind_cols("sample_id" = rownames(usvi_family_filtered.df),
-            .,
-            "Other taxa" = (100 - rowSums(usvi_family_filtered.df))) %>%
-  tidyr::pivot_longer(., cols = !c("sample_id"),
-                      names_to = "taxonomy",
-                      values_to = "relabund") %>%
-  dplyr::arrange(desc(relabund)) %>%
-  dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
-  tidyr::separate_wider_delim(taxonomy, names = keep_tax2, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
-  droplevels
-length(unique(usvi_family_filtered.df[["Family"]]))
-length(unique(usvi_family_filtered.df[["Class"]]))
-
-usvi_family_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
-
-#filtere for 10% or more genera:
-#75.4% to 99.4% of sequences in genera from 43 families across 12 classes
-
-keep_tax3 <- rev(rev(keep_tax2)[-1])
-usvi_order_filtered.df <- usvi_family_filtered.df %>%
-  dplyr::filter(!grepl("Other taxa", Domain)) %>%
-  dplyr::select(all_of(keep_tax3)) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  droplevels %>%
-  dplyr::inner_join(., usvi_order.df,
-                    by = join_by(!!!keep_tax3),
-                    relationship = "many-to-many", multiple = "all") %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = all_of(keep_tax3),
-                     names_from = "sample_id",
-                     values_fill = 0,
-                     values_from = "relabund") %>%
-  tidyr::unite("taxonomy", c(all_of(keep_tax3)), sep = ";", remove = TRUE) %>%
-  dplyr::relocate(taxonomy) %>%
-  tibble::column_to_rownames(var = "taxonomy") %>%
-  dplyr::slice(which(rowSums(.) >= 5)) %>%
-  # droplevels
-  t()
-usvi_order_filtered.df <- usvi_order_filtered.df %>%
-  # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
-  bind_cols("sample_id" = rownames(usvi_order_filtered.df),
-            .,
-            "Other taxa" = (100 - rowSums(usvi_order_filtered.df))) %>%
-  tidyr::pivot_longer(., cols = !c("sample_id"),
-                      names_to = "taxonomy",
-                      values_to = "relabund") %>%
-  dplyr::arrange(desc(relabund)) %>%
-  dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
-  tidyr::separate_wider_delim(taxonomy, names = keep_tax3, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
-  droplevels
-length(unique(usvi_order_filtered.df[["Class"]]))
-length(unique(usvi_order_filtered.df[["Order"]]))
-
-usvi_order_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
-
-#10% genera filter
-#28 orders in 12 classes
-#90.8% to 99.4% sequences in environmental samples belong to these orders
-
-
-keep_tax4 <- rev(rev(keep_tax3)[-1])
-usvi_class_filtered.df <- usvi_order_filtered.df %>%
-  dplyr::filter(!grepl("Other taxa", Domain)) %>%
-  dplyr::select(all_of(keep_tax4)) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  droplevels %>%
-  dplyr::inner_join(., usvi_class.df,
-                    by = join_by(!!!keep_tax4),
-                    relationship = "many-to-many", multiple = "all") %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = all_of(keep_tax4),
-                     names_from = "sample_id",
-                     values_fill = 0,
-                     values_from = "relabund") %>%
-  tidyr::unite("taxonomy", c(all_of(keep_tax4)), sep = ";", remove = TRUE) %>%
-  dplyr::relocate(taxonomy) %>%
-  tibble::column_to_rownames(var = "taxonomy") %>%
-  dplyr::slice(which(rowSums(.) >= 5)) %>%
-  # droplevels
-  t()
-usvi_class_filtered.df <- usvi_class_filtered.df %>%
-  # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
-  bind_cols("sample_id" = rownames(usvi_class_filtered.df),
-            .,
-            "Other taxa" = (100 - rowSums(usvi_class_filtered.df))) %>%
-  tidyr::pivot_longer(., cols = !c("sample_id"),
-                      names_to = "taxonomy",
-                      values_to = "relabund") %>%
-  dplyr::arrange(desc(relabund)) %>%
-  dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
-  tidyr::separate_wider_delim(taxonomy, names = keep_tax4, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
-  droplevels
-length(unique(usvi_class_filtered.df[["Class"]]))
-length(unique(usvi_class_filtered.df[["Phylum"]]))
-
-usvi_class_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
-
-#10% genera filter:
-#12 classes in 10 phyla 
-#90.8% to 100.7% of sequences are in these classes
-
-
-keep_tax5 <- rev(rev(keep_tax4)[-1])
-usvi_phylum_filtered.df <- usvi_class_filtered.df %>%
-  dplyr::filter(!grepl("Other taxa", Domain)) %>%
-  dplyr::select(all_of(keep_tax5)) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  droplevels %>%
-  dplyr::inner_join(., usvi_phylum.df,
-                    by = join_by(!!!keep_tax5),
-                    relationship = "many-to-many", multiple = "all") %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = all_of(keep_tax5),
-                     names_from = "sample_id",
-                     values_fill = 0,
-                     values_from = "relabund") %>%
-  tidyr::unite("taxonomy", c(all_of(keep_tax5)), sep = ";", remove = TRUE) %>%
-  dplyr::relocate(taxonomy) %>%
-  tibble::column_to_rownames(var = "taxonomy") %>%
-  dplyr::slice(which(rowSums(.) >= 5)) %>%
-  # droplevels
-  t()
-usvi_phylum_filtered.df <- usvi_phylum_filtered.df %>%
-  # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
-  bind_cols("sample_id" = rownames(usvi_phylum_filtered.df),
-            .,
-            "Other taxa" = (100 - rowSums(usvi_phylum_filtered.df))) %>%
-  tidyr::pivot_longer(., cols = !c("sample_id"),
-                      names_to = "taxonomy",
-                      values_to = "relabund") %>%
-  dplyr::arrange(desc(relabund)) %>%
-  dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
-  tidyr::separate_wider_delim(taxonomy, names = keep_tax5, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
-  droplevels
-length(unique(usvi_phylum_filtered.df[["Domain"]]))
-length(unique(usvi_class_filtered.df[["Phylum"]]))
-
-usvi_phylum_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
-#10 phyla in 2 domains
-#93.9% to 100% of sequences in environmental samples are represented in these 13 phyla
-
-usvi_taxonomy_filtered_list <- list(usvi_phylum_filtered.df, usvi_class_filtered.df, usvi_order_filtered.df, usvi_family_filtered.df, usvi_filtered_genus.df) %>%
-  setNames(., c("usvi_phylum_filtered.df", "usvi_class_filtered.df", "usvi_order_filtered.df", "usvi_family_filtered.df", "usvi_filtered_genus.df"))
-if(!file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))){
+  # length(unique(usvi_genus_over10.df[["Genus"]]))
+  # length(unique(usvi_genus_over10.df[["Family"]]))
+  # #43 families constitute genera with 10% or more realtive abundance
+  # usvi_genus_over10.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
+  
+  #use the top genera 10% or more of all sequences to further filter.
+  usvi_filtered_genus.df <- usvi_genus_over10.df
+  
+  keep_tax2 <- rev(rev(keep_tax)[-1])
+  usvi_family_filtered.df <- usvi_filtered_genus.df %>%
+    dplyr::filter(!grepl("Other taxa", Domain)) %>%
+    dplyr::select(all_of(keep_tax2)) %>%
+    dplyr::distinct(., .keep_all = TRUE) %>%
+    droplevels %>%
+    dplyr::inner_join(., usvi_family.df,
+                      by = join_by(!!!keep_tax2),
+                      relationship = "many-to-many", multiple = "all") %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = all_of(keep_tax2),
+                       names_from = "sample_id",
+                       values_fill = 0,
+                       values_from = "relabund") %>%
+    tidyr::unite("taxonomy", c(all_of(keep_tax2)), sep = ";", remove = TRUE) %>%
+    dplyr::relocate(taxonomy) %>%
+    tibble::column_to_rownames(var = "taxonomy") %>%
+    dplyr::slice(which(rowSums(.) >= 5)) %>%
+    # droplevels
+    t()
+  usvi_family_filtered.df <- usvi_family_filtered.df %>%
+    # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
+    bind_cols("sample_id" = rownames(usvi_family_filtered.df),
+              .,
+              "Other taxa" = (100 - rowSums(usvi_family_filtered.df))) %>%
+    tidyr::pivot_longer(., cols = !c("sample_id"),
+                        names_to = "taxonomy",
+                        values_to = "relabund") %>%
+    dplyr::arrange(desc(relabund)) %>%
+    dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
+    tidyr::separate_wider_delim(taxonomy, names = keep_tax2, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+    droplevels
+  
+  # length(unique(usvi_family_filtered.df[["Family"]]))
+  # length(unique(usvi_family_filtered.df[["Class"]]))
+  # usvi_family_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
+  # 
+  # #filtere for 10% or more genera:
+  # #75.4% to 99.4% of sequences in genera from 43 families across 12 classes
+  
+  keep_tax3 <- rev(rev(keep_tax2)[-1])
+  usvi_order_filtered.df <- usvi_family_filtered.df %>%
+    dplyr::filter(!grepl("Other taxa", Domain)) %>%
+    dplyr::select(all_of(keep_tax3)) %>%
+    dplyr::distinct(., .keep_all = TRUE) %>%
+    droplevels %>%
+    dplyr::inner_join(., usvi_order.df,
+                      by = join_by(!!!keep_tax3),
+                      relationship = "many-to-many", multiple = "all") %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = all_of(keep_tax3),
+                       names_from = "sample_id",
+                       values_fill = 0,
+                       values_from = "relabund") %>%
+    tidyr::unite("taxonomy", c(all_of(keep_tax3)), sep = ";", remove = TRUE) %>%
+    dplyr::relocate(taxonomy) %>%
+    tibble::column_to_rownames(var = "taxonomy") %>%
+    dplyr::slice(which(rowSums(.) >= 5)) %>%
+    # droplevels
+    t()
+  usvi_order_filtered.df <- usvi_order_filtered.df %>%
+    # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
+    bind_cols("sample_id" = rownames(usvi_order_filtered.df),
+              .,
+              "Other taxa" = (100 - rowSums(usvi_order_filtered.df))) %>%
+    tidyr::pivot_longer(., cols = !c("sample_id"),
+                        names_to = "taxonomy",
+                        values_to = "relabund") %>%
+    dplyr::arrange(desc(relabund)) %>%
+    dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
+    tidyr::separate_wider_delim(taxonomy, names = keep_tax3, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+    droplevels
+  # length(unique(usvi_order_filtered.df[["Class"]]))
+  # length(unique(usvi_order_filtered.df[["Order"]]))
+  # 
+  # usvi_order_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
+  # 
+  # #10% genera filter
+  # #28 orders in 12 classes
+  # #90.8% to 99.4% sequences in environmental samples belong to these orders
+  
+  
+  keep_tax4 <- rev(rev(keep_tax3)[-1])
+  usvi_class_filtered.df <- usvi_order_filtered.df %>%
+    dplyr::filter(!grepl("Other taxa", Domain)) %>%
+    dplyr::select(all_of(keep_tax4)) %>%
+    dplyr::distinct(., .keep_all = TRUE) %>%
+    droplevels %>%
+    dplyr::inner_join(., usvi_class.df,
+                      by = join_by(!!!keep_tax4),
+                      relationship = "many-to-many", multiple = "all") %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = all_of(keep_tax4),
+                       names_from = "sample_id",
+                       values_fill = 0,
+                       values_from = "relabund") %>%
+    tidyr::unite("taxonomy", c(all_of(keep_tax4)), sep = ";", remove = TRUE) %>%
+    dplyr::relocate(taxonomy) %>%
+    tibble::column_to_rownames(var = "taxonomy") %>%
+    dplyr::slice(which(rowSums(.) >= 5)) %>%
+    # droplevels
+    t()
+  usvi_class_filtered.df <- usvi_class_filtered.df %>%
+    # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
+    bind_cols("sample_id" = rownames(usvi_class_filtered.df),
+              .,
+              "Other taxa" = (100 - rowSums(usvi_class_filtered.df))) %>%
+    tidyr::pivot_longer(., cols = !c("sample_id"),
+                        names_to = "taxonomy",
+                        values_to = "relabund") %>%
+    dplyr::arrange(desc(relabund)) %>%
+    dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
+    tidyr::separate_wider_delim(taxonomy, names = keep_tax4, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+    droplevels
+  # length(unique(usvi_class_filtered.df[["Class"]]))
+  # length(unique(usvi_class_filtered.df[["Phylum"]]))
+  # 
+  # usvi_class_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
+  # 
+  # #10% genera filter:
+  # #12 classes in 10 phyla 
+  # #90.8% to 100.7% of sequences are in these classes
+  
+  
+  keep_tax5 <- rev(rev(keep_tax4)[-1])
+  usvi_phylum_filtered.df <- usvi_class_filtered.df %>%
+    dplyr::filter(!grepl("Other taxa", Domain)) %>%
+    dplyr::select(all_of(keep_tax5)) %>%
+    dplyr::distinct(., .keep_all = TRUE) %>%
+    droplevels %>%
+    dplyr::inner_join(., usvi_phylum.df,
+                      by = join_by(!!!keep_tax5),
+                      relationship = "many-to-many", multiple = "all") %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = all_of(keep_tax5),
+                       names_from = "sample_id",
+                       values_fill = 0,
+                       values_from = "relabund") %>%
+    tidyr::unite("taxonomy", c(all_of(keep_tax5)), sep = ";", remove = TRUE) %>%
+    dplyr::relocate(taxonomy) %>%
+    tibble::column_to_rownames(var = "taxonomy") %>%
+    dplyr::slice(which(rowSums(.) >= 5)) %>%
+    # droplevels
+    t()
+  usvi_phylum_filtered.df <- usvi_phylum_filtered.df %>%
+    # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
+    bind_cols("sample_id" = rownames(usvi_phylum_filtered.df),
+              .,
+              "Other taxa" = (100 - rowSums(usvi_phylum_filtered.df))) %>%
+    tidyr::pivot_longer(., cols = !c("sample_id"),
+                        names_to = "taxonomy",
+                        values_to = "relabund") %>%
+    dplyr::arrange(desc(relabund)) %>%
+    dplyr::mutate(across(c(sample_id, taxonomy), factor)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.$taxonomy))) %>%
+    tidyr::separate_wider_delim(taxonomy, names = keep_tax5, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+    droplevels
+  # length(unique(usvi_phylum_filtered.df[["Domain"]]))
+  # length(unique(usvi_class_filtered.df[["Phylum"]]))
+  # 
+  # usvi_phylum_filtered.df %>% dplyr::filter(!grepl("Other taxa", Domain)) %>% dplyr::group_by(sample_id) %>% dplyr::summarise(sample_relabund = sum(relabund, na.rm = TRUE)) %>% dplyr::filter(grepl("Metab", sample_id)) %>% droplevels %>% dplyr::reframe(across(contains("relabund"), list(min = min, max = max)))
+  # #10 phyla in 2 domains
+  # #93.9% to 100% of sequences in environmental samples are represented in these 13 phyla
+  
+  usvi_taxonomy_filtered_list <- list(usvi_phylum_filtered.df, usvi_class_filtered.df, usvi_order_filtered.df, usvi_family_filtered.df, usvi_filtered_genus.df) %>%
+    setNames(., c("usvi_phylum_filtered.df", "usvi_class_filtered.df", "usvi_order_filtered.df", "usvi_family_filtered.df", "usvi_filtered_genus.df"))
+  
   readr::write_rds(usvi_taxonomy_filtered_list, 
                    paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
 }
@@ -900,58 +964,54 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
 # Summarise taxonomic diversity -------------------------------------------
 
 
-#how many different taxonomic lineages?
-temp_df <- phyloseq::tax_table(ps_usvi) %>%
-  as.data.frame %>%
-  tibble::rownames_to_column(var = "asv_id") %>%
-  droplevels
-temp_df %>%
-  tibble::column_to_rownames(var = "asv_id") %>%
-  dplyr::filter(if_any(c("Domain":"Species"), ~!is.na(.x))) %>%
-  dplyr::filter(if_any(c("Domain":"Species"), ~!grepl("Other", .x, ignore.case = TRUE))) %>%
-  apply(., 2, function(x) length(unique(x)))
-# Domain  Phylum   Class   Order  Family   Genus Species 
-# 2      63     145     338     564     994    1109 
-
-#how many non-propagated?
-temp_df <- usvi_prok_asvs.taxa %>% 
-  dplyr::select(asv_id, Domain:Species) %>%
-  dplyr::filter(if_any(c("Domain":"Species"), ~!is.na(.x))) %>%
-  droplevels
-temp_df %>%
-  dplyr::filter(if_any(c("Domain":"Species"), ~!grepl("Other", .x, ignore.case = TRUE))) %>%
-  apply(., 2, function(x) length(unique(x)))
-# Domain  Phylum   Class   Order  Family   Genus Species 
-# 2      63     114     257     347     593     202 
-
-
-temp_df2 <- usvi_taxonomy_filtered_list[["usvi_filtered_genus.df"]] %>%
-  dplyr::group_by(Domain, Phylum, Class, Order, Family, Genus) %>%
-  dplyr::summarise(total_abund = sum(relabund)) %>%
-  dplyr::distinct(.) %>%
-  dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::mutate(across(c(Domain, Phylum, Class, Order, Family, Genus), ~dplyr::case_when(!is.na(.x) ~ .x, .default = "Other taxa"))) %>%
-  droplevels
-
-temp_df2 %>%
-  dplyr::filter(!grepl("Other", Domain)) %>%
-  dplyr::summarise(total_abund = sum(total_abund))
-temp_df2 %>%
-  dplyr::filter(grepl("Other", Domain)) %>%
-  dplyr::summarise(total_abund = sum(total_abund))
-
-
-temp_df2 %>%
-  dplyr::filter(if_any(c("Domain":"Genus"), ~!grepl("Other", .x, ignore.case = TRUE))) %>%
-    dplyr::select(Domain:Genus) %>%
-  apply(., 2, function(x) length(unique(x)))
-# Domain Phylum  Class  Order Family  Genus 
-# 2     11     12     28     43     56 
-
-
-# broad Taxonomy summary --------------------------------------------------
-
+# #how many different taxonomic lineages?
+# temp_df <- phyloseq::tax_table(ps_usvi) %>%
+#   as.data.frame %>%
+#   tibble::rownames_to_column(var = "asv_id") %>%
+#   droplevels
+# temp_df %>%
+#   tibble::column_to_rownames(var = "asv_id") %>%
+#   dplyr::filter(if_any(c("Domain":"Species"), ~!is.na(.x))) %>%
+#   dplyr::filter(if_any(c("Domain":"Species"), ~!grepl("Other", .x, ignore.case = TRUE))) %>%
+#   apply(., 2, function(x) length(unique(x)))
+# # Domain  Phylum   Class   Order  Family   Genus Species 
+# # 2      63     145     338     564     994    1109 
+# 
+# #how many non-propagated?
+# temp_df <- usvi_prok_asvs.taxa %>% 
+#   dplyr::select(asv_id, Domain:Species) %>%
+#   dplyr::filter(if_any(c("Domain":"Species"), ~!is.na(.x))) %>%
+#   droplevels
+# temp_df %>%
+#   dplyr::filter(if_any(c("Domain":"Species"), ~!grepl("Other", .x, ignore.case = TRUE))) %>%
+#   apply(., 2, function(x) length(unique(x)))
+# # Domain  Phylum   Class   Order  Family   Genus Species 
+# # 2      63     114     257     347     593     202 
+# 
+# 
+# temp_df2 <- usvi_taxonomy_filtered_list[["usvi_filtered_genus.df"]] %>%
+#   dplyr::group_by(Domain, Phylum, Class, Order, Family, Genus) %>%
+#   dplyr::summarise(total_abund = sum(relabund), .groups = "keep") %>%
+#   dplyr::distinct(.) %>%
+#   dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus) %>%
+#   dplyr::ungroup(.) %>%
+#   dplyr::mutate(across(c(Domain, Phylum, Class, Order, Family, Genus), ~dplyr::case_when(!is.na(.x) ~ .x, .default = "Other taxa"))) %>%
+#   droplevels
+# 
+# temp_df2 %>%
+#   dplyr::filter(!grepl("Other", Domain)) %>%
+#   dplyr::summarise(total_abund = sum(total_abund), .groups = "keep")
+# temp_df2 %>%
+#   dplyr::filter(grepl("Other", Domain)) %>%
+#   dplyr::summarise(total_abund = sum(total_abund))
+# 
+# 
+# temp_df2 %>%
+#   dplyr::filter(if_any(c("Domain":"Genus"), ~!grepl("Other", .x, ignore.case = TRUE))) %>%
+#     dplyr::select(Domain:Genus) %>%
+#   apply(., 2, function(x) length(unique(x)))
+# # Domain Phylum  Class  Order Family  Genus 
+# # 2     11     12     28     43     56 
 
 
 ASV_env_phylum_summary.tbl <- usvi_phylum_filtered.df %>%
@@ -965,7 +1025,7 @@ ASV_env_phylum_summary.tbl <- usvi_phylum_filtered.df %>%
   dplyr::mutate(metric = gsub("relabund_", "", metric)) %>%
   droplevels
 
-grep("Candidatus Nitro", names(annotation_taxa_colors_list[["Genus"]]), value = TRUE)
+# grep("Candidatus Nitro", names(annotation_taxa_colors_list[["Genus"]]), value = TRUE)
 
 phylum_colors <- dplyr::left_join(annotation_taxa_colors_list[["Genus"]] %>%
                                     tibble::enframe(., name = "Genus", value = "color"), 
@@ -984,58 +1044,58 @@ phylum_colors <- dplyr::left_join(annotation_taxa_colors_list[["Genus"]] %>%
   dplyr::select(taxonomy, color) %>%
   tibble::deframe(.)
 
-pal.bands(phylum_colors)
+# pal.bands(phylum_colors)
 
-if(!any(grepl("phylum", list.files(projectpath, pattern = "usvi_.*_abundance_stats.*.png")))){
-  
-  df <- ASV_env_phylum_summary.tbl %>%
-    dplyr::filter(grepl("seawater", sample_type)) %>%
-    droplevels
-  df2 <- ASV_env_phylum_summary.tbl %>%
-    dplyr::filter(!grepl("seawater", sample_type)) %>%
-    droplevels
-  
-  g1 <- P_summary_taxonomy_bar(dataset = df %>%
-                                 dplyr::filter(grepl("LB_seagrass", site)),
-                               x = taxonomy,
-                               y = relabund, 
-                               z = taxonomy,
-                               facet_form = "sampling_time ~ metric")
-  
-  g2 <- P_summary_taxonomy_bar(dataset = df %>%
-                                 dplyr::filter(grepl("Yawzi", site)),
-                               x = taxonomy,
-                               y = relabund, 
-                               z = taxonomy,
-                               facet_form = "sampling_time~metric")
-  
-  g3 <- P_summary_taxonomy_bar(dataset = df %>%
-                                 dplyr::filter(grepl("Tektite", site)),
-                               x = taxonomy,
-                               y = relabund, 
-                               z = taxonomy,
-                               facet_form = "sampling_time~metric")
-  
-  g4 <- P_summary_taxonomy_bar(dataset = df2,
-                               x = taxonomy,
-                               y = relabund, 
-                               z = taxonomy,
-                               facet_form = "sample_type~metric")
-  
-  
-  gpatch <- (g1 + ggtitle("Lameshur Bay seagrass") + theme(axis.text.x = element_blank(), axis.title.x = element_blank(), legend.position = "none")) / (g2 + ggtitle("Yawzi reef") + theme(axis.text.x = element_blank(), axis.title.x = element_blank(), strip.text.x = element_blank(), legend.position = "none")) / (g3 + ggtitle("Tektite reef") + theme(axis.text.x = element_blank(), strip.text.x = element_blank(), legend.direction = "horizontal")) / (g4 + ggtitle("Controls") + theme(axis.text.x = element_blank(), strip.text.x = element_blank(), legend.direction = "horizontal")) + patchwork::plot_layout(guides = "collect") & theme(legend.position = "right")
-  gpatch <- gpatch & scale_fill_manual(values = phylum_colors, drop = TRUE, guide = "legend")
-  gpatch <- gpatch + patchwork::plot_annotation(title = "Summary of relative abundances of phyla by site", 
-                                                tag_level = "A")
-  ggsave(paste0(projectpath, "/", "usvi_phylum_abundance_stats-", Sys.Date(), ".png"),
-         gpatch,
-         width = 10, height = 16, units = "in")
-  gpatch_log10 <- gpatch & scale_y_continuous(trans = "pseudo_log", expand = expansion(mult = c(0,0.1)))
-  ggsave(paste0(projectpath, "/", "usvi_phylum_abundance_stats_log10-", Sys.Date(), ".png"),
-         gpatch_log10,
-         width = 10, height = 16, units = "in")
-  
-}
+# if(!any(grepl("phylum", list.files(projectpath, pattern = "usvi_.*_abundance_stats.*.png")))){
+#   
+#   df <- ASV_env_phylum_summary.tbl %>%
+#     dplyr::filter(grepl("seawater", sample_type)) %>%
+#     droplevels
+#   df2 <- ASV_env_phylum_summary.tbl %>%
+#     dplyr::filter(!grepl("seawater", sample_type)) %>%
+#     droplevels
+#   
+#   g1 <- P_summary_taxonomy_bar(dataset = df %>%
+#                                  dplyr::filter(grepl("LB_seagrass", site)),
+#                                x = taxonomy,
+#                                y = relabund, 
+#                                z = taxonomy,
+#                                facet_form = "sampling_time ~ metric")
+#   
+#   g2 <- P_summary_taxonomy_bar(dataset = df %>%
+#                                  dplyr::filter(grepl("Yawzi", site)),
+#                                x = taxonomy,
+#                                y = relabund, 
+#                                z = taxonomy,
+#                                facet_form = "sampling_time~metric")
+#   
+#   g3 <- P_summary_taxonomy_bar(dataset = df %>%
+#                                  dplyr::filter(grepl("Tektite", site)),
+#                                x = taxonomy,
+#                                y = relabund, 
+#                                z = taxonomy,
+#                                facet_form = "sampling_time~metric")
+#   
+#   g4 <- P_summary_taxonomy_bar(dataset = df2,
+#                                x = taxonomy,
+#                                y = relabund, 
+#                                z = taxonomy,
+#                                facet_form = "sample_type~metric")
+#   
+#   
+#   gpatch <- (g1 + ggtitle("Lameshur Bay seagrass") + theme(axis.text.x = element_blank(), axis.title.x = element_blank(), legend.position = "none")) / (g2 + ggtitle("Yawzi reef") + theme(axis.text.x = element_blank(), axis.title.x = element_blank(), strip.text.x = element_blank(), legend.position = "none")) / (g3 + ggtitle("Tektite reef") + theme(axis.text.x = element_blank(), strip.text.x = element_blank(), legend.direction = "horizontal")) / (g4 + ggtitle("Controls") + theme(axis.text.x = element_blank(), strip.text.x = element_blank(), legend.direction = "horizontal")) + patchwork::plot_layout(guides = "collect") & theme(legend.position = "right")
+#   gpatch <- gpatch & scale_fill_manual(values = phylum_colors, drop = TRUE, guide = "legend")
+#   gpatch <- gpatch + patchwork::plot_annotation(title = "Summary of relative abundances of phyla by site", 
+#                                                 tag_level = "A")
+#   ggsave(paste0(projectpath, "/", "usvi_phylum_abundance_stats-", Sys.Date(), ".png"),
+#          gpatch,
+#          width = 10, height = 16, units = "in")
+#   gpatch_log10 <- gpatch & scale_y_continuous(trans = "pseudo_log", expand = expansion(mult = c(0,0.1)))
+#   ggsave(paste0(projectpath, "/", "usvi_phylum_abundance_stats_log10-", Sys.Date(), ".png"),
+#          gpatch_log10,
+#          width = 10, height = 16, units = "in")
+#   
+# }
 # Zoom in on specific classes and orders ----------------------------------
 
 #based on the relative abundances of phyla, focus on these:
@@ -1047,16 +1107,67 @@ if(!any(grepl("phylum", list.files(projectpath, pattern = "usvi_.*_abundance_sta
 #Thermoplasmota
 #Actinobacteria
 
+keep <- c("Cyanobacteria", "Alphaproteobacteria", "Bacteroidota",
+          # "Proteobacteria",
+          "Gammaproteobacteria", "Actinobacteriota",
+          "SAR406", "Verrucomicrobiota", "Thermoplasmatota")
+drop <- c("Rhodothermia")
+
 annotation_taxa_colors <- annotation_taxa_colors_list %>%
   bind_rows(., .id = "spec") %>%
   tidyr::pivot_longer(., cols = !c("spec"),
                       names_to = "taxonomy",
                       values_to = "color") %>%
   droplevels %>%
-  dplyr::mutate(spec = factor(spec, levels = (c("Domain", "Phylum", "Class", "Order", "Family", "Genus")))) %>%
+  tidyr::drop_na(.) %>%
+  dplyr::mutate(spec = factor(spec, levels = c("Domain", "Phylum", "Class", "Order", "Family", "Genus"))) %>%
   dplyr::arrange(spec) %>%
   dplyr::distinct(taxonomy, color, .keep_all = TRUE) %>%
   droplevels
+
+taxonomy_colors.df <- dplyr::inner_join(annotation_taxa_colors %>%
+                                          tidyr::drop_na(color) %>%
+                                          droplevels, 
+                                        usvi_filtered_genus.df %>%
+                                          dplyr::select(Genus, Domain, Phylum, Class, Order, Family) %>%
+                                          dplyr::distinct(Genus, Domain, Phylum, Class, Order, Family, .keep_all = FALSE) %>%
+                                          dplyr::mutate(across(c(Class, Order, Genus), ~ dplyr::case_when(is.na(.x) ~ "NA",
+                                                                                                          .default = .x))),
+                                        # dplyr::mutate(Class = dplyr::case_when(is.na(Class) ~ "NA",
+                                        #                                        .default = Class)),
+                                        by = join_by("taxonomy" == "Genus")) %>%
+  droplevels %>%
+  dplyr::mutate(Genus = taxonomy) %>% dplyr::relocate(Genus, .after = "Family") %>% dplyr::rename(value = "taxonomy") %>%
+  tidyr::unite("taxonomy_phylum", c(Domain, Phylum), sep = ";", remove = FALSE, na.rm = TRUE) %>%
+  tidyr::unite("taxonomy_class", c(Domain, Phylum, Class), sep = ";", remove = FALSE, na.rm = TRUE) %>%
+  tidyr::unite("taxonomy_order", c(Domain, Phylum, Class, Order), sep = ";", remove = FALSE, na.rm = TRUE) %>%
+  tidyr::unite("taxonomy_family", c(Domain, Phylum, Class, Order, Family), sep = ";", remove = FALSE, na.rm = TRUE) %>%
+  tidyr::unite("taxonomy_genus", c(Domain, Phylum, Class, Order, Family, Genus), sep = ";", remove = TRUE, na.rm = TRUE) %>%
+  dplyr::select(color, contains("taxonomy")) %>%
+  tidyr::pivot_longer(., cols = !c(color),
+                      names_to = "taxonomic_level",
+                      values_to = "taxonomy") %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(grepl("NA;NA", taxonomy) ~ "Other taxa",
+                                            grepl("NA", taxonomy) ~ "Other taxa",
+                                            .default = taxonomy)) %>%
+  droplevels %>%
+  dplyr::ungroup(.) %>%
+  tidyr::drop_na(.) %>%
+  dplyr::arrange(taxonomy, taxonomic_level) %>%
+  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
+  droplevels
+
+
+taxonomy_colors.df %>%
+  dplyr::select(taxonomy, color) %>%
+  tibble::deframe(.) %>%
+  pal.bands()
+
+taxonomy_colors <- taxonomy_colors.df %>%
+  dplyr::select(taxonomy, color) %>%
+  tibble::deframe(.)
+
+
 # annotation_taxa_colors %>%
 #   dplyr::filter(grepl("Phylum", spec)) %>%
 #   dplyr::select(taxonomy, color) %>%
@@ -1134,13 +1245,13 @@ annotation_taxa_colors <- annotation_taxa_colors_list %>%
   usvi_relabund_taxonomy_list <- list(temp_df1, temp_df2, temp_df3, temp_df4) %>%
     setNames(., c("Class", "Order", "Family", "Genus"))
 }
-usvi_filtered_genus.df %>%
-  dplyr::filter(!grepl("Other", taxonomy)) %>%
-  dplyr::filter(relabund > 0) %>%
-  droplevels %>%
-  # dplyr::group_by(sample_id) %>% dplyr::summarise(total_relabund = sum(relabund)) %>% dplyr::arrange(total_relabund) #min: 89.3%
-  # dplyr::summarise(num_genera = length(taxonomy)/90) #56genera in here
-  dplyr::distinct(taxonomy, .keep_all = FALSE)
+# usvi_filtered_genus.df %>%
+#   dplyr::filter(!grepl("Other", taxonomy)) %>%
+#   dplyr::filter(relabund > 0) %>%
+#   droplevels %>%
+#   # dplyr::group_by(sample_id) %>% dplyr::summarise(total_relabund = sum(relabund)) %>% dplyr::arrange(total_relabund) #min: 89.3%
+#   # dplyr::summarise(num_genera = length(taxonomy)/90) #56genera in here
+#   dplyr::distinct(taxonomy, .keep_all = FALSE)
 
 # usvi_relabund_taxonomy_list[["Genus"]] %>%
 #   dplyr::filter(!grepl("Other", taxonomy)) %>%
@@ -1150,43 +1261,6 @@ usvi_filtered_genus.df %>%
 #   dplyr::summarise(num_genera = length(taxonomy)/90) #52 here
 #   # dplyr::distinct(taxonomy, .keep_all = FALSE) #52 in here
 
-taxonomy_colors.df <- dplyr::inner_join(annotation_taxa_colors %>%
-                                      tidyr::drop_na(color) %>%
-                                      droplevels, 
-                                    usvi_filtered_genus.df %>%
-                                      dplyr::select(Genus, Domain, Phylum, Class, Order, Family) %>%
-                                      dplyr::distinct(Genus, Domain, Phylum, Class, Order, Family, .keep_all = FALSE) %>%
-                                      dplyr::mutate(across(c(Class, Order, Genus), ~ dplyr::case_when(is.na(.x) ~ "NA",
-                                                                                                      .default = .x))),
-                                    # dplyr::mutate(Class = dplyr::case_when(is.na(Class) ~ "NA",
-                                    #                                        .default = Class)),
-                                    by = join_by("taxonomy" == "Genus")) %>%
-  droplevels %>%
-  dplyr::mutate(Genus = taxonomy) %>% dplyr::relocate(Genus, .after = "Family") %>% dplyr::rename(value = "taxonomy") %>%
-  tidyr::unite("taxonomy_phylum", c(Domain, Phylum), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_class", c(Domain, Phylum, Class), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_order", c(Domain, Phylum, Class, Order), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_family", c(Domain, Phylum, Class, Order, Family), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_genus", c(Domain, Phylum, Class, Order, Family, Genus), sep = ";", remove = TRUE, na.rm = TRUE) %>%
-  dplyr::select(color, contains("taxonomy")) %>%
-  tidyr::pivot_longer(., cols = !c(color),
-                      names_to = "taxonomic_level",
-                      values_to = "taxonomy") %>%
-  dplyr::mutate(taxonomy = dplyr::case_when(grepl("NA;NA", taxonomy) ~ "Other taxa",
-                                            grepl("NA", taxonomy) ~ "Other taxa",
-                                            .default = taxonomy)) %>%
-  droplevels %>%
-  dplyr::ungroup(.) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::arrange(taxonomy, taxonomic_level) %>%
-  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
-  droplevels
-
-
-taxonomy_colors.df %>%
-  dplyr::select(taxonomy, color) %>%
-  tibble::deframe(.) %>%
-  pal.bands()
 
 
 
@@ -1252,6 +1326,7 @@ taxonomy_rank_class_idx <- usvi_relabund_taxonomy_list[["Genus"]] %>% #there are
 taxonomy_rank_genus_idx <- usvi_relabund_taxonomy_list[["Genus"]] %>% #52
   dplyr::ungroup(.) %>%
   dplyr::distinct(Class, taxonomy) %>%
+  dplyr::ungroup(.) %>%
   dplyr::mutate(Class = factor(Class, levels = taxonomy_rank_class_idx)) %>%
   dplyr::arrange(Class) %>%
   dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.[["taxonomy"]]))) %>%
@@ -1275,6 +1350,7 @@ taxonomy_filt_genus_colors <- bind_rows(usvi_relabund_taxonomy_list[["Genus"]]) 
   dplyr::select(c(Domain:taxonomy), total_abund) %>%
   dplyr::distinct(., .keep_all = TRUE) %>%
   dplyr::mutate(first_taxonomy = paste0(Domain, ";", Phylum)) %>%
+  # dplyr::mutate(first_taxonomy = dplyr::case_when((Domain == Phylum) ~ Phylum, .default = paste0(Domain, ";", Phylum))) %>%
   dplyr::left_join(., taxonomy_filt_genus_colors.df, by = join_by(first_taxonomy), relationship = "many-to-many", multiple = "all") %>% droplevels %>%
   split(., f = .$Phylum) %>%
   map(., ~.x %>%
@@ -1288,7 +1364,10 @@ taxonomy_filt_genus_colors <- taxonomy_filt_genus_colors[match(taxonomy_rank_gen
 taxonomy_filt_genus_colors_lookup <- data.frame(taxonomy = names(taxonomy_filt_genus_colors),
                                                 first = stringr::str_split_i(names(taxonomy_filt_genus_colors), ";", 2),
                                                 second = stringr::str_split_i(names(taxonomy_filt_genus_colors), ";", -1)) %>%
+  dplyr::mutate(first = dplyr::case_when(grepl("SAR406", taxonomy) ~ paste0("Marinimicrobia"),
+                                         .default = first)) %>%
   dplyr::mutate(second = dplyr::case_when(grepl("SAR11 clade", taxonomy) ~ paste0("SAR11 ", second),
+                                          grepl("SAR406", taxonomy) ~ paste0("SAR406 clade"),
                                           .default = second)) %>% #replace all of the "Alphaproteobacteria;Clade " names that are supposed to be SAR11 
   tidyr::unite(label, c("first", "second"), sep = ";") %>%
   dplyr::select(label, taxonomy) %>%
@@ -1340,53 +1419,22 @@ temp_idx <- (usvi_filtered_taxonomy_rank_genus_relabund.df %>%
                dplyr::select(taxonomy, asv_id) %>%
                tibble::deframe(.))
 
-usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-  dplyr::group_by(sample_id) %>%
-  dplyr::summarise(total_relabund = sum(rel_abund)) %>%
-  dplyr::arrange(total_relabund) #min: 88.8%
-
-
-
-
-
-# taxonomy_colors <- taxonomy_colors.df %>%
-#   dplyr::select(taxonomy, color) %>%
-#   tibble::deframe(.)
-
+# usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#   dplyr::group_by(sample_id) %>%
+#   dplyr::summarise(total_relabund = sum(rel_abund)) %>%
+#   dplyr::arrange(total_relabund) #min: 88.8%
 
 
 temp_df <- usvi_relabund_taxonomy_list[["Genus"]] %>%
   dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
   droplevels
-temp_df %>%
-  dplyr::group_by(sample_id) %>%
-  dplyr::summarise(total_relabund = sum(relabund)) %>%
-  dplyr::arrange(total_relabund) #min: 88.8%
+# temp_df %>%
+#   dplyr::group_by(sample_id) %>%
+#   dplyr::summarise(total_relabund = sum(relabund)) %>%
+#   dplyr::arrange(total_relabund) #min: 88.8%
+g2 <- P_filtered_summary_bar(dataset = temp_df, x = sample_order_all, y = relabund, z = taxonomy, facet_form = ". ~ site") + scale_x_continuous(name = "Sample", n.breaks = 6)
 
-g2 <- print(ggplot(data = temp_df %>%
-                     droplevels, aes(y = relabund, x = sample_order_all, group = taxonomy, fill = taxonomy))
-            + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
-            + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
-            + theme_bw()
-            + scale_x_continuous(name = "Sample", n.breaks = 6)
-            + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Relative abundance (%)")
-            + scale_fill_manual(values = taxonomy_filt_genus_colors, 
-                                # breaks = names(taxonomy_filt_genus_colors),
-                                breaks = taxonomy_filt_genus_colors_lookup,
-                                labels = names(taxonomy_filt_genus_colors_lookup),
-                                drop = TRUE)
-            + facet_grid(scales = "free", space = "free",
-                         labeller = labeller(site = site_lookup),
-                         . ~ site)
-            # Class ~ site)
-            + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-                    strip.text.x = element_text(angle = 0),
-                    strip.text.y = element_text(angle = 0))
-            + coord_cartesian(ylim = c(0,100), expand = FALSE)
-            + guides(fill = guide_legend(order = 2, ncol = 1, title = "Taxonomy", direction = "vertical",
-                                         override.aes = list(stroke = 1, color = "black"), position = "right"),
-                     color = "none")
-)
+
 # length(unique(names(temp_idx)))
 # #30
 
@@ -1420,31 +1468,7 @@ temp_df2 <- temp_df %>%
 #   dplyr::group_by(sample_id) %>%
 #   dplyr::summarise(total_abund = sum(relabund)) %>%
 #   dplyr::arrange(total_abund) #minimum relative abundance of the top 30 genera' ASVs that were at least 1% in any sample: 68.9%
-
-g2_oneperc <- print(ggplot(data = temp_df2 %>%
-                             droplevels, aes(y = relabund, x = sample_order_all, group = taxonomy, fill = taxonomy))
-                    + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
-                    + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
-                    + theme_bw()
-                    + scale_x_continuous(name = "Sample", n.breaks = 6)
-                    + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Relative abundance (%)")
-                    + scale_fill_manual(values = taxonomy_filt_genus_colors, 
-                                        # breaks = names(taxonomy_filt_genus_colors),
-                                        breaks = taxonomy_filt_genus_colors_lookup,
-                                        labels = names(taxonomy_filt_genus_colors_lookup),
-                                        drop = TRUE)
-                    + facet_grid(scales = "free", space = "free",
-                                 labeller = labeller(site = site_lookup),
-                                 . ~ site)
-                    # Class ~ site)
-                    + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
-                            strip.text.x = element_text(angle = 0),
-                            strip.text.y = element_text(angle = 0))
-                    + coord_cartesian(ylim = c(0,100), expand = FALSE)
-                    + guides(fill = guide_legend(order = 2, ncol = 1, title = "Taxonomy", direction = "vertical",
-                                                 override.aes = list(stroke = 1, color = "black"), position = "right"),
-                             color = "none")
-)
+g2_oneperc <- P_filtered_summary_bar(dataset = temp_df2, x = sample_order_all, y = relabund, z = taxonomy, facet_form = ". ~ site") + scale_x_continuous(name = "Sample", n.breaks = 6)
 
 if(!any(grepl("usvi_barchart_", list.files(projectpath, pattern = "usvi_.*.png")))){
   ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus", "-", Sys.Date(), ".png"),
@@ -1455,6 +1479,309 @@ if(!any(grepl("usvi_barchart_", list.files(projectpath, pattern = "usvi_.*.png")
          width = 16, height = 10, units = "in")
 }
 
+
+# Summary taxonomy figure -------------------------------------------------
+
+
+
+#calculate mean relative abundance of the interesting taxonomic groups as filtered above
+#grouping the replicates for each timepoint and day
+#so instead of 90 samples on the x-axis, we have 8 (or 10) per site
+
+temp_idx <- (usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+               dplyr::ungroup(.) %>%
+               dplyr::filter(rel_abund >= 1) %>%
+               dplyr::distinct(asv_id, taxonomy, .keep_all = FALSE) %>%
+               dplyr::select(taxonomy, asv_id) %>%
+               tibble::deframe(.))
+
+
+usvi_asv_relabund_summary.df <- metadata %>%
+  dplyr::filter(sample_type == "seawater") %>%
+  dplyr::select(sample_id) %>%
+  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+  droplevels %>%
+  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+  dplyr::left_join(., metadata %>%
+                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::arrange(site, sampling_day, sampling_time) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_day, sampling_time))  %>%
+  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_day, sampling_time)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::arrange(site, sampling_time, sampling_day) %>%
+  dplyr::mutate(sample_order = seq_along(interaction(sampling_time, sampling_day)), .by = c("site", asv_id)) %>%
+  droplevels
+# usvi_asv_relabund_summary.df %>%
+# dplyr::group_by(site, sampling_day, sampling_time) %>%
+# dplyr::summarise(total_abund = sum(rel_abund))
+
+usvi_asv_relabund_simple_summary.df <- metadata %>%
+  dplyr::filter(sample_type == "seawater") %>%
+  dplyr::select(sample_id) %>%
+  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+  droplevels %>%
+  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+  dplyr::left_join(., metadata %>%
+                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::arrange(site, sampling_day, sampling_time) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+  droplevels
+
+# usvi_asv_relabund_simple_summary.df %>%
+#   dplyr::group_by(site, sampling_time) %>%
+#   dplyr::summarise(total_abund = sum(rel_abund))
+
+#without the corresponding microbiome sample to CINAR_BC_73:
+usvi_asv_relabund_summary_wo73.df <- metadata %>%
+  dplyr::filter(sample_type == "seawater") %>%
+  dplyr::select(sample_id) %>%
+  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+  droplevels %>%
+  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+  dplyr::left_join(., metadata %>%
+                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::arrange(site, sampling_day, sampling_time) %>%
+  dplyr::ungroup(.) %>%
+    dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
+  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_day, sampling_time))  %>%
+  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_day, sampling_time)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::arrange(site, sampling_time, sampling_day) %>%
+  dplyr::mutate(sample_order = seq_along(interaction(sampling_time, sampling_day)), .by = c("site", asv_id)) %>%
+  droplevels
+
+usvi_asv_relabund_simple_summary_wo73.df <- metadata %>%
+  dplyr::filter(sample_type == "seawater") %>%
+  dplyr::select(sample_id) %>%
+  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+  droplevels %>%
+  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+  dplyr::left_join(., metadata %>%
+                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::arrange(site, sampling_day, sampling_time) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
+  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+  droplevels
+
+#consolidate all ASVs with the same taxonomy, to that level (so it goes from 56 ASVs to 30 taxonomic levels)
+usvi_filtered_taxonomy_relabund_summary.df <- usvi_asv_relabund_summary.df %>%
+  dplyr::filter(asv_id %in% temp_idx) %>%
+  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  dplyr::arrange(sample_order) %>%
+  dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+                  paste0(., ": ", sampling_day)) %>%
+  dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+  droplevels
+# usvi_filtered_taxonomy_relabund_summary.df %>%
+#   dplyr::group_by(site, sampling_day, sampling_time) %>%
+#   dplyr::summarise(total_abund = sum(rel_abund))
+# # site        sampling_day sampling_time total_abund
+# # <chr>       <chr>        <chr>               <dbl>
+# #   1 LB_seagrass Day1         dawn                 78.1
+# # 2 LB_seagrass Day1         peak_photo           77.8
+# # 3 LB_seagrass Day2         dawn                 75.6
+# # 4 LB_seagrass Day2         peak_photo           74.5
+# # 5 LB_seagrass Day3         dawn                 78.0
+# # 6 LB_seagrass Day3         peak_photo           77.5
+
+usvi_filtered_taxonomy_relabund_summary_wo73.df <- usvi_asv_relabund_summary_wo73.df %>%
+  dplyr::filter(asv_id %in% temp_idx) %>%
+  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  dplyr::arrange(sample_order) %>%
+  dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+                  paste0(., ": ", sampling_day)) %>%
+  dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+  droplevels
+
+# usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
+#   dplyr::group_by(site, sampling_day, sampling_time) %>%
+#   dplyr::summarise(total_abund = sum(rel_abund))
+# # site        sampling_day sampling_time total_abund
+# # <chr>       <chr>        <chr>               <dbl>
+# #   1 LB_seagrass Day1         dawn                 78.1
+# # 2 LB_seagrass Day1         peak_photo           77.8
+# # 3 LB_seagrass Day2         dawn                 75.6
+# # 4 LB_seagrass Day2         peak_photo           74.5
+# # 5 LB_seagrass Day3         dawn                 78.0
+# # 6 LB_seagrass Day3         peak_photo           78.2
+
+usvi_filtered_taxonomy_relabund_simple_summary.df <- usvi_asv_relabund_simple_summary.df %>%
+  dplyr::filter(asv_id %in% temp_idx) %>%
+  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  dplyr::arrange(sample_order) %>%
+  dplyr::mutate(sample_label = sample_order) %>%
+  droplevels
+usvi_filtered_taxonomy_relabund_simple_summary_wo73.df <- usvi_asv_relabund_simple_summary_wo73.df %>%
+  dplyr::filter(asv_id %in% temp_idx) %>%
+  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  dplyr::arrange(sample_order) %>%
+  dplyr::mutate(sample_label = sample_order) %>%
+  droplevels
+
+usvi_filtered_taxonomy_relabund_simple_summary_woD1.df <- metadata %>%
+  dplyr::filter(sample_type == "seawater") %>%
+  dplyr::select(sample_id) %>%
+  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+  droplevels %>%
+  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+  dplyr::right_join(., metadata %>%
+                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                     dplyr::filter(!grepl("Day1", sampling_day)) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::arrange(site, sampling_day, sampling_time) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+  droplevels %>%
+  dplyr::ungroup(.) %>%
+  dplyr::filter(asv_id %in% temp_idx) %>%
+  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  dplyr::arrange(sample_order) %>%
+  dplyr::mutate(sample_label = sample_order) %>%
+  droplevels
+
+usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df <- metadata %>%
+  dplyr::filter(sample_type == "seawater") %>%
+  dplyr::select(sample_id) %>%
+  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+  droplevels %>%
+  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+  dplyr::right_join(., metadata %>%
+                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                     dplyr::filter(!grepl("Day1", sampling_day)) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
+  droplevels %>%
+  dplyr::arrange(site, sampling_day, sampling_time) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::arrange(site, sampling_time) %>%
+  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+  droplevels %>%
+  dplyr::ungroup(.) %>%
+  dplyr::filter(asv_id %in% temp_idx) %>%
+  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  dplyr::arrange(sample_order) %>%
+  dplyr::mutate(sample_label = sample_order) %>%
+  droplevels
+
+# g2_sum_oneperc <- print(ggplot(data = usvi_filtered_taxonomy_relabund_summary.df %>%
+#                                       droplevels, 
+#                                     aes(y = rel_abund, x = sample_label, group = taxonomy, fill = taxonomy))
+#                              + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
+#                              + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
+#                              + theme_bw()
+#                              + scale_x_discrete(name = "Sample")
+#                              + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Relative abundance (%)")
+#                              + scale_discrete_manual(aesthetics = c("fill", "color"), 
+#                                                      values = taxonomy_filt_genus_colors, 
+#                                                      breaks = taxonomy_filt_genus_colors_lookup,
+#                                                      labels = names(taxonomy_filt_genus_colors_lookup),
+#                                                      drop = TRUE)
+#                              + facet_grid(scales = "free", space = "free",
+#                                           labeller = global_labeller,
+#                                           . ~ site)
+#                              + theme(axis.text.x = element_text(angle = -45, vjust = 0.5, hjust = 0),
+#                                      strip.text.x = element_text(angle = 0),
+#                                      strip.text.y = element_text(angle = 0))
+#                              + coord_cartesian(ylim = c(0,100), expand = FALSE)
+#                              + guides(fill = guide_legend(order = 2, ncol = 1, title = "Taxonomy", direction = "vertical",
+#                                                           override.aes = list(stroke = 1, color = "black"), position = "right"),
+#                                       color = "none")
+# )
+
+g2_sum_oneperc <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_summary.df, x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+
+g2_sum_oneperc_wo73 <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_summary_wo73.df, x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+
+g2_sum_oneperc_woD1 <- P_filtered_summary_bar(dataset = (usvi_filtered_taxonomy_relabund_summary.df %>% dplyr::filter(!grepl("Day1", sampling_day)) %>% droplevels), x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+
+g2_sum_oneperc_woD1_wo73 <- P_filtered_summary_bar(dataset = (usvi_filtered_taxonomy_relabund_summary_wo73.df %>% dplyr::filter(!grepl("Day1", sampling_day)) %>% droplevels), x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+
+g2_sum_oneperc_simple <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_simple_summary.df, x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+g2_sum_oneperc_simple_wo73 <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_simple_summary_wo73.df, x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+g2_sum_oneperc_simple_woD1 <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_simple_summary_woD1.df , x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+g2_sum_oneperc_simple_woD1_wo73 <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df, x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
+
+
+gpatch1 <- (g2_sum_oneperc_simple + ggtitle("Summed by sampling time")) + (g2_sum_oneperc_simple_woD1 + ggtitle("Summed by sampling time, without Day 1")) + patchwork::plot_layout(guides = "collect")
+gpatch2 <- (g2_sum_oneperc_simple_wo73 + ggtitle("Summed by sampling time, without Metab_280")) + (g2_sum_oneperc_simple_woD1_wo73 + ggtitle("Summed by sampling time, without Day 1, without Metab_280")) + patchwork::plot_layout(guides = "collect")
+gpatch3 <- (g2_sum_oneperc + ggtitle("Summed by sampling day and time")) + (g2_sum_oneperc_woD1 + ggtitle("Summed by sampling day and time, without Day 1")) + patchwork::plot_layout(guides = "collect")
+gpatch4 <- (g2_sum_oneperc_wo73 + ggtitle("Summed by sampling day and time, without Metab_280")) + (g2_sum_oneperc_woD1_wo73 + ggtitle("Summed by sampling day and time, without Day 1, without Metab_280")) + patchwork::plot_layout(guides = "collect")
+
+
+if(!any(grepl("sum_oneperc_", list.files(projectpath, pattern = "usvi_barchart_filtered_genus.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_", "sum_oneperc", "-", Sys.Date(), ".png"),
+         gpatch1,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_", "sum_oneperc_wo73","-", Sys.Date(), ".png"),
+         gpatch2,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_", "sum_oneperc_days","-", Sys.Date(), ".png"),
+         gpatch3,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","sum_oneperc_days_wo73", "-", Sys.Date(), ".png"),
+         gpatch4,
+         width = 16, height = 10, units = "in")
+}
+
+# Other figures -----------------------------------------------------------
 
 
 # #which taxa were in filtered genus df, but not 1% or more abundant?
@@ -1507,11 +1834,7 @@ if(!any(grepl("usvi_barchart_", list.files(projectpath, pattern = "usvi_.*.png")
   #   tibble::deframe(.)
 
 
-# keep <- c("Cyanobacteria", "Alphaproteobacteria", "Bacteroidota", 
-#           # "Proteobacteria",
-#           "Gammaproteobacteria", "Actinobacteriota", 
-#           "SAR406", "Verrucomicrobiota", "Thermoplasmatota")
-# drop <- c("Rhodothermia")
+
 # 
 # 
 # for(taxlevel in names(usvi_relabund_taxonomy_list)){
@@ -1564,155 +1887,155 @@ if(!any(grepl("usvi_barchart_", list.files(projectpath, pattern = "usvi_.*.png")
 
 
 # How many ASVs in these 52 dominant genera? -----------------------------
-
-temp_df2 <- usvi_prok_asvs.taxa %>%
-  dplyr::select(asv_id, Domain:Species) %>%
-  # dplyr::filter(if_any(c("Domain":"Species"), ~!is.na(.x))) %>%
-  dplyr::filter(if_any(c("Domain":"Genus"), ~!is.na(.x))) %>%
-  droplevels %>%
-  dplyr::ungroup(.) %>%
-  dplyr::filter(if_any(c("Domain":"Genus"), ~.x %in% stringr::str_split_i(taxonomy_rank_genus_idx, ";", -1))) %>%
-  # dplyr::filter(if_any(c("Family":"Genus"), ~.x %in% stringr::str_split_i(taxonomy_rank_genus_idx, ";", -1))) %>%
-  droplevels
-
-
-
-# temp_idx <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-#   dplyr::group_by(taxonomy, asv_id) %>%
-#   dplyr::summarise(weight = mean(rel_abund, na.rm = TRUE)) %>%
-#   dplyr::mutate(weight = nafill(weight, fill = 0)) %>%
-#   dplyr::group_by(taxonomy) %>%
-#   dplyr::mutate(weight = relabund(weight)/100) %>%
-#   # dplyr::mutate(weight = scale(weight, center = TRUE, scale = FALSE)) %>%
-#   # dplyr::summarise(sum_weight = sum(weight, na.rm = TRUE)) %>%
-#   # droplevels
-#   dplyr::ungroup(.) %>% dplyr::select(asv_id, weight) %>%  tibble::deframe(.)
 # 
-# temp_df <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-#   split(., f = .$sample_id) %>%
-#   map(., ~.x %>%
-#         dplyr::left_join(., tibble::enframe(temp_idx, name = "asv_id", value = "weight"), by = join_by(asv_id)) %>%
-#         dplyr::mutate(w_mean = (rel_abund * weight)) %>%
-#         # dplyr::group_by(taxonomy) %>%
-#         # dplyr::summarise(w_mean = mean(w_mean, na.rm= TRUE)) %>%
-#         droplevels) %>%
-#   bind_rows(.) %>%
-#   dplyr::group_by(taxonomy) %>%
-#   dplyr::summarise(w_mean = mean(w_mean, na.rm= TRUE)) %>%
+# temp_df2 <- usvi_prok_asvs.taxa %>%
+#   dplyr::select(asv_id, Domain:Species) %>%
+#   # dplyr::filter(if_any(c("Domain":"Species"), ~!is.na(.x))) %>%
+#   dplyr::filter(if_any(c("Domain":"Genus"), ~!is.na(.x))) %>%
+#   droplevels %>%
+#   dplyr::ungroup(.) %>%
+#   dplyr::filter(if_any(c("Domain":"Genus"), ~.x %in% stringr::str_split_i(taxonomy_rank_genus_idx, ";", -1))) %>%
+#   # dplyr::filter(if_any(c("Family":"Genus"), ~.x %in% stringr::str_split_i(taxonomy_rank_genus_idx, ";", -1))) %>%
 #   droplevels
-
-#what is the average relative abundance of the ASVs assigned to these genera-level taxonomies
-#if we look at all ASVs (~2058)
-#compared to only those ASVs 1% or more in a sample
-temp_df <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::group_by(taxonomy) %>%
-                     dplyr::summarise(`Mean relative abundance of all ASVs` = mean(rel_abund, na.rm= TRUE)) %>%
-                     droplevels %>%
-  dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(asv_id %in% temp_idx) %>%
-                     # dplyr::mutate(keep = dplyr::case_when(rel_abund >= 1 ~ "Abundant",
-                     #                                       .default = NA)) %>%
-                     tidyr::drop_na(.) %>%
-                     dplyr::group_by(taxonomy) %>%
-                     dplyr::summarise(`Mean relative abundance of abundant ASVs` = mean(rel_abund, na.rm= TRUE)) %>%
-                     droplevels, 
-                   by= join_by(taxonomy)) %>%
-  tidyr::drop_na(taxonomy) %>%
-  dplyr::mutate(across(contains("relative abundance"), nafill, fill = 0)) %>%
-  droplevels
-
-#forexample, the average relative abundance of the 4 abundant Synechococcus ASVs was 5.69%
-#in contrast, the average relative abundance of all 26 Synechoccocus ASVs was 2.95%
-usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-  tidyr::drop_na(.) %>%
-  dplyr::group_by(sample_id) %>%
-  dplyr::summarise(total_relabund = sum(rel_abund,na.rm = TRUE)) %>%
-  dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(taxonomy %in% names(temp_idx)) %>%
-                     droplevels %>%
-                     dplyr::group_by(sample_id) %>%
-                     dplyr::summarise(most_relabund = sum(rel_abund,na.rm = TRUE)),
-                   by = join_by(sample_id)) %>%
-  dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(asv_id %in% temp_idx) %>%
-                     droplevels %>%
-                     # dplyr::filter(rel_abund >= 1) %>%
-                     # tidyr::drop_na(.) %>%
-                     dplyr::group_by(sample_id) %>%
-                     dplyr::summarise(asv_one_relabund = sum(rel_abund,na.rm = TRUE)),
-                   by = join_by(sample_id)) %>%
-  # dplyr::arrange(most_relabund)
-  dplyr::arrange(asv_one_relabund)
-  # dplyr::arrange(total_relabund)
-
-usvi_filtered_taxonomy_rank_genus_summary.tbl <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-  dplyr::ungroup(.) %>%
-  # dplyr::filter(rel_abund >= 1) %>%
-  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  dplyr::group_by(taxonomy, Genus) %>%
-  dplyr::summarise(`Total ASVs` = length(asv_id)) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(asv_id %in% temp_idx) %>%
-                     # dplyr::filter(taxonomy %in% names(temp_idx)) %>%
-                     dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-                     dplyr::group_by(taxonomy, Genus) %>%
-                     dplyr::summarise(`Abundant ASVs` = length(asv_id)) %>%
-                     tidyr::drop_na(.),
-                   by = join_by(taxonomy, Genus)) %>%
-  dplyr::left_join(., (usvi_filtered_taxonomy_rank_genus_relabund.df %>% #what is the mean relative abundance of the most abundant ASV in each taxon?
-      dplyr::group_by(asv_id, taxonomy) %>%
-      dplyr::summarise(`Mean relative abundance of top ASV` = mean(rel_abund)) %>%
-      dplyr::arrange(desc(`Mean relative abundance of top ASV`)) %>% 
-      dplyr::ungroup(.) %>%
-        dplyr::select(taxonomy, `Mean relative abundance of top ASV`) %>%
-      dplyr::distinct(taxonomy, .keep_all = TRUE)),
-      by = join_by(taxonomy)) %>%
-  dplyr::mutate(`Abundant ASVs` = nafill(`Abundant ASVs`, fill = 0)) %>%
-  dplyr::left_join(., temp_df, by = join_by(taxonomy)) %>%
-  dplyr::mutate(Class = stringr::str_extract(taxonomy, paste0(taxonomy_rank_class_idx, collapse = "|"))) %>%
-  dplyr::relocate(Class, .before = Genus) %>%
-  dplyr::ungroup(.) %>%
-  # dplyr::arrange(desc(`Mean relative abundance of abundant ASVs`)) %>%
-  dplyr::arrange(desc(`Mean relative abundance of top ASV`)) %>%
-  dplyr::rowwise(.) %>%
-  dplyr::mutate(across(contains("relative abundance"), scales::percent, scale = 1, accuracy = 0.01)) %>%
-  droplevels
-
-readr::write_delim(usvi_filtered_taxonomy_rank_genus_summary.tbl, paste0(projectpath, "/", "usvi_filtered_genus_summary", ".tsv"),
-                   delim = "\t", col_names = TRUE)
-
-usvi_filtered_taxonomy_rank_genus_summary.df <- usvi_filtered_taxonomy_rank_genus_summary.tbl %>%
-  dplyr::select(-contains("relative abundance")) %>%
-  tidyr::pivot_longer(., cols = contains("ASVs"),
-                      names_to = "parameter",
-                      values_to = "count") %>%
-  dplyr::mutate(count = nafill(count, fill = 0)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = taxonomy_rank_genus_idx)) %>%
-  dplyr::arrange(taxonomy) %>%
-  dplyr::mutate(Genus = factor(Genus))
-
-print(
-  ggplot(data = usvi_filtered_taxonomy_rank_genus_summary.df,
-         aes(x = Genus, y = count, fill = taxonomy, group_by = taxonomy))
-  + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
-  + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
-  + theme_bw()
-  + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Number of ASVs", transform = "pseudo_log")
-  + scale_fill_manual(values = taxonomy_filt_genus_colors, 
-                      # breaks = names(taxonomy_filt_genus_colors),
-                      breaks = taxonomy_filt_genus_colors_lookup,
-                      labels = names(taxonomy_filt_genus_colors_lookup),
-                      drop = TRUE)
-  + facet_grid(scales = "free", space = "fixed",
-               # labeller = labeller(site = site_lookup),
-               parameter ~ .)
-  )
+# 
+# 
+# 
+# # temp_idx <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+# #   dplyr::group_by(taxonomy, asv_id) %>%
+# #   dplyr::summarise(weight = mean(rel_abund, na.rm = TRUE)) %>%
+# #   dplyr::mutate(weight = nafill(weight, fill = 0)) %>%
+# #   dplyr::group_by(taxonomy) %>%
+# #   dplyr::mutate(weight = relabund(weight)/100) %>%
+# #   # dplyr::mutate(weight = scale(weight, center = TRUE, scale = FALSE)) %>%
+# #   # dplyr::summarise(sum_weight = sum(weight, na.rm = TRUE)) %>%
+# #   # droplevels
+# #   dplyr::ungroup(.) %>% dplyr::select(asv_id, weight) %>%  tibble::deframe(.)
+# # 
+# # temp_df <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+# #   split(., f = .$sample_id) %>%
+# #   map(., ~.x %>%
+# #         dplyr::left_join(., tibble::enframe(temp_idx, name = "asv_id", value = "weight"), by = join_by(asv_id)) %>%
+# #         dplyr::mutate(w_mean = (rel_abund * weight)) %>%
+# #         # dplyr::group_by(taxonomy) %>%
+# #         # dplyr::summarise(w_mean = mean(w_mean, na.rm= TRUE)) %>%
+# #         droplevels) %>%
+# #   bind_rows(.) %>%
+# #   dplyr::group_by(taxonomy) %>%
+# #   dplyr::summarise(w_mean = mean(w_mean, na.rm= TRUE)) %>%
+# #   droplevels
+# 
+# #what is the average relative abundance of the ASVs assigned to these genera-level taxonomies
+# #if we look at all ASVs (~2058)
+# #compared to only those ASVs 1% or more in a sample
+# temp_df <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#                      dplyr::ungroup(.) %>%
+#                      dplyr::group_by(taxonomy) %>%
+#                      dplyr::summarise(`Mean relative abundance of all ASVs` = mean(rel_abund, na.rm= TRUE)) %>%
+#                      droplevels %>%
+#   dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#                      dplyr::ungroup(.) %>%
+#                      dplyr::filter(asv_id %in% temp_idx) %>%
+#                      # dplyr::mutate(keep = dplyr::case_when(rel_abund >= 1 ~ "Abundant",
+#                      #                                       .default = NA)) %>%
+#                      tidyr::drop_na(.) %>%
+#                      dplyr::group_by(taxonomy) %>%
+#                      dplyr::summarise(`Mean relative abundance of abundant ASVs` = mean(rel_abund, na.rm= TRUE)) %>%
+#                      droplevels, 
+#                    by= join_by(taxonomy)) %>%
+#   tidyr::drop_na(taxonomy) %>%
+#   dplyr::mutate(across(contains("relative abundance"), nafill, fill = 0)) %>%
+#   droplevels
+# 
+# #forexample, the average relative abundance of the 4 abundant Synechococcus ASVs was 5.69%
+# #in contrast, the average relative abundance of all 26 Synechoccocus ASVs was 2.95%
+# usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#   tidyr::drop_na(.) %>%
+#   dplyr::group_by(sample_id) %>%
+#   dplyr::summarise(total_relabund = sum(rel_abund,na.rm = TRUE)) %>%
+#   dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#                      dplyr::ungroup(.) %>%
+#                      dplyr::filter(taxonomy %in% names(temp_idx)) %>%
+#                      droplevels %>%
+#                      dplyr::group_by(sample_id) %>%
+#                      dplyr::summarise(most_relabund = sum(rel_abund,na.rm = TRUE)),
+#                    by = join_by(sample_id)) %>%
+#   dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#                      dplyr::ungroup(.) %>%
+#                      dplyr::filter(asv_id %in% temp_idx) %>%
+#                      droplevels %>%
+#                      # dplyr::filter(rel_abund >= 1) %>%
+#                      # tidyr::drop_na(.) %>%
+#                      dplyr::group_by(sample_id) %>%
+#                      dplyr::summarise(asv_one_relabund = sum(rel_abund,na.rm = TRUE)),
+#                    by = join_by(sample_id)) %>%
+#   # dplyr::arrange(most_relabund)
+#   dplyr::arrange(asv_one_relabund)
+#   # dplyr::arrange(total_relabund)
+# 
+# usvi_filtered_taxonomy_rank_genus_summary.tbl <- usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#   dplyr::ungroup(.) %>%
+#   # dplyr::filter(rel_abund >= 1) %>%
+#   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+#   dplyr::group_by(taxonomy, Genus) %>%
+#   dplyr::summarise(`Total ASVs` = length(asv_id)) %>%
+#   tidyr::drop_na(.) %>%
+#   dplyr::left_join(., usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+#                      dplyr::ungroup(.) %>%
+#                      dplyr::filter(asv_id %in% temp_idx) %>%
+#                      # dplyr::filter(taxonomy %in% names(temp_idx)) %>%
+#                      dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+#                      dplyr::group_by(taxonomy, Genus) %>%
+#                      dplyr::summarise(`Abundant ASVs` = length(asv_id)) %>%
+#                      tidyr::drop_na(.),
+#                    by = join_by(taxonomy, Genus)) %>%
+#   dplyr::left_join(., (usvi_filtered_taxonomy_rank_genus_relabund.df %>% #what is the mean relative abundance of the most abundant ASV in each taxon?
+#       dplyr::group_by(asv_id, taxonomy) %>%
+#       dplyr::summarise(`Mean relative abundance of top ASV` = mean(rel_abund)) %>%
+#       dplyr::arrange(desc(`Mean relative abundance of top ASV`)) %>% 
+#       dplyr::ungroup(.) %>%
+#         dplyr::select(taxonomy, `Mean relative abundance of top ASV`) %>%
+#       dplyr::distinct(taxonomy, .keep_all = TRUE)),
+#       by = join_by(taxonomy)) %>%
+#   dplyr::mutate(`Abundant ASVs` = nafill(`Abundant ASVs`, fill = 0)) %>%
+#   dplyr::left_join(., temp_df, by = join_by(taxonomy)) %>%
+#   dplyr::mutate(Class = stringr::str_extract(taxonomy, paste0(taxonomy_rank_class_idx, collapse = "|"))) %>%
+#   dplyr::relocate(Class, .before = Genus) %>%
+#   dplyr::ungroup(.) %>%
+#   # dplyr::arrange(desc(`Mean relative abundance of abundant ASVs`)) %>%
+#   dplyr::arrange(desc(`Mean relative abundance of top ASV`)) %>%
+#   dplyr::rowwise(.) %>%
+#   dplyr::mutate(across(contains("relative abundance"), scales::percent, scale = 1, accuracy = 0.01)) %>%
+#   droplevels
+# 
+# readr::write_delim(usvi_filtered_taxonomy_rank_genus_summary.tbl, paste0(projectpath, "/", "usvi_filtered_genus_summary", ".tsv"),
+#                    delim = "\t", col_names = TRUE)
+# 
+# usvi_filtered_taxonomy_rank_genus_summary.df <- usvi_filtered_taxonomy_rank_genus_summary.tbl %>%
+#   dplyr::select(-contains("relative abundance")) %>%
+#   tidyr::pivot_longer(., cols = contains("ASVs"),
+#                       names_to = "parameter",
+#                       values_to = "count") %>%
+#   dplyr::mutate(count = nafill(count, fill = 0)) %>%
+#   dplyr::mutate(taxonomy = factor(taxonomy, levels = taxonomy_rank_genus_idx)) %>%
+#   dplyr::arrange(taxonomy) %>%
+#   dplyr::mutate(Genus = factor(Genus))
+# 
+# print(
+#   ggplot(data = usvi_filtered_taxonomy_rank_genus_summary.df,
+#          aes(x = Genus, y = count, fill = taxonomy, group_by = taxonomy))
+#   + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
+#   + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
+#   + theme_bw()
+#   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Number of ASVs", transform = "pseudo_log")
+#   + scale_fill_manual(values = taxonomy_filt_genus_colors, 
+#                       # breaks = names(taxonomy_filt_genus_colors),
+#                       breaks = taxonomy_filt_genus_colors_lookup,
+#                       labels = names(taxonomy_filt_genus_colors_lookup),
+#                       drop = TRUE)
+#   + facet_grid(scales = "free", space = "fixed",
+#                # labeller = labeller(site = site_lookup),
+#                parameter ~ .)
+#   )
 
 
 # Make fasta file of sequences to make phylogenetic tree ------------------

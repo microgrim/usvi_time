@@ -158,6 +158,29 @@ if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))
   
 }
 
+potential_metab_outliers_idx <- c(73) %>%
+  paste0("CINAR_BC_", .)
+keep <- c("sample_id", "metab_deriv_label", "sample_type", "site", "sampling_time", "sampling_day", "sampling_date", "depth", "site_type",
+          "fcm_Prochlorococcus", "fcm_Synechococcus", "fcm_Picoeukaryotes", "fcm_Unpigmented_cells",
+          "replicate", "grouping", "PAR", "lumens", "lux", "temp")
+usvi_selected_metadata <- metabolomics_sample_metadata %>%
+  dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
+  dplyr::filter(!(grepl("Day1", sampling_day))) %>% #drop day1 samples
+  dplyr::filter(grepl("seawater", sample_type)) %>%
+  dplyr::select(intersect(colnames(metabolomics_sample_metadata), keep)) %>%
+  dplyr::select(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, starts_with("fcm")) %>%
+  dplyr::mutate(across(c(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site), ~factor(.x))) %>%
+  dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+  dplyr::mutate(site_type = dplyr::case_when(grepl("LB", site) ~ "seagrass",
+                                             grepl("Yawzi|Tektite", site) ~ "reef",
+                                             .default = NA)) %>%
+  dplyr::mutate(rownames = sample_id) %>% tibble::column_to_rownames(var = "rownames") %>%
+  dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+  dplyr::left_join(., metadata %>%
+                     dplyr::select(sample_id, replicate)) %>%
+  # tidyr::drop_na(.) %>% #removed sample Metab_306 due to lack of FCM measurements
+  droplevels
+
 if(ncol(usvi_prok_decontam_idx) == 1){
   usvi_prok_decontam_idx <- usvi_prok_decontam_idx %>%
     tidyr::separate_wider_delim(1, names = c("asv_id", "keep"), delim = " ", cols_remove = TRUE, too_few = "align_start")
@@ -266,288 +289,6 @@ if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
 }
 
 
-
-# Read in significant asvs/genera -----------------------------------------
-
-#don't need to evaluate significant genera
-{
-  # if(any(grepl("rds$", list.files(projectpath, pattern = "usvi_sda_genera_compare.*")))){
-  #   usvi_sda_genera_compare.df <- readr::read_rds(paste0(projectpath, "/", "usvi_sda_genera_compare.rds"))
-  # } else {
-  #   if(any(grepl("tsv$", list.files(projectpath, pattern = "usvi_sda_genera_compare.*")))){
-  #     usvi_sda_genera_compare.df <- readr::read_delim(paste0(projectpath, "/", "usvi_sda_genera_compare.tsv"),
-  #                                                     delim = "\t", col_names = TRUE, show_col_types = FALSE)
-  #   } else {
-  #     cli::cli_alert_info("Reading in rademu and deseq results to parse...")
-  #     
-  #     #read in the genera that were significant by site through rademu:
-  #     if(any(grepl("genera_reef_highlow", list.files(projectpath, pattern = "usvi_rademu_.*.RData")))){
-  #       temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_reef_highlow.*.RData")[1]
-  #       load(paste0(projectpath, "/", temp_file))
-  #       rm(temp_file)
-  #     }
-  #     
-  #     if(any(grepl("genera_site_time", list.files(projectpath, pattern = "usvi_rademu_.*.RData")))){
-  #       temp_file <- list.files(projectpath, pattern = "usvi_rademu_genera_site_time.*.RData")[1]
-  #       load(paste0(projectpath, "/", temp_file))
-  #       rm(temp_file)
-  #     }
-  #     
-  #     rademu_res.df <- bind_rows((score_1_res_list %>%
-  #                                   bind_rows(.) %>% #these were genera that were found to be higher in samples collected at dawn
-  #                                   dplyr::mutate(group = "high_dawn") %>%
-  #                                   dplyr::filter(pval < 0.05) %>%
-  #                                   tidyr::drop_na(score_stat)),
-  #                                (score_2_res_list %>%
-  #                                   bind_rows(.) %>% # these were genera that were found to be higher in samples collected at peak photo
-  #                                   dplyr::mutate(group = "low_dawn") %>%
-  #                                   dplyr::filter(pval < 0.05) %>%
-  #                                   tidyr::drop_na(score_stat)),
-  #                                (score_4_res_list %>%
-  #                                   bind_rows(.) %>% #these were genera that were found to be higher in samples collected in seagrass
-  #                                   dplyr::mutate(group = "high_seagrass") %>%
-  #                                   dplyr::filter(pval < 0.05) %>%
-  #                                   tidyr::drop_na(score_stat)),
-  #                                (score_5_res_list %>%
-  #                                   bind_rows(.) %>% #these were genera that were found to be higher in samples collected in reef sites
-  #                                   dplyr::mutate(group = "low_seagrass") %>%
-  #                                   dplyr::filter(pval < 0.05) %>%
-  #                                   tidyr::drop_na(score_stat)),
-  #                                (score_lowreef_res_list %>%
-  #                                   bind_rows(.) %>%
-  #                                   dplyr::mutate(group = "low_reef") %>%
-  #                                   dplyr::filter(pval < 0.05) %>%
-  #                                   tidyr::drop_na(score_stat)),
-  #                                (score_highreef_res_list %>%
-  #                                   bind_rows(.) %>%
-  #                                   dplyr::mutate(group = "high_reef") %>%
-  #                                   dplyr::filter(pval < 0.05) %>%
-  #                                   tidyr::drop_na(score_stat))) %>%
-  #       dplyr::rename(asv_id = "category") %>%
-  #       droplevels %>%
-  #       dplyr::rename(contrast = "covariate") %>%
-  #       dplyr::mutate(contrast = stringr::str_remove_all(contrast, "site") %>%
-  #                       stringr::str_replace_all(., ":sampling_time", "_")) %>%
-  #       dplyr::mutate(contrast = dplyr::case_when(grepl("reef", group) ~ paste0(contrast, " - LB_seagrass_all"),
-  #                                                 grepl("dawn", group) ~ paste0(contrast, " - all_peak_photo"),
-  #                                                 grepl("seagrass", group) ~ paste0(contrast, " - LB_seagrass_all"),
-  #                                                 .default = contrast)) %>%
-  #       dplyr::mutate(site = stringr::str_extract(contrast, "Yawzi|Tektite")) %>%
-  #       dplyr::mutate(commonid = stringr::str_split_i(group, "_", 2)) %>%
-  #       dplyr::arrange(commonid, asv_id) %>%
-  #       dplyr::group_by(commonid) %>%
-  #       dplyr::distinct(asv_id, group, contrast, .keep_all = TRUE) %>%
-  #       droplevels
-  #     
-  #     ## read in the results from DESeq:
-  #     
-  #     if(any(grepl("asvs_site_time", list.files(projectpath, pattern = "usvi_deseq_.*.RData")))){
-  #       temp_file <- list.files(projectpath, pattern = "usvi_deseq_asvs_site_time.*.RData")[1]
-  #       load(paste0(projectpath, "/", temp_file))
-  #       rm(temp_file)
-  #     }
-  #     if(any(grepl("genera_site_time", list.files(projectpath, pattern = "usvi_deseq_.*.RData")))){
-  #       temp_file <- list.files(projectpath, pattern = "usvi_deseq_genera_site_time.*.RData")[1]
-  #       load(paste0(projectpath, "/", temp_file))
-  #       rm(temp_file)
-  #     }
-  #     usvi_sda_genera_compare.df <- rademu_res.df %>%
-  #       dplyr::mutate(test_type = "rademu") %>%
-  #       dplyr::rename(estimate = "score_stat") %>%
-  #       dplyr::mutate(model = "auto_fit") %>%
-  #       dplyr::mutate(sampling_time = dplyr::case_when(grepl("dawn|peak", contrast) ~ stringr::str_extract(contrast, "dawn|peak_photo"),
-  #                                                      .default = "all")) %>%
-  #       dplyr::mutate(site = stringr::str_extract(contrast, "Yawzi|Tektite")) %>%
-  #       dplyr::mutate(Combo = dplyr::case_when(grepl("Yawzi_|Tektite_", contrast) ~ stringr::str_extract(contrast, "Yawzi_.|Tektite_."),
-  #                                              .default = site)) %>%
-  #       dplyr::mutate(baseline = gsub("([[:print:]]+)( - )(.*)$", "\\3", contrast)) %>%
-  #       dplyr::mutate(baseline = dplyr::case_when(grepl("all_peak_photo", baseline) ~ "all_peak_photo",
-  #                                                 grepl("dawn|peak", baseline) ~ "LB_seagrass_time",
-  #                                                 .default = "LB_seagrass_all")) %>%
-  #       bind_rows(., (usvi_deseq_genera_abund.df %>%
-  #                       # bind_rows(., (usvi_deseq_genera_abund_filtered.df %>%
-  #                       dplyr::mutate(test_type = "deseq"))) %>%
-  #       dplyr::mutate(pair1 = stringr::str_split_i(contrast, " - ", 1),
-  #                     pair2 = stringr::str_split_i(contrast, " - ", 2))
-  #   }
-  # }
-  # 
-  # #which genera are flagged as significantly differentially abundant in both tests?
-  # shared_sda_genera_idx <- usvi_sda_genera_compare.df %>%
-  #   dplyr::ungroup(.) %>%
-  #   dplyr::distinct(test_type, asv_id, .keep_all = FALSE) %>%
-  #   dplyr::group_by(asv_id) %>%
-  #   dplyr::summarise(num_results = length(test_type)) %>%
-  #   dplyr::filter(num_results > 1) %>%
-  #   # dplyr::filter(num_results > 2) %>%
-  #   dplyr::arrange(asv_id) %>%
-  #   dplyr::distinct(asv_id) %>%
-  #   unlist %>%
-  #   as.character
-  # # droplevels
-  # 
-  # 
-  # #which are not?
-  # selfish_sda_genera_idx <- usvi_sda_genera_compare.df %>%
-  #   dplyr::ungroup(.) %>%
-  #   dplyr::distinct(test_type, asv_id, .keep_all = FALSE) %>%
-  #   dplyr::group_by(asv_id) %>%
-  #   dplyr::summarise(num_results = length(test_type)) %>%
-  #   dplyr::filter(num_results <= 1) %>%
-  #   # dplyr::filter(num_results <= 2) %>%
-  #   dplyr::distinct(asv_id) %>%
-  #   dplyr::left_join(., usvi_sda_genera_compare.df %>%
-  #                      dplyr::distinct(asv_id, test_type, .keep_all = FALSE),
-  #                    by = join_by(asv_id)) %>%
-  #   dplyr::select(test_type, asv_id) %>%
-  #   dplyr::arrange(asv_id) %>%
-  #   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  #   tibble::deframe(.)
-  # # unlist %>%
-  # # as.character
-  # 
-  # #which are in DESeq2 but not in rademu?
-  # 
-  # setdiff(unique(usvi_sda_genera_compare.df %>%
-  #                  dplyr::ungroup(.) %>%
-  #                  tidyr::drop_na(baseMean) %>%
-  #                  dplyr::distinct(asv_id) %>%
-  #                  unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                    dplyr::ungroup(.) %>%
-  #                                    tidyr::drop_na(group) %>%
-  #                                    dplyr::distinct(asv_id) %>%
-  #                                    unlist))
-  # #what are in radEmu not in DeSeq2?
-  # setdiff(unique(usvi_sda_genera_compare.df %>%
-  #                  dplyr::ungroup(.) %>%
-  #                  tidyr::drop_na(group) %>%
-  #                  dplyr::distinct(asv_id) %>%
-  #                  unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                    dplyr::ungroup(.) %>%
-  #                                    tidyr::drop_na(baseMean) %>%
-  #                                    dplyr::distinct(asv_id) %>%
-  #                                    unlist))
-  # 
-  # #how many genera were "low_seagrass" and "high_reef"?
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "high_reef") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "low_seagrass") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # # [1] "ASV_00002" "ASV_00007" "ASV_00017" "ASV_00023" "ASV_00031" "ASV_00072" "ASV_00129" "ASV_00138"
-  # # [9] "ASV_00150" "ASV_00171"
-  # 
-  # #how many genera were "low_reef" and "high_seagrass"?
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "high_seagrass") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "low_reef") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # # [1] "ASV_00003" "ASV_00006" "ASV_00009" "ASV_00038" "ASV_00045" "ASV_00060" "ASV_00097" "ASV_00105"
-  # # [9] "ASV_00111" "ASV_00124" "ASV_00131" "ASV_00251" "ASV_00271"
-  # 
-  # 
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "high_dawn") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "high_reef") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # # [1] "ASV_00002" "ASV_00007" "ASV_00017" "ASV_00023" "ASV_00031" "ASV_00072" "ASV_00129" "ASV_00138"
-  # # [9] "ASV_00150" "ASV_00171"
-  # 
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "low_dawn") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "low_reef") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # # [1] "ASV_00003" "ASV_00006" "ASV_00009" "ASV_00038" "ASV_00045" "ASV_00060" "ASV_00097" "ASV_00105"
-  # # [9] "ASV_00111" "ASV_00124" "ASV_00131" "ASV_00215" "ASV_00227" "ASV_00243" "ASV_00251" "ASV_00282"
-  # # [17] "ASV_01134"
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "low_dawn") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "high_reef") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # #0
-  # 
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "high_dawn") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "low_reef") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # #0
-  # 
-  # intersect(unique(usvi_sda_genera_compare.df %>%
-  #                    dplyr::ungroup(.) %>%
-  #                    tidyr::drop_na(group) %>%
-  #                    dplyr::filter(group == "high_dawn") %>%
-  #                    dplyr::distinct(asv_id) %>%
-  #                    unlist), unique(usvi_sda_genera_compare.df %>%
-  #                                      dplyr::ungroup(.) %>%
-  #                                      tidyr::drop_na(group) %>%
-  #                                      dplyr::filter(group == "high_seagrass") %>%
-  #                                      dplyr::distinct(asv_id) %>%
-  #                                      unlist))
-  # #0
-  # 
-  # 
-  # #how many are just significantly more abundant in seagrass?
-  # usvi_sda_genera_compare.df %>%
-  #   dplyr::ungroup(.) %>%
-  #   tidyr::drop_na(group) %>%
-  #   dplyr::distinct(asv_id, group) %>%
-  #   dplyr::group_by(group) %>%
-  #   dplyr::summarise(num_obs = length(asv_id))
-  # 
-  # usvi_sda_genera_compare.df %>%
-  #   dplyr::ungroup(.) %>%
-  #   tidyr::drop_na(baseMean) %>%
-  #   dplyr::distinct(asv_id, baseline, .keep_all = TRUE) %>%
-  #   dplyr::mutate(highlow = dplyr::case_when(log2FoldChange_MMSE < 0 ~ -1,
-  #                                            log2FoldChange_MMSE > 0 ~ 1,
-  #                                            .default = NA)) %>%
-  #   dplyr::group_by(baseline, Combo, highlow) %>%
-  #   dplyr::summarise(num_obs = length(asv_id))
-  # 
-  # 
-}
-
 # Correlations between DNA profile and metabolomics -----------------------
 
 
@@ -638,19 +379,22 @@ drop <- c("CINAR_BC_73")
 if(file.exists(paste0(projectpath, "/", "usvi_dist_mat_list_optA", ".rds"))){
   usvi_dist_mat_list_optA <- readr::read_rds(paste0(projectpath, "/", "usvi_dist_mat_list_optA", ".rds"))
 } else {
-  usvi_metab_mat <- usvi_metabolomics.df %>%
-    dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+  usvi_metab_mat <- usvi_metabolomics_long.df %>%
+    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+    dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+    #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+    dplyr::filter(LODflag == 0) %>%
+    dplyr::select(-LODflag) %>%
     dplyr::left_join(., (metabolomics_sample_metadata %>%
                            dplyr::filter(grepl("seawater", sample_type)) %>%
-                           dplyr::select(sample_id, metab_deriv_label) %>%
+                           dplyr::select(sample_id,  metab_deriv_label) %>%
                            droplevels),
-                     by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+                     by = c("metab_deriv_label")) %>%
+    dplyr::mutate(across(c(sample_id, simpleName), ~factor(.x))) %>%
     dplyr::relocate(sample_id) %>%
-    tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
-                        names_to = "simpleName",
-                        values_to = "conc") %>%
-    dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
     dplyr::ungroup(.) %>%
+    dplyr::select(-metab_deriv_label) %>%
     dplyr::group_by(sample_id, simpleName) %>%
     # dplyr::summarise(num = length(conc)) %>%
     dplyr::summarise(mean_conc = mean(conc, na.rm = TRUE),  
@@ -663,11 +407,11 @@ if(file.exists(paste0(projectpath, "/", "usvi_dist_mat_list_optA", ".rds"))){
     dplyr::mutate(conc = log2(conc + 1)) %>%
     tidyr::pivot_wider(., id_cols = "sample_id",
                        names_from = "simpleName",
-                       values_fill = 0,
+                       # values_fill = 0,
                        values_from = "conc") %>%
     tibble::column_to_rownames(var = "sample_id") %>%
     as.matrix(.) %>%
-    vegan::vegdist(., binary = FALSE, upper = TRUE,
+    vegan::vegdist(., binary = FALSE, upper = TRUE, na.rm = TRUE,
                    # distance = "horn",
                    distance = "bray",
                    autotransform = TRUE) %>%
@@ -688,42 +432,6 @@ if(file.exists(paste0(projectpath, "/", "usvi_dist_mat_list_optA", ".rds"))){
     tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time, replA), sep = "_", remove = FALSE)  %>%
     dplyr::distinct(sample_id, relabeled_sample) %>%
     tibble::deframe(.)
-  
-  # sample_relabel <- metabolomics_sample_metadata %>%
-  #   dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
-  #   dplyr::distinct(., .keep_all = TRUE) %>%
-  #   dplyr::arrange(site, sampling_time, sampling_day) %>%
-  #   droplevels %>%
-  #   tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time), sep = "_", remove = TRUE)  %>%
-  #   tibble::deframe(.)
-  
-  
-  # temp_mat <- usvi_prok_asvs.df %>%
-  #   dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
-  #   dplyr::right_join(., (metabolomics_sample_metadata %>%
-  #                          dplyr::filter(grepl("seawater", sample_type)) %>%
-  #                          dplyr::distinct(sample_id) %>%
-  #                          droplevels),
-  #                    by = join_by("sample_ID" == "sample_id"), multiple = "all", relationship = "many-to-many") %>%
-  #   droplevels %>%
-  #   tidyr::pivot_wider(., id_cols = "asv_id",
-  #                      names_from = "sample_ID",
-  #                      values_from = "counts",
-  #                      values_fill = 0) %>%
-  #   tibble::column_to_rownames(var = "asv_id") %>%
-  #   apply(., 2, relabund) %>%
-  #   as.data.frame(.) %>%
-  #   dplyr::slice(which(rowSums(.) > 0)) %>%
-  #   tidyr::drop_na(.) %>%
-  #   as.matrix(.)
-  # dropped_asv_idx <- names(which(rowSums(temp_mat[,colnames(usvi_metab_mat)]) == 0))
-  # data.frame(`sample_id` = names(which(colSums(temp_mat[dropped_asv_idx,]) < 1))) %>%
-  #   dplyr::left_join(., (metabolomics_sample_metadata %>%
-  #                          dplyr::filter(grepl("seawater", sample_type)) %>%
-  #                          dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
-  #                          dplyr::distinct(sample_id, .keep_all = TRUE) %>%
-  #                          droplevels)) %>%
-  #   dplyr::arrange(sampling_day, site, sampling_time)
   
   
   usvi_asv_mat <- usvi_prok_asvs.df %>%
@@ -797,48 +505,33 @@ if(file.exists(paste0(projectpath, "/", "usvi_dist_mat_list_optB", ".rds"))){
     dplyr::distinct(metab_deriv_label, relabeled_sample) %>%
     tibble::deframe(.)
   
-  temp_mat <- usvi_metabolomics.df %>%
-    dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+  temp_mat <- usvi_metabolomics_long.df %>%
+    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+    dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+    #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+    dplyr::filter(LODflag == 0) %>%
+    dplyr::select(-LODflag) %>%
     dplyr::left_join(., (metabolomics_sample_metadata %>%
                            dplyr::filter(grepl("seawater", sample_type)) %>%
                            dplyr::select(sample_id, metab_deriv_label) %>%
                            droplevels),
                      by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
     dplyr::relocate(sample_id) %>%
-    tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
-                        names_to = "simpleName",
-                        values_to = "conc") %>%
     dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
     dplyr::mutate(conc = log2(conc + 1)) %>%
     tidyr::pivot_wider(., id_cols = "metab_deriv_label",
                        names_from = "simpleName",
-                       values_fill = 0,
+                       # values_fill = 0,
                        values_from = "conc") %>%
     tibble::column_to_rownames(var = "metab_deriv_label") %>%
     as.matrix(.) %>%
-    vegan::vegdist(., binary = FALSE, upper = TRUE,
+    vegan::vegdist(., binary = FALSE, upper = TRUE, na.rm = TRUE,
                    # distance = "horn",
                    distance = "bray",
                    autotransform = TRUE) %>%
     as.matrix(.)
   temp_mat <- temp_mat[intersect(names(sample_relabel), rownames(temp_mat)), intersect(names(sample_relabel), colnames(temp_mat))]
-  
-  
-  
-  # dropped_cinar_idx <- c("CINAR_BC_39", "CINAR_BC_40", "CINAR_BC_65", "CINAR_BC_66")
-  # temp_mat2 <- temp_mat[c("CINAR_BC_39", "CINAR_BC_40"), c("CINAR_BC_39", "CINAR_BC_40")]
-  # temp_mat2[lower.tri(temp_mat2, diag = FALSE)]
-  # # [1] 0.04279126
-  # 
-  # temp_mat2 <- temp_mat[c("CINAR_BC_65", "CINAR_BC_66"), c("CINAR_BC_65", "CINAR_BC_66")]
-  # temp_mat2[lower.tri(temp_mat2, diag = FALSE)]
-  # # [1] 0.02544024
-  # 
-  # temp_mat2 <- temp_mat[!(rownames(temp_mat) %in% dropped_cinar_idx), !(colnames(temp_mat) %in% dropped_cinar_idx)]
-  # 
-  # quantile(temp_mat2[lower.tri(temp_mat2, diag = FALSE)], probs = seq(0, 1, 0.25), names = TRUE)
-  # # 0%        25%        50%        75%       100% 
-  # # 0.03306662 0.17085251 0.24356958 0.31371609 0.62614110 
   
   temp_mat2 <- usvi_prok_asvs.df %>%
     dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
@@ -877,74 +570,18 @@ if(file.exists(paste0(projectpath, "/", "usvi_dist_mat_list_optB", ".rds"))){
   readr::write_rds(usvi_dist_mat_list_optB, paste0(projectpath, "/", "usvi_dist_mat_list_optB", ".rds"), compress = "gz")
 }
 
+#whatis the minimum number of samples in which a metabolite is observed?
+#3: amMP
+usvi_metabolomics_long.df %>%
+  dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+  dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+  dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+  #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+  dplyr::filter(LODflag == 0) %>%
+  dplyr::summarise(num_obs = length(conc), .by = c("simpleName")) %>%
+  dplyr::arrange(num_obs)
 
 # Plot heatmaps of the distance matrices ----------------------------------
-
-
-
-#get the top 100 genera:
-#don't need to do genus-level assessments:
-{
-  # usvi_top100_genus_mat <- usvi_sw_genus.tbl %>%
-  #   dplyr::select(c(asv_id, rownames(usvi_metab_mat))) %>%
-  #   # dplyr::filter(sample_ID %in% rownames(usvi_metab_mat)) %>%
-  #   tibble::column_to_rownames(var = "asv_id") %>%
-  #   apply(., 2, relabund) %>%
-  #   as.data.frame(.) %>%
-  #   dplyr::slice(which(rowSums(.) > 0)) %>%
-  #   dplyr::mutate(TotAbund = rowSums(.)) %>%
-  #   dplyr::arrange(desc(TotAbund)) %>%
-  #   dplyr::slice_head(., n = 100) %>%
-  #   dplyr::select(-TotAbund) %>%
-  #   tibble::rownames_to_column(var = "asv_id") %>%
-  #   tidyr::pivot_longer(., cols = -c("asv_id"),
-  #                       names_to = "sample",
-  #                       values_to = "abundance")  %>%
-  #   droplevels %>%
-  #   # dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
-  #   #                                 log2(abundance+1), #log transform abundance (with +1 pseudocount)
-  #   #                                 0)) %>%
-  #   tidyr::pivot_wider(., id_cols = "sample",
-  #                      values_from = "abundance",
-  #                      # values_from = "logabund",
-  #                      names_from = "asv_id") %>%
-  #   dplyr::filter(sample %in% colnames(usvi_metab_mat)) %>%
-  #   tibble::column_to_rownames(var = "sample") %>%
-  #   tidyr::drop_na(.) %>%
-  #   vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
-  #                  autotransform = TRUE) %>%
-  #   as.matrix(.)
-  # 
-  # usvi_top25_genus_mat <- usvi_sw_genus.tbl %>%
-  #   dplyr::select(c(asv_id, rownames(usvi_metab_mat))) %>%
-  #   tibble::column_to_rownames(var = "asv_id") %>%
-  #   apply(., 2, relabund) %>%
-  #   as.data.frame(.) %>%
-  #   dplyr::slice(which(rowSums(.) > 0)) %>%
-  #   dplyr::mutate(TotAbund = rowSums(.)) %>%
-  #   dplyr::arrange(desc(TotAbund)) %>%
-  #   dplyr::slice_head(., n = 25) %>%
-  #   dplyr::select(-TotAbund) %>%
-  #   tibble::rownames_to_column(var = "asv_id") %>%
-  #   tidyr::pivot_longer(., cols = -c("asv_id"),
-  #                       names_to = "sample",
-  #                       values_to = "abundance")  %>%
-  #   droplevels %>%
-  #   dplyr::mutate(logabund = ifelse(!(is.na(abundance) | (abundance < 0)),
-  #                                   log2(abundance+1), #log transform abundance (with +1 pseudocount)
-  #                                   0)) %>%
-  #   tidyr::pivot_wider(., id_cols = "sample",
-  #                      values_from = "abundance",
-  #                      # values_from = "logabund",
-  #                      names_from = "asv_id") %>%
-  #   dplyr::filter(sample %in% colnames(usvi_metab_mat)) %>%
-  #   tibble::column_to_rownames(var = "sample") %>%
-  #   tidyr::drop_na(.) %>%
-  #   vegan::vegdist(., distance = "horn", binary = FALSE, upper = TRUE,
-  #                  autotransform = TRUE) %>%
-  #   # as.matrix(.) %>% as.data.frame(.) %>% tibble::rownames_to_column(var = "sample_id") %>% droplevels
-  #   as.matrix(.)
-  }
 
 
 
@@ -1299,64 +936,66 @@ if(execchunk) {
 
 
 
-
-#recaling the concentrations of metabolits from 0 to 1 wrt metabolites
-#using top 25 genera relative abundance:
-# Call:
-#   vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: -0.006939 
-# Significance: 0.551 
-
-
-#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
-#using top 25 genera relative abundance:
-# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: 0.04983 
-# Significance: 0.115 
-
-#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
-#using top 25 genera relative abundance log+1-transformed:
-# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: 0.04983 
-# Significance: 0.112 
-
-
-
-#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
-#using top 100 genera rlative abundance:
-# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: 0.05378 
-# Significance: 0.095 
-
-
-#calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
-#using top 100 genera rlative abundance log+1 transformed:
-# vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: 0.05378 
-# Significance: 0.105 
-
-
-# Mantel statistic based on Pearson's product-moment correlation 
-# 
-# Call:
-# vegan::mantel(xdis = usvi_top100_genus_mat, ydis = usvi_metab_mat,      method = "pearson", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: 0.0172 
-#       Significance: 0.319 
-
-# Mantel statistic based on Spearman's rank correlation rho 
-# 
-# Call:
-# vegan::mantel(xdis = usvi_top100_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
-# 
-# Mantel statistic r: 0.02933 
-#       Significance: 0.275 
-# 
+{
+  #recaling the concentrations of metabolits from 0 to 1 wrt metabolites
+  #using top 25 genera relative abundance:
+  # Call:
+  #   vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: -0.006939 
+  # Significance: 0.551 
+  
+  
+  #calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+  #using top 25 genera relative abundance:
+  # vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: 0.04983 
+  # Significance: 0.115 
+  
+  #calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+  #using top 25 genera relative abundance log+1-transformed:
+  # vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: 0.04983 
+  # Significance: 0.112 
+  
+  
+  
+  #calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+  #using top 100 genera rlative abundance:
+  # vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: 0.05378 
+  # Significance: 0.095 
+  
+  
+  #calculating relative abundance wtihin sample of each metabolite, then rescaling from 0 to 1:
+  #using top 100 genera rlative abundance log+1 transformed:
+  # vegan::mantel(xdis = usvi_top_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: 0.05378 
+  # Significance: 0.105 
+  
+  
+  # Mantel statistic based on Pearson's product-moment correlation 
+  # 
+  # Call:
+  # vegan::mantel(xdis = usvi_top100_genus_mat, ydis = usvi_metab_mat,      method = "pearson", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: 0.0172 
+  #       Significance: 0.319 
+  
+  # Mantel statistic based on Spearman's rank correlation rho 
+  # 
+  # Call:
+  # vegan::mantel(xdis = usvi_top100_genus_mat, ydis = usvi_metab_mat,      method = "spearman", permutations = 999, parallel = nthreads) 
+  # 
+  # Mantel statistic r: 0.02933 
+  #       Significance: 0.275 
+  # 
+  
+}
 
 
 
@@ -1368,18 +1007,19 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
   spearman.test.optB.list <- readr::read_rds(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))
 } else { 
   list2env(usvi_dist_mat_list_optB, envir = .GlobalEnv)
-  usvi_metab.tbl <- usvi_metabolomics.df %>%
-    dplyr::filter(metab_deriv_label %in% colnames(usvi_metab_mat)) %>%
+  usvi_metab.tbl <- usvi_metabolomics_long.df %>%
+    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+    dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+    #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+    dplyr::filter(LODflag == 0) %>%
     dplyr::left_join(., (metabolomics_sample_metadata %>%
                            dplyr::filter(grepl("seawater", sample_type)) %>%
-                           dplyr::select(sample_id, metab_deriv_label) %>%
+                           dplyr::select(sample_id, site, metab_deriv_label) %>%
                            droplevels),
                      by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+    dplyr::select(-LODflag) %>%
     dplyr::relocate(sample_id) %>%
-    tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
-                        names_to = "simpleName",
-                        values_to = "conc") %>%
-    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
     dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
     dplyr::ungroup(.) %>%
     dplyr::group_by(metab_deriv_label, simpleName) %>%
@@ -1392,7 +1032,8 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
     dplyr::rename(conc = "mean_conc") %>%
     dplyr::mutate(log_conc = ifelse(!(is.na(conc) | (conc < 0)),
                                     log2(conc+1), #log transform abundance (with +1 pseudocount)
-                                    0)) %>%
+                                    NA)) %>%
+                                    # 0)) %>%
     dplyr::select(metab_deriv_label, simpleName, log_conc) %>%
     droplevels %>%
     tidyr::pivot_wider(., id_cols = "metab_deriv_label",
@@ -1401,6 +1042,7 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
                        names_from = "simpleName") %>%
     tibble::column_to_rownames(var = "metab_deriv_label") %>%
     droplevels
+  
   
   usvi_asv.tbl <- usvi_prok_asvs.df %>%
     dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
@@ -1430,16 +1072,27 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
   rownames(spearman.test) <- colnames(usvi_asv.tbl)
   
   spearman.test.rho <- spearman.test
+  spearman.test.n <- spearman.test
   
   y <- length(colnames(spearman.test))
   for(j in seq_len(y)){
     vector_metab <- usvi_metab.tbl[, j]
-    # for(i in seq_len(2)){
     for(i in seq_len(nrow(spearman.test))){
-      spearman.test[i, j] <- cor.test(vector_metab, usvi_asv.tbl[,i], method = "spearman", exact = FALSE) %>%
-        purrr::pluck(., "p.value")
-      spearman.test.rho[i, j] <- cor.test(vector_metab, usvi_asv.tbl[,i], method = "spearman", exact = FALSE) %>%
-        purrr::pluck(., "estimate")
+      vector_microb <- usvi_asv.tbl[,i]
+      vector_microb <- vector_microb[!is.na(vector_metab)]
+      vector_metab_na <- vector_metab[!is.na(vector_metab)]
+      
+      if(length(vector_metab_na) >= 3 & sum(vector_microb) > 0){ #if 3 of the samples have a non-NA value for that metabolite, and the ASV was observed in those samples..
+        spearman.test[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+          purrr::pluck(., "p.value")
+        spearman.test.rho[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+          purrr::pluck(., "estimate")
+        spearman.test.n[i, j] <- length(vector_metab_na)
+      } else {
+        spearman.test[i, j] <- NA
+        spearman.test.rho[i, j] <- NA
+        spearman.test.n[i, j] <- length(vector_metab_na)
+      }
     }
   }
   
@@ -1449,35 +1102,14 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
   #For a q-value of 0.1, the adjusted p-threshold should be 0.0579
   #and we have Y significant relationships
   
-  q_value <- 0.05
   padj_cutoff <- spearman.test %>%
-    # apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
-    apply(., 2, na.omit) %>%
-    apply(., 2, function(x) ashr::qval.from.lfdr(x)) %>%
-    unlist %>% as.matrix(.) %>%
-    # quantile(., probs = q_value, na.rm = TRUE, names = FALSE,type = 7)
+    apply(., 2, na.omit) %>% unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
     quantile(., probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE,type = 7) #get the possible p-adj cutoffs for different q-values
   
   spearman.test.bh.corrected <- spearman.test %>%
     apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
     apply(., 2, function(x) ifelse(x <= 0.05, x, NA)) #drop the p.values > the adjusted p-value or did not compute
   
-  # spearman.test.0.05.corrected <- spearman.test %>%
-  #   apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
-  #   # apply(., 2, function(x) ifelse(x < padj_cutoff, x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  #   apply(., 2, function(x) ifelse(x < padj_cutoff[1], x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  # spearman.test.0.10.corrected <- spearman.test %>%
-  #   apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
-  #   # apply(., 2, function(x) ifelse(x < padj_cutoff, x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  #   apply(., 2, function(x) ifelse(x < padj_cutoff[2], x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  # 
-  # length(which(!is.na(spearman.test.0.10.corrected))) #7298
-  # length(which(!is.na(spearman.test.0.05.corrected))) #5557
-  # length(which(!is.na(spearman.test.bh.corrected))) #6503
-  
-  # temp_mat <- spearman.test.0.10.corrected[spearman.test.bh.corrected] %>%
-  #   as.matrix(.)
-  # 
   dend_asv <- spearman.test.rho %>%
     dist(t(.), method = "euclidean") %>%
     hclust(method = "ward.D2") %>%
@@ -1519,28 +1151,26 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
     dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
     dplyr::arrange(asv_id, simpleName) %>%
     dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
-    # tidyr::drop_na(contains("padj")) %>%
     dplyr::mutate(label = signif(estimate, digits = 2)) %>%
     dplyr::ungroup(.) %>%
     dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
     droplevels
   
-  spearman.test.df %>%
-    tidyr::drop_na(padj_05) %>%
-    # dplyr::summarise(num_results = length(padj_bh), .by = "simpleName") %>%
-    dplyr::summarise(num_results = length(padj_bh), .by = "asv_id") %>%
-    dplyr::arrange(desc(num_results)) %>%
-    dplyr::select(num_results) %>%
-    tibble::deframe(.) %>%
-    quantile(., probs = seq(0, 1, 0.25), names = TRUE)
+  # spearman.test.df %>%
+  #   tidyr::drop_na(padj_05) %>%
+  #   dplyr::summarise(num_results = length(padj_bh), .by = "asv_id") %>%
+  #   dplyr::arrange(desc(num_results)) %>%
+  #   dplyr::select(num_results) %>%
+  #   tibble::deframe(.) %>%
+  #   quantile(., probs = seq(0, 1, 0.25), names = TRUE)
   
   #passing the q-value cutoff of 0.05:
-  #of the 49 metabolites, the maximum number of significantly correlated ASVs was 652, the median was 142
-  #of the 1664 ASVs that had significant correlations with metabolite concentrations,
-  #the maximum number of significantly correlated metabolites for an ASV was 24.  the median was 1.
+  #of the 48 metabolites, the maximum number of significantly correlated ASVs was 652, the median was 142
+  #of the 975 ASVs that had significant correlations with metabolite concentrations,
+  #the maximum number of significantly correlated metabolites for an ASV was 23.  the median was 1.
   
   #using the BH adjusted p-values < 0.05:
-  #of the 49 metabolites, the maximum number of significantly correlated ASVs was 658, the median was 154.
+  #of the 48 metabolites, the maximum number of significantly correlated ASVs was 658, the median was 154.
   #of the 1742 ASVs that had significant correlations with metabolite concentrations,
   #the maximum number of significantly correlated metabolites for an ASV was 27.  the median was 1.
   
@@ -1556,18 +1186,20 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optA.list", ".rds"))){
   spearman.test.optA.list <- readr::read_rds(paste0(projectpath, "/", "spearman.test.optA.list", ".rds"))
 } else {
   list2env(usvi_dist_mat_list_optA, envir = .GlobalEnv)
-  usvi_metab.tbl <- usvi_metabolomics.df %>%
+  usvi_metab.tbl <- usvi_metabolomics_long.df %>%
+    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+    dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+    #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+    dplyr::filter(LODflag == 0) %>%
     dplyr::left_join(., (metabolomics_sample_metadata %>%
                            dplyr::filter(grepl("seawater", sample_type)) %>%
-                           dplyr::select(sample_id, metab_deriv_label) %>%
+                           dplyr::filter(sample_id %in% colnames(usvi_metab_mat)) %>%
+                           dplyr::select(sample_id, site, metab_deriv_label) %>%
                            droplevels),
                      by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+    dplyr::select(-LODflag) %>%
     dplyr::relocate(sample_id) %>%
-    dplyr::filter(sample_id %in% colnames(usvi_metab_mat)) %>%
-    tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
-                        names_to = "simpleName",
-                        values_to = "conc") %>%
-    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
     dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
     dplyr::ungroup(.) %>%
     dplyr::group_by(sample_id, simpleName) %>%
@@ -1580,7 +1212,8 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optA.list", ".rds"))){
     dplyr::rename(conc = "mean_conc") %>%
     dplyr::mutate(log_conc = ifelse(!(is.na(conc) | (conc < 0)),
                                     log2(conc+1), #log transform abundance (with +1 pseudocount)
-                                    0)) %>%
+                                    NA)) %>%
+                                    # 0)) %>%
     dplyr::select(sample_id, simpleName, log_conc) %>%
     droplevels %>%
     tidyr::pivot_wider(., id_cols = "sample_id",
@@ -1592,11 +1225,6 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optA.list", ".rds"))){
   
   usvi_asv.tbl <- usvi_prok_asvs.df %>%
     dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
-    # dplyr::right_join(., (metabolomics_sample_metadata %>%
-    #                         dplyr::filter(grepl("seawater", sample_type)) %>%
-    #                         dplyr::select(sample_id, metab_deriv_label) %>%
-    #                         droplevels),
-    #                   by = join_by("sample_ID" == "sample_id"), multiple = "all", relationship = "many-to-many") %>%
     dplyr::filter(sample_ID %in% rownames(usvi_metab.tbl)) %>%
     droplevels %>%
     tidyr::pivot_wider(., id_cols = "asv_id",
@@ -1618,42 +1246,47 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optA.list", ".rds"))){
   rownames(spearman.test) <- colnames(usvi_asv.tbl)
   
   spearman.test.rho <- spearman.test
+  spearman.test.n <- spearman.test  
   
   y <- length(colnames(spearman.test))
   for(j in seq_len(y)){
     vector_metab <- usvi_metab.tbl[, j]
-    # for(i in seq_len(2)){
     for(i in seq_len(nrow(spearman.test))){
-      spearman.test[i, j] <- cor.test(vector_metab, usvi_asv.tbl[,i], method = "spearman", exact = FALSE) %>%
-        purrr::pluck(., "p.value")
-      spearman.test.rho[i, j] <- cor.test(vector_metab, usvi_asv.tbl[,i], method = "spearman", exact = FALSE) %>%
-        purrr::pluck(., "estimate")
+      vector_microb <- usvi_asv.tbl[,i]
+      vector_microb <- vector_microb[!is.na(vector_metab)]
+      vector_metab_na <- vector_metab[!is.na(vector_metab)]
+      
+      if(length(vector_metab_na) >= 3 & sum(vector_microb) > 0){ #if 3 of the samples have a non-NA value for that metabolite, and the ASV was observed in those samples..
+        spearman.test[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+          purrr::pluck(., "p.value")
+        spearman.test.rho[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+          purrr::pluck(., "estimate")
+        spearman.test.n[i, j] <- length(vector_metab_na)
+      } else {
+        spearman.test[i, j] <- NA
+        spearman.test.rho[i, j] <- NA
+        spearman.test.n[i, j] <- length(vector_metab_na)
+      }
     }
   }
+  # for(j in seq_len(y)){
+  #   vector_metab <- usvi_metab.tbl[, j]
+  #   # for(i in seq_len(2)){
+  #   for(i in seq_len(nrow(spearman.test))){
+  #     spearman.test[i, j] <- cor.test(vector_metab, usvi_asv.tbl[,i], method = "spearman", exact = FALSE) %>%
+  #       purrr::pluck(., "p.value")
+  #     spearman.test.rho[i, j] <- cor.test(vector_metab, usvi_asv.tbl[,i], method = "spearman", exact = FALSE) %>%
+  #       purrr::pluck(., "estimate")
+  #   }
+  # }
   
-  q_value <- 0.05
   padj_cutoff <- spearman.test %>%
-    apply(., 2, na.omit) %>%
-    apply(., 2, function(x) ashr::qval.from.lfdr(x)) %>%
-    unlist %>% as.matrix(.) %>%
+    apply(., 2, na.omit) %>% unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
     quantile(., probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE,type = 7) #get the possible p-adj cutoffs for different q-values
   
   spearman.test.bh.corrected <- spearman.test %>%
     apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
     apply(., 2, function(x) ifelse(x <= 0.05, x, NA)) #drop the p.values > the adjusted p-value or did not compute
-
-  # spearman.test.0.05.corrected <- spearman.test %>%
-  #   apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
-  #   # apply(., 2, function(x) ifelse(x < padj_cutoff, x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  #   apply(., 2, function(x) ifelse(x < padj_cutoff[1], x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  # spearman.test.0.10.corrected <- spearman.test %>%
-  #   apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
-  #   # apply(., 2, function(x) ifelse(x < padj_cutoff, x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  #   apply(., 2, function(x) ifelse(x < padj_cutoff[2], x, NA)) #drop the p.values > the adjusted p-value or did not compute
-  # 
-  # length(which(!is.na(spearman.test.0.10.corrected))) #6645
-  # length(which(!is.na(spearman.test.0.05.corrected))) #5558
-  # length(which(!is.na(spearman.test.bh.corrected))) #6429
   
   dend_asv <- spearman.test.rho %>%
     dist(t(.), method = "euclidean") %>%
@@ -1716,72 +1349,478 @@ if(file.exists(paste0(projectpath, "/", "spearman.test.optA.list", ".rds"))){
     dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
     droplevels
   
-  length(unique((spearman.test.df %>% tidyr::drop_na(padj_05))$asv_id))
-  length(unique((spearman.test.df %>% tidyr::drop_na(padj_bh))$asv_id))
-  
-  spearman.test.df %>%
-    # tidyr::drop_na(padj_05) %>%
-    # dplyr::summarise(num_results = length(padj_bh), .by = "simpleName") %>%
-    dplyr::summarise(num_results = length(padj_bh), .by = "asv_id") %>%
-    dplyr::arrange(desc(num_results)) %>%
-    dplyr::select(num_results) %>%
-    tibble::deframe(.) %>%
-    quantile(., probs = seq(0, 1, 0.25), names = TRUE)
-  
-  #passing the q-value cutoff of 0.05:
-  #of the 49 metabolites, the maximum number of significantly correlated ASVs was 651, the median was 144
-  #of the 1660 ASVs that had significant correlations with metabolite concentrations,
-  #the maximum number of significantly correlated metabolites for an ASV was 24.  the median was 1.
-  
-  #using the BH adjusted p-values < 0.05:
-  #of the 49 metabolites, the maximum number of significantly correlated ASVs was 658, the median was 172
-  #of the 1734 ASVs that had significant correlations with metabolite concentrations,
-  #the maximum number of significantly correlated metabolites for an ASV was 27.  the median was 1.
-  
-  #using the q-value cutoff, we lose 74 ASVs that had an adjusted p-value < 0.05 but not below the 0.05 q-value cutoff.
   
   spearman.test.optA.list <- list(spearman.test.df, dend_asv, dend_metab, padj_cutoff) %>%
     setNames(., c("spearman.test.df", "dend_asv", "dend_metab", "padj_cutoff"))
   readr::write_rds(spearman.test.optA.list, paste0(projectpath, "/", "spearman.test.optA.list", ".rds"), compress = "gz")
 }
 
+
+# Repeat Spearman on site-specific ----------------------------------------
+
+
+#note: since some of the metabolites were measured/recorded above detection only a handful of times in each site
+#the correlations can be junky
+#throw out any cor.test result between a metabolite and ASV where there are fewer than 8 measurements of the metabolite in the site's samples (so <1/3 of samples had measurable metabolite)
+
+#option A:
+if(file.exists(paste0(projectpath, "/", "spearman.test.site.optA.list", ".rds"))){
+  spearman.test.site.optA.list <- readr::read_rds(paste0(projectpath, "/", "spearman.test.site.optA.list", ".rds"))
+} else {
+  list2env(usvi_dist_mat_list_optA, envir = .GlobalEnv)
+  usvi_metab.tbl <- usvi_metabolomics_long.df %>%
+    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+    dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+    #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+    dplyr::left_join(., (metabolomics_sample_metadata %>%
+                           dplyr::filter(grepl("seawater", sample_type)) %>%
+                           dplyr::select(sample_id, metab_deriv_label) %>%
+                           droplevels),
+                     by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+    dplyr::filter(sample_id %in% colnames(usvi_metab_mat)) %>%
+    dplyr::filter(LODflag == 0) %>%
+    dplyr::select(-LODflag) %>%
+    dplyr::relocate(sample_id) %>%
+    dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::group_by(sample_id, simpleName) %>%
+    dplyr::summarise(mean_conc = mean(conc, na.rm = TRUE), 
+                     num = length(conc),
+                     .groups = "keep",
+                     sd = sd(conc, na.rm = TRUE)) %>%
+    dplyr::rename(conc = "mean_conc") %>%
+    dplyr::mutate(log_conc = ifelse(!(is.na(conc) | (conc < 0)),
+                                    log2(conc+1), #log transform abundance (with +1 pseudocount)
+                                    # 0)) %>%
+                                    NA)) %>%
+    dplyr::select(sample_id, simpleName, log_conc) %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = "sample_id",
+                       values_from = "log_conc",
+                       names_from = "simpleName") %>%
+    tibble::column_to_rownames(var = "sample_id") %>%
+    droplevels
+  
+  usvi_asv.tbl <- usvi_prok_asvs.df %>%
+    dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
+    dplyr::filter(sample_ID %in% rownames(usvi_metab.tbl)) %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = "asv_id",
+                       names_from = "sample_ID",
+                       values_from = "counts",
+                       values_fill = 0) %>%
+    tibble::column_to_rownames(var = "asv_id") %>%
+    apply(., 2, relabund) %>%
+    as.data.frame(.) %>%
+    dplyr::slice(which(rowSums(.) > 0)) %>%
+    tidyr::drop_na(.) %>%
+    dplyr::select(rownames(usvi_metab.tbl)) %>%
+    t()
+  
+  usvi_asv.tbl <- usvi_asv.tbl[rownames(usvi_metab.tbl),]
+  
+  usvi_metab_site.list <- metabolomics_sample_metadata %>%
+      dplyr::filter(grepl("seawater", sample_type)) %>%
+    dplyr::filter(sample_id %in% colnames(usvi_metab_mat)) %>%
+      dplyr::distinct(sample_id, site) %>%
+      droplevels %>%
+    split(., f = .$site) %>%
+    map(., ~.x %>%
+          droplevels %>%
+          dplyr::select(sample_id) %>%
+          dplyr::left_join(., usvi_metab.tbl %>%
+                             tibble::as_tibble(rownames = "sample_id")) %>%
+          # dplyr::select(which(colSums(.) > 0)) %>% #remove any that are insignificant.
+          tibble::column_to_rownames(var = "sample_id"))
+    
+  usvi_asv_site.list <- metabolomics_sample_metadata %>%
+    dplyr::filter(grepl("seawater", sample_type)) %>%
+    dplyr::filter(sample_id %in% colnames(usvi_metab_mat)) %>%
+    dplyr::distinct(sample_id, site) %>%
+    droplevels %>%
+    split(., f = .$site) %>%
+    map(., ~.x %>%
+          droplevels %>%
+          dplyr::select(sample_id) %>%
+          dplyr::inner_join(., usvi_asv.tbl %>%
+                             tibble::as_tibble(rownames = "sample_id") %>%
+                             droplevels) %>%
+          tibble::column_to_rownames(var = "sample_id") %>%
+          dplyr::select(which(colSums(.) > 0)) %>%
+          droplevels)
+  
+
+  #for loop for each site:
+  # for(site in names(usvi_asv_site.list)[3]){
+  for(site in names(usvi_asv_site.list)){
+    namevar <- site
+    temp_asv.tbl <- usvi_asv_site.list[[site]]
+    temp_metab.tbl <- usvi_metab_site.list[[site]]
+    
+    temp_spearman.test <- matrix(nrow = ncol(temp_asv.tbl), ncol = ncol(temp_metab.tbl))
+    colnames(temp_spearman.test) <- colnames(temp_metab.tbl)
+    rownames(temp_spearman.test) <- colnames(temp_asv.tbl)
+    
+    temp_spearman.test.rho <- temp_spearman.test
+    temp_spearman.test.n <- temp_spearman.test
+    
+    y <- length(colnames(temp_spearman.test))
+    
+    # vector_metab <- temp_metab.tbl[, 38] #"spermidine 3" has only 4 non-NA entries in Yawzi. so the correlation is junky...
+    # vector_microb <- temp_asv.tbl[, 1]
+    #     vector_microb <- vector_microb[!is.na(vector_metab)]
+    #     vector_metab_na <- vector_metab[!is.na(vector_metab)]
+    #     cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+    #               purrr::pluck(., "p.value")
+    for(j in seq_len(y)){
+      vector_metab <- temp_metab.tbl[, j]
+      for(i in seq_len(nrow(temp_spearman.test))){
+        vector_microb <- temp_asv.tbl[,i]
+        vector_microb <- vector_microb[!is.na(vector_metab)]
+        vector_metab_na <- vector_metab[!is.na(vector_metab)]
+        
+        # if(length(vector_metab_na) > 0){ #if the metabolite has non-NA values for the samples in this site:
+        # if(length(vector_metab_na) >= 8){ #if 1/3 of the samples have a non-NA value for that metabolite
+        # if(length(vector_metab_na) >= 4){ #if 1/6 of the samples have a non-NA value for that metabolite
+        if(length(vector_metab_na) >= 3 & sum(vector_microb) > 0){ #if 1/6 of the samples have a non-NA value for that metabolite, and the ASV was observed in those samples..
+          temp_spearman.test[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+            purrr::pluck(., "p.value")
+          temp_spearman.test.rho[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+            purrr::pluck(., "estimate")
+          temp_spearman.test.n[i, j] <- length(vector_metab_na)
+        } else {
+          temp_spearman.test[i, j] <- NA
+          temp_spearman.test.rho[i, j] <- NA
+          temp_spearman.test.n[i, j] <- length(vector_metab_na)
+        }
+      }
+    }
+    
+    ##for troubleshooting:
+    # assign(paste0("temp_spearman.test.", namevar), temp_spearman.test, envir = .GlobalEnv)
+    # assign(paste0("temp_spearman.test.rho.", namevar), temp_spearman.test.rho, envir = .GlobalEnv)
+    
+    padj_cutoff <- temp_spearman.test %>%
+      apply(., 2, na.omit) %>%
+      unlist %>%
+      ashr::qval.from.lfdr(.) %>%
+      as.matrix(.) %>%
+      quantile(., probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE,type = 7) #get the possible p-adj cutoffs for different q-values
+    
+    temp_spearman.test.bh.corrected <- temp_spearman.test %>%
+      apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
+      apply(., 2, function(x) ifelse(x <= 0.05, x, NA)) #drop the p.values > the adjusted p-value or did not compute
+    
+    # temp_dend_asv <- temp_spearman.test.rho %>%
+    #   dist(t(.), method = "euclidean") %>%
+    #   hclust(method = "ward.D2") %>%
+    #   as.dendrogram
+    # temp_dend_metab <- temp_spearman.test.rho %>%
+    #   t() %>%
+    #   dist(t(.), method = "euclidean") %>%
+    #   hclust(method = "ward.D2") %>%
+    #   as.dendrogram
+    
+    temp_spearman.test.df <- temp_spearman.test.bh.corrected %>%
+      tibble::as_tibble(., rownames = "asv_id") %>%
+      tidyr::pivot_longer(., cols = !asv_id,
+                          names_to = "simpleName",
+                          values_to = "padj_bh") %>%
+      droplevels %>%
+      dplyr::left_join(., (temp_spearman.test %>%
+                             tibble::as_tibble(., rownames = "asv_id") %>%
+                             tidyr::pivot_longer(., cols = !asv_id,
+                                                 names_to = "simpleName",
+                                                 values_to = "padj") %>%
+                             tidyr::drop_na(.)),
+                       by = join_by(asv_id, simpleName)) %>%
+      dplyr::relocate(padj_bh, .after = "padj") %>%
+      tidyr::drop_na(padj_bh) %>%
+      dplyr::mutate(padj_05 = dplyr::case_when(padj_bh <= padj_cutoff[1] ~ padj_bh,
+                                               .default = NA)) %>%
+      dplyr::right_join(., (temp_spearman.test.rho %>%
+                              tibble::as_tibble(., rownames = "asv_id") %>%
+                              tidyr::pivot_longer(., cols = !asv_id,
+                                                  names_to = "simpleName",
+                                                  values_to = "estimate")),
+                        by = join_by(asv_id, simpleName)) %>%
+      dplyr::mutate(sig = dplyr::case_when(!is.na(padj_bh) & !is.na(padj_05) ~ "sig",
+                                           !is.na(padj_bh) & is.na(padj_05) ~ "maybe",
+                                           .default = "not")) %>%
+      dplyr::mutate(sig = factor(sig)) %>%
+      # dplyr::mutate(asv_id = factor(asv_id, levels = labels(temp_dend_asv))) %>%
+      # dplyr::mutate(simpleName = factor(simpleName, levels = labels(temp_dend_metab))) %>%
+      dplyr::arrange(asv_id, simpleName) %>%
+      dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+      # tidyr::drop_na(contains("padj")) %>%
+      dplyr::mutate(label = signif(estimate, digits = 2)) %>%
+      dplyr::ungroup(.) %>%
+      dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+      droplevels
+    
+    spearman.test.site.list <- list(temp_spearman.test.df, 
+                                    temp_spearman.test, temp_spearman.test.rho, temp_spearman.test.n,
+                                    # temp_dend_asv, temp_dend_metab, 
+                                    padj_cutoff) %>%
+      setNames(., c("spearman.test.df", 
+                    "spearman.test", "spearman.test.rho", "spearman.test.n",
+                    # "dend_asv", "dend_metab", 
+                    "padj_cutoff"))
+    
+    assign(paste0("spearman.test.siteA.", namevar, ".list"), spearman.test.site.list, envir = .GlobalEnv)
+    rm(spearman.test.site.list)
+    rm(list = apropos("^(temp_spearman.test)(.*)$", mode = "list"))
+  }
+  
+  
+  spearman.test.site.optA.list <- lapply(apropos("^spearman.test.siteA.*$", mode = "list"),
+                                         get) %>%
+    setNames(., names(usvi_asv_site.list))
+  readr::write_rds(spearman.test.site.optA.list, paste0(projectpath, "/", "spearman.test.site.optA.list", ".rds"), compress = "gz")
+
+}
+rm(list = apropos("^(spearman.test.siteA.)(.*)$", mode = "list"))
+
+
+#option B:
+if(file.exists(paste0(projectpath, "/", "spearman.test.site.optB.list", ".rds"))){
+  spearman.test.site.optB.list <- readr::read_rds(paste0(projectpath, "/", "spearman.test.site.optB.list", ".rds"))
+} else {
+  list2env(usvi_dist_mat_list_optB, envir = .GlobalEnv)
+  usvi_metab.tbl <- usvi_metabolomics_long.df %>%
+    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+    dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+    #   dplyr::filter(!grepl("CINAR_BC_73", metab_deriv_label)) %>%
+    dplyr::left_join(., (metabolomics_sample_metadata %>%
+                           dplyr::filter(grepl("seawater", sample_type)) %>%
+                           dplyr::select(sample_id, metab_deriv_label) %>%
+                           droplevels),
+                     by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+    dplyr::filter(metab_deriv_label %in% colnames(usvi_metab_mat)) %>%
+    dplyr::filter(LODflag == 0) %>%
+    dplyr::select(-LODflag) %>%
+    dplyr::relocate(sample_id) %>%
+    dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::group_by(metab_deriv_label, simpleName) %>%
+    # dplyr::summarise(num = length(conc)) %>%
+    dplyr::summarise(mean_conc = mean(conc, na.rm = TRUE), 
+                     num = length(conc),
+                     # .by = c(sample_id, simpleName),
+                     .groups = "keep",
+                     sd = sd(conc, na.rm = TRUE)) %>%
+    dplyr::rename(conc = "mean_conc") %>%
+    dplyr::mutate(log_conc = ifelse(!(is.na(conc) | (conc < 0)),
+                                    log2(conc+1), #log transform abundance (with +1 pseudocount)
+                                    # 0)) %>%
+                                    NA)) %>%
+    dplyr::select(metab_deriv_label, simpleName, log_conc) %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = "metab_deriv_label",
+                       values_from = "log_conc",
+                       # values_from = "logabund",
+                       names_from = "simpleName") %>%
+    tibble::column_to_rownames(var = "metab_deriv_label") %>%
+    droplevels
+  
+  usvi_asv.tbl <- usvi_prok_asvs.df %>%
+    dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
+    dplyr::right_join(., (metabolomics_sample_metadata %>%
+                            dplyr::filter(grepl("seawater", sample_type)) %>%
+                            dplyr::select(sample_id, metab_deriv_label) %>%
+                            droplevels),
+                      by = join_by("sample_ID" == "sample_id"), multiple = "all", relationship = "many-to-many") %>%
+    dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = "asv_id",
+                       names_from = "metab_deriv_label",
+                       values_from = "counts",
+                       values_fill = 0) %>%
+    tibble::column_to_rownames(var = "asv_id") %>%
+    apply(., 2, relabund) %>%
+    as.data.frame(.) %>%
+    dplyr::slice(which(rowSums(.) > 0)) %>%
+    tidyr::drop_na(.) %>%
+    dplyr::select(rownames(usvi_metab.tbl)) %>%
+    t()
+  
+  usvi_asv.tbl <- usvi_asv.tbl[rownames(usvi_metab.tbl),]
+  
+  usvi_metab_site.list <- metabolomics_sample_metadata %>%
+    dplyr::filter(grepl("seawater", sample_type)) %>%
+    dplyr::filter(metab_deriv_label %in% colnames(usvi_metab_mat)) %>%
+    dplyr::distinct(metab_deriv_label, site) %>%
+    droplevels %>%
+    split(., f = .$site) %>%
+    map(., ~.x %>%
+          droplevels %>%
+          dplyr::select(metab_deriv_label) %>%
+          dplyr::left_join(., usvi_metab.tbl %>%
+                             tibble::as_tibble(rownames = "metab_deriv_label")) %>%
+          tibble::column_to_rownames(var = "metab_deriv_label"))
+  
+  usvi_asv_site.list <- metabolomics_sample_metadata %>%
+    dplyr::filter(grepl("seawater", sample_type)) %>%
+    dplyr::filter(metab_deriv_label %in% colnames(usvi_metab_mat)) %>%
+    dplyr::distinct(metab_deriv_label, site) %>%
+    droplevels %>%
+    split(., f = .$site) %>%
+    map(., ~.x %>%
+          droplevels %>%
+          dplyr::select(metab_deriv_label) %>%
+          dplyr::inner_join(., usvi_asv.tbl %>%
+                              tibble::as_tibble(rownames = "metab_deriv_label") %>%
+                              droplevels) %>%
+          tibble::column_to_rownames(var = "metab_deriv_label") %>%
+          dplyr::select(which(colSums(.) > 0)) %>%
+          droplevels)
+  
+  
+  #for loop for each site:
+  for(site in names(usvi_asv_site.list)){
+    namevar <- site
+    temp_asv.tbl <- usvi_asv_site.list[[site]]
+    temp_metab.tbl <- usvi_metab_site.list[[site]]
+    
+    temp_spearman.test <- matrix(nrow = ncol(temp_asv.tbl), ncol = ncol(temp_metab.tbl))
+    colnames(temp_spearman.test) <- colnames(temp_metab.tbl)
+    rownames(temp_spearman.test) <- colnames(temp_asv.tbl)
+    
+    temp_spearman.test.rho <- temp_spearman.test
+    temp_spearman.test.n <- temp_spearman.test
+    
+    y <- length(colnames(temp_spearman.test))
+    
+    for(j in seq_len(y)){
+      vector_metab <- temp_metab.tbl[, j]
+      for(i in seq_len(nrow(temp_spearman.test))){
+        vector_microb <- temp_asv.tbl[,i]
+        vector_microb <- vector_microb[!is.na(vector_metab)]
+        vector_metab_na <- vector_metab[!is.na(vector_metab)]
+        
+        if(length(vector_metab_na) >= 3 & sum(vector_microb) > 0){ #if 1/6 of the samples have a non-NA value for that metabolite, and the ASV was observed in those samples..
+          temp_spearman.test[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+            purrr::pluck(., "p.value")
+          temp_spearman.test.rho[i, j] <- cor.test(vector_metab_na, vector_microb, method = "spearman", exact = FALSE) %>%
+            purrr::pluck(., "estimate")
+          temp_spearman.test.n[i, j] <- length(vector_metab_na)
+        } else {
+          temp_spearman.test[i, j] <- NA
+          temp_spearman.test.rho[i, j] <- NA
+          temp_spearman.test.n[i, j] <- length(vector_metab_na)
+        }
+      }
+    }
+    
+    padj_cutoff <- temp_spearman.test %>%
+      apply(., 2, na.omit) %>%
+      unlist %>%
+      ashr::qval.from.lfdr(.) %>%
+      as.matrix(.) %>%
+      quantile(., probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE,type = 7) #get the possible p-adj cutoffs for different q-values
+    
+    temp_spearman.test.bh.corrected <- temp_spearman.test %>%
+      apply(., 2, function(x) p.adjust(x, method = "BH")) %>% #multiple testing corrections
+      apply(., 2, function(x) ifelse(x <= 0.05, x, NA)) #drop the p.values > the adjusted p-value or did not compute
+    
+    temp_spearman.test.df <- temp_spearman.test.bh.corrected %>%
+      tibble::as_tibble(., rownames = "asv_id") %>%
+      tidyr::pivot_longer(., cols = !asv_id,
+                          names_to = "simpleName",
+                          values_to = "padj_bh") %>%
+      droplevels %>%
+      dplyr::left_join(., (temp_spearman.test %>%
+                             tibble::as_tibble(., rownames = "asv_id") %>%
+                             tidyr::pivot_longer(., cols = !asv_id,
+                                                 names_to = "simpleName",
+                                                 values_to = "padj") %>%
+                             tidyr::drop_na(.)),
+                       by = join_by(asv_id, simpleName)) %>%
+      dplyr::relocate(padj_bh, .after = "padj") %>%
+      tidyr::drop_na(padj_bh) %>%
+      dplyr::mutate(padj_05 = dplyr::case_when(padj_bh <= padj_cutoff[1] ~ padj_bh,
+                                               .default = NA)) %>%
+      dplyr::right_join(., (temp_spearman.test.rho %>%
+                              tibble::as_tibble(., rownames = "asv_id") %>%
+                              tidyr::pivot_longer(., cols = !asv_id,
+                                                  names_to = "simpleName",
+                                                  values_to = "estimate")),
+                        by = join_by(asv_id, simpleName)) %>%
+      dplyr::mutate(sig = dplyr::case_when(!is.na(padj_bh) & !is.na(padj_05) ~ "sig",
+                                           !is.na(padj_bh) & is.na(padj_05) ~ "maybe",
+                                           .default = "not")) %>%
+      dplyr::mutate(sig = factor(sig)) %>%
+      dplyr::arrange(asv_id, simpleName) %>%
+      dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+      dplyr::mutate(label = signif(estimate, digits = 2)) %>%
+      dplyr::ungroup(.) %>%
+      dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+      droplevels
+    
+    spearman.test.site.list <- list(temp_spearman.test.df, 
+                                    temp_spearman.test, temp_spearman.test.rho, temp_spearman.test.n,
+                                    padj_cutoff) %>%
+      setNames(., c("spearman.test.df", 
+                    "spearman.test", "spearman.test.rho", "spearman.test.n",
+                    "padj_cutoff"))
+    
+    assign(paste0("spearman.test.siteB.", namevar, ".list"), spearman.test.site.list, envir = .GlobalEnv)
+    rm(spearman.test.site.list)
+    rm(list = apropos("^(temp_spearman.test)(.*)$", mode = "list"))
+  }
+  
+  
+  spearman.test.site.optB.list <- lapply(apropos("^spearman.test.siteB.*$", mode = "list"),
+                                         get) %>%
+    setNames(., names(usvi_asv_site.list))
+  
+  readr::write_rds(spearman.test.site.optB.list, paste0(projectpath, "/", "spearman.test.site.optB.list", ".rds"), compress = "gz")
+  
+}
+rm(list = apropos("^(spearman.test.siteB.)(.*)$", mode = "list"))
+
 # Filter the spearman correlations ----------------------------------------
 
-
-# setdiff(unique((spearman.test.optA.list[["spearman.test.df"]] %>% tidyr::drop_na(padj_bh))$asv_id),
-#         unique((spearman.test.optB.list[["spearman.test.df"]] %>% tidyr::drop_na(padj_bh))$asv_id))
-# setdiff(unique((spearman.test.optB.list[["spearman.test.df"]] %>% tidyr::drop_na(padj_bh))$asv_id),
-#         unique((spearman.test.optA.list[["spearman.test.df"]] %>% tidyr::drop_na(padj_bh))$asv_id)) %in% unique((spearman.test.optB.list[["spearman.test.df"]] %>% tidyr::drop_na(padj_bh))$asv_id)
-# 
-# #12 ASVs are in spearman.test.optB.list that are not in spearman.test.optA.list
-# #3 ASVs are in spearman.test.optA.list that are not in spearman.test.optB.list
 
 spearman.test.df <- list(spearman.test.optA.list[["spearman.test.df"]],
                          spearman.test.optB.list[["spearman.test.df"]]) %>%
   setNames(., c("optA", "optB")) %>%
   bind_rows(., .id = "test_type")
-# temp_df <- spearman.test.df %>%
-#   tidyr::drop_na(padj_bh) %>%
-#   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
-#   dplyr::filter(consistent > 1) %>%
-#   dplyr::select(test_type, asv_id, simpleName, padj_05) %>%
-#   tidyr::pivot_wider(., id_cols = NULL,
-#                      names_from = "test_type",
-#                      values_from = "padj_05") %>%
-#   droplevels
-# 
-# temp_df %>% tidyr::drop_na(optA) %>% droplevels %>% nrow(.)
-# #5558 correlations
-# temp_df %>% tidyr::drop_na(optB) %>% droplevels %>% nrow(.)
-# #5557 correlations
-# temp_df %>% tidyr::drop_na(.) %>% droplevels %>% nrow(.)
-# #5468 correlations that are consistent between options A and B
+
+#also site specific:
+spearman.test.site.df <- list(spearman.test.site.optA.list, spearman.test.site.optB.list) %>%
+  setNames(., c("optA", "optB")) %>%
+  map(.,
+      ~imap(.,
+       ~.x[["spearman.test.df"]] %>%
+         dplyr::mutate(site = .y)) %>%
+        bind_rows(.)) %>%
+  bind_rows(., .id = "test_type")
+spearman.test.site.df <- spearman.test.site.df %>%
+  dplyr::left_join(., (list(spearman.test.site.optA.list, spearman.test.site.optB.list) %>%
+                         setNames(., c("optA", "optB")) %>%
+                         map(.,
+                             ~imap(.,
+                                   ~.x[["spearman.test.n"]] %>%
+                                     tibble::as_tibble(rownames = "asv_id") %>%
+                                     dplyr::select(-asv_id) %>%
+                                     dplyr::distinct(.) %>%
+                                     dplyr::mutate(site = .y)) %>%
+                               bind_rows(.)) %>%
+                         bind_rows(., .id = "test_type")) %>%
+  tidyr::pivot_longer(., cols = !c(test_type, site),
+                      names_to = "simpleName",
+                      values_to = "num_obs_metab"),
+  by = join_by(test_type, site, simpleName))
 
 #filter for the correlations between ASVs and metabolites, that are consistently significant, in the same direction, and observed in both options A and B
-temp_df <- spearman.test.df %>%
+spearman.test.filtered.df <- spearman.test.df %>%
   tidyr::drop_na(padj_bh) %>%
   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
   dplyr::filter(consistent > 1) %>%
+  dplyr::ungroup(.) %>%
   dplyr::select(test_type, asv_id, simpleName, estimate) %>%
   tidyr::pivot_wider(., id_cols = NULL,
                      names_from = "test_type",
@@ -1789,7 +1828,8 @@ temp_df <- spearman.test.df %>%
   dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
                                               .default = NA)) %>%
   tidyr::drop_na(.) %>%
-  dplyr::select(asv_id, simpleName) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::distinct(asv_id, simpleName) %>%
   dplyr::inner_join(., (spearman.test.df %>%
                          tidyr::drop_na(padj_bh) %>%
                          dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
@@ -1799,17 +1839,259 @@ temp_df <- spearman.test.df %>%
                                             names_from = "test_type",
                                             values_from = "padj_05") %>%
                          tidyr::drop_na(.) %>%
-                         droplevels %>%
-                         dplyr::select(asv_id, simpleName)),
+                          dplyr::ungroup(.) %>%
+                         dplyr::distinct(asv_id, simpleName) %>%
+                          droplevels),
                    by = join_by(asv_id, simpleName)) %>%
   dplyr::left_join(., spearman.test.df %>%
                      dplyr::select(test_type, asv_id, simpleName, estimate, sig, label) %>%
+                     dplyr::ungroup(.) %>%
                      droplevels,
-                   by = join_by(asv_id, simpleName), relationship = "many-to-many", multiple = "all") %>%
+                   by = join_by(asv_id, simpleName), relationship = "many-to-many", multiple = "first") %>%
+  dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, .default = estimate)) %>%
+  tidyr::drop_na(estimate) %>%
   dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
                                                      .default = NA)) %>%
   dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
   droplevels
+
+(spearman.test.df %>%
+    tidyr::drop_na(padj_bh) %>%
+    dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
+    dplyr::filter(consistent > 1) %>%
+    dplyr::select(test_type, asv_id, simpleName, padj_05) %>%
+    tidyr::pivot_wider(., id_cols = NULL,
+                       names_from = "test_type",
+                       values_from = "padj_05") %>%
+    tidyr::drop_na(.) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+    droplevels)
+
+#with site-specific, don't yet filter for whether the metabolite*ASV was found in both options A and B of handling metabolome replicate samples.
+spearman.test.site.filtered.df <- spearman.test.site.df %>%
+  tidyr::drop_na(padj_bh) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::distinct(asv_id, simpleName, site) %>%
+  dplyr::inner_join(., (spearman.test.site.df %>%
+                          tidyr::drop_na(padj_bh) %>%
+                          dplyr::select(test_type, asv_id, simpleName, padj_05, site) %>%
+                          tidyr::pivot_wider(., id_cols = NULL,
+                                             names_from = "test_type",
+                                             values_from = "padj_05") %>%
+                          droplevels %>%
+                          dplyr::distinct(asv_id, simpleName, site)),
+                    by = join_by(asv_id, simpleName, site)) %>%
+  dplyr::left_join(., spearman.test.site.df %>%
+                     dplyr::select(test_type, asv_id, simpleName, estimate, sig, site, label, num_obs_metab) %>%
+                     tidyr::pivot_wider(., id_cols = NULL,
+                                        names_from = "test_type",
+                                        values_from = "test_type") %>%
+                     tidyr::unite("test_type", c(optA, optB), sep = "_", remove = TRUE, na.rm = TRUE) %>%
+                     dplyr::arrange(abs(estimate)) %>%
+                     dplyr::ungroup(.) %>%
+                     dplyr::distinct(asv_id, simpleName, site, test_type, num_obs_metab, .keep_all = TRUE) %>%
+                     droplevels,
+                   by = join_by(asv_id, simpleName, site), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, .default = estimate)) %>%
+  tidyr::drop_na(estimate) %>%
+ dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
+  droplevels
+
+
+#plot the distribution of Spearman rho's when using all samples, compared to site-specific
+spearman.test.rho.dist.df <- bind_rows(spearman.test.filtered.df, spearman.test.site.filtered.df) %>%
+  dplyr::mutate(site = dplyr::case_when(is.na(site) ~ "all", .default = site)) %>%
+  dplyr::select(asv_id, simpleName, site, estimate) %>%
+  dplyr::distinct(asv_id, simpleName, site, .keep_all = TRUE) %>%
+  dplyr::group_by(asv_id, simpleName, site) %>%
+  dplyr::distinct(estimate, .keep_all = TRUE) %>%
+  droplevels
+spearman.test.rho.dist.df %>%
+  dplyr::ungroup(.) %>%
+  # dplyr::distinct(asv_id, simpleName, site, .keep_all = TRUE) %>%
+  # dplyr::summarise(num_obs = length(simpleName), .by = c("asv_id", "site"))
+  dplyr::distinct(asv_id, site, .keep_all = TRUE) %>%
+  dplyr::summarise(num_obs = length(asv_id), .by = c("site"))
+# site        num_obs
+# <chr>         <int>
+#   1 all             381
+# 2 LB_seagrass     60
+# 3 Yawzi            6
+# 4 Tektite           5
+
+#using all samples, there were 381 ASVs with significant and strong correlations to metabolites
+#with just LB samples, 60 ASVs
+#with just Yawzi samples, 6
+#with just Tektite samples, 5
+
+
+# 
+# print(ggplot(data = spearman.test.rho.dist.df, aes(x = estimate, fill = simpleName))
+#       + geom_histogram( color = "black")
+#       # + scale_discrete_manual(aesthetics = "fill", values = metab_colors, breaks = names(metab_colors), labels = names(metab_colors))
+#       + facet_wrap(site~., scales = "free_y", drop = TRUE)
+#       )
+# 
+# print(ggplot(data = spearman.test.rho.dist.df %>%
+#                dplyr::ungroup(.) %>%
+#                # dplyr::distinct(asv_id, simpleName, site, .keep_all = TRUE) %>% dplyr::summarise(num_obs = length(simpleName), .by = c("asv_id", "site")))
+#                dplyr::distinct(asv_id, site, .keep_all = TRUE) %>% dplyr::summarise(num_obs = length(asv_id), .by = c("site")))
+#       + geom_col(aes(x = site, y= num_obs), color = "black")
+# )
+
+#what happened to some correlations that were significant btw metabolites and ASVs when using all samples, when going site specific?
+spearman.test.site.dropped.df <- list(spearman.test.site.optA.list, spearman.test.site.optB.list) %>%
+  setNames(., c("optA", "optB")) %>%
+  map(.,
+      ~imap(.,
+            ~.x[["spearman.test"]] %>%
+              tibble::as_tibble(rownames = "asv_id") %>%
+              dplyr::mutate(site = .y)) %>%
+        bind_rows(.)) %>%
+  bind_rows(., .id = "test_type") %>%
+  tidyr::pivot_longer(., cols = !c(test_type, site, asv_id),
+                      names_to = "simpleName",
+                      values_to = "p_value") %>%
+  dplyr::left_join(., (list(spearman.test.site.optA.list, spearman.test.site.optB.list) %>%
+                                             setNames(., c("optA", "optB")) %>%
+                                             map(.,
+                                                 ~imap(.,
+                                                       ~.x[["spearman.test.n"]] %>%
+                                                         tibble::as_tibble(rownames = "asv_id") %>%
+                                                         dplyr::select(-asv_id) %>%
+                                                         dplyr::distinct(.) %>%
+                                                         dplyr::mutate(site = .y)) %>%
+                                                   bind_rows(.)) %>%
+                                             bind_rows(., .id = "test_type")) %>%
+                                         tidyr::pivot_longer(., cols = !c(test_type, site),
+                                                             names_to = "simpleName",
+                                                             values_to = "num_obs_metab"),
+                                       by = join_by(test_type, site, simpleName)) %>%
+  dplyr::arrange(desc(num_obs_metab))
+
+
+spearman.test.site.dropped.relabund.df <- spearman.test.site.dropped.df %>%
+  dplyr::ungroup(.) %>%
+  dplyr::filter(is.na(p_value) & num_obs_metab >= 4) %>%
+  dplyr::filter(asv_id %in% unique(spearman.test.filtered.df[["asv_id"]])) %>%
+  dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+  dplyr::mutate(asv_id = factor(asv_id)) %>%
+  dplyr::left_join(., (usvi_prok_asvs.df %>%
+                         dplyr::filter(sample_ID %in% usvi_selected_metadata[["sample_id"]]) %>%
+                         tidyr::pivot_wider(., id_cols = "asv_id",
+                                            names_from = "sample_ID",
+                                            values_from = "counts",
+                                            values_fill = 0) %>%
+                         tibble::column_to_rownames(var = "asv_id") %>%
+                         dplyr::slice(which(rowSums(.) > 0)) %>%
+                         apply(., 2, relabund) %>%
+                         as.data.frame(.) %>%
+                         tibble::rownames_to_column(var = "asv_id") %>%
+                         dplyr::filter(asv_id %in% unique(spearman.test.site.dropped.df[["asv_id"]])) %>%
+                         dplyr::filter(asv_id %in% unique(spearman.test.filtered.df[["asv_id"]])) %>%
+                         droplevels %>%
+                         tidyr::pivot_longer(., cols = !c("asv_id"),
+                                             names_to = "sample_id",
+                                             values_to = "relabund") %>%
+                         dplyr::right_join(., usvi_selected_metadata %>%
+                                             dplyr::filter(sampling_day != "Day1") %>%
+                                             dplyr::distinct(sample_id, site) %>%
+                                             droplevels,
+                                           by = join_by(sample_id), relationship = "many-to-many", multiple = "all") %>%
+                         droplevels %>%
+                         dplyr::mutate(across(c(asv_id, site), ~factor(.x))) %>%
+                         tidyr::drop_na(.) %>%
+                         dplyr::group_by(asv_id, site) %>%
+                         dplyr::summarise(max_relabund = max(relabund),
+                                          min_relabund = min(relabund),
+                                          relabund = mean(relabund))),
+                   by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  droplevels %>%
+  dplyr::left_join(., spearman.test.site.dropped.df %>%
+                     dplyr::ungroup(.) %>%
+                     dplyr::filter(is.na(p_value) & num_obs_metab >= 4) %>%
+                     dplyr::distinct(asv_id, site, .keep_all = FALSE) %>%
+                     dplyr::mutate(sig_site = "t") %>% #this indicates that while there were enough observations of a specific metabolite to correlate with the relative abundance of the ASV, all the same the spearman test p-value was NA (because the relative abundance of that ASV in the sample set was 0)
+                     droplevels, by = join_by(asv_id, site)) %>%
+  dplyr::left_join(., spearman.test.filtered.df %>%
+                     dplyr::distinct(asv_id, simpleName) %>%
+                     dplyr::group_by(asv_id) %>%
+                     dplyr::summarise(num_sig_metabs = length(simpleName)),
+                   by = join_by(asv_id)) %>%
+  dplyr::arrange(desc(num_sig_metabs)) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]])))
+  
+
+# spearman.test.site.dropped.relabund.df <- spearman.test.site.dropped.df %>%
+#   dplyr::ungroup(.) %>%
+#   dplyr::filter(is.na(p_value) & num_obs_metab >= 4) %>%
+#   dplyr::filter(asv_id %in% unique(spearman.test.filtered.df[["asv_id"]])) %>%
+#   dplyr::distinct(asv_id, site, .keep_all = FALSE) %>%
+#   droplevels %>%
+#   split(., f = .$site) %>%
+#   map(., ~.x %>% 
+#         dplyr::mutate(across(c(asv_id, site), ~factor(.x))) %>%
+#         droplevels %>%
+#         dplyr::inner_join(., usvi_selected_metadata %>%
+#                             dplyr::filter(sampling_day != "Day1") %>%
+#                             dplyr::distinct(sample_id, site) %>%
+#                             droplevels,
+#                           by = join_by(site), relationship = "many-to-many", multiple = "all") %>%
+#         dplyr::inner_join(., (usvi_prok_asvs.df %>%
+#                                 tidyr::pivot_wider(., id_cols = "asv_id",
+#                                                    names_from = "sample_ID",
+#                                                    values_from = "counts",
+#                                                    values_fill = 0) %>%
+#                                 tibble::column_to_rownames(var = "asv_id") %>%
+#                                 dplyr::slice(which(rowSums(.) > 0)) %>%
+#                                 apply(., 2, relabund) %>%
+#                                 as.data.frame(.) %>%
+#                                 tibble::rownames_to_column(var = "asv_id") %>%
+#                                 dplyr::filter(asv_id %in% unique(spearman.test.site.dropped.df[["asv_id"]])) %>%
+#                                 tidyr::pivot_longer(., cols = !c("asv_id"),
+#                                                     names_to = "sample_id",
+#                                                     values_to = "relabund")),
+#                           by = join_by(asv_id, sample_id), relationship = "many-to-many", multiple = "all") %>%
+#         dplyr::distinct(.) %>%
+#         droplevels) %>%
+#   bind_rows(., .id = NULL) %>%
+#   dplyr::group_by(asv_id, site) %>%
+#   dplyr::summarise(max_relabund = max(relabund),
+#                    min_relabund = min(relabund),
+#                    relabund = mean(relabund))
+
+gpatch <- print(ggplot(data = spearman.test.site.dropped.relabund.df)
+      + theme_bw()
+      + geom_col(aes(x = asv_id, y = num_sig_metabs/10, group = interaction(asv_id, site)), 
+                 fill = "grey", color = "grey", alpha = 0.5)
+          + geom_errorbar(aes(x = asv_id, ymin = (min_relabund), ymax = (max_relabund), color = site), width = 0.3,
+                          position = position_dodge(width = 0.4, preserve = "total"),
+                          show.legend = FALSE)
+      + geom_point(aes(x = asv_id, y = relabund, fill = site, shape = site, group = interaction(asv_id, site)))
+      + geom_text(aes(x = asv_id, label = sig_site, y = 1, group = interaction(asv_id, site)))
+        + scale_shape_manual(name = "Sampling site", values = c(22, 21, 23), labels = site_lookup, breaks = names(site_lookup))
+        + scale_discrete_manual(aesthetics = c("fill", "color"), name = "Sampling site",
+                                values = site_colors, labels = c(site_lookup), breaks = names(site_lookup))
+        + scale_x_discrete(labels = usvi_genera_relabel, name = NULL)
+        + scale_y_continuous(name = "Relative abundance (%)", expand = expansion(mult = c(0.1,0.1)),
+                              sec.axis = sec_axis(~.*10, name = "Number of metabolites significantly correlated when using all samples"))
+      + facet_grid(site~., scales = "free", drop = TRUE, labeller = global_labeller)
+        + theme(panel.grid= element_blank(),
+                strip.text.y = element_text(size = rel(0.7), angle = 0),
+                strip.text.x = element_text(size = rel(0.7), angle = 0),
+                # axis.title.y = element_blank(),
+                legend.position = "none",
+                axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5, size = 3))
+)
+gpatch <- gpatch + patchwork::plot_annotation(title = "A sampling of ASVs that had significant correlations with metabolites in the full dataset, \n but not in the site-specific correlation analyses",
+                                              subtitle = " 't' indicates site-specific test result was not significant")
+gpatch
+
+# ggsave(paste0(projectpath, "/", "usvi_spearman_corr_all_vs_site-", Sys.Date(), ".png"),
+#        gpatch,
+#        width = 10, height = 8, units = "in")
+
 
 
 # output list of SDA/sig ASVs ---------------------------------------------
@@ -1823,11 +2105,9 @@ usvi_sda_asvs_compare_summary.df <- readr::read_delim(paste0(projectpath, "/", t
 rm(temp_file)
 
 
-usvi_sig_seqs_idx <- temp_df %>%  
-  # dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
-  # tidyr::drop_na(estimate) %>%
-  # dplyr::summarise(num_results = length(estimate), .by = "asv_id") %>%
-  # dplyr::filter(num_results > 1) %>%
+# usvi_sig_seqs_idx <- spearman.test.filtered.df %>%  
+usvi_sig_seqs_idx <- bind_rows(spearman.test.filtered.df, spearman.test.site.filtered.df) %>%
+  dplyr::ungroup(.) %>%
   dplyr::distinct(asv_id, .keep_all = FALSE) %>%
   droplevels %>%
   dplyr::bind_rows(., usvi_sda_asvs_compare_summary.df %>%
@@ -1866,9 +2146,245 @@ usvi_sig_seqs_key.list <- usvi_prok_asvs.taxa %>%
 
 
 library(dada2)
+library(ape)
+library(stats)
+library(ggdendro)
 dada2::uniquesToFasta(usvi_sig_seqs_key.list, paste0(projectpath, "/", "usvi_prok_sig_asvs.fna"), ids = usvi_sig_seqs_key.list[["asv_id"]], mode = "w")
 
-# temp_df %>% dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
+#import the results from Silva
+keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
+
+usvi_sig_seqs_key.taxonomy <- usvi_prok_asvs.taxa %>%
+  dplyr::select(-sequence) %>%
+  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(
+    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+  dplyr::relocate(contains("_id"), taxonomy) %>%
+  dplyr::select(-c(final_taxonomy)) %>%
+  droplevels %>%
+  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+  dplyr::filter(asv_id %in% usvi_sig_seqs_idx[["asv_id"]]) %>%
+  dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
+  dplyr::distinct(asv_id, taxonomy, .keep_all = TRUE) %>%
+  droplevels
+
+
+#option 1: use Silva tree to propagate taxonomy and relative arrangement of ASVs by taxonomy
+#look at the Silva tax tree and search for matching taxonomy:
+silva_ssu_tax.df <- readr::read_delim("~/projects/silva/tax_slv_ssu_138.2.txt", delim = "\t", col_names = FALSE, show_col_types = FALSE) %>%
+  setNames(., c("taxonomy", "id", "tax_level", "X4", "version")) %>%
+  dplyr::select(-X4) %>%
+  tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+  droplevels
+
+# usvi_sig_seqs_filtered_silva.df <- usvi_sig_seqs_key.taxonomy %>%
+#   dplyr::left_join(., silva_ssu_tax.df %>%
+#                      dplyr::select(-c(taxonomy)) %>%
+#                      droplevels, by = join_by(!!!keep_tax), relationship = "many-to-many", multiple = "all")
+# 
+usvi_sig_seqs_filtered_silva.df <- usvi_sig_seqs_key.taxonomy %>%
+  dplyr::select(Domain:Genus) %>%
+  dplyr::distinct(.) %>%
+  dplyr::left_join(., silva_ssu_tax.df %>%
+                     dplyr::select(id, tax_level, Domain:Genus) %>%
+                     dplyr::distinct(.) %>%
+                     droplevels, by = join_by(Domain, Phylum, Class, Order, Family, Genus), relationship = "many-to-many", multiple = "all") %>%
+  tidyr::drop_na(.) %>%
+  dplyr::distinct(id, .keep_all = TRUE)
+
+silva_newick <- ape::read.tree("~/projects/silva/tax_slv_ssu_138.2.tre")
+# phyloseq::plot_tree(silva_newick, method = "sampledodge",
+#                     min.abundance = 5,
+#                     ladderize = TRUE)
+
+
+# usvi_sig_seqs_filtered_silva_idx <- usvi_sig_seqs_filtered_silva.df %>%
+#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy %>%
+#                      dplyr::distinct(taxonomy, .keep_all = TRUE), relationship = "many-to-many", multiple = "all") %>%
+#   dplyr::select(asv_id, taxonomy, id) %>%
+#   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+#   dplyr::select(asv_id, id) %>%
+#   tibble::deframe(.)
+#   # droplevels
+# 
+# silva_usvi_idx <- intersect(usvi_sig_seqs_filtered_silva_idx, silva_newick[["tip.label"]])
+
+# silva_newick_pruned <- ape::keep.tip(silva_newick, silva_usvi_idx)
+# phyloseq::plot_tree(silva_newick_pruned, method = "sampledodge",
+#                     min.abundance = 5,
+#                     ladderize = TRUE)
+# # usvi_sig_seqs_filtered_silva_idx %>%
+# #   tibble::enframe(name = "asv_id", value = "tip.label") %>%
+# #   dplyr::mutate(`tip.label` = as.character(`tip.label`)) %>%
+# #   dplyr::right_join(., tibble::tibble(`tip.label` = silva_usvi_idx))
+# # usvi_sig_seqs_filtered_silva_idx[match(usvi_sig_seqs_filtered_silva_idx, silva_usvi_idx)]
+# 
+# head(labels(silva_newick_pruned))
+# silva_usvi_renamed_idx <- usvi_sig_seqs_filtered_silva_idx[usvi_sig_seqs_filtered_silva_idx %in% silva_usvi_idx]
+# silva_usvi_renamed_idx <- names(silva_usvi_renamed_idx)
+# usvi_asvs_silva_newick_pruned <- silva_newick_pruned
+# labels(usvi_asvs_silva_newick_pruned) <- silva_usvi_renamed_idx
+# # phyloseq::plot_tree(usvi_asvs_silva_newick_pruned, method = "sampledodge",
+# #                     min.abundance = 5,
+#                     # ladderize = TRUE)
+# head(labels(usvi_asvs_silva_newick_pruned))
+# 
+# silva_newick_relabled_pruned <- silva_newick_pruned
+# labels(silva_newick_relabled_pruned)
+# silva_renamed_idx <- usvi_sig_seqs_filtered_silva.df %>%
+#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy %>%
+#                       dplyr::distinct(taxonomy, .keep_all = TRUE), relationship = "many-to-many", multiple = "all") %>%
+#   dplyr::select(asv_id, taxonomy, id) %>%
+#   dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>%
+#   # dplyr::select(asv_id, id) %>%
+#   dplyr::select(taxonomy, id) %>%
+#   tibble::deframe(.)
+# silva_renamed_idx <- silva_renamed_idx[silva_renamed_idx %in% labels(silva_newick_relabled_pruned)]
+# silva_renamed_idx <- names(silva_renamed_idx)
+# labels(silva_newick_relabled_pruned) <- silva_renamed_idx
+# head(labels(silva_newick_relabled_pruned))
+# # phyloseq::plot_tree(usvi_asvs_silva_newick_pruned, method = "sampledodge",
+# #                     min.abundance = 5,
+# #                     ladderize = TRUE)
+
+# usvi_sig_seqs_phylogeny.df <- usvi_sig_seqs_filtered_silva.df %>%
+#   dplyr::mutate(id = factor(id, levels = labels(silva_newick))) %>%
+#   dplyr::arrange(id) %>%
+#     droplevels %>%
+#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy, relationship = "many-to-many", multiple = "all") %>%
+#   dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus, id) %>%
+#   tidyr::drop_na(Domain) %>%
+#   dplyr::mutate(across(c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "tax_level", "asv_id", "taxonomy"), ~factor(.x))) %>%
+#   dplyr::mutate(arrangement = seq_len(nrow(.))) %>%
+#   droplevels
+
+#option 2:
+#made a tree with SINA (Arb web service) for 467 ASVs that, during analyses up to 1/30/2025, were found SDA
+#look at an ARB-generated tree
+
+usvi_arb.tree <- ape::read.tree("~/projects/apprill/usvi_temporal/arb-silva.de_2025-01-29_id1375389/arb-silva.de_2025-01-29_id1375389.tree")
+
+# phyloseq::plot_tree(usvi_arb.tree, method = "sampledodge",
+#                     min.abundance = 5,
+#                     ladderize = TRUE)
+# labels(usvi_arb.tree)
+# length(grep("ASV_", labels(usvi_arb.tree)))
+# usvi_arb.tree[["tip.labels"]]
+# plot(usvi_arb.tree)
+
+usvi_arb.taxonomy <- readr::read_delim("~/projects/apprill/usvi_temporal/arb-silva.de_2025-01-29_id1375389/arb-silva.de_align_resultlist_1375389.csv",
+                  delim = ";", col_names = TRUE, show_col_types = FALSE) %>%
+  dplyr::select(sequence_identifier, identity, starts_with("lca_tax")) %>%
+  tidyr::drop_na(.) %>%
+  dplyr::mutate(across(starts_with("lca_tax"), ~dplyr::case_when(grepl("^Unclassified", .x) ~ NA,
+                                                                 .default = .x))) %>%
+  dplyr::mutate(across(starts_with("lca_tax"), ~stringr::str_remove_all(.x, '"'))) %>%
+  dplyr::mutate(across(starts_with("lca_tax"), ~stringr::str_remove_all(.x, ';$')))
+
+#does the ARB taxonomy match our assignments?
+usvi_sig_seqs_arb.taxonomy <-  usvi_arb.taxonomy %>%
+  dplyr::rename(asv_id = "sequence_identifier") %>%
+  dplyr::select(asv_id, lca_tax_slv) %>%
+  tidyr::separate_wider_delim(lca_tax_slv, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = TRUE) %>%
+  droplevels %>%
+  tidyr::pivot_longer(., cols = !c("asv_id"),
+                      names_to = "level",
+                      values_to = "arb") %>%
+  dplyr::mutate(arb = gsub("ii", "i", arb)) %>%
+  dplyr::left_join(., usvi_sig_seqs_key.taxonomy %>%
+                     tidyr::pivot_longer(., cols = !c("asv_id"),
+                                         names_to = "level",
+                                         values_to = "dada2"),
+                   by = join_by(asv_id, level)) %>%
+  dplyr::group_by(asv_id, level) %>%
+  dplyr::mutate(matched = dplyr::case_when((arb == dada2) ~ 1,
+                                         # .default = NA)) %>% dplyr::group_by(asv_id) %>% tidyr::drop_na(.)
+                                         .default = NA))
+# usvi_sig_seqs_arb.taxonomy %>%
+#   dplyr::group_by(asv_id) %>%
+#   dplyr::summarise(num_matched = sum(matched, na.rm = TRUE)) %>%
+#   dplyr::arrange(num_matched)
+
+usvi_arb_asvs_idx <- grep("ASV_", usvi_arb.tree[["tip.label"]])
+usvi_arb_pruned.tree <- ape::keep.tip(usvi_arb.tree, usvi_arb_asvs_idx)
+head(usvi_arb_pruned.tree[["tip.label"]])
+length(usvi_arb_pruned.tree[["tip.label"]])
+usvi_arb_renamed_idx <- data.frame(asv_id = usvi_arb_pruned.tree[["tip.label"]]) %>%
+  dplyr::left_join(., usvi_prok_asvs.taxa %>%
+  dplyr::select(-sequence) %>%
+  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(
+    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+  dplyr::relocate(contains("_id"), taxonomy) %>%
+  dplyr::select(-c(final_taxonomy)) %>%
+  droplevels %>%
+  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+                     dplyr::select(asv_id, taxonomy), 
+                   by= join_by(asv_id)) %>%
+    dplyr::mutate(taxonomy = across(starts_with("taxonomy")) %>% purrr::reduce(coalesce)) %>%
+    dplyr::select(-ends_with(c(".x", ".y"))) %>%
+  dplyr::filter(asv_id %in% usvi_arb_pruned.tree[["tip.label"]]) %>%
+  dplyr::select(asv_id, taxonomy) %>%
+  dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>%
+  dplyr::select(taxonomy, asv_id) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = usvi_arb_pruned.tree[["tip.label"]])) %>%
+  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.[["taxonomy"]]))) %>%
+  # droplevels %>% dplyr::arrange(asv_id)
+  dplyr::arrange(asv_id) %>% tibble::deframe(.)
+
+usvi_arb_renamed_idx <- usvi_arb_renamed_idx[usvi_arb_renamed_idx %in% usvi_arb_pruned.tree[["tip.label"]]]
+head(names(usvi_arb_renamed_idx))
+length(names(usvi_arb_renamed_idx))
+usvi_arb_renamed_idx <- names(usvi_arb_renamed_idx)
+
+usvi_arb_pruned.tree[["tip.label"]] <- usvi_arb_renamed_idx
+
+# phyloseq::plot_tree(usvi_arb_pruned.tree, method = "sampledodge",
+#                     label.tips = "taxa_names",
+#                     ladderize = TRUE)
+
+usvi_arb_order_idx <- data.frame(tax_label = usvi_arb_pruned.tree[["tip.label"]]) %>%
+  dplyr::mutate(asv_id = stringr::str_split_i(tax_label, ": ", 1)) %>%
+  dplyr::mutate(arb_rangement = seq_len(nrow(.))) %>%
+  droplevels
+
+
+#consolidate the ARB and Silva arrangements for the significant ASVs
+usvi_sig_seqs_phylogeny.df <- usvi_sig_seqs_filtered_silva.df %>%
+  dplyr::mutate(id = factor(id, levels = silva_newick[["tip.label"]])) %>%
+  dplyr::arrange(id) %>%
+  droplevels %>%
+  dplyr::right_join(., (usvi_sig_seqs_key.taxonomy %>%
+                          dplyr::full_join(., data.frame(asv_id = grep("ASV_", usvi_arb.tree[["tip.label"]], value = TRUE)), by = join_by(asv_id))),
+                    relationship = "many-to-many", multiple = "all") %>%
+#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy, relationship = "many-to-many", multiple = "all") %>%
+  dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus, id) %>%
+  tidyr::drop_na(Domain) %>%
+  dplyr::mutate(across(c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "tax_level", "asv_id", "taxonomy"), ~factor(.x))) %>%
+  dplyr::mutate(arrangement = seq_len(nrow(.))) %>%
+  dplyr::left_join(., usvi_arb_order_idx %>%
+                     dplyr::select(asv_id, arb_rangement),
+                   by = join_by(asv_id)) %>%
+  dplyr::mutate(prop_arb_rangement = arb_rangement) %>%
+  dplyr::arrange(arrangement, taxonomy) %>%
+  dplyr::group_by(taxonomy) %>% tidyr::fill(prop_arb_rangement, .direction = "downup") %>%
+  dplyr::ungroup(.) %>% tidyr::fill(prop_arb_rangement, .direction = "updown") %>%
+  droplevels
+
+
+# Look at strongest corfamily()# Look at strongest correlations ------------------------------------------
+
+
 
 ##look at only the strongest correlations
 #the minimum abs(estimate) is 0.3929270
@@ -1912,11 +2428,17 @@ dada2::uniquesToFasta(usvi_sig_seqs_key.list, paste0(projectpath, "/", "usvi_pro
 #   dplyr::arrange(desc(num_results)) %>%
 #   droplevels
 
-spearman.sig.metab.list <- temp_df %>%  
+
+
+
+
+dend_metab <- spearman.test.optA.list[["dend_metab"]]
+
+spearman.sig.metab.list <- spearman.test.filtered.df %>%  
   dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
   tidyr::drop_na(estimate) %>%
   dplyr::select(simpleName, asv_id) %>%
-  dplyr::mutate(simpleName = factor(simpleName, levels = (temp_df %>%  
+  dplyr::mutate(simpleName = factor(simpleName, levels = (spearman.test.filtered.df %>%  
                                                             dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
                                                             tidyr::drop_na(estimate) %>%
                                                             dplyr::summarise(num_results = length(estimate), .by = "simpleName") %>%
@@ -1926,14 +2448,16 @@ spearman.sig.metab.list <- temp_df %>%
   split(., f = .$simpleName) %>%
   map(., ~.x %>%
         dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
+        dplyr::arrange(asv_id) %>%
         unlist %>%
         as.character)
 
-spearman.sig.strong.metab.list <- temp_df %>%  
+spearman.sig.strong.metab.list <- spearman.test.filtered.df %>%  
   dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
   tidyr::drop_na(filtered_estimate) %>%
   dplyr::select(simpleName, asv_id) %>%
-  dplyr::mutate(simpleName = factor(simpleName, levels = (temp_df %>%  
+  dplyr::mutate(simpleName = factor(simpleName, levels = (spearman.test.filtered.df %>%  
                                                             dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
                                                             tidyr::drop_na(filtered_estimate) %>%
                                                             dplyr::summarise(num_results = length(filtered_estimate), .by = "simpleName") %>%
@@ -1944,6 +2468,8 @@ spearman.sig.strong.metab.list <- temp_df %>%
   split(., f = .$simpleName) %>%
   map(., ~.x %>%
         dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
+        dplyr::arrange(asv_id) %>%
         unlist %>%
         as.character)
 
@@ -1952,7 +2478,7 @@ spearman.sig_corr_asvs_idx_list <- NULL
 spearman.sig_strong_corr_asvs_idx_list <- NULL
 for(i in seq(2, 11, 1)){
   namevar <- paste0("sig_corr_asvs_", i, "_idx")
-  temp_idx <- temp_df %>%  
+  temp_idx <- spearman.test.filtered.df %>%  
     dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
     tidyr::drop_na(estimate) %>%
     dplyr::summarise(num_results = length(estimate), .by = "asv_id") %>%
@@ -1966,7 +2492,7 @@ for(i in seq(2, 11, 1)){
   spearman.sig_corr_asvs_idx_list <- append(spearman.sig_corr_asvs_idx_list, temp_idx)
   
   namevar <- paste0("sig_strong_corr_asvs_", i, "_idx")
-  temp_idx <- temp_df %>%  
+  temp_idx <- spearman.test.filtered.df %>%  
     dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
     tidyr::drop_na(filtered_estimate) %>%
     dplyr::summarise(num_results = length(filtered_estimate), .by = "asv_id") %>%
@@ -1985,25 +2511,14 @@ for(i in seq(2, 11, 1)){
 # View(spearman.sig_corr_asvs_idx_list)
 
 
-
-
-
-# spearman.test.filtered.df <- temp_df %>%
-#   dplyr::filter(asv_id %in% sig_corr_asvs_idx) %>%
-#   # tidyr::drop_na(filtered_estimate) %>%
-#   # dplyr::select(-filtered_estimate) %>%
-#   dplyr::mutate(asv_id = factor(asv_id, levels = labels(dend_asv))) %>%
-#   dplyr::arrange(asv_id) %>%
-#   dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
-#   dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
-#   # dplyr::arrange(asv_id, simpleName) %>%
-#   droplevels
 spearman.test.strong.filtered.list <- spearman.sig_strong_corr_asvs_idx_list %>%
-  map(., ~dplyr::filter(temp_df, asv_id %in% .x) %>%
+  map(., ~dplyr::filter(spearman.test.filtered.df, asv_id %in% .x) %>%
         tidyr::drop_na(filtered_estimate) %>%
         dplyr::select(-filtered_estimate) %>%
         droplevels %>%
-        dplyr::mutate(asv_id = factor(asv_id, levels = labels(dend_asv))) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
+        # dplyr::mutate(asv_id = factor(asv_id, levels = labels(dend_asv))) %>%
+        droplevels %>%
         dplyr::arrange(asv_id) %>%
         dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
         dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
@@ -2011,15 +2526,47 @@ spearman.test.strong.filtered.list <- spearman.sig_strong_corr_asvs_idx_list %>%
         droplevels)
 
 
+#look at site-specific correlations
+spearman.site.sig.metab.list <- spearman.test.site.filtered.df %>%  
+  dplyr::distinct(asv_id, simpleName, site, .keep_all = TRUE) %>% 
+  tidyr::drop_na(estimate) %>%
+  dplyr::select(simpleName, asv_id, site) %>%
+  dplyr::mutate(simpleName = factor(simpleName, levels = (spearman.test.site.filtered.df %>%  
+                                                            dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>% 
+                                                            tidyr::drop_na(estimate) %>%
+                                                            dplyr::summarise(num_results = length(estimate), .by = "simpleName") %>%
+                                                            dplyr::arrange(desc(num_results)) %>%
+                                                            dplyr::select(simpleName) %>%
+                                                            tibble::deframe(.)))) %>%
+  split(., f = .$simpleName) %>%
+  map(., ~.x %>%
+        dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = usvi_sig_seqs_phylogeny.df[["asv_id"]])) %>%
+        dplyr::arrange(asv_id) %>%
+        unlist %>%
+        as.character)
+
 # Summary of Spearman rank correlation coefficient tests ------------------
 
 #if we filter for only the strongest correlations (abs(estimate) >= 0.5) between ASVs and metabolites
-#we resolved 82 ASVs that each had 11+ correlations to 28 metabolites
-#10+ correlations: 110 ASVs correlated to 28 metabolites
-#9+: 123 ASVs and 28 metabolites
-#8+: 145 ASVs and 28 metabolites
-#7+: 167 ASVs and 28 metabolites
-
+#we resolved 52 ASVs that each had 11+ correlations to 24 metabolites
+#10+ correlations: 75 ASVs correlated to 24 metabolites
+#9+: 97 ASVs and 24 metabolites
+#8+: 118 ASVs and 24 metabolites
+#7+: 143 ASVs and 24 metabolites
+#6+: 174 ASVs and 24 metabolites
+# num_corrs num_asvs num_metabs
+# <dbl>    <int> <fct>     
+#   1         2      242 24        
+# 2         3      216 24        
+# 3         4      205 24        
+# 4         5      188 24        
+# 5         6      174 24        
+# 6         7      143 24        
+# 7         8      118 24        
+# 8         9       97 24        
+# 9        10       75 24        
+# 10        11       52 24        
 
 spearman_summary.df <- spearman.test.strong.filtered.list %>%
   map(., ~.x %>%
@@ -2050,6 +2597,7 @@ g6 <- (ggplot(data = spearman_summary.df)
                strip.text.y = element_blank(),
                legend.position = "bottom")
 )
+g6
 
 if(!any(grepl("spearman_strong_corr_summar", list.files(projectpath, pattern = "usvi_.*.png")))){
   ggsave(paste0(projectpath, "/", "usvi_spearman_strong_corr_summary-", Sys.Date(), ".png"),
@@ -2057,141 +2605,15 @@ if(!any(grepl("spearman_strong_corr_summar", list.files(projectpath, pattern = "
          width = 6, height = 6, units = "in")
 }
 
+if(!any(grepl("spearman_df", list.files(projectpath, pattern = "usvi_.*.RData")))){
+  save(spearman.test.site.filtered.df, spearman.test.filtered.df, usvi_sig_seqs_phylogeny.df,
+       spearman.site.sig.metab.list, spearman.sig.strong.metab.list, spearman.sig.metab.list,
+       file = paste0(projectpath, "/", "usvi_spearman_df-", Sys.Date(), ".RData"))
+}
+
 # Plot the heatmaps of correlations ---------------------------------------
-
-as.hclust(dend_metab) %>%
-  cutree(., k = 2) %>%
-  tibble::enframe(name = "metabolite", value = "grouping")
-
-as.hclust(dend_asv) %>%
-  cutree(., k = 2) %>%
-  tibble::enframe(name = "asv_id", value = "grouping")
-
-#try to plot the number of significant correlations across each row (ASV) and column (metabolite):
-# temp_spearman.df <- spearman.test.strong.filtered.list[[9]] %>%
-#   dplyr::select(-label)
-# temp_spearman.df2 <- bind_rows(
-#                                (temp_spearman.df %>%
-#                                   dplyr::group_by(asv_id) %>%
-#                                   dplyr::summarise(label = length(estimate)) %>%
-#                                   dplyr::mutate(simpleName = "total correlations"))) %>%
-#   dplyr::bind_rows(., temp_spearman.df %>%
-#                      dplyr::summarise(label = length(estimate), .by = "simpleName") %>%
-#                      dplyr::mutate(grouping = 1) %>%
-#                      dplyr::mutate(asv_id = "total correlations")) %>%
-#   # dplyr::bind_rows(., temp_spearman.df %>%
-#   #                    dplyr::summarise(label = length(estimate), .by = "simpleName") %>%
-#   #                    dplyr::mutate(grouping = 2) %>%
-#   #                    dplyr::mutate(asv_id = "total correlations")) %>%
-#   # dplyr::bind_rows(., data.frame(asv_id = "",
-#   #                                label = NA,
-#   #                                simpleName = "")) %>%
-#   bind_rows(temp_spearman.df, .) %>%
-#   dplyr::left_join(., as.hclust(dend_asv) %>%
-#                      cutree(., k = 2) %>%
-#                      tibble::enframe(name = "asv_id", value = "grouping"),
-#                    by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-#   dplyr::mutate(grouping = across(starts_with("grouping")) %>% purrr::reduce(coalesce)) %>%
-#   dplyr::select(-ends_with(c(".x", ".y"))) %>%
-#   dplyr::mutate(asv_id = factor(asv_id, levels = c(labels(dend_asv), "total correlations"))) %>%
-#   # dplyr::mutate(asv_id = factor(asv_id, levels = c(labels(dend_asv), "", "total"))) %>%
-#   dplyr::arrange(asv_id) %>%
-#   dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
-#   dplyr::mutate(simpleName = factor(simpleName, levels = c(labels(dend_metab), "total correlations"))) %>%
-#   # dplyr::mutate(simpleName = factor(simpleName, levels = c(labels(dend_metab), "", "total"))) %>%
-#   # dplyr::group_by(simpleName) %>% tidyr::complete(grouping) %>%
-#   droplevels
-# # spearman.test.filtered.df <- spearman.test.strong.filtered.list[[1]]
-
-
-# temp_spearman.df1 <- temp_spearman.df %>%
-#   dplyr::left_join(., as.hclust(dend_asv) %>%
-#                      cutree(., k = 2) %>%
-#                      tibble::enframe(name = "asv_id", value = "grouping"),
-#                    by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-#   split(., f = .$grouping) %>%
-#   map(., ~.x %>%
-#         droplevels %>%
-#         dplyr::group_by(asv_id, grouping) %>%
-#         dplyr::summarise(label = length(estimate), .groups = "keep") %>%
-#         dplyr::mutate(simpleName2 = "total correlations")) %>%
-#   map(., ~.x %>%
-#         dplyr::left_join(temp_spearman.df %>%
-#                            dplyr::select(asv_id, simpleName, estimate), by = join_by(asv_id))) %>%
-#   bind_rows(., .id = NULL) %>%
-#   droplevels
 # 
-# temp_spearman.df2 <- temp_spearman.df1 %>%
-#   split(., f = .$simpleName) %>%
-#   map(., ~.x %>%
-#         dplyr::group_by(grouping, simpleName) %>%
-#         dplyr::summarise(label = length(estimate), .groups = "keep") %>%
-#         dplyr::mutate(asv_id = "total correlations") %>%
-#         # droplevels)
-#         droplevels) %>%
-#   bind_rows(., .id = NULL) %>%
-#   bind_rows(., temp_spearman.df1 %>%
-#               dplyr::select(asv_id, grouping, label, simpleName2) %>%
-#               dplyr::rename(simpleName = "simpleName2") %>%
-#               dplyr::distinct(asv_id, grouping, label, simpleName) %>%
-#               droplevels) %>%
-#   bind_rows(., (temp_spearman.df %>%
-#                   dplyr::left_join(., as.hclust(dend_asv) %>%
-#                                      cutree(., k = 2) %>%
-#                                      tibble::enframe(name = "asv_id", value = "grouping"),
-#                                    by = join_by(asv_id), relationship = "many-to-many", multiple = "all") )) %>%
-#   dplyr::select(asv_id, grouping, simpleName, label, estimate, sig) %>%
-#   dplyr::mutate(asv_id = factor(asv_id, levels = c(labels(dend_asv), "total correlations"))) %>%
-#   dplyr::arrange(asv_id) %>%
-#   dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
-#   dplyr::mutate(simpleName = factor(simpleName, levels = c(labels(dend_metab), "total correlations"))) %>%
-#   droplevels
-# 
-# print(
-#   ggplot(data = temp_spearman.df2 %>%
-#            droplevels, aes(x = asv_id, y = simpleName))
-#   + theme_bw()
-#   # + geom_raster(aes(fill = estimate), hjust = 0, alpha = 0.7, show.legend = TRUE)
-#   + geom_tile(aes(fill = estimate), stat = "identity", color = "black", alpha = 0.7, show.legend = TRUE)
-#   + geom_text(aes(x = asv_id, y = simpleName, label = label), size = 3)
-#   +  scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100),
-#                           transform = "reverse",
-#                           aesthetics = "fill",
-#                           limits = c(1, -1),
-#                           # expand = expansion(1.1,1.1),
-#                           # name = "Similarity (%)",
-#                           na.value = "white")
-#   + scale_color_manual(values = c("grey", "black"),
-#                        breaks = c("not", "sig"),
-#                        labels = c("not", "sig"))
-#   + scale_x_discrete(labels = usvi_genera_relabel,
-#                      expand = c(0,0),
-#                      # name = "Sample identifier")
-#                      name = "Taxon")
-#   + scale_y_discrete(name = "Metabolite",
-#                      expand = c(0,0))
-#   + theme(panel.spacing = unit(1, "lines"),
-#           # + theme(
-#           panel.background = element_blank(),
-#           axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
-#           axis.text.y = element_text(vjust = 0.5, hjust = 1),
-#           # axis.ticks.x = element_blank(),
-#           # axis.ticks.y = element_blank(),
-#           # axis.minor.ticks.x.bottom = element_line(linewidth = 2),
-#           panel.grid.major = element_blank(),
-#           # panel.grid.minor = element_line(color = "black", linewidth = 2),
-#           # panel.grid.major.y = element_line(color = "black"),
-#           # panel.grid.major.x = element_line(color = "black"),
-#           panel.grid.minor.y = element_blank(),
-#           panel.grid.minor.x = element_blank(),
-#           panel.ontop = FALSE,
-#           strip.text.y = element_blank())
-#   # + facet_wrap(grouping~., scales = "free_y", drop = TRUE)
-#   + guides(fill = guide_legend(order = 2, ncol = 1, title = "Spearman estimate", direction = "vertical",
-#                                override.aes = list(stroke = 1, color = "black")),
-#            color = "none")
-#   + coord_flip()
-# )
+
 try(f_run_chunk())
 if(execchunk) {
 for(i in seq_len(length(spearman.test.strong.filtered.list))){
@@ -2209,7 +2631,8 @@ for(i in seq_len(length(spearman.test.strong.filtered.list))){
                        dplyr::summarise(label = length(estimate), .by = "simpleName") %>%
                        dplyr::mutate(asv_id = "total correlations")) %>%
     bind_rows(temp_spearman.df %>% dplyr::select(-label), .) %>%
-    dplyr::mutate(asv_id = factor(asv_id, levels = c(labels(dend_asv), "total correlations"))) %>%
+    # dplyr::mutate(asv_id = factor(asv_id, levels = c(labels(dend_asv), "total correlations"))) %>%
+    dplyr::mutate(asv_id = factor(asv_id, levels = c(usvi_sig_seqs_phylogeny.df[["asv_id"]], "total correlations"))) %>%
     dplyr::arrange(asv_id) %>%
     dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
     dplyr::mutate(simpleName = factor(simpleName, levels = c(labels(dend_metab), "total correlations"))) %>%
@@ -2247,11 +2670,11 @@ for(i in seq_len(length(spearman.test.strong.filtered.list))){
   )
   
   assign(paste0("g6_asvs_", namevar, "_results"), temp_g6, envir = .GlobalEnv)
-  if(!any(grepl("spearman_.*_strong_corr", list.files(projectpath, pattern = "usvi_.*.png")))){
+  # if(!any(grepl("spearman_.*_strong_corr", list.files(projectpath, pattern = "usvi_.*.png")))){
     ggsave(paste0(projectpath, "/", "usvi_spearman_", namevar, "_strong_corr-", Sys.Date(), ".png"),
            temp_g6,
            width = fig_width, height = 12, units = "in")
-  }
+  # }
   rm(temp_g6)
   rm(title_plot)
   rm(namevar)
@@ -2260,6 +2683,263 @@ for(i in seq_len(length(spearman.test.strong.filtered.list))){
 }
 
 
+
+#now plot the site-specific correlations
+
+#option A. average the metabolite profiles that are technical replicates, so there is 1 metabolome sample per microbiome sample (71 samples, LB: 23, Yawzi: 24, Tektite: 24)
+#option B. keep the technical replicates, but duplicate the corresponding microbiome sample (73 samples, LB: 23, Yawzi: 25, Tektite: 25)
+
+spearman.site.sig.filtered.list <- spearman.test.site.filtered.df %>%
+  split(., f = .$site) %>%
+  map(., ~.x %>%
+        tidyr::drop_na(estimate) %>%
+        droplevels %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
+        droplevels %>%
+        dplyr::arrange(asv_id) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+        dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
+        droplevels)
+
+
+for(i in seq_len(length(spearman.site.sig.filtered.list))){
+  namevar <- names(spearman.site.sig.filtered.list)[i]
+  title_plot <- recode(namevar, !!!site_lookup)
+  title_plot <- paste0("ASVs with significant correlations in ", title_plot)
+  temp_spearman.df <- spearman.site.sig.filtered.list[[i]]
+  fig_width <- max(10, (round(nrow(temp_spearman.df)/100, digits = 0) + 2))
+  
+  temp_spearman.df2 <- temp_spearman.df %>%
+    dplyr::summarise(label = length(estimate), .by = "asv_id") %>%
+    dplyr::mutate(simpleName = "total correlations") %>%
+    dplyr::bind_rows(., temp_spearman.df %>%
+                       dplyr::summarise(label = length(estimate), .by = "simpleName") %>%
+                       dplyr::mutate(asv_id = "total correlations")) %>%
+    bind_rows(temp_spearman.df %>% dplyr::select(-label), .) %>%
+    # dplyr::mutate(asv_id = factor(asv_id, levels = c(labels(dend_asv), "total correlations"))) %>%
+    dplyr::mutate(asv_id = factor(asv_id, levels = c(usvi_sig_seqs_phylogeny.df[["asv_id"]], "total correlations"))) %>%
+    dplyr::arrange(asv_id) %>%
+    dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+    dplyr::mutate(simpleName = factor(simpleName, levels = c(labels(dend_metab), "total correlations"))) %>%
+    droplevels
+  
+  temp_g7 <- (
+    ggplot(data = temp_spearman.df2 %>%
+             droplevels, aes(x = asv_id, y = simpleName))
+    + theme_bw() 
+    + geom_tile(aes(fill = estimate), stat = "identity", color = "black", alpha = 0.7, show.legend = TRUE)
+    + geom_text(aes(x = asv_id, y = simpleName, label = label), size = 3)
+    +  scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100), 
+                            transform = "reverse", aesthetics = "fill", 
+                            limits = c(1, -1), na.value = "white")
+    + scale_color_manual(values = c("grey", "black"), 
+                         breaks = c("not", "sig"), 
+                         labels = c("not", "sig"))
+    + scale_x_discrete(labels = usvi_genera_relabel,
+                       expand = c(0,0), name = "Taxon")
+    + scale_y_discrete(name = "Metabolite", expand = c(0,0))
+    + theme(panel.spacing = unit(1, "lines"),
+            panel.background = element_blank(),
+            axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1, size = rel(0.8)),
+            axis.text.y = element_text(vjust = 0.5, hjust = 1),
+            panel.grid.major = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.ontop = TRUE,
+            title = element_text(hjust = 0),
+            strip.text.y = element_blank())
+    + guides(fill = guide_legend(order = 2, ncol = 1, title = "Spearman estimate", direction = "vertical",
+                                 override.aes = list(stroke = 1, color = "black")),
+             color = "none")
+    + coord_flip()
+    + ggtitle(title_plot)
+  )
+  
+  assign(paste0("g7_asvs_", namevar, "_results"), temp_g7, envir = .GlobalEnv)
+  # if(!any(grepl(namevar, list.files(projectpath, pattern = "usvi_spearman_.*site_corr.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_spearman_", namevar, "_site_corr-", Sys.Date(), ".png"),
+         temp_g7,
+         width = fig_width, height = 8, units = "in")
+  # }
+  rm(temp_g7)
+  rm(title_plot)
+  rm(namevar)
+}
+
+gpatch_layout <- "
+    AAAABBB
+    AAAABBB
+    AAAACCC
+    AAAACCC
+    AAAA###
+  "
+
+gpatch1 <- (g7_asvs_LB_seagrass_results + theme(legend.position = "none")) + (g7_asvs_Tektite_results + theme(legend.position = "none")) + (g7_asvs_Yawzi_results + theme(legend.position = "right")) + patchwork::plot_layout(design = gpatch_layout) + patchwork::plot_annotation(title = "Correlations between ASVs and metabolites in each of the 3 sites", tag_levels = "A")
+
+gpatch1
+
+#if you wanted to de novo cluster the ASVs in this subset by taxonomic values...
+temp_dend <- usvi_sig_seqs_phylogeny.df %>%
+  tidyr::drop_na(id) %>%
+  dplyr::select(asv_id, Domain:Genus) %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  dplyr::mutate(across(everything(), as.numeric)) %>%
+  dist(t(.), method = "euclidean") %>%
+  hclust(method = "ward.D2") %>%
+  as.dendrogram
+
+
+if(!any(grepl("all_sites", list.files(projectpath, pattern = "usvi_spearman_.*_corr.*.png")))){
+  ggsave(paste0(projectpath, "/", "usvi_spearman_all_sites_corr-", Sys.Date(), ".png"),
+         gpatch1,
+         width = 16, height = 10, units = "in")
+}
+
+# for(i in seq_len(length(spearman.site.sig.filtered.list))){
+  temp_df <- (spearman.site.sig.filtered.list)[[1]] %>%
+    dplyr::distinct(asv_id, site) %>%
+  dplyr::left_join(., (usvi_prok_asvs.df %>%
+                         dplyr::filter(sample_ID %in% usvi_selected_metadata[["sample_id"]]) %>%
+                         tidyr::pivot_wider(., id_cols = "asv_id",
+                                            names_from = "sample_ID",
+                                            values_from = "counts",
+                                            values_fill = 0) %>%
+                         tibble::column_to_rownames(var = "asv_id") %>%
+                         dplyr::slice(which(rowSums(.) > 0)) %>%
+                         apply(., 2, relabund) %>%
+                         as.data.frame(.) %>%
+                         tibble::rownames_to_column(var = "asv_id") %>%
+                         dplyr::filter(asv_id %in% unique(spearman.test.site.filtered.df[["asv_id"]])) %>%
+                         droplevels %>%
+                         tidyr::pivot_longer(., cols = !c("asv_id"),
+                                             names_to = "sample_id",
+                                             values_to = "relabund") %>%
+                         dplyr::right_join(., usvi_selected_metadata %>%
+                                             dplyr::filter(sampling_day != "Day1") %>%
+                                             dplyr::distinct(sample_id, site, metab_deriv_label) %>%
+                                             droplevels,
+                                           by = join_by(sample_id), relationship = "many-to-many", multiple = "all") %>%
+                         droplevels %>%
+                         dplyr::mutate(across(c(asv_id, site), ~factor(.x))) %>%
+                         tidyr::drop_na(.) %>%
+                         dplyr::group_by(asv_id, site) %>%
+                         dplyr::summarise(max = max(relabund),
+                                          min = min(relabund),
+                                          value = mean(relabund))),
+                   by = join_by(asv_id, site), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+    droplevels
+  
+  temp_df2 <- (spearman.site.sig.filtered.list)[[1]] %>%
+    dplyr::select(site, simpleName) %>%
+    dplyr::left_join(., usvi_selected_metadata %>%
+                        dplyr::filter(sampling_day != "Day1") %>%
+                        dplyr::distinct(sample_id, site, metab_deriv_label) %>%
+                        droplevels,
+                      by = join_by(site), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::left_join(., usvi_metab.tbl %>%
+                       tibble::as_tibble(rownames = "metab_deriv_label") %>%
+                       tidyr::pivot_longer(., cols = !c("metab_deriv_label"),
+                                           names_to = "simpleName",
+                                           values_to = "conc") %>%
+                       dplyr::mutate(conc = log2(conc + 1)) %>%
+                       droplevels, by = join_by(simpleName, metab_deriv_label), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::mutate(across(c(simpleName, site), ~factor(.x))) %>%
+    tidyr::drop_na(.) %>%
+    dplyr::group_by(simpleName, site) %>%
+    dplyr::summarise(max = max(conc),
+                     min = min(conc),
+                     value = mean(conc)) %>%
+    droplevels
+  
+  temp_df <- (spearman.site.sig.filtered.list)[[1]] %>%
+    dplyr::distinct(asv_id, site, simpleName) %>%
+    dplyr::inner_join(., (metabolomics_sample_metadata %>%
+                           dplyr::filter(grepl("seawater", sample_type)) %>%
+                           dplyr::select(sample_id, site, metab_deriv_label) %>%
+                           droplevels), by = join_by(site), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::left_join(., usvi_metabolomics_long.df %>%
+                       dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+                       dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+                       # dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+                       dplyr::filter(LODflag == 0) %>%
+                       dplyr::select(-LODflag),
+                     by = join_by(simpleName, metab_deriv_label), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::left_join(., (usvi_prok_asvs.df %>%
+                           dplyr::filter(sample_ID %in% usvi_selected_metadata[["sample_id"]]) %>%
+                           tidyr::pivot_wider(., id_cols = "asv_id",
+                                              names_from = "sample_ID",
+                                              values_from = "counts",
+                                              values_fill = 0) %>%
+                           tibble::column_to_rownames(var = "asv_id") %>%
+                           dplyr::slice(which(rowSums(.) > 0)) %>%
+                           apply(., 2, relabund) %>%
+                           as.data.frame(.) %>%
+                           tibble::rownames_to_column(var = "asv_id") %>%
+                           dplyr::filter(asv_id %in% unique(spearman.test.site.filtered.df[["asv_id"]])) %>%
+                           droplevels %>%
+                           tidyr::pivot_longer(., cols = !c("asv_id"),
+                                               names_to = "sample_id",
+                                               values_to = "relabund") %>%
+                           dplyr::right_join(., usvi_selected_metadata %>%
+                                               dplyr::filter(sampling_day != "Day1") %>%
+                                               dplyr::distinct(sample_id, site, metab_deriv_label) %>%
+                                               droplevels,
+                                             by = join_by(sample_id), relationship = "many-to-many", multiple = "all") %>%
+                           droplevels),
+                     by = join_by(asv_id, metab_deriv_label,sample_id, site), relationship = "many-to-many", multiple = "all") %>%
+    droplevels %>%
+    dplyr::inner_join(., (spearman.site.sig.filtered.list)[[1]] %>%
+                                                             dplyr::distinct(asv_id, simpleName) %>%
+                                                             droplevels, 
+                                                           by = join_by(asv_id, simpleName)) %>%
+    tidyr::drop_na(.) %>%
+    dplyr::select(asv_id, simpleName, conc, relabund) %>%
+    # tidyr::pivot_longer(., cols  = !c(asv_id, simpleName),
+    #                     names_to = NULL,
+    #                     values_to = "parameter") %>%
+    # tidyr::pivot_longer(., cols = !c(asv_id, simpleName),
+    #                     names_to = "metric",
+    #                     values_to = "value") %>%
+    droplevels
+  
+  # print(
+  #     ggplot(data = temp_df %>%
+  #              droplevels, aes(x = asv_id, y = simpleName))
+  #     + theme_bw()
+  #     # + geom_raster(aes(fill = estimate), hjust = 0, alpha = 0.7, show.legend = TRUE)
+  #     + geom_tile(aes(fill = estimate), stat = "identity", color = "black", alpha = 0.7, show.legend = TRUE)
+  #     +  scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100),
+  #                             transform = "reverse",
+  #                             aesthetics = "fill",
+  #                             limits = c(1, -1),
+  #                             # expand = expansion(1.1,1.1),
+  #                             # name = "Similarity (%)",
+  #                             na.value = "white")
+  #     + scale_color_manual(values = c("grey", "black"),
+  #                          breaks = c("not", "sig"),
+  #                          labels = c("not", "sig"))
+  #     + scale_x_discrete(labels = usvi_genera_relabel,
+  #                        expand = c(0,0),
+  #                        # name = "Sample identifier")
+  #                        name = "Taxon")
+  #     + scale_y_discrete(name = "Metabolite",
+  #                        expand = c(0,0))
+  #     + theme(panel.spacing = unit(1, "lines"),
+  #             panel.background = element_blank(),
+  #             axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+  #             axis.text.y = element_text(vjust = 0.5, hjust = 1),
+  #             panel.grid.major = element_blank(),
+  #             panel.grid.minor.y = element_blank(),
+  #             panel.grid.minor.x = element_blank(),
+  #             panel.ontop = FALSE,
+  #             strip.text.y = element_blank())
+  #     + guides(fill = guide_legend(order = 2, ncol = 1, title = "Spearman estimate", direction = "vertical",
+  #                                  override.aes = list(stroke = 1, color = "black")),
+  #              color = "none")
+  #     + coord_flip()
+  #   )
+# }
 
 # 
 # #filter out only rho abs(estimates) >= 0.5
@@ -2293,354 +2973,44 @@ for(i in seq_len(length(spearman.test.strong.filtered.list))){
 #   droplevels
 
 
-print(
-  ggplot(data = spearman.test.filtered.df %>%
-           tidyr::drop_na(filtered_estimate) %>%
-           droplevels, aes(x = asv_id, y = simpleName))
-  + theme_bw() 
-  # + geom_raster(aes(fill = estimate), hjust = 0, alpha = 0.7, show.legend = TRUE)
-  + geom_tile(aes(fill = estimate), stat = "identity", color = "black", alpha = 0.7, show.legend = TRUE)
-  +  scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100), 
-                          transform = "reverse",
-                          aesthetics = "fill", 
-                          limits = c(1, -1),
-                          # expand = expansion(1.1,1.1), 
-                          # name = "Similarity (%)",
-                          na.value = "white")
-  + scale_color_manual(values = c("grey", "black"), 
-                       breaks = c("not", "sig"), 
-                       labels = c("not", "sig"))
-  + scale_x_discrete(labels = usvi_genera_relabel,
-                     expand = c(0,0),
-                     # name = "Sample identifier")
-                     name = "Taxon")
-  + scale_y_discrete(name = "Metabolite",
-                     expand = c(0,0))
-  + theme(panel.spacing = unit(1, "lines"),
-          panel.background = element_blank(),
-          axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
-          axis.text.y = element_text(vjust = 0.5, hjust = 1),
-          panel.grid.major = element_blank(),
-          panel.grid.minor.y = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          panel.ontop = FALSE,
-          strip.text.y = element_blank())
-  + guides(fill = guide_legend(order = 2, ncol = 1, title = "Spearman estimate", direction = "vertical",
-                               override.aes = list(stroke = 1, color = "black")),
-           color = "none")
-  + coord_flip()
-)
+# print(
+#   ggplot(data = spearman.test.filtered.df %>%
+#            tidyr::drop_na(filtered_estimate) %>%
+#            droplevels, aes(x = asv_id, y = simpleName))
+#   + theme_bw() 
+#   # + geom_raster(aes(fill = estimate), hjust = 0, alpha = 0.7, show.legend = TRUE)
+#   + geom_tile(aes(fill = estimate), stat = "identity", color = "black", alpha = 0.7, show.legend = TRUE)
+#   +  scale_fill_gradientn(colors = colorRampPalette(pals::coolwarm(n = 3))(100), 
+#                           transform = "reverse",
+#                           aesthetics = "fill", 
+#                           limits = c(1, -1),
+#                           # expand = expansion(1.1,1.1), 
+#                           # name = "Similarity (%)",
+#                           na.value = "white")
+#   + scale_color_manual(values = c("grey", "black"), 
+#                        breaks = c("not", "sig"), 
+#                        labels = c("not", "sig"))
+#   + scale_x_discrete(labels = usvi_genera_relabel,
+#                      expand = c(0,0),
+#                      # name = "Sample identifier")
+#                      name = "Taxon")
+#   + scale_y_discrete(name = "Metabolite",
+#                      expand = c(0,0))
+#   + theme(panel.spacing = unit(1, "lines"),
+#           panel.background = element_blank(),
+#           axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+#           axis.text.y = element_text(vjust = 0.5, hjust = 1),
+#           panel.grid.major = element_blank(),
+#           panel.grid.minor.y = element_blank(),
+#           panel.grid.minor.x = element_blank(),
+#           panel.ontop = FALSE,
+#           strip.text.y = element_blank())
+#   + guides(fill = guide_legend(order = 2, ncol = 1, title = "Spearman estimate", direction = "vertical",
+#                                override.aes = list(stroke = 1, color = "black")),
+#            color = "none")
+#   + coord_flip()
+# )
 
-
-# Plot relative abundances of significant taxa ----------------------------
-
-
-#from rademu:
-# rademu_reef_res.df %>%
-#   dplyr::distinct(asv_id, group) %>%
-#   droplevels
-
-#these genera flagged as significantly differentially abundant between reef sites and seagrass seawater, contributed between 14.0% - 45.6% of total sequences in each sample
-
-
-#from spearman:
-# spearman.test.filtered.df %>%
-#   dplyr::select(asv_id) %>%
-#   dplyr::distinct(.)
-
-
-
-temp_df <- usvi_sda_genera_compare.df %>%
-              dplyr::ungroup(.) %>%
-                  # dplyr::distinct(asv_id, test_type, group, site, .keep_all = FALSE) %>%
-  dplyr::mutate(group = dplyr::coalesce(group, sampling_time)) %>% dplyr::select(-sampling_time) %>% dplyr::distinct(asv_id, group, test_type) %>%
-  # dplyr::distinct(asv_id, test_type, site, .keep_all = FALSE) %>%
-  # dplyr::rename(group = "site") %>%
-                  dplyr::rename(category = "test_type") %>%
-  dplyr::distinct(asv_id, category, .keep_all = TRUE) %>%
-                  # tidyr::drop_na(group) %>%
-  dplyr::arrange(asv_id) %>%
-  droplevels %>%
-    dplyr::full_join(.,
-              (spearman.test.filtered.df %>%
-                 dplyr::select(asv_id) %>%
-                 dplyr::distinct(.) %>%
-                 dplyr::mutate(spearman = "rho"))) %>%
-  dplyr::mutate(group = dplyr::case_when(is.na(group) ~ "not",
-                                         .default = group)) %>%
-  # tidyr::drop_na(.) %>%
-  # tidyr::pivot_wider(., id_cols = c("asv_id", "spearman"),
-  #                    names_from = "group",
-  #                    values_from = "category") %>%
-  # dplyr::select(-not) %>%
-  droplevels
-# temp_df <- (usvi_sda_genera_compare.df %>%
-#               dplyr::ungroup(.) %>%
-#               # dplyr::distinct(asv_id, sampling_time, test_type) %>%
-#               # dplyr::rename(category = "sampling_time") %>%
-#               # dplyr::rename(group = "test_type") %>%
-#               # dplyr::mutate(category = "rademu") %>%
-#               # temp_df <- (rademu_reef_res.df %>%
-#               tidyr::drop_na(group) %>%
-#               dplyr::distinct(asv_id, group) %>%
-#               # dplyr::distinct(asv_id, Combo) %>%
-#               # dplyr::rename(group = "Combo") %>%
-#               dplyr::mutate(category = "rademu") %>%
-#               droplevels) %>%
-#   bind_rows(., (usvi_sda_genera_compare.df %>%
-#                   dplyr::ungroup(.) %>%
-#                   # dplyr::distinct(asv_id, sampling_time, test_type) %>%
-#                   # dplyr::rename(category = "sampling_time") %>%
-#                   # dplyr::rename(group = "test_type") %>%
-#                   # dplyr::mutate(category = "rademu") %>%
-#                   # temp_df <- (rademu_reef_res.df %>%
-#                   tidyr::drop_na(baseMean) %>%
-#                   dplyr::distinct(asv_id, test_type, Combo, .keep_all = FALSE) %>%
-#                   dplyr::rename(group = "Combo") %>%
-#                   dplyr::rename(category = "test_type") %>%
-#                   tidyr::drop_na(group) %>%
-#                   # dplyr::mutate(category = "deseq") %>%
-#                   droplevels) ) %>%
-#   dplyr::arrange(asv_id) %>%
-#   # tidyr::pivot_wider(., id_cols = "asv_id",
-#   #                    names_from = "category",
-#   #                    values_from = "group") %>%
-#   # bind_rows(., 
-#   #           (spearman.test.filtered.df %>%
-#   #              dplyr::select(asv_id) %>%
-#   #              dplyr::distinct(.) %>%
-#   #              # dplyr::mutate(category = "spearman") %>%
-#   #              dplyr::mutate(group = "rho"))) %>%
-#   droplevels
-
-usvi_key_genera.df <- usvi_sw_genus.tbl %>%
-  dplyr::select(c(asv_id, all_of(unique(metabolomics_sample_metadata[["sample_id"]])))) %>%
-  tibble::column_to_rownames(var = "asv_id") %>%
-  apply(., 2, relabund) %>%
-  as.data.frame(.) %>%
-  tibble::rownames_to_column(var = "asv_id") %>%
-  dplyr::right_join(., usvi_sda_genera_compare.df %>%
-                      dplyr::ungroup(.) %>%
-                      dplyr::distinct(asv_id) %>%
-                    dplyr::left_join(., selfish_sda_genera_idx %>%
-                                       tibble::enframe(name = "test_type.x", value = "asv_id")) %>%
-                      dplyr::left_join(., data.frame(asv_id = shared_sda_genera_idx,
-                                                     test_type.y = "both")) %>%
-                      tidyr::unite("category", c("test_type.x", "test_type.y"), remove = TRUE, na.rm = TRUE) %>%
-                    # usvi_sda_genera_compare.df %>%
-                    #   dplyr::ungroup(.) %>%
-                    #   dplyr::mutate(group = dplyr::coalesce(group, sampling_time)) %>% dplyr::select(-sampling_time) %>% dplyr::distinct(asv_id, group, test_type) %>%
-                    #   dplyr::rename(category = "test_type") %>%
-                    #   dplyr::distinct(asv_id, category, .keep_all = FALSE) %>%
-                    #   dplyr::arrange(asv_id) %>%
-                    #   droplevels %>%
-                      dplyr::full_join(.,
-                                       (spearman.test.filtered.df %>%
-                                          dplyr::select(asv_id) %>%
-                                          dplyr::distinct(asv_id) %>%
-                                          dplyr::mutate(spearman = "rho"))) %>%
-                      droplevels,
-                    by = join_by(asv_id)) %>%
-  droplevels %>%
-  tidyr::pivot_longer(., cols = starts_with("Metab_"),
-                      names_to = "sample_id",
-                      values_to = "relabund") %>%
-  dplyr::left_join(., (metabolomics_sample_metadata %>%
-                         dplyr::filter(grepl("seawater", sample_type)) %>%
-                         dplyr::distinct(sample_id, site,  sampling_day, sampling_time) %>%
-                         droplevels),
-                   by = join_by(sample_id)) %>%
-  dplyr::distinct(asv_id, sample_id, .keep_all = TRUE) %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
-  dplyr::mutate(across(c(asv_id, category, spearman, sample_id, site, sampling_day, sampling_time), ~factor(.x))) %>%
-  dplyr::mutate(sample_id = factor(sample_id, levels = unique(.[["sample_id"]]))) %>%
-  droplevels
-
-
-# usvi_key_genera.df %>%
-#   dplyr::group_by(sample_id) %>%
-#   dplyr::summarise(totalabund = sum(relabund)) %>%
-#   dplyr::arrange((totalabund))
-#   # dplyr::arrange(desc(totalabund))
-
-
-#between 46.5% and 85.3% of sequences are reprsented in these taxa identified through either radEmu or spearmanr ank correlation, as significantly differentially abundant or r2>0.5 correlated with metabolite concentrations
-
-temp_df <- usvi_sw_genus.taxa.df %>%
-  dplyr::filter(asv_id %in% unique(usvi_key_genera.df[["asv_id"]])) %>%
-  droplevels %>%
-  dplyr::select(asv_id, Genus, Domain, Phylum, Class, Order, Family) %>%
-  dplyr::distinct(asv_id, Genus, Domain, Phylum, Class, Order, Family, .keep_all = FALSE) %>%
-  dplyr::mutate(across(c(Class, Order, Genus), ~ dplyr::case_when(is.na(.x) ~ "NA",
-                                                                  .default = .x)))
-
-usvi_key_taxonomy_colors.df <- dplyr::right_join(annotation_taxa_colors_list[["Genus"]] %>%
-                                                   tibble::enframe(., name = "Genus", value = "color"), 
-                                                 usvi_sw_genus.taxa.df %>%
-                                                   dplyr::filter(asv_id %in% unique(usvi_key_genera.df[["asv_id"]])) %>%
-                                                   droplevels %>%
-                                                   dplyr::select(asv_id, Genus, Domain, Phylum, Class, Order, Family) %>%
-                                                   dplyr::distinct(asv_id, Genus, Domain, Phylum, Class, Order, Family, .keep_all = FALSE) %>%
-                                                   dplyr::mutate(across(c(Class, Order, Genus), ~ dplyr::case_when(is.na(.x) ~ "NA",
-                                                                                                                   .default = .x))),
-                                                 # dplyr::mutate(Class = dplyr::case_when(is.na(Class) ~ "NA",
-                                                 #                                        .default = Class)),
-                                                 by = join_by(Genus)) %>%
-  droplevels %>%
-  tidyr::unite("taxonomy_class", c(Domain, Phylum, Class), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_order", c(Domain, Phylum, Class, Order), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_family", c(Domain, Phylum, Class, Order, Family), sep = ";", remove = FALSE, na.rm = TRUE) %>%
-  tidyr::unite("taxonomy_genus", c(Domain, Phylum, Class, Order, Family, Genus), sep = ";", remove = TRUE, na.rm = TRUE) %>%
-  # dplyr::distinct(color, .keep_all = TRUE) %>%
-  dplyr::select(asv_id, color, contains("taxonomy")) %>%
-  tidyr::pivot_longer(., cols = !c(color, asv_id),
-                      # dplyr::select(color, contains("taxonomy")) %>%
-                      # tidyr::pivot_longer(., cols = !c(color),
-                      names_to = "taxonomic_level",
-                      values_to = "taxonomy") %>%
-  dplyr::mutate(taxonomy = dplyr::case_when(grepl("NA;NA", taxonomy) ~ "NA",
-                                            .default = taxonomy)) %>%
-  droplevels %>%
-  dplyr::group_by(asv_id, color) %>%
-  dplyr::mutate(color = dplyr::case_when(is.na(color) ~ sample(color_resample_list, size = 1, replace = FALSE),
-                                         .default = color)) %>%
-  dplyr::ungroup(.) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::arrange(taxonomy) %>%
-  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
-  droplevels
-
-
-asv_colors <- usvi_key_taxonomy_colors.df %>%
-  dplyr::select(asv_id, color) %>%
-  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  tibble::deframe(.)
-taxonomy_colors <- usvi_key_taxonomy_colors.df %>%
-  dplyr::select(taxonomy, color) %>%
-  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
-  tibble::deframe(.)
-
-taxonomy_colors_lookup <- data.frame(taxonomy = names(taxonomy_colors),
-                                     first = stringr::str_split_i(names(taxonomy_colors), ";", 2),
-                                     second = stringr::str_split_i(names(taxonomy_colors), ";", -1)) %>%
-  tidyr::unite(label, c("first", "second"), sep = ";") %>%
-  dplyr::select(label, taxonomy) %>%
-  tibble::deframe(.)
-asv_colors_lookup <- usvi_key_taxonomy_colors.df %>%
-  dplyr::select(asv_id, taxonomy) %>%
-  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  dplyr::mutate(first = stringr::str_split_i(taxonomy, ";", 2),
-                second = stringr::str_split_i(taxonomy, ";", -1)) %>%
-  tidyr::unite(label, c("first", "second"), sep = ";") %>%
-  dplyr::select(label, asv_id) %>%
-  tibble::deframe(.)
-
-temp_df <- usvi_key_genera.df %>%
-  dplyr::left_join(., usvi_key_taxonomy_colors.df %>%
-                     dplyr::filter(grepl("genus", taxonomic_level)) %>%
-                     dplyr::distinct(asv_id, taxonomy, .keep_all = FALSE) %>%
-                     droplevels,
-                   by = join_by(asv_id),
-                   relationship = "many-to-many", multiple = "all") %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(asv_id, taxonomy, sample_id, .keep_all = TRUE) %>%
-  droplevels
-
-temp_df %>%
-  dplyr::distinct(asv_id, category, spearman) %>%
-  # tidyr::drop_na(rademu) %>%
-  # tidyr::drop_na(spearman) %>%
-  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  dplyr::group_by(category, spearman) %>%
-  dplyr::summarise(num_taxa = length(asv_id))
-temp_df %>%
-  dplyr::distinct(asv_id, category, spearman) %>%
-  # tidyr::drop_na(rademu) %>%
-  # tidyr::drop_na(spearman) %>%
-  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-  dplyr::group_by(category) %>%
-  dplyr::summarise(num_taxa = length(asv_id))
-
-
-
-g3 <- print(ggplot(data = temp_df %>%
-                     dplyr::filter(!is.na(category) & !is.na(spearman)) %>%
-                     droplevels, aes(y = relabund,
-                                     x = sample_id,
-                                     group = taxonomy,
-                                     # color = taxonomy,
-                                     # fill = taxonomy))
-                                     fill = asv_id))
-            + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
-            + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
-            + theme_bw()
-            + scale_y_continuous(expand = expansion(mult = c(0,0.1)))
-            + scale_x_discrete(labels = gsub("((Yawzi_)|(Tektite_)|(LB_seagrass_))", "", sample_relabel), name = "Sample identifier")
-            + scale_fill_manual(values = asv_colors, 
-                                breaks = names(asv_colors),
-                                labels = names(asv_colors_lookup),
-                                # + scale_fill_manual(values = taxonomy_colors, 
-                                #                     breaks = names(taxonomy_colors),
-                                #                     labels = names(taxonomy_colors_lookup),
-                                drop = FALSE)
-            + facet_grid(scales = "free_x", space = "free",
-                         labeller = labeller(site = site_lookup),
-                         category ~ site)
-            + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-                    strip.text.x = element_text(angle = 0),
-                    strip.text.y = element_text(angle = 0))
-            + labs(x = "sample",
-                   y = "Relative abundance (%)")
-            # + coord_cartesian(ylim = c(0,60), expand = FALSE)
-            + guides(fill = guide_legend(order = 2, ncol = 2, title = "Taxonomy", direction = "vertical",
-                                         override.aes = list(stroke = 1, color = "black")),
-                     color = "none")
-)
-g4 <- print(ggplot(data = temp_df %>%
-                     dplyr::filter(is.na(category) & !is.na(spearman)) %>%
-                     droplevels, aes(y = relabund,
-                                     x = sample_id,
-                                     group = taxonomy,
-                                     # color = taxonomy,
-                                     fill = taxonomy))
-            + geom_bar(width = 0.90, show.legend = TRUE, position = "stack", stat = "identity")
-            + geom_bar(color = "black", width = 0.90, show.legend = FALSE, position = "stack", stat = "identity")
-            + theme_bw()
-            + scale_y_continuous(expand = expansion(mult = c(0,0.1)))
-            + scale_x_discrete(labels = gsub("((Yawzi_)|(Tektite_)|(LB_seagrass_))", "", sample_relabel), name = "Sample identifier")
-            + scale_fill_manual(values = taxonomy_colors, 
-                                breaks = names(taxonomy_colors),
-                                labels = names(taxonomy_colors_lookup),
-                                drop = TRUE)
-            + facet_grid(scales = "free_x", space = "free",
-                         labeller = labeller(site = site_lookup),
-                         . ~ site)
-            + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-                    strip.text.x = element_text(angle = 0),
-                    strip.text.y = element_text(angle = 0))
-            + labs(x = "sample",
-                   y = "Relative abundance (%)")
-            # + coord_cartesian(ylim = c(0,100), expand = FALSE)
-            + guides(fill = guide_legend(order = 2, ncol = 1, title = "Taxonomy", direction = "vertical",
-                                         override.aes = list(stroke = 1, color = "black")),
-                     color = "none")
-)
-
-
-gpatch <- (g3 + ggtitle("SDA taxa, strong correlations with metabolites") + theme(axis.text.x = element_blank(), axis.title.x = element_blank())) / (g4 + ggtitle("Strong correlations with metabolites, not SDA taxa")) + patchwork::plot_layout(guides = "collect") + patchwork::plot_annotation(title = "Relative abundance of key genera", tag_levels = "A")
-gpatch
-
-if(!any(grepl("key_genera_relabund", list.files(projectpath, pattern = "usvi_.*.png")))){
-  ggsave(paste0(projectpath, "/", "usvi_key_genera_relabund-", Sys.Date(), ".png"),
-         gpatch,
-         width = 20, height = 16, units = "in")
-  ggsave(paste0(projectpath, "/", "usvi_key_genera_relabund_sda-", Sys.Date(), ".png"),
-         g3,
-         width = 20, height = 10, units = "in")
-  ggsave(paste0(projectpath, "/", "usvi_key_genera_relabund_not_sda-", Sys.Date(), ".png"),
-         g4,
-         width = 16, height = 8, units = "in")
-}
 
 
 
@@ -2648,7 +3018,7 @@ if(!any(grepl("key_genera_relabund", list.files(projectpath, pattern = "usvi_.*.
 
 
 temp_graph <- spearman.test.filtered.df %>%
-  dplyr::filter(!is.na(rho_threshold) | !is.na(group)) %>%
+  dplyr::filter(!is.na(filtered_estimate)) %>%
   dplyr::select(asv_id, simpleName, estimate) %>%
   droplevels %>%
   droplevels %>%
@@ -2671,244 +3041,241 @@ plot(temp_graph)
 # edge_density(temp_graph)
 
 #make a tidy-compatible dataframe to plot the graph:
-temp_graph_coords <- igraph::layout_nicely(temp_graph, dim = 2) %>%
-  tibble::as_tibble(.) %>%
-  dplyr::mutate(nodes = vertex_attr(temp_graph, "name")) %>%
-  dplyr::relocate(nodes) %>%
-  dplyr::mutate(type = dplyr::case_when(grepl("ASV_", nodes) ~ "taxon",
-                                        .default = "metabolite")) %>%
-  dplyr::left_join(., spearman.test.filtered.df %>%
-                     dplyr::select(asv_id, group) %>%
-                     dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-                     droplevels,
-                   by = join_by("nodes" =="asv_id"))
-
-# print(
-#   ggplot(data = temp_graph_coords, aes(x = V1, y = V2, fill = type))
+# temp_graph_coords <- igraph::layout_nicely(temp_graph, dim = 2) %>%
+#   tibble::as_tibble(.) %>%
+#   dplyr::mutate(nodes = vertex_attr(temp_graph, "name")) %>%
+#   dplyr::relocate(nodes) %>%
+#   dplyr::mutate(type = dplyr::case_when(grepl("ASV_", nodes) ~ "taxon",
+#                                         .default = "metabolite")) %>%
+#   dplyr::left_join(., spearman.test.filtered.df %>%
+#                      # dplyr::select(asv_id, group) %>%
+#                      dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+#                      droplevels,
+#                    by = join_by("nodes" =="asv_id"))
+# 
+# # print(
+# #   ggplot(data = temp_graph_coords, aes(x = V1, y = V2, fill = type))
+# #   + theme_bw()
+# #   + geom_point(shape = 21)
+# # )
+# 
+# temp_df <- temp_graph_coords %>%
+#   dplyr::select(nodes, V1, V2) %>%
+#   dplyr::distinct(., .keep_all = TRUE) %>%
+#   dplyr::rename(xstart = "V1",
+#                 node_start = "nodes",
+#                 ystart = "V2") %>%
+#   droplevels
+# 
+# temp_graph_edges <- spearman.test.filtered.df %>%
+#   dplyr::filter(!is.na(rho_threshold) | !is.na(group)) %>%
+#   dplyr::select(asv_id, simpleName, estimate) %>%
+#   droplevels %>%
+#   ggsankey::make_long(., asv_id, simpleName, value = "estimate") %>%
+#   tidyr::drop_na(next_node) %>%
+#   dplyr::rename(node_start = "node",
+#                 node_end = "next_node",
+#                 estimate = "value") %>%
+#   dplyr::select(node_start, node_end, estimate) %>%
+#   dplyr::distinct(., .keep_all = TRUE) %>%
+#   droplevels %>%
+#   dplyr::left_join(., temp_df,
+#                    by = join_by(node_start)) %>%
+#   dplyr::left_join(., temp_df %>%
+#                      dplyr::rename(node_end = "node_start",
+#                                    xend = "xstart",
+#                                    yend = "ystart"),
+#                    by = join_by(node_end)) %>%
+#   # dplyr::left_join(., temp_graph_coords %>%
+#   #   dplyr::select(nodes, type, color, group) %>%
+#   #   droplevels,
+#   # by = join_by("node_start" == "nodes")) %>%
+#   dplyr::mutate(direction = dplyr::case_when((estimate < 0) ~ "negative",
+#                                              (estimate > 0) ~ "positive",
+#                                              .default = NA)) %>%
+#   dplyr::mutate(abs_estimate = abs(estimate)) %>%
+#   droplevels
+# 
+# 
+# #plot the taxa with higher abundance in reefs than in seagrass, and their metabolite correlations:
+# 
+# keep <- spearman.test.filtered.df %>%
+#   dplyr::filter(grepl("high", group)) %>%
+#   dplyr::filter(!is.na(rho_threshold)) %>%
+#   dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
+#   droplevels %>%
+#   tidyr::pivot_longer(., cols = everything(),
+#                       names_to = NULL,
+#                       values_to = "nodes") %>%
+#   dplyr::arrange(nodes) %>%
+#   distinct(.) %>%
+#   unlist(.)
+# 
+# temp_df2 <- temp_graph_coords %>%
+#   dplyr::filter(grepl(paste0(keep, collapse = "|"), nodes)) %>%
+#   dplyr::mutate(nodes = dplyr::case_when(grepl("ASV_", nodes) ~ dplyr::recode_factor(nodes, !!!usvi_genera_relabel),
+#                                          .default = nodes)) %>%
+#   dplyr::mutate(nodes = stringr::str_split_i(nodes, ";", -1)) %>%
+#   droplevels
+# 
+# temp_df1 <- temp_graph_edges %>%
+#   dplyr::right_join(., spearman.test.filtered.df %>%
+#                       dplyr::filter(grepl("high", group)) %>%
+#                       dplyr::filter(!is.na(rho_threshold)) %>%
+#                       dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
+#                       droplevels,
+#                     by = join_by("node_start" == "asv_id", "node_end" == "simpleName")) %>%
+#   dplyr::mutate(node_start = dplyr::case_when(grepl("ASV_", node_start) ~ dplyr::recode_factor(node_start, !!!usvi_genera_relabel),
+#                                               .default = node_start)) %>%
+#   dplyr::mutate(node_start = stringr::str_split_i(node_start, ";", -1)) %>%
+#   droplevels
+# 
+# 
+# 
+# #now do the lower-abudnace taxa and their metabolite correlations
+# 
+# keep <- spearman.test.filtered.df %>%
+#   dplyr::filter(grepl("low", group)) %>%
+#   dplyr::filter(!is.na(rho_threshold)) %>%
+#   dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
+#   droplevels %>%
+#   tidyr::pivot_longer(., cols = everything(),
+#                       names_to = NULL,
+#                       values_to = "nodes") %>%
+#   dplyr::arrange(nodes) %>%
+#   distinct(.) %>%
+#   unlist(.)
+# 
+# temp_df4 <- temp_graph_coords %>%
+#   dplyr::filter(grepl(paste0(keep, collapse = "|"), nodes)) %>%
+#   dplyr::mutate(nodes = dplyr::case_when(grepl("ASV_", nodes) ~ dplyr::recode_factor(nodes, !!!usvi_genera_relabel),
+#                                          .default = nodes)) %>%
+#   dplyr::mutate(nodes = stringr::str_split_i(nodes, ";", -1)) %>%
+#   droplevels
+# 
+# temp_df3 <- temp_graph_edges %>%
+#   dplyr::right_join(., spearman.test.filtered.df %>%
+#                       dplyr::filter(grepl("low", group)) %>%
+#                       dplyr::filter(!is.na(rho_threshold)) %>%
+#                       dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
+#                       droplevels,
+#                     by = join_by("node_start" == "asv_id", "node_end" == "simpleName")) %>%
+#   dplyr::mutate(node_start = dplyr::case_when(grepl("ASV_", node_start) ~ dplyr::recode_factor(node_start, !!!usvi_genera_relabel),
+#                                               .default = node_start)) %>%
+#   dplyr::mutate(node_start = stringr::str_split_i(node_start, ";", -1)) %>%
+#   droplevels
+# 
+# temp_list <- list(list(temp_df1, temp_df2) %>%
+#                     setNames(., c("connections", "nodes")), 
+#                   (list(temp_df3, temp_df4) %>%
+#                      setNames(., c("connections", "nodes")))) %>%
+#   setNames(., c("high_reef", "low_reef"))
+# 
+# 
+# g1 <- print(
+#   ggplot(data = temp_df1)
 #   + theme_bw()
-#   + geom_point(shape = 21)
+#   + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend,
+#                      linewidth = abs_estimate, color = direction),
+#                  arrow = arrow(length = unit(0.03, "npc"),
+#                                angle = 30, ends = "last", type = "closed"),
+#                  lineend = "butt", linejoin = "round",
+#                  alpha = 0.7, show.legend = TRUE)
+#   + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend),
+#                  lineend = "butt", linejoin = "round", linetype = 2, color = "black",
+#                  alpha = 0.7, show.legend = TRUE)
+#   + geom_point(data = temp_df2, aes(x = V1, y = V2, fill = type), shape = 21, size = 3, alpha = 1)
+#   + ggrepel::geom_label_repel(data = temp_df2, aes(x = V1, y = V2, label = nodes, fill = type),
+#                               direction = "both", segment.color = NA, seed = 123,
+#                               force = 1, force_pull = 1,
+#                               point.padding = unit(0.01, "npc"),
+#                               box.padding = unit(0.01, "npc"),
+#                               colour = "black", fontface = "bold")
+#   + scale_color_manual(values = c("#dec1aa", "#03c4da"),
+#                        breaks = c("negative", "positive"),
+#                        labels = c("negative", "positive"))
+#   + scale_fill_manual(values = c("#c5b8dc", "#b9d2b1"),
+#                       breaks = c("taxon", "metabolite"),
+#                       labels = c("taxon", "metabolite"))
+#   + scale_linewidth_continuous(name = "Strength of relationship")
+#   + scale_x_continuous(expand = expansion(0.1,0.1))
+#   + scale_y_continuous(expand = expansion(0.1,0.1))
+#   + theme(
+#     axis.text = element_blank(),
+#     axis.ticks = element_blank(),
+#     axis.title = element_blank(),
+#     panel.grid.minor = element_blank(),
+#     panel.grid.major = element_blank())
+#   + ggtitle("Taxa significantly more abundant in reef sites and strong correlations with metabolites")
 # )
+# 
+# 
+# 
+# for(i in 1:length(temp_list)){
+#   namevar <- eval(names(temp_list)[i]) %>%
+#     gsub("_", " in ", .)
+#   temp_df1 <- temp_list[[i]]$connections %>%
+#     as.data.frame(.)
+#   temp_df2 <- temp_list[[i]]$nodes %>%
+#     as.data.frame(.)
+#   
+#   g <- print(
+#     ggplot(data = temp_df1)
+#     # ggplot(data = temp_list[[i]]$connections)
+#     + theme_bw()
+#     + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend,
+#                        linewidth = abs_estimate, color = direction), 
+#                    arrow = arrow(length = unit(0.03, "npc"), 
+#                                  angle = 30, ends = "last", type = "closed"), 
+#                    lineend = "butt", linejoin = "round",
+#                    alpha = 0.7, show.legend = TRUE)
+#     + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend), 
+#                    lineend = "butt", linejoin = "round", linetype = 2, color = "black",
+#                    alpha = 0.7, show.legend = FALSE)
+#     + geom_point(data = temp_df2,
+#                  # + geom_point(data = temp_list[[i]]$node, 
+#                  aes(x = V1, y = V2, fill = type), shape = 21, size = 3, alpha = 1)
+#     + ggrepel::geom_label_repel(aes(x = V1, y = V2, label = nodes, fill = type),
+#                                 # data = temp_list[[i]]$node, 
+#                                 data = temp_df2, 
+#                                 max.overlaps = 30,
+#                                 direction = "both", segment.color = NA, seed = 123,
+#                                 force = 1, force_pull = 1,
+#                                 point.padding = unit(0.01, "npc"),
+#                                 box.padding = unit(0.01, "npc"),
+#                                 colour = "black", fontface = "bold")
+#     + scale_color_manual(values = c("#dec1aa", "#03c4da"),
+#                          breaks = c("negative", "positive"),
+#                          labels = c("negative", "positive"), drop = FALSE)
+#     + scale_fill_manual(values = c("#c5b8dc", "#b9d2b1"),
+#                         breaks = c("taxon", "metabolite"),
+#                         labels = c("taxon", "metabolite"), drop = FALSE)
+#     + scale_linewidth_continuous(name = "Strength of relationship", limits = c(0, 0.9))
+#     + scale_x_continuous(expand = expansion(0.1,0.1))
+#     + scale_y_continuous(expand = expansion(0.1,0.1))
+#     + theme(axis.text = element_blank(),
+#             axis.ticks = element_blank(),
+#             axis.title = element_blank(),
+#             panel.grid.minor = element_blank(),
+#             panel.grid.major = element_blank())
+#     + ggtitle(paste0("Taxa significantly ", namevar, " sites"))
+#   )
+#   
+#   assign(paste0("g", i), g, envir = .GlobalEnv, inherits = TRUE)
+#   rm(g)
+#   rm(namevar)
+# }
+# 
+# gpatch2  <- ((g1 + theme(legend.position = "none")) | g2) + patchwork::plot_layout(guides = "collect")
+# gpatch2 <- gpatch2 + patchwork::plot_annotation(title = "Network graphs of metabolite concentrations related to taxa abundances",
+#                                                 tag_levels = "A")
+# gpatch2
+# if(!any(grepl("key_taxa_network", list.files(projectpath, pattern = "usvi_.*.png")))){
+#   ggsave(paste0(projectpath, "/", "usvi_key_taxa_network-", Sys.Date(), ".png"),
+#          gpatch2,
+#          width = 18, height = 10, units = "in")
+# }
 
-temp_df <- temp_graph_coords %>%
-  dplyr::select(nodes, V1, V2) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  dplyr::rename(xstart = "V1",
-                node_start = "nodes",
-                ystart = "V2") %>%
-  droplevels
-
-temp_graph_edges <- spearman.test.filtered.df %>%
-  dplyr::filter(!is.na(rho_threshold) | !is.na(group)) %>%
-  dplyr::select(asv_id, simpleName, estimate) %>%
-  droplevels %>%
-  ggsankey::make_long(., asv_id, simpleName, value = "estimate") %>%
-  tidyr::drop_na(next_node) %>%
-  dplyr::rename(node_start = "node",
-                node_end = "next_node",
-                estimate = "value") %>%
-  dplyr::select(node_start, node_end, estimate) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  droplevels %>%
-  dplyr::left_join(., temp_df,
-                   by = join_by(node_start)) %>%
-  dplyr::left_join(., temp_df %>%
-                     dplyr::rename(node_end = "node_start",
-                                   xend = "xstart",
-                                   yend = "ystart"),
-                   by = join_by(node_end)) %>%
-  # dplyr::left_join(., temp_graph_coords %>%
-  #   dplyr::select(nodes, type, color, group) %>%
-  #   droplevels,
-  # by = join_by("node_start" == "nodes")) %>%
-  dplyr::mutate(direction = dplyr::case_when((estimate < 0) ~ "negative",
-                                             (estimate > 0) ~ "positive",
-                                             .default = NA)) %>%
-  dplyr::mutate(abs_estimate = abs(estimate)) %>%
-  droplevels
-
-
-#plot the taxa with higher abundance in reefs than in seagrass, and their metabolite correlations:
-
-keep <- spearman.test.filtered.df %>%
-  dplyr::filter(grepl("high", group)) %>%
-  dplyr::filter(!is.na(rho_threshold)) %>%
-  dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
-  droplevels %>%
-  tidyr::pivot_longer(., cols = everything(),
-                      names_to = NULL,
-                      values_to = "nodes") %>%
-  dplyr::arrange(nodes) %>%
-  distinct(.) %>%
-  unlist(.)
-
-temp_df2 <- temp_graph_coords %>%
-  dplyr::filter(grepl(paste0(keep, collapse = "|"), nodes)) %>%
-  dplyr::mutate(nodes = dplyr::case_when(grepl("ASV_", nodes) ~ dplyr::recode_factor(nodes, !!!usvi_genera_relabel),
-                                         .default = nodes)) %>%
-  dplyr::mutate(nodes = stringr::str_split_i(nodes, ";", -1)) %>%
-  droplevels
-
-temp_df1 <- temp_graph_edges %>%
-  dplyr::right_join(., spearman.test.filtered.df %>%
-                      dplyr::filter(grepl("high", group)) %>%
-                      dplyr::filter(!is.na(rho_threshold)) %>%
-                      dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
-                      droplevels,
-                    by = join_by("node_start" == "asv_id", "node_end" == "simpleName")) %>%
-  dplyr::mutate(node_start = dplyr::case_when(grepl("ASV_", node_start) ~ dplyr::recode_factor(node_start, !!!usvi_genera_relabel),
-                                              .default = node_start)) %>%
-  dplyr::mutate(node_start = stringr::str_split_i(node_start, ";", -1)) %>%
-  droplevels
-
-
-
-#now do the lower-abudnace taxa and their metabolite correlations
-
-keep <- spearman.test.filtered.df %>%
-  dplyr::filter(grepl("low", group)) %>%
-  dplyr::filter(!is.na(rho_threshold)) %>%
-  dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
-  droplevels %>%
-  tidyr::pivot_longer(., cols = everything(),
-                      names_to = NULL,
-                      values_to = "nodes") %>%
-  dplyr::arrange(nodes) %>%
-  distinct(.) %>%
-  unlist(.)
-
-temp_df4 <- temp_graph_coords %>%
-  dplyr::filter(grepl(paste0(keep, collapse = "|"), nodes)) %>%
-  dplyr::mutate(nodes = dplyr::case_when(grepl("ASV_", nodes) ~ dplyr::recode_factor(nodes, !!!usvi_genera_relabel),
-                                         .default = nodes)) %>%
-  dplyr::mutate(nodes = stringr::str_split_i(nodes, ";", -1)) %>%
-  droplevels
-
-temp_df3 <- temp_graph_edges %>%
-  dplyr::right_join(., spearman.test.filtered.df %>%
-                      dplyr::filter(grepl("low", group)) %>%
-                      dplyr::filter(!is.na(rho_threshold)) %>%
-                      dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
-                      droplevels,
-                    by = join_by("node_start" == "asv_id", "node_end" == "simpleName")) %>%
-  dplyr::mutate(node_start = dplyr::case_when(grepl("ASV_", node_start) ~ dplyr::recode_factor(node_start, !!!usvi_genera_relabel),
-                                              .default = node_start)) %>%
-  dplyr::mutate(node_start = stringr::str_split_i(node_start, ";", -1)) %>%
-  droplevels
-
-temp_list <- list(list(temp_df1, temp_df2) %>%
-                    setNames(., c("connections", "nodes")), 
-                  (list(temp_df3, temp_df4) %>%
-                     setNames(., c("connections", "nodes")))) %>%
-  setNames(., c("high_reef", "low_reef"))
-
-
-g1 <- print(
-  ggplot(data = temp_df1)
-  + theme_bw()
-  + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend,
-                     linewidth = abs_estimate, color = direction),
-                 arrow = arrow(length = unit(0.03, "npc"),
-                               angle = 30, ends = "last", type = "closed"),
-                 lineend = "butt", linejoin = "round",
-                 alpha = 0.7, show.legend = TRUE)
-  + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend),
-                 lineend = "butt", linejoin = "round", linetype = 2, color = "black",
-                 alpha = 0.7, show.legend = TRUE)
-  + geom_point(data = temp_df2, aes(x = V1, y = V2, fill = type), shape = 21, size = 3, alpha = 1)
-  + ggrepel::geom_label_repel(data = temp_df2, aes(x = V1, y = V2, label = nodes, fill = type),
-                              direction = "both", segment.color = NA, seed = 123,
-                              force = 1, force_pull = 1,
-                              point.padding = unit(0.01, "npc"),
-                              box.padding = unit(0.01, "npc"),
-                              colour = "black", fontface = "bold")
-  + scale_color_manual(values = c("#dec1aa", "#03c4da"),
-                       breaks = c("negative", "positive"),
-                       labels = c("negative", "positive"))
-  + scale_fill_manual(values = c("#c5b8dc", "#b9d2b1"),
-                      breaks = c("taxon", "metabolite"),
-                      labels = c("taxon", "metabolite"))
-  + scale_linewidth_continuous(name = "Strength of relationship")
-  + scale_x_continuous(expand = expansion(0.1,0.1))
-  + scale_y_continuous(expand = expansion(0.1,0.1))
-  + theme(
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    axis.title = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_blank())
-  + ggtitle("Taxa significantly more abundant in reef sites and strong correlations with metabolites")
-)
-
-
-
-for(i in 1:length(temp_list)){
-  namevar <- eval(names(temp_list)[i]) %>%
-    gsub("_", " in ", .)
-  temp_df1 <- temp_list[[i]]$connections %>%
-    as.data.frame(.)
-  temp_df2 <- temp_list[[i]]$nodes %>%
-    as.data.frame(.)
-  
-  g <- print(
-    ggplot(data = temp_df1)
-    # ggplot(data = temp_list[[i]]$connections)
-    + theme_bw()
-    + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend,
-                       linewidth = abs_estimate, color = direction), 
-                   arrow = arrow(length = unit(0.03, "npc"), 
-                                 angle = 30, ends = "last", type = "closed"), 
-                   lineend = "butt", linejoin = "round",
-                   alpha = 0.7, show.legend = TRUE)
-    + geom_segment(aes(x = xstart, y = ystart, xend = xend, yend = yend), 
-                   lineend = "butt", linejoin = "round", linetype = 2, color = "black",
-                   alpha = 0.7, show.legend = FALSE)
-    + geom_point(data = temp_df2,
-                 # + geom_point(data = temp_list[[i]]$node, 
-                 aes(x = V1, y = V2, fill = type), shape = 21, size = 3, alpha = 1)
-    + ggrepel::geom_label_repel(aes(x = V1, y = V2, label = nodes, fill = type),
-                                # data = temp_list[[i]]$node, 
-                                data = temp_df2, 
-                                max.overlaps = 30,
-                                direction = "both", segment.color = NA, seed = 123,
-                                force = 1, force_pull = 1,
-                                point.padding = unit(0.01, "npc"),
-                                box.padding = unit(0.01, "npc"),
-                                colour = "black", fontface = "bold")
-    + scale_color_manual(values = c("#dec1aa", "#03c4da"),
-                         breaks = c("negative", "positive"),
-                         labels = c("negative", "positive"), drop = FALSE)
-    + scale_fill_manual(values = c("#c5b8dc", "#b9d2b1"),
-                        breaks = c("taxon", "metabolite"),
-                        labels = c("taxon", "metabolite"), drop = FALSE)
-    + scale_linewidth_continuous(name = "Strength of relationship", limits = c(0, 0.9))
-    + scale_x_continuous(expand = expansion(0.1,0.1))
-    + scale_y_continuous(expand = expansion(0.1,0.1))
-    + theme(axis.text = element_blank(),
-            axis.ticks = element_blank(),
-            axis.title = element_blank(),
-            panel.grid.minor = element_blank(),
-            panel.grid.major = element_blank())
-    + ggtitle(paste0("Taxa significantly ", namevar, " sites"))
-  )
-  
-  assign(paste0("g", i), g, envir = .GlobalEnv, inherits = TRUE)
-  rm(g)
-  rm(namevar)
-}
-
-gpatch2  <- ((g1 + theme(legend.position = "none")) | g2) + patchwork::plot_layout(guides = "collect")
-gpatch2 <- gpatch2 + patchwork::plot_annotation(title = "Network graphs of metabolite concentrations related to taxa abundances",
-                                                tag_levels = "A")
-gpatch2
-if(!any(grepl("key_taxa_network", list.files(projectpath, pattern = "usvi_.*.png")))){
-  ggsave(paste0(projectpath, "/", "usvi_key_taxa_network-", Sys.Date(), ".png"),
-         gpatch2,
-         width = 18, height = 10, units = "in")
-}
-
-if(!any(grepl("spearman_df", list.files(projectpath, pattern = "usvi_.*.RData")))){
-  save(spearman.test.corrected, spearman.test.filtered.df, file = paste0(projectpath, "/", "usvi_spearman_df-", Sys.Date(), ".RData"))
-}
 
 
 #pantothenic acid emerged as significant coral-produced metabolites (Weber et al., 2022)

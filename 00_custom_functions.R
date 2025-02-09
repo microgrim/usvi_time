@@ -57,7 +57,7 @@ F_desaturate <- function(x, l_start) {
   y <- seq(10, 10*length(x), 10)
   temp_pal <- NULL
   for(i in seq_len(length(y))){
-    temp_pal <- c(temp_pal, muted(x[1], l = l_start[i], c = y[i]))
+    temp_pal <- c(temp_pal, scales::muted(x[1], l = l_start[i], c = y[i]))
   }
   names(temp_pal) <- names(x)
   return(temp_pal)

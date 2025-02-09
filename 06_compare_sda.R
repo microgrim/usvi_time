@@ -1769,9 +1769,19 @@ usvi_sda_asvs_both_mean_list <- usvi_sda_asvs_both_list %>%
 abundrank_labeller <- (c(`0` = "Abundant and SDA in ",
                                     `1` = "Overall rare and SDA in "))
 #test it out:
+
+
 {
 
   temp_df1 <- usvi_sda_asvs_both_mean_list[[5]]
+  (temp_df1 %>%
+      dplyr::ungroup(.) %>%
+      dplyr::select(asv_id, pair, mean) %>%
+      dplyr::group_by(asv_id) %>%
+      dplyr::slice_max(mean, na_rm = TRUE) %>%
+      dplyr::mutate(enriched = pair) %>%
+      dplyr::ungroup(.) %>%
+      dplyr::summarise(mean(mean)))
   temp_df1 <- temp_df1 %>%
     dplyr::left_join(., (temp_df1 %>%
                            dplyr::ungroup(.) %>%
