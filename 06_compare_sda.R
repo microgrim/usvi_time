@@ -1808,7 +1808,7 @@ usvi_sda_asvs_day_time_median_list <- shared_sda_asvs_idx_filtered_list %>%
         droplevels %>%
         # dplyr::group_by(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label) %>%
         # tidyr::expand(relabund) %>%
-        dplyr::group_by(asv_id, group_label) %>%
+        dplyr::group_by(asv_id, sampling_day) %>%
         dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
         dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
                                                        .default = 0)) %>%
@@ -1847,18 +1847,14 @@ temp_df1 <- shared_sda_asvs_idx_filtered_list[[8]] %>%
   droplevels %>%
   # dplyr::group_by(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label) %>%
   # tidyr::expand(relabund) %>%
-  dplyr::group_by(asv_id, group_label) %>%
+  # dplyr::group_by(asv_id, group_label) %>%
+  # dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
+  # dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
+  #                                                .default = 0)) %>%
+  dplyr::group_by(asv_id, sampling_day) %>%
   dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
-  # dplyr::mutate(relabund = dplyr::case_when((relabund > 0) ~ relabund, .default = 0.0001)) %>%
   dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
                                                  .default = 0)) %>%
-  # tidyr::pivot_wider(., id_cols = c(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label),
-  #                    names_from = NULL,
-  #                    values_from ="relabund",
-  #                    values_fill = 0) %>%
-  # tidyr::pivot_longer(., cols = "metric",
-  #                     names_from = "metric",
-  #                     values_from = "value") %>%
   dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
   dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
                    mean_norm = mean(sum(norm_relabund, na.rm = TRUE)),
@@ -1873,7 +1869,7 @@ temp_df1 <- shared_sda_asvs_idx_filtered_list[[8]] %>%
                 median_norm_label = signif(median_norm, digits = 2)) %>%
   dplyr::mutate(across(c(median_label, median_norm_label), ~dplyr::case_when(.x > 0 ~ .x,
                                                                              .default = NA))) %>%
-  dplyr::mutate(across(c(median, mean, sd), ~dplyr::case_when((.x > 0) ~ .x, .default = 0.0001))) %>%
+  # dplyr::mutate(median_norm = median_norm * 0.5) %>%
   dplyr::left_join(., usvi_sda_asvs_filtered_silva.df %>%
                      dplyr::select(asv_id, rankorder) %>%
                      droplevels, by = join_by(asv_id)) %>%
@@ -1924,8 +1920,12 @@ temp_df1 %>%
   # dplyr::filter(grepl("ASV_00021", asv_id)) %>%
   # dplyr::ungroup(.) %>%
   # dplyr::select(asv_id, contrast, sampling_day, sampling_time, site, contains("median")) %>%
-  dplyr::group_by(asv_id, group_label) %>%
-  dplyr::summarise(num_obs = length(median)) %>%
+  # dplyr::group_by(asv_id, group_label) %>%
+  # dplyr::mutate(median_norm = median_norm * 0.5) %>%
+  dplyr::group_by(asv_id, sampling_day) %>%
+  # dplyr::summarise(num_obs = length(median)) %>%
+  dplyr::summarise(num_obs = length(median_norm),
+                   sum_norm = sum(median_norm)) %>%
   # dplyr::summarise(total_norm = sum(median_norm, na.rm = TRUE),
   #                  num_obs = length(group_label),
   #                  total_med = sum(median, na.rm = TRUE))  %>%
