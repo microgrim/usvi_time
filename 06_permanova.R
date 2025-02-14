@@ -93,6 +93,40 @@ if(file.exists(paste0(getwd(), "/", "00_custom_functions.R"))){
          echo = FALSE, verbose = getOption("verbose"), prompt.echo = getOption("prompt"))
 } 
 
+#generalized function to grab dissimilarities
+F_ttest_gn <- function(dataset, variable, f){
+  #d is a dataframe containing all the measurements by site
+  #variable is your factor you want to examine pairwise the levels
+  variable <- rlang::parse_expr(variable)
+  temp_vars <- unique(dataset[[variable]])
+  
+  resample_depth <- dataset %>%
+    split(., f = .[[variable]]) %>%
+    map(., ~round(nrow(.x)/10)) %>%
+    purrr::reduce(mean)
+  
+  ttest_res <- combn(temp_vars, 2) %>%
+    t() %>%
+    as.data.frame() %>%
+    setNames(., c("pair1", "pair2")) %>%
+    dplyr::mutate(p.value = NA)
+  for(i in seq_len(nrow(ttest_res))){
+    var1 <- ttest_res[i, 1]
+    var2 <- ttest_res[i, 2]
+    temp_i_a <- dataset %>%
+      dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
+      dplyr::select(dissimilarity) %>%
+      tibble::deframe(.) %>% sample(., resample_depth, replace = FALSE)
+    temp_i_b <- dataset %>%
+      dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
+      dplyr::select(dissimilarity) %>%
+      tibble::deframe(.) %>% sample(., resample_depth, replace = FALSE)
+    ttest_res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
+  }
+  
+  #list the resulting p-values from t-testing LB vs Yawzi, LB vs Tektite, and Yawzi vs Tektite
+  ttest_res %>% dplyr::select(p.value) %>% tibble::deframe(.)
+}
 
 # find existing processed files -------------------------------------------
 to_import <- c("usvi_prok_asvs.df", "usvi_prok_asvs.taxa", "usvi_prok_decontam_idx", "usvi_hobo_light_temp_filtered.df")
@@ -762,135 +796,6 @@ dist_usvi_asv_log2.mat <- as.matrix(dist_usvi_asv_log2.d)
 
 
 
-#stat checking:
-{
-  
-# #which transformation to use?
-# 
-# #check homogeneity via anova(betadisper):
-# #for asvs
-# #site:sampling_time: Pr(>F) = 1.401e-05
-# #site: Pr(>F) =1.704e-07
-# #sampling_time: Pr(>F) = 0.2268
-# #sampling_day: 0.5866
-# 
-# vegan::betadisper(dist_usvi_asv.d, type = "median",
-#                   # interaction(meta.microb$site, meta.microb$sampling_time)) %>%
-#   meta.microb$sampling_day) %>%
-#   anova(.)
-# 
-# #for metabolomics
-# #site:sampling_time: Pr(>F) = 0.008554
-# #site: Pr(>F) =0.006649
-# #sampling_time: Pr(>F) = 0.5337
-# #sampling_day:  Pr(>F) = 0.9971
-# 
-# vegan::betadisper(dist_usvi_metab.d, type = "median",
-#                   # interaction(meta.metab$site, meta.metab$sampling_time)) %>%
-#                   meta.metab$sampling_day) %>%
-#   anova(.)
-
-
-# #visualizing dispersions in the ASV matrix based on site*sampling_time:
-# betadisp_dist_usvi_asv.df <- vegan::betadisper(dist_usvi_asv.d, type = "median",
-#                                                interaction(usvi_selected_metadata$site, usvi_selected_metadata$sampling_time)) %>%
-#                                       # usvi_selected_metadata$sampling_time) %>%
-#   # purrr::pluck("distances") %>% tibble::enframe(value = "dissimilarity", name = NULL) %>%
-#   purrr::pluck("distances") %>%  tibble::enframe(value = "dissimilarity", name = "sample_id") %>% droplevels %>%
-#   dplyr::left_join(usvi_selected_metadata %>%
-#               dplyr::select(sample_id, site, sampling_time)) %>%
-#   # tibble::column_to_rownames(var = "sample_id") %>%
-#   droplevels
-# 
-# print(
-#   ggplot(data = betadisp_dist_usvi_asv.df)
-#   + geom_violin(aes(x = site, y = dissimilarity, fill = sampling_time), color = "white", draw_quantiles = c(0.25, 0.5, 0.75))
-#   + theme_dark()
-#   + scale_shape_manual(name = "Sampling site and time",
-#                        values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
-#   + scale_fill_manual(name = "Sampling time",
-#                       values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-#   + guides(fill = guide_legend(order = 1, ncol = 1, title = "Sampling site and time",  direction = "vertical", 
-#                                override.aes = list(color = "black", shape = 21, size = 3)),
-#            color = "none")
-# )
-  
-}
-# Comparing physicochemical and cotninuous variables using manova ---------
-{
-  
-
-# 
-# usvi_physicochem.tbl <- meta.microb %>%
-#   dplyr::select(depth, PAR, temp)
-# usvi_fcm.tbl <- meta.microb %>%
-#   dplyr::select(starts_with("fcm_"))
-# 
-# 
-# # #using manova doesn't seem as suitable:
-# # temp_manova_fit <- manova(as.matrix(usvi_physicochem.tbl) ~ meta.microb$site*meta.microb$sampling_time )
-# # summary.aov(temp_manova_fit)
-# 
-# 
-# # #MRPP evaluates whether there is a significant difference between two or more GROUPs of sampling units
-# # #the continuous data can be the input, but the variables to test are categorical
-# # 
-# # mrpp.lighttemp <- mrpp(as.matrix(usvi_physicochem.tbl), interaction(meta.microb$site, meta.microb$sampling_time), distance = "bray")
-# # meandist(vegdist(usvi_physicochem.tbl, "bray"), interaction(meta.microb$site, meta.microb$sampling_time))
-# # 
-# # mrpp.fcm <- mrpp(as.matrix(usvi_fcm.tbl), interaction(meta.microb$site, meta.microb$sampling_time), distance = "bray")
-# # meandist(vegdist(usvi_fcm.tbl, "bray"), interaction(meta.microb$site, meta.microb$sampling_time))
-# # 
-# # mrpp.asv <- mrpp(dist_usvi_asv.d, interaction(meta.microb$site, meta.microb$sampling_time), distance = "bray")
-# # meandist(dist_usvi_asv.d, interaction(meta.microb$site, meta.microb$sampling_time))
-# 
-# 
-# ##trying nested anova a la: https://rcompanion.org/rcompanion/d_07.html
-# # library(nlme)
-# # library(multcomp)
-# # 
-# # model_lme <- lme(fcm_Prochlorococcus ~ (site*sampling_time)/sampling_day,
-# #                  random = ~1|sampling_day, data = meta.microb, method = "REML")
-# # # K <- diag(length(coef(model_lme)))[-1,]
-# # # rownames(K) <- names(coef(model_lme))[-1]
-# # K <- diag(length(coef(model_lme)))
-# # rownames(K) <- names(coef(model_lme))
-# # 
-# # anova.lme(model_lme,
-# #           type="sequential",
-# #           adjustSigma = FALSE)
-# # model_lme_posthoc <- glht(model_lme, linfct = K)
-# # model_lme_summary <- summary(model_lme_posthoc,
-# #               test=adjusted("fdr"))
-# # 
-# # cld(model_lme_posthoc,
-# #     level=0.05,
-# #     decreasing=TRUE)
-# 
-# aov(fcm_Prochlorococcus ~ site*sampling_time + sampling_day/sampling_time, data = meta.microb) %>% summary
-# #one at a time: calculate Tukey HSD from the flow counts and other continuous data, compared to site*sampling_time
-# TukeyHSD(aov(fcm_Prochlorococcus ~ site*sampling_time + (site:sampling_day)/sampling_time, data = meta.microb))
-# TukeyHSD(aov(fcm_Prochlorococcus ~ (site/sampling_time) + (sampling_day/sampling_time), data = meta.microb))
-# TukeyHSD(aov(fcm_Prochlorococcus ~ site + site*(sampling_day/sampling_time), data = meta.microb))
-# 
-# #for all the continuous variables:
-# continuous_idx <- c("depth", "fcm_Prochlorococcus", "fcm_Synechococcus", "fcm_Picoeukaryotes", "fcm_Unpigmented_cells",
-#                     "PAR", "lumens", "lux", "temp")
-# 
-# temp_list <- NULL
-# for(i in continuous_idx){
-# # for(i in continuous_idx[1:2]){
-#   var1 <- rlang::parse_expr(i)
-#   design_formula <- paste0(var1, "~", "site*sampling_time*sampling_day")
-#   design_formula <- rlang::parse_expr(design_formula)
-#   temp_tuk <- list(TukeyHSD(aov(eval(design_formula), data = meta.microb)))
-#   temp_list <- c(temp_list, temp_tuk) %>%
-#     setNames(., c(names(temp_list), var1))
-# }
-# usvi_cts_param.list <- temp_list
-# 
-}
-
 # Permanova via adonis2 ---------------------------------------------------
 #please see here for why we should not include continuous variables in adonis2's implementation of permanova:
 #https://learninghub.primer-e.com/books/should-i-use-primer-or-r/chapter/3-permanova-vs-adonis2-in-r/export/html
@@ -898,6 +803,70 @@ dist_usvi_asv_log2.mat <- as.matrix(dist_usvi_asv_log2.d)
 #we have a Crossed Model, where Site has 3 levels, Sampling_time has 2 levels, and Sampling_day has 5 levels
 #with this data set we really ought to use type III SS
 #but adonis only does type I SS.
+
+#what it used to be with Day1 samples:
+{
+  meta.microb_full <- metabolomics_sample_metadata %>%
+    dplyr::select(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
+    # dplyr::filter(!grepl("Day1", sampling_day)) %>%
+    dplyr::mutate(across(c(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site), ~factor(.x))) %>%
+    dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+    dplyr::mutate(site_type = dplyr::case_when(grepl("LB", site) ~ "seagrass",
+                                               grepl("Yawzi|Tektite", site) ~ "reef",
+                                               .default = NA)) %>%
+    # dplyr::mutate(sample_id = factor(sample_id, levels = colnames(usvi_sw_asv_full.tbl))) %>%
+    dplyr::arrange(sample_id) %>%
+    tidyr::drop_na(.) %>%
+    dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+    dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
+    dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
+    dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
+                  grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
+                  grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
+    dplyr::mutate(rownames = sample_id) %>%
+    tibble::column_to_rownames(var = "rownames") %>%
+    droplevels
+  
+  usvi_sw_asv_full.tbl <- usvi_prok_asvs.df %>%
+    dplyr::filter(sample_ID %in% meta.microb_full[["sample_id"]]) %>%
+    droplevels %>%
+    tidyr::pivot_wider(., id_cols = "asv_id",
+                       names_from = "sample_ID",
+                       values_from = "counts",
+                       values_fill = 0) %>%
+    droplevels %>%
+    tibble::column_to_rownames(var = "asv_id") %>%
+    apply(., 2, relabund) %>%
+    as.data.frame(.) %>%
+    dplyr::slice(which(rowSums(.) > 0)) %>%
+    as.data.frame(.) %>%
+    # dplyr::select(colnames(usvi_sw_genus.tbl)) %>%
+    droplevels
+  
+  dist_usvi_asv_full.mh.d <- usvi_sw_asv_full.tbl %>%
+    dplyr::select(rownames(meta.microb_full)) %>%
+    t() %>%
+    vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE)
+  
+  temp_permanova_asv_est_var.df <- with(meta.microb_full, vegan::adonis2(data = meta.microb_full, method = "horn", permutations = 9999,
+                                                                         # strata = site,
+                                                                         formula = dist_usvi_asv_full.mh.d ~ sampling_time*sampling_day*site,
+                                                                         parallel = nthreads, by = "terms"))
+  temp_permanova_asv_est_var.df <- temp_permanova_asv_est_var.df %>%
+    tibble::rownames_to_column(var = "term") %>%
+    dplyr::mutate(term = as.character(term)) %>%
+    dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
+                                        .default = NA))
+  temp_permanova_asv_est_var.df <- temp_permanova_asv_est_var.df %>%
+    dplyr::mutate(temp_permanova_asv_est_var.df %>%
+                    dplyr::filter(!grepl("Total", term)) %>%
+                    dplyr::summarise(TotalEMS = sum(MS))) %>%
+    dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
+                                            .default = NA)) %>%
+    dplyr::select(-TotalEMS) %>%
+    dplyr::mutate(sq_root = MS^(1/2)) %>%
+    dplyr::mutate(perc_variation = sq_root/(sum(sq_root, na.rm = TRUE))*100)
+}
 
 #SS(total) for microbiomes: 1.239223
 (1/nrow(dist_usvi_asv.mat))*(sum((dist_usvi_asv.mat[lower.tri(dist_usvi_asv.mat, diag = FALSE)])^2))
@@ -923,22 +892,6 @@ dist_usvi_asv.ss <- meta.microb %>%
 #site:sampling_day
 #site:sampling_time:sampling_day
 
-with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutations = 9999,
-                                 # strata = site,
-                                 formula = dist_usvi_asv.d ~ sampling_time*site*sampling_day,
-                                 parallel = nthreads, by = "terms"))
-# Df SumOfSqs       R2       F Pr(>F)    
-# sampling_time                    1  0.07469  0.06027 15.6865 0.0002 ***
-#   site                             2  0.73899  0.59634 77.6046 0.0001 ***
-#   sampling_day                     3  0.11478  0.09262  8.0354 0.0002 ***
-#   sampling_time:site               2 -0.02078 -0.01677 -2.1824 1.0000    
-# sampling_time:sampling_day       3  0.04125  0.03329  2.8881 0.0499 *  
-#   site:sampling_day                6  0.07101  0.05730  2.4857 0.0368 *  
-#   sampling_time:site:sampling_day  6 -0.00449 -0.00363 -0.1573 0.9978    
-# Residual                        47  0.22378  0.18058                   
-# Total                           70  1.23922  1.00000                   
-# ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1            
 
 #do samplign day before ssite:
 with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutations = 9999,
@@ -958,13 +911,221 @@ with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutatio
 # ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-temp_res <- with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutations = 9999,
+#note that now we have negative SS for two interactions: sampling_time:site, and sampling_time:sampling_day:site
+#see here for what to do about negative SS: https://learninghub.primer-e.com/books/permanova-for-primer-guide-to-software-and-statistical-methods/page/129-pooling-or-excluding-terms
+
+#is it negative if we included the Metab_280 sample?
+#tldr: yes
+#using BC distance metric does not generate neagtive SS for sampling_time:sampling_day and sampling_time:sampling_day:site
+#but with Bray, sampling_time:sampling_day is not flagged as significant, whereas sampling_day:site is more strongly significant.
+
+{
+  # dist_usvi_asv_full.mh.d <- usvi_sw_asv_full.tbl %>%
+  #   dplyr::select(rownames(meta.microb_full)) %>%
+  #   t() %>%
+  #   vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE)
+# 
+#   
+  # 
+  # #try a different distance metric:
+  ###try BC
+  # dist_usvi_asv_full.bc.d <- usvi_sw_asv_full.tbl %>% 
+  #   dplyr::select(rownames(meta.microb_full)) %>%
+  #   t() %>%
+  #   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE)
+  # 
+  # 
+  # with(meta.microb_full, vegan::adonis2(data = meta.microb_full, method = "bray", permutations = 9999,
+  #                                       # strata = site,
+  #                                       formula = dist_usvi_asv_full.bc.d ~ sampling_time*sampling_day*site,
+  #                                       parallel = nthreads, by = "terms"))
+  # # Df SumOfSqs       R2       F Pr(>F)    
+  # # sampling_time                    1  0.06931  0.05341 14.7839 0.0004 ***
+  # #   sampling_day                     3  0.11603  0.08941  8.2490 0.0001 ***
+  # #   site                             2  0.79357  0.61150 84.6288 0.0001 ***
+  # #   sampling_time:sampling_day       3  0.04353  0.03354  3.0945 0.0351 *  
+  # #   sampling_time:site               2 -0.01896 -0.01461 -2.0219 1.0000    
+  # # sampling_day:site                6  0.06956  0.05360  2.4728 0.0391 *  
+  # #   sampling_time:sampling_day:site  6 -0.00035 -0.00027 -0.0126 0.9915    
+  # # Residual                        48  0.22505  0.17342                   
+  # # Total                           71  1.29774  1.00000                   
+  # # ---
+  # #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  # 
+  # # vegan::adonis2(formula = dist_usvi_asv_full.bc.d ~ sampling_time * sampling_day * site, data = meta.microb_full, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
+  # # Df SumOfSqs      R2       F Pr(>F)    
+  # # sampling_time                    1   0.1475 0.02954  7.0551 0.0024 ** 
+  # #   sampling_day                     3   0.3526 0.07061  5.6214 0.0001 ***
+  # #   site                             2   2.8066 0.56198 67.1123 0.0001 ***
+  # #   sampling_time:sampling_day       3   0.1224 0.02450  1.9509 0.0819 .  
+  # # sampling_time:site               2   0.0559 0.01119  1.3361 0.2333    
+  # # sampling_day:site                6   0.3268 0.06543  2.6046 0.0055 ** 
+  # #   sampling_time:sampling_day:site  6   0.1787 0.03577  1.4240 0.1593    
+  # # Residual                        48   1.0037 0.20097                   
+  # # Total                           71   4.9942 1.00000                   
+  # # ---
+  # #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  # 
+  # 
+  # 
+  # 
+  
+  # dist_usvi_asv.bc.d <- usvi_sw_asv.tbl %>% 
+  #   dplyr::select(rownames(meta.microb)) %>%
+  #   t() %>%
+  #   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE)
+  # 
+  # temp_res <- with(meta.microb, vegan::adonis2(data = meta.microb_full, method = "bray", permutations = 9999,
+  #                                              # strata = site,
+  #                                              # formula = dist_usvi_asv.bc.d ~ sampling_time*sampling_day*site,
+  #                                              formula = dist_usvi_asv_full.bc.d ~ sampling_time*sampling_day*site,
+  #                                              parallel = nthreads, by = "terms"))
+  # permanova_asv_estimate_variation.bc.df <- temp_res %>%
+  #   tibble::rownames_to_column(var = "term") %>%
+  #   dplyr::mutate(term = as.character(term)) %>%
+  #   dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
+  #                                       .default = NA))
+  # permanova_asv_estimate_variation.bc.df <- permanova_asv_estimate_variation.bc.df %>%
+  #   dplyr::mutate(permanova_asv_estimate_variation.bc.df %>%
+  #                   dplyr::filter(!grepl("Total", term)) %>%
+  #                   dplyr::summarise(TotalEMS = sum(MS))) %>%
+  #   dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
+  #                                           .default = NA)) %>%
+  #   dplyr::mutate(sq_root = MS^(1/2))
+  # 
+}
+
+
+
+#if we manually specify the terms (not subtracting them):
+{
+  #if we set sampling_time:sampling_day:site to 0
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time * sampling_day * site - sampling_time:sampling_day:site, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs       R2       F Pr(>F)    
+  # sampling_time               1  0.07469  0.06027 18.0516 0.0001 ***
+  #   sampling_day                3  0.10838  0.08746  8.7313 0.0001 ***
+  #   site                        2  0.74539  0.60150 90.0782 0.0001 ***
+  #   sampling_time:sampling_day  3  0.04151  0.03350  3.3442 0.0266 *  
+  #   sampling_time:site          2 -0.02104 -0.01698 -2.5424 1.0000    
+  # sampling_day:site           6  0.07101  0.05730  2.8604 0.0203 *  
+  #   Residual                   53  0.21929  0.17695                   
+  # Total                      70  1.23922  1.00000                   
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  #if we set both sampling_time:sampling_day:site = 0, and sampling_time:site = 0:
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time * sampling_day * site - sampling_time:site - sampling_time:sampling_day:site, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs      R2        F Pr(>F)    
+  # sampling_time               1  0.07469 0.06027  20.6686 0.0001 ***
+  #   sampling_day                3  0.10838 0.08746   9.9971 0.0001 ***
+  #   site                        2  0.74539 0.60150 103.1374 0.0001 ***
+  #   sampling_time:sampling_day  3  0.04151 0.03350   3.8290 0.0130 *  
+  #   sampling_day:site           6  0.07051 0.05690   3.2521 0.0089 ** 
+  #   Residual                   55  0.19875 0.16038                    
+  # Total                      70  1.23922 1.00000                    
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + sampling_time:sampling_day + sampling_day:site, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs      R2        F Pr(>F)    
+  # sampling_time               1  0.07469 0.06027  20.6686 0.0001 ***
+  #   sampling_day                3  0.10838 0.08746   9.9971 0.0001 ***
+  #   site                        2  0.74539 0.60150 103.1374 0.0001 ***
+  #   sampling_time:sampling_day  3  0.04151 0.03350   3.8290 0.0171 *  
+  #   sampling_day:site           6  0.07051 0.05690   3.2521 0.0093 ** 
+  #   Residual                   55  0.19875 0.16038                    
+  # Total                      70  1.23922 1.00000                    
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + sampling_time:sampling_day + sampling_day:site/sampling_time, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs       R2       F Pr(>F)    
+  # sampling_time                    1  0.07469  0.06027 15.6865 0.0001 ***
+  #   sampling_day                     3  0.10838  0.08746  7.5874 0.0001 ***
+  #   site                             2  0.74539  0.60150 78.2766 0.0001 ***
+  #   sampling_time:sampling_day       3  0.04151  0.03350  2.9060 0.0458 *  
+  #   sampling_day:site                6  0.07051  0.05690  2.4682 0.0404 *  
+  #   sampling_time:sampling_day:site  8 -0.02503 -0.02020 -0.6572 1.0000    
+  # Residual                        47  0.22378  0.18058                   
+  # Total                           70  1.23922  1.00000                   
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + sampling_time/(sampling_day:site), data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs      R2       F Pr(>F)    
+  # sampling_time                    1  0.07469 0.06027 15.6865 0.0003 ***
+  #   sampling_day                     3  0.10838 0.08746  7.5874 0.0004 ***
+  #   site                             2  0.74539 0.60150 78.2766 0.0001 ***
+  #   sampling_time:sampling_day:site 17  0.08699 0.07020  1.0747 0.4061    
+  # Residual                        47  0.22378 0.18058                   
+  # Total                           70  1.23922 1.00000                   
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + (sampling_time:sampling_day)/site, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs      R2       F Pr(>F)    
+  # sampling_time                    1  0.07469 0.06027 15.6865 0.0005 ***
+  #   sampling_day                     3  0.10838 0.08746  7.5874 0.0002 ***
+  #   site                             2  0.74539 0.60150 78.2766 0.0001 ***
+  #   sampling_time:sampling_day       3  0.04151 0.03350  2.9060 0.0451 *  
+  #   sampling_time:sampling_day:site 14  0.04548 0.03670  0.6823 0.7729    
+  # Residual                        47  0.22378 0.18058                   
+  # Total                           70  1.23922 1.00000                   
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  # vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + (sampling_day:site)/sampling_time, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+  # Df SumOfSqs      R2       F Pr(>F)    
+  # sampling_time                    1  0.07469 0.06027 15.6865 0.0003 ***
+  #   sampling_day                     3  0.10838 0.08746  7.5874 0.0003 ***
+  #   site                             2  0.74539 0.60150 78.2766 0.0001 ***
+  #   sampling_day:site                6  0.06906 0.05572  2.4173 0.0419 *  
+  #   sampling_time:sampling_day:site 11  0.01793 0.01447  0.3424 0.9538    
+  # Residual                        47  0.22378 0.18058                   
+  # Total                           70  1.23922 1.00000                   
+  # ---
+  #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+  
+  
+}
+
+
+#instead of changing the distance metric, pool the terms smartly (setting V(sampling_time:sampling_day:site) = 0 and V(sampling_time:site) = 0), by adding them to the next lowest term, in this case it was sampling_time:sampling_day
+#
+
+with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutations = 9999,
+                                 # strata = site,
+                                 formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + (sampling_day:site)/sampling_time,
+                                 parallel = nthreads, by = "terms"))
+
+# vegan::adonis2(formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + (sampling_day:site)/sampling_time, data = meta.microb, permutations = 9999, method = "horn", by = "terms", parallel = nthreads)
+# Df SumOfSqs      R2       F Pr(>F)    
+# sampling_time                    1  0.07469 0.06027 15.6865 0.0003 ***
+#   sampling_day                     3  0.10838 0.08746  7.5874 0.0003 ***
+#   site                             2  0.74539 0.60150 78.2766 0.0001 ***
+#   sampling_day:site                6  0.06906 0.05572  2.4173 0.0464 *  
+#   sampling_time:sampling_day:site 11  0.01793 0.01447  0.3424 0.9479    
+# Residual                        47  0.22378 0.18058                   
+# Total                           70  1.23922 1.00000                   
+# ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Calculate estimates of variation ----------------------------------------
+
+
+
+permanova_asv_estimate_variation.df <- with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutations = 9999,
                                              # strata = site,
-                                             formula = dist_usvi_asv.d ~ sampling_time*sampling_day*site,
+                                             formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + (sampling_day:site)/sampling_time,
                                              parallel = nthreads, by = "terms"))
-permanova_asv_estimate_variation.df <- temp_res %>%
+permanova_asv_estimate_variation.df <- permanova_asv_estimate_variation.df %>%
   tibble::rownames_to_column(var = "term") %>%
   dplyr::mutate(term = as.character(term)) %>%
+  dplyr::mutate(term = dplyr::case_when(term == "sampling_time:sampling_day:site" ~ "pooled",
+                                        .default = term)) %>%
   dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
                                       .default = NA))
 permanova_asv_estimate_variation.df <- permanova_asv_estimate_variation.df %>%
@@ -973,40 +1134,20 @@ permanova_asv_estimate_variation.df <- permanova_asv_estimate_variation.df %>%
                      dplyr::summarise(TotalEMS = sum(MS))) %>%
   dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
                                           .default = NA)) %>%
-  dplyr::mutate(sq_root = MS^(1/2))
-# term Df SumOfSqs       R2       F Pr(>F)       MS TotalEMS V_term sq_root
-# [1,]    4  1  0.07469  0.06027 15.6865 0.0003  0.07469  0.50267 14.858 0.27329
-# [2,]    2  3  0.10838  0.08746  7.5874 0.0001  0.03613  0.50267  7.187 0.19007
-# [3,]    8  2  0.74539  0.60150 78.2766 0.0001  0.37270  0.50267 74.143 0.61049
-# [4,]    5  3  0.04151  0.03350  2.9060 0.0488  0.01384  0.50267  2.753 0.11763
-# [5,]    7  2 -0.02104 -0.01698 -2.2093 1.0000 -0.01052  0.50267 -2.093     NaN
-# [6,]    3  6  0.07101  0.05730  2.4857 0.0402  0.01183  0.50267  2.354 0.10879
-# [7,]    6  6 -0.00449 -0.00363 -0.1573 0.9989 -0.00075  0.50267 -0.149     NaN
-# [8,]    1 47  0.22378  0.18058                 0.00476  0.50267  0.947 0.06900
-# [9,]    9 70  1.23922  1.00000                          0.50267               
+  dplyr::select(-c(TotalEMS, R2)) %>%
+  dplyr::mutate(sq_root = MS^(1/2)) %>%
+  dplyr::mutate(perc_variation = sq_root/(sum(sq_root, na.rm = TRUE))*100)
+# term Df SumOfSqs       F Pr(>F)      MS V_term sq_root perc_variation
+# [1,]    4  1  0.07469 15.6865 0.0002 0.07469 14.896 0.27329         21.177
+# [2,]    2  3  0.10838  7.5874 0.0005 0.03613  7.205 0.19007         14.728
+# [3,]    6  2  0.74539 78.2766 0.0001 0.37270 74.330 0.61049         47.306
+# [4,]    3  6  0.06906  2.4173 0.0419 0.01151  2.295 0.10728          8.313
+# [5,]    5 11  0.01793  0.3424 0.9532 0.00163  0.325 0.04038          3.129
+# [6,]    1 47  0.22378                0.00476  0.950 0.06900          5.347
+# [7,]    7 70  1.23922                                                     
 
-# #how does it look with log2(x+1) relative abundance as basis of diss matrix?
-# with(meta.microb, vegan::adonis2(data = meta.microb, 
-#                                  # method = "horn", 
-#                                  permutations = 9999,
-#                                  # strata = site,
-#                                  formula = dist_usvi_asv_log2.d ~ sampling_time*sampling_day*site,
-#                                  parallel = nthreads, by = "terms"))
-# # Df SumOfSqs       R2        F Pr(>F)    
-# # sampling_time                    1  0.06845  0.04774  33.7654 0.0001 ***
-# #   sampling_day                     3  0.14893  0.10388  24.4887 0.0001 ***
-# #   site                             2  1.11848  0.78014 275.8776 0.0001 ***
-# #   sampling_time:sampling_day       3  0.01557  0.01086   2.5600 0.0774 .  
-# # sampling_time:site               2 -0.01680 -0.01172  -4.1442 1.0000    
-# # sampling_day:site                6  0.00425  0.00296   0.3492 0.8767    
-# # sampling_time:sampling_day:site  6 -0.00046 -0.00032  -0.0377 0.9976    
-# # Residual                        47  0.09528  0.06645                    
-# # Total                           70  1.43369  1.00000                    
-# # ---
-# #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-
-
+#the column "sq root" typically represents the % variation, however if the sum of the terms' sqrts is not 100, then it's not as accurate
+#normalize to 100% by summing the sqrts of the terms' estimates
 
 #Site has a significant difference via P-value and F-ratio
 #since it has the highest pseudo F-ratio, frst investigate site
@@ -1072,29 +1213,29 @@ meta.microb %>%
 #what about if we used bray-curtis instead of MH?
 #still LB is higher than Tektite and higher than Yawzi
 
-dist_usvi_asv_bc.mat <- usvi_sw_asv.tbl %>% 
-  dplyr::select(rownames(meta.microb)) %>%
-  t() %>%
-  vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>%
-  as.matrix(.)
-
-meta.microb %>%
-  split(., f = .$site) %>%
-  map(., ~.x %>%
-        tibble::rownames_to_column(var = "sample_id") %>%
-        dplyr::select(sample_id) %>%
-        tibble::deframe(.)) %>%
-  map(., ~dist_usvi_asv_bc.mat[.x, .x])  %>%
-  map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
-  map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "site") %>%
-  dplyr::group_by(site) %>%
-  dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE))
-# site        avg_dist
-# <chr>          <dbl>
-#   1 LB_seagrass    0.311
-# 2 Tektite        0.205
-# 3 Yawzi          0.182
+# dist_usvi_asv_bc.mat <- usvi_sw_asv.tbl %>% 
+#   dplyr::select(rownames(meta.microb)) %>%
+#   t() %>%
+#   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>%
+#   as.matrix(.)
+# 
+# meta.microb %>%
+#   split(., f = .$site) %>%
+#   map(., ~.x %>%
+#         tibble::rownames_to_column(var = "sample_id") %>%
+#         dplyr::select(sample_id) %>%
+#         tibble::deframe(.)) %>%
+#   map(., ~dist_usvi_asv_bc.mat[.x, .x])  %>%
+#   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
+#   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
+#   bind_rows(., .id = "site") %>%
+#   dplyr::group_by(site) %>%
+#   dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE))
+# # site        avg_dist
+# # <chr>          <dbl>
+# #   1 LB_seagrass    0.311
+# # 2 Tektite        0.205
+# # 3 Yawzi          0.182
 
 
 #approach 1: Kruskal-Wallis testing
@@ -1344,40 +1485,7 @@ kruskal.test(temp_list)
 # }
 
 #approach 3: bootstrap resampling the dissimilarity values in each site, and pairwise t-test them
-#generalized function to grab dissimilarities
-F_ttest_gn <- function(dataset, variable, f){
-  #d is a dataframe containing all the measurements by site
-  #variable is your factor you want to examine pairwise the levels
-  variable <- rlang::parse_expr(variable)
-  temp_vars <- unique(dataset[[variable]])
-  
-  resample_depth <- dataset %>%
-    split(., f = .[[variable]]) %>%
-    map(., ~round(nrow(.x)/10)) %>%
-    purrr::reduce(mean)
-  
-  ttest_res <- combn(temp_vars, 2) %>%
-    t() %>%
-    as.data.frame() %>%
-    setNames(., c("pair1", "pair2")) %>%
-    dplyr::mutate(p.value = NA)
-  for(i in seq_len(nrow(ttest_res))){
-    var1 <- ttest_res[i, 1]
-    var2 <- ttest_res[i, 2]
-    temp_i_a <- dataset %>%
-      dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
-      dplyr::select(dissimilarity) %>%
-      tibble::deframe(.) %>% sample(., resample_depth, replace = FALSE)
-    temp_i_b <- dataset %>%
-      dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
-      dplyr::select(dissimilarity) %>%
-      tibble::deframe(.) %>% sample(., resample_depth, replace = FALSE)
-    ttest_res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
-  }
 
-  #list the resulting p-values from t-testing LB vs Yawzi, LB vs Tektite, and Yawzi vs Tektite
-  ttest_res %>% dplyr::select(p.value) %>% tibble::deframe(.)
-}
 
 #testing it:
 # F_ttest_gn(dataset=dist_usvi_asv.df, variable = "site")
@@ -1487,53 +1595,27 @@ meta.metab %>%
 
 with(meta.metab, vegan::adonis2(data = meta.metab, method = "bray", permutations = 9999,
                                 # strata = site,
-                                formula = dist_usvi_metab.d ~ sampling_time*site*sampling_day,
-                                parallel = nthreads, by = "terms"))
-# Permutation test for adonis under reduced model
-# Terms added sequentially (first to last)
-# Permutation: free
-# Number of permutations: 9999
-# 
-# vegan::adonis2(formula = dist_usvi_metab.d ~ sampling_time * site * sampling_day, data = meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
-# Df SumOfSqs      R2       F Pr(>F)    
-# sampling_time                    1  0.09094 0.03560  3.9751 0.0182 *  
-#   site                             2  0.72202 0.28263 15.7800 0.0001 ***
-#   sampling_day                     3  0.08280 0.03241  1.2064 0.2945    
-# sampling_time:site               2  0.04924 0.01927  1.0761 0.3690    
-# sampling_time:sampling_day       3  0.08729 0.03417  1.2719 0.2580    
-# site:sampling_day                6  0.29794 0.11663  2.1705 0.0120 *  
-#   sampling_time:site:sampling_day  6  0.10337 0.04046  0.7530 0.7285    
-# Residual                        49  1.12100 0.43882                   
-# Total                           72  2.55460 1.00000                   
-# ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
-
-
-#does it matter if we write the formula as sampling_time*sampling_day*site instead?
-
-with(meta.metab, vegan::adonis2(data = meta.metab, method = "bray", permutations = 9999,
-                                # strata = site,
                                 formula = dist_usvi_metab.d ~ sampling_time*sampling_day*site,
                                 parallel = nthreads, by = "terms"))
-# Df SumOfSqs      R2       F Pr(>F)    
-# sampling_time                    1  0.09094 0.03560  3.9751 0.0174 *  
-#   sampling_day                     3  0.08985 0.03517  1.3091 0.2456    
+# Df SumOfSqs      R2       F Pr(>F)
+# sampling_time                    1  0.09094 0.03560  3.9751 0.0174 *
+#   sampling_day                     3  0.08985 0.03517  1.3091 0.2456
 # site                             2  0.71497 0.27987 15.6259 0.0001 ***
-#   sampling_time:sampling_day       3  0.08584 0.03360  1.2507 0.2708    
-# sampling_time:site               2  0.05069 0.01984  1.1079 0.3426    
-# sampling_day:site                6  0.29794 0.11663  2.1705 0.0119 *  
-#   sampling_time:sampling_day:site  6  0.10337 0.04046  0.7530 0.7189    
-# Residual                        49  1.12100 0.43882                   
-# Total                           72  2.55460 1.00000                   
+#   sampling_time:sampling_day       3  0.08584 0.03360  1.2507 0.2708
+# sampling_time:site               2  0.05069 0.01984  1.1079 0.3426
+# sampling_day:site                6  0.29794 0.11663  2.1705 0.0119 *
+#   sampling_time:sampling_day:site  6  0.10337 0.04046  0.7530 0.7189
+# Residual                        49  1.12100 0.43882
+# Total                           72  2.55460 1.00000
 # ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 
-temp_res <- with(meta.metab, vegan::adonis2(data = meta.metab, method = "bray", permutations = 9999,
+permanova_metab_estimate_variation.df <- with(meta.metab, vegan::adonis2(data = meta.metab, method = "bray", permutations = 9999,
                                             # strata = site,
                                             formula = dist_usvi_metab.d ~ sampling_time*sampling_day*site,
                                             parallel = nthreads, by = "terms"))
-permanova_metab_estimate_variation.df <- temp_res %>%
+permanova_metab_estimate_variation.df <- permanova_metab_estimate_variation.df %>%
   tibble::rownames_to_column(var = "term") %>%
   dplyr::mutate(term = as.character(term)) %>%
   dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
@@ -1545,22 +1627,21 @@ permanova_metab_estimate_variation.df <- permanova_metab_estimate_variation.df %
                   dplyr::summarise(TotalEMS = sum(MS))) %>%
   dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
                                           .default = NA)) %>%
-  dplyr::mutate(sq_root = MS^(1/2))
+  dplyr::select(-c(TotalEMS, R2)) %>%
+  dplyr::mutate(sq_root = MS^(1/2)) %>%
+  dplyr::mutate(perc_variation = sq_root/(sum(sq_root, na.rm = TRUE))*100)
 
 
-permanova_metab_estimate_variation.df %>% 
-  dplyr::summarise(sum(sq_root, na.rm = TRUE))
-
-# term Df SumOfSqs      R2       F Pr(>F)      MS TotalEMS V_term sq_root
-# [1,]    4  1  0.09094 0.03560  3.9751 0.0158 0.09094   0.6221 14.618 0.30156
-# [2,]    2  3  0.08985 0.03517  1.3091 0.2451 0.02995   0.6221  4.814 0.17306
-# [3,]    8  2  0.71497 0.27987 15.6259 0.0001 0.35748   0.6221 57.464 0.59790
-# [4,]    5  3  0.08584 0.03360  1.2507 0.2700 0.02861   0.6221  4.599 0.16915
-# [5,]    7  2  0.05069 0.01984  1.1079 0.3418 0.02535   0.6221  4.074 0.15920
-# [6,]    3  6  0.29794 0.11663  2.1705 0.0110 0.04966   0.6221  7.982 0.22284
-# [7,]    6  6  0.10337 0.04046  0.7530 0.7225 0.01723   0.6221  2.769 0.13126
-# [8,]    1 49  1.12100 0.43882                0.02288   0.6221  3.678 0.15125
-# [9,]    9 72  2.55460 1.00000                          0.6221               
+# term Df SumOfSqs       F Pr(>F)      MS V_term sq_root perc_variation
+# [1,]    4  1  0.09094  3.9751 0.0155 0.09094 14.618 0.30156        15.8199
+# [2,]    2  3  0.08985  1.3091 0.2464 0.02995  4.814 0.17306         9.0786
+# [3,]    8  2  0.71497 15.6259 0.0001 0.35748 57.464 0.59790        31.3656
+# [4,]    5  3  0.08584  1.2507 0.2704 0.02861  4.599 0.16915         8.8737
+# [5,]    7  2  0.05069  1.1079 0.3532 0.02535  4.074 0.15920         8.3518
+# [6,]    3  6  0.29794  2.1705 0.0113 0.04966  7.982 0.22284        11.6900
+# [7,]    6  6  0.10337  0.7530 0.7280 0.01723  2.769 0.13126         6.8856
+# [8,]    1 49  1.12100                0.02288  3.678 0.15125         7.9347
+# [9,]    9 72  2.55460                   
 
 #what is the interaction of terms within each factor?
 dist_usvi_metab.df <- meta.metab %>%
@@ -1744,7 +1825,7 @@ bind_cols(., data.frame("q05" = (dist_usvi_metab_sites.boot$t %>%
 
 
 
-temp_res <- t.test(dist_usvi_metab.df %>%
+t.test(dist_usvi_metab.df %>%
          dplyr::filter(grepl("Tektite", site)) %>%
          dplyr::select(dissimilarity) %>%
          tibble::deframe(.),
@@ -1797,12 +1878,13 @@ t.test(dist_usvi_metab.df %>%
 #Summarizing intra-site distances via pariwise t-tests:
 
 
-length_v <- c("LB_seagrass", "Yawzi", "Tektite")
+length_v <- c("LB_seagrass", "Tektite", "Yawzi")
 ttest_res <- combn(length_v, 2) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  dplyr::mutate(p.value = NA, t = NA)
+  # dplyr::mutate(p.value = NA) %>%
+  dplyr::mutate(t = NA)
 ttest_usvi_metab_sites.res <- ttest_res
 ttest_usvi_asv_sites.res <- ttest_res
 for(i in seq_len(nrow(ttest_res))){
@@ -1817,7 +1899,7 @@ for(i in seq_len(nrow(ttest_res))){
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_metab_sites.res[i, "t"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$statistic
-  ttest_usvi_metab_sites.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
+  # ttest_usvi_metab_sites.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
   
   temp_i_c <- dist_usvi_asv.df %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
@@ -1828,20 +1910,16 @@ for(i in seq_len(nrow(ttest_res))){
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_asv_sites.res[i, "t"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$statistic
-  ttest_usvi_asv_sites.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
+  # ttest_usvi_asv_sites.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
 }
 
+ttest_usvi_metab_sites.res <- ttest_usvi_metab_sites.res %>%
+  dplyr::left_join(., dist_usvi_metab_sites.boot.summary.df)
+ttest_usvi_asv_sites.res <- ttest_usvi_asv_sites.res %>%
+  dplyr::left_join(., dist_usvi_asv_sites.boot.summary.df)
 
 # Look at within-site within-sampling time --------------------------------
 
-
-#heads up: the bootstrapped pairwise t-tests for 'dawn' vs 'peak_photo' microbial samples yielded:
-# pair1      pair2   p.value       t  q.value
-# 1  dawn peak_photo 0.5313026 1.52252  0.07870059
-
-#for metabolics samples:
-# pair1      pair2    p.value        t  q.value
-# 1  dawn peak_photo 0.002738135 -3.12219 0.02773236
 
 meta.microb %>%
   split(., f = .$sampling_time) %>%
@@ -2175,6 +2253,10 @@ ttest_usvi_asv_grouping.res
 #Tekeite dawn vs Lameshur afternoon
 #somewhat, Lameshur dawn vs Tektite dawn
 #somewhat, Lameshur dawn vs Yawzi afternoon
+readr::write_delim(ttest_usvi_metab_grouping.res, paste0(projectpath, "/", "permanova_ttest_usvi_metab_site_time.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+readr::write_delim(ttest_usvi_asv_grouping.res, paste0(projectpath, "/", "permanova_ttest_usvi_asv_site_time.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
 
 
 # Pairwise t-tests for day and site ---------------------------------------
@@ -2394,6 +2476,11 @@ ttest_usvi_asv_site_day.res <- ttest_usvi_asv_site_day.res %>%
   dplyr::left_join(., dist_usvi_asv_site_day.boot.summary.df)
 
 
+readr::write_delim(ttest_usvi_metab_site_day.res, paste0(projectpath, "/", "permanova_ttest_usvi_metab_site_day.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+readr::write_delim(ttest_usvi_asv_site_day.res, paste0(projectpath, "/", "permanova_ttest_usvi_asv_site_day.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+
 ttest_usvi_asv_site_day.res %>%
   dplyr::filter(p.value < 0.1) %>%
   # dplyr::summarise(num_SDA = length(t))
@@ -2408,6 +2495,8 @@ ttest_usvi_metab_site_day.res %>%
 #2 comparisons are between days at LB
 #2 comparisons are between Yawzi and LB on days 3 and 4
 #1 comparison is between Yawzi and Tektite on day 4
+
+###STOP HERE: 20250208
 
 
 # adonis2 per site --------------------------------------------------------

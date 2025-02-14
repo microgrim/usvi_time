@@ -1746,12 +1746,617 @@ if(!any(grepl("asvs_relabund_(A|B|C|D)", list.files(projectpath, pattern = "usvi
   
 }
 
+
+# Plot SDA ASVs relative abundance heatmap --------------------------------
+
+#arrange the SDA ASVs by phylogeny
+
+#import the results from Silva
+keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
+
+usvi_sda_asvs.taxonomy <- usvi_prok_asvs.taxa %>%
+  dplyr::select(-sequence) %>%
+  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+  dplyr::mutate(taxonomy = dplyr::case_when(
+    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+  dplyr::relocate(contains("_id"), taxonomy) %>%
+  dplyr::select(-c(final_taxonomy)) %>%
+  droplevels %>%
+  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+  dplyr::filter(asv_id %in% usvi_sda_asvs_compare_summary.df[["asv_id"]]) %>%
+  dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
+  dplyr::distinct(asv_id, taxonomy, .keep_all = TRUE) %>%
+  droplevels
+
+
+#use Silva tree to propagate relative arrangement of ASVs by taxonomy
+silva_ssu_tax.df <- readr::read_delim("~/projects/silva/tax_slv_ssu_138.2.txt", delim = "\t", col_names = FALSE, show_col_types = FALSE) %>%
+  setNames(., c("taxonomy", "id", "tax_level", "X4", "version")) %>%
+  dplyr::select(-X4) %>%
+  dplyr::mutate(taxonomy = gsub("riia", "ria", taxonomy)) %>%
+  dplyr::mutate(taxonomy = gsub("biia", "bia", taxonomy)) %>%
+  tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+  dplyr::mutate(across(everything(), ~stringr::str_trim(.x, "both"))) %>%
+  dplyr::mutate(across(everything(), ~dplyr::na_if(.x, ""))) %>%
+  droplevels
+
+
+usvi_sda_asvs_filtered_silva.df <- usvi_sda_asvs.taxonomy %>%
+  dplyr::left_join(., silva_ssu_tax.df %>%
+                     dplyr::select(-c(taxonomy)) %>%
+                     droplevels, by = join_by(!!!keep_tax), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::mutate(id = as.numeric(id)) %>%
+  dplyr::arrange(id) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+  tibble::rowid_to_column(var = "rankorder") %>%
+  droplevels
+
+
+usvi_sda_asvs_day_time_median_list <- shared_sda_asvs_idx_filtered_list %>%
+  map(., ~.x %>%
+        dplyr::select(asv_id, contrast, hold, variable, sampling_time, site, sample_id, relabund, pair, hold2, group_label) %>%
+        droplevels %>%
+        dplyr::left_join(., metabolomics_sample_metadata %>%
+                           dplyr::distinct(sample_id, sampling_day) %>%
+                           droplevels, by = join_by(sample_id)) %>%
+        dplyr::filter(!grepl("Day1", sampling_day)) %>%
+        droplevels %>%
+        # dplyr::group_by(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label) %>%
+        # tidyr::expand(relabund) %>%
+        dplyr::group_by(asv_id, group_label) %>%
+        dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
+        dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
+                                                       .default = 0)) %>%
+        dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
+        dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
+                         mean_norm = mean(sum(norm_relabund, na.rm = TRUE)),
+                         median = median(relabund, na.rm = TRUE),
+                         median_norm = median(sum(norm_relabund, na.rm = TRUE)),
+                         sd = sd(relabund, na.rm = TRUE),
+                         .groups = "keep") %>%
+        # dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
+        # dplyr::group_by(asv_id, contrast, sampling_day, sampling_time, site, group_label) %>%
+        # tidyr::expand(median, median_norm, mean, mean_norm, sd) %>%
+        dplyr::mutate(median_label = signif(median, digits = 2),
+                      median_norm_label = signif(median_norm, digits = 2)) %>%
+        dplyr::mutate(across(c(median_label, median_norm_label), ~dplyr::case_when(.x > 0 ~ .x,
+                                                      .default = NA))) %>%
+        dplyr::left_join(., usvi_sda_asvs_filtered_silva.df %>%
+                           dplyr::select(asv_id, rankorder) %>%
+                           droplevels, by = join_by(asv_id)) %>%
+        dplyr::mutate(sampling_time = factor(sampling_time, levels = names(sampling_time_lookup)),
+                      sampling_day = factor(sampling_day, levels = names(sampling_day_lookup))) %>%
+        dplyr::mutate(sampling_time = recode(sampling_time, !!!sampling_time_lookup)) %>%
+        dplyr::arrange(rankorder, sampling_time, sampling_day) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+        droplevels)
+
+
+temp_df1 <- shared_sda_asvs_idx_filtered_list[[8]] %>%
+  dplyr::select(asv_id, contrast, hold, variable, sampling_time, site, sample_id, relabund, pair, hold2, group_label) %>%
+  droplevels %>%
+  dplyr::left_join(., metabolomics_sample_metadata %>%
+                     dplyr::distinct(sample_id, sampling_day) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::filter(!grepl("Day1", sampling_day)) %>%
+  droplevels %>%
+  # dplyr::group_by(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label) %>%
+  # tidyr::expand(relabund) %>%
+  dplyr::group_by(asv_id, group_label) %>%
+  dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
+  # dplyr::mutate(relabund = dplyr::case_when((relabund > 0) ~ relabund, .default = 0.0001)) %>%
+  dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
+                                                 .default = 0)) %>%
+  # tidyr::pivot_wider(., id_cols = c(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label),
+  #                    names_from = NULL,
+  #                    values_from ="relabund",
+  #                    values_fill = 0) %>%
+  # tidyr::pivot_longer(., cols = "metric",
+  #                     names_from = "metric",
+  #                     values_from = "value") %>%
+  dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
+  dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
+                   mean_norm = mean(sum(norm_relabund, na.rm = TRUE)),
+                   median = median(relabund, na.rm = TRUE),
+                   median_norm = median(sum(norm_relabund, na.rm = TRUE)),
+                   sd = sd(relabund, na.rm = TRUE),
+                   .groups = "keep") %>%
+  # dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
+  # dplyr::group_by(asv_id, contrast, sampling_day, sampling_time, site, group_label) %>%
+  # tidyr::expand(median, median_norm, mean, mean_norm, sd) %>%
+  dplyr::mutate(median_label = signif(median, digits = 2),
+                median_norm_label = signif(median_norm, digits = 2)) %>%
+  dplyr::mutate(across(c(median_label, median_norm_label), ~dplyr::case_when(.x > 0 ~ .x,
+                                                                             .default = NA))) %>%
+  dplyr::mutate(across(c(median, mean, sd), ~dplyr::case_when((.x > 0) ~ .x, .default = 0.0001))) %>%
+  dplyr::left_join(., usvi_sda_asvs_filtered_silva.df %>%
+                     dplyr::select(asv_id, rankorder) %>%
+                     droplevels, by = join_by(asv_id)) %>%
+  dplyr::mutate(sampling_time = factor(sampling_time, levels = names(sampling_time_lookup)),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup))) %>%
+  dplyr::mutate(sampling_time = recode(sampling_time, !!!sampling_time_lookup)) %>%
+  dplyr::arrange(rankorder, sampling_time, sampling_day) %>%
+  dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+  droplevels
+
+# temp_df1 <- usvi_sda_asvs_day_time_median_list[[grep("^Yawzi", names(usvi_sda_asvs_day_time_median_list))]] %>%
+# # temp_df1 <- usvi_sda_asvs_day_time_median_list[[grep("^LB_seagrass", names(usvi_sda_asvs_day_time_median_list))]] %>%
+#   tidyr::drop_na(.)
+#   
+# temp_breaks1 <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::select(median) %>% tibble::deframe(.) %>% quantile(., probs = seq(0, 1, 0.25), names = FALSE) %>% log10(.)  %>% signif(., digits = 1)
+# temp_breaks1 <- 10^(temp_breaks1) %>% signif(., digits = 1) %>% unique(.)
+# 
+# # temp_scalebreaks_1 <- c(seq(0.01, temp_breaks1[2], length.out = 6),
+# #                         seq(temp_breaks1[2], temp_breaks1[3], length.out = 6),
+# #                         seq(temp_breaks1[3], temp_breaks1[4], length.out = 6), 
+# #                         seq(temp_breaks1[4], temp_breaks1[5], length.out = 5)) %>% 
+# #   unique(.) %>% sort(.)
+# # temp_nbreaks1 <- (temp_breaks1)/2 %>% unique(.) %>% sort(.)
+# # temp_breaks1 <- temp_scalebreaks_1
+# 
+# # temp_breaks1 <- 10^(round(temp_breaks1, digits = 0)) %>% unique(.)
+# # temp_breaks1 <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::select(median) %>% tibble::deframe(.) %>% quantile(., probs = seq(0, 1, 0.25), names = FALSE) %>% round(., digits = 1) %>% unique(.)
+# 
+# 
+# temp_breaks1 <- c(temp_breaks1, round(max(temp_breaks1)/2, digits = 0), 0) %>% unique(.) %>% sort(.)
+# temp_nbreaks1 <- (temp_breaks1)/2 %>% unique(.) %>% sort(.)
+# 
+# # temp_labels1 <-  (temp_breaks1) %>%  replace_na(., "") %>% scales::percent(accuracy = 0.1, scale = 1)
+# # temp_labels1 <- 10^(temp_breaks1) %>% replace_na(., "") %>% scales::percent(accuracy = 0.1, scale = 1)
+# # temp_pal1 <- colorRampPalette(viridisLite::viridis(n = length(temp_breaks1)))(length(temp_breaks1)) %>% setNames(., temp_breaks1)
+# # temp_pal1 <- colorRampPalette(pals::gnuplot(n = 10)[-1])(length(temp_breaks1))
+# # temp_pal1 <- colorRampPalette(pals::cubicyf(n = length(temp_breaks1)))(100)
+# temp_pal1 <- colorRampPalette(pals::cubicyf(n = length(temp_breaks1)))(length(temp_breaks1)) %>% setNames(., temp_breaks1)
+
+# temp_df1 <- usvi_sda_asvs_day_time_median_list[[1]] %>%
+# temp_df1 <- usvi_sda_asvs_day_time_median_list[[grep("^Yawzi", names(usvi_sda_asvs_day_time_median_list))]] %>%
+  temp_df1 <- usvi_sda_asvs_day_time_median_list[[grep("^LB_seagrass", names(usvi_sda_asvs_day_time_median_list))]] %>%
+  # tidyr::drop_na(.) %>% dplyr::distinct(.) %>% 
+  # dplyr::group_by(asv_id, contrast, sampling_day, sampling_time, site, group_label) %>%
+  # tidyr::expand(median, median_norm, mean, mean_norm, sd) %>%
+  tidyr::drop_na(.)
+temp_df1 %>% 
+  # dplyr::filter(grepl("ASV_00021", asv_id)) %>%
+  # dplyr::ungroup(.) %>%
+  # dplyr::select(asv_id, contrast, sampling_day, sampling_time, site, contains("median")) %>%
+  dplyr::group_by(asv_id, group_label) %>%
+  dplyr::summarise(num_obs = length(median)) %>%
+  # dplyr::summarise(total_norm = sum(median_norm, na.rm = TRUE),
+  #                  num_obs = length(group_label),
+  #                  total_med = sum(median, na.rm = TRUE))  %>%
+  dplyr::arrange((num_obs)) %>%
+  droplevels
+
+temp_breaks1 <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::select(median) %>% tibble::deframe(.) 
+# temp_breaks1 <- c(temp_breaks1, 0, ceiling(max(temp_breaks1))) %>% 
+#   # c(0, .)%>% 
+#   signif(., digits = 1)  %>% 
+#   quantile(., probs = seq(0, 1, 0.1), names = TRUE) 
+# 
+# temp_nbreaks1 <- temp_breaks1 %>%
+#   # c(., ceiling(max(temp_breaks1))) %>% 
+#   # log10(.)  %>% 
+#   signif(., digits = 1) %>% unique(.) %>%
+#   # c(0, .) %>% unique(.) %>%
+#   sort(.)
+# temp_nbreaks1 <- (temp_nbreaks1)/2
+# temp_breaks1 <- 10^(temp_breaks1) %>% signif(., digits = 1) %>% unique(.)
+# temp_breaks1 <- c(temp_breaks1, round(max(temp_breaks1)/2, digits = 0), 0) %>% unique(.) %>% sort(.) %>% as.vector(.)
+# temp_nbreaks1 <- (temp_breaks1[-1])/2 %>% unique(.) %>% sort(.)
+# temp_nbreaks1 <- c(0, temp_breaks1)/2 %>% unique(.) %>% sort(.)
+# temp_pal1 <- colorRampPalette(pals::cubicyf(n = length(temp_nbreaks1)))(length(temp_nbreaks1)) %>% setNames(names(temp_breaks1)[-1])
+# temp_pal1 <- colorRampPalette(pals::cubicyf(n = length(temp_breaks1)))(length(temp_breaks1))
+# %>% setNames(., temp_nbreaks1)
+# temp_breaks1 <- temp_nbreaks1 %>% c(0, ., ceiling(max(temp_breaks1))) %>% signif(.,digits = 1) %>% c(range(temp_nbreaks1), .) %>% unique(.) %>% sort(.)
+# temp_breaks1 <- temp_nbreaks1 %>% quantile(., probs = seq(0, 1, 0.25), names = TRUE) %>% c(range(temp_breaks1), .) %>% unique(.) %>% sort(.)
+# temp_breaks1 <- temp_breaks1 %>% 
+#   # range(.) %>%
+#   # quantile(., probs = seq(0, 1, 0.25), names = TRUE) %>%
+#   # c(0, .) %>% 
+#   # c(., ceiling(max(temp_breaks1))) %>%
+#   # signif(.,digits = 1) %>% 
+#   # c(range(temp_nbreaks1), .) %>% 
+#   unique(.) %>% sort(.)
+# temp_legendbreaks1 <- seq(floor(min(min(temp_breaks1, na.rm = TRUE), min(temp_breaks1, na.rm = TRUE))),
+#                                             ceiling(max(max(temp_breaks1, na.rm = TRUE), max(temp_breaks1, na.rm = TRUE))),
+#                                             length.out = 6)
+temp_legendbreaks1 <- temp_breaks1 %>% range(.) %>%
+  quantile(., probs = seq(0, 1, 0.2), names = TRUE) %>%
+  signif(.,digits = 1) %>% c(0, .) %>% unique(.) %>% sort(.)
+temp_pal1 <- colorRampPalette(pals::cubicyf(100))(100)
+
+#making our own labeller:
+{
+  log10p1 <- function(x){ log10(x + 1) }
+  log10p1_inv <- function(x){ exp(x) - 1 }
+  log10p1_br <- function(x) { 
+    temp_b <- quantile((x+1), probs = seq(0, 1, 0.2), names = FALSE)
+    temp_b <- c(0, temp_b)
+    temp_b <- c(signif(temp_b, digits = 1), max(x), signif(max(x), digits = 1)/2)
+    temp_b <- sort(unique(temp_b))
+    return(temp_b)
+  }
+  log10p1_lab <- function(x) { 
+    temp_b <- log10p1_br(x)
+    temp_b <- scaleFUN1(temp_b)
+    temp_b <- paste0(temp_b, "%")
+    return(temp_b)
+  }
+  
+}
+# 
+temp_breaks1 %>%
+# temp_legendbreaks1 %>%
+# temp_m <- temp_breaks1 %>%
+  log10p1_br(.)
+(log10p1_br(temp_breaks1)) %>% log10p1(.)
+(log10p1_br(temp_breaks1)) %>% log10p1_inv(.)
+10^(log10p1_br(temp_breaks1))
+ceiling(range(temp_breaks1))
+
+log10p1_lab(temp_breaks1)
+
+# regular_minor_breaks()(temp_m, log10p1_br(temp_breaks1), n = 2)
+# minor_breaks_n()(temp_m, log10p1_br(temp_breaks1), n = 2)
+# rev(colorRampPalette(pals::cubehelix(n = 20)[5:15])(10)) %>% pal.bands(.)
+
+T_log10p1 <- function(){ scales::new_transform(name = "log10p1", 
+                                   transform = log10p1, inverse = log10p1_inv,
+                                   d_transform = NULL, d_inverse = NULL,
+                                   breaks = log10p1_br, 
+                                   minor_breaks = minor_breaks_n(10),
+                                   format = log10p1_lab,
+                                   domain = c(0, Inf)) }
+
+colorRampPalette(pals::cubicyf(n = length(temp_legendbreaks1)))(length(temp_legendbreaks1)) %>% setNames(., temp_legendbreaks1) %>% pal.bands(.)
+
+label_y <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::distinct(pair, sampling_day) %>%
+  dplyr::mutate(label = paste0(pair, ".", sampling_day)) %>%
+  dplyr::mutate(pair = recode(pair, !!!c(site_lookup, sampling_time_lookup))) %>%
+  droplevels %>%
+  dplyr::mutate(relabeled = paste0(pair, ".", sampling_day)) %>%
+  dplyr::select(label, relabeled) %>%
+  tibble::deframe(.)
+
+temp_g3a <- print(
+  ggplot(data = temp_df1, aes(x = asv_id, y = interaction(pair, sampling_day), group = group_label))
+  + theme_bw() 
+  + geom_tile(aes(fill = (median)), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+  + geom_text(aes(label = median_label), size = rel(2))
+  +  scale_fill_gradientn(aesthetics = "fill",
+                          colours = temp_pal1, 
+                          transform = T_log10p1(), 
+                          limits = range(log10p1_br(temp_breaks1)),
+                          labels = log10p1_lab(temp_breaks1), breaks = log10p1_br(temp_breaks1),
+                          # breaks = breaks_pretty(n = 5)(temp_legendbreaks1),
+                          # limits = c(0, signif(max(temp_legendbreaks1), digits = 1)),
+                          na.value = "white")
+  + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon")
+  + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y)
+  + theme(panel.spacing = unit(1, "lines"),
+          panel.background = element_blank(),
+          axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+          axis.text.y = element_text(vjust = 0.5, hjust = 1),
+          panel.grid.major = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.ontop = FALSE,
+          strip.text.y = element_blank())
+  + guides(
+  fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+    # fill = guide_colorbar(nbin = 10, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
+                          title = "Relative \nabundance", direction = "vertical",
+                          theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+                          override.aes = list(stroke = 1, color = "black")),
+    color = "none")
+  + coord_flip()
+) 
+
+# temp_df2 <- usvi_sda_asvs_day_time_median_list[[grep("^Yawzi", names(usvi_sda_asvs_day_time_median_list))]] %>%
+temp_df2 <- temp_df1 %>%
+  tidyr::drop_na(.) %>%
+  # dplyr::group_by(asv_id, group_label) %>%
+  # dplyr::mutate(median = median/sum(median, na.rm = TRUE))%>%
+  droplevels
+  # dplyr::mutate(median = median/sum(median, na.rm = TRUE)) %>% dplyr::mutate(median = log10(median))
+
+# (ggplot(data = temp_df2, aes(x = median_norm, group = interaction(asv_id, group_label)))
+#   + geom_histogram(aes(fill = asv_id))
+# )
+# (ggplot(data = temp_df1, aes(x = median, group = interaction(asv_id, group_label)))
+#   + geom_histogram(aes(fill = asv_id))
+# )
+# 
+# 
+# pal.bands(rev(colorRampPalette(pals::cubehelix(n = 20)[5:15])(5)))
+# pal.bands(colorRampPalette(pals::gnuplot(n = 10)[-1])(6))
+# pal.bands(colorRampPalette(viridisLite::viridis(n = 6))(length(temp_breaks2)))
+# 
+# temp_df2 %>% dplyr::group_by(asv_id, group_label) %>% dplyr::summarise(total = sum(median_norm, na.rm = TRUE))
+# 
+# temp_breaks2 <- bind_rows(usvi_sda_asvs_day_time_median_list) %>%
+#   dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% quantile(., probs = seq(0, 1, 0.25), names = FALSE) %>% round(., digits = 1) %>% unique(.)
+
+temp_breaks2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% 
+  quantile(., probs = seq(0, 1, 0.1), names = FALSE, na.rm = TRUE) %>% round(., digits = 1) %>% unique(.)
+temp_breaks2 <- c(temp_breaks2, 0, 1)%>% unique(.) %>% sort(.)
+# temp_labels2 <-  (temp_breaks2) %>%  replace_na(., "") %>% as.character(.)
+temp_nbreaks2 <- (temp_breaks2)/2 %>% unique(.) %>% sort(.)
+
+# temp_pal2 <- colorRampPalette(viridisLite::viridis(n = 6))(length(temp_breaks2))
+temp_pal2 <- colorRampPalette(pals::gnuplot(100))(100)
+pal.bands(temp_pal2)
+# temp_pal2 <- colorRampPalette(pals::gnuplot(n = 10)[-1])(length(temp_breaks2))
+# pal.bands(temp_pal2 %>% setNames(temp_breaks2)) 
+
+temp_g3b <- print(
+  ggplot(data = temp_df2 %>%
+           droplevels, aes(x = asv_id, y = interaction(pair, sampling_day), group = interaction(group_label)))
+  + theme_bw() 
+  + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+  + geom_text(aes(label = median_norm_label), size = rel(2))
+  # +  scale_fill_gradientn(colors = temp_pal2, values = temp_breaks2,
+  #                         breaks = temp_breaks2, 
+  #                         # labels = temp_labels2, 
+  #                         limits = range(temp_breaks2),
+  #                         # expand = expansion(1.1, 1.1), 
+  #                         aesthetics = "fill", na.value = "white")
+  +  scale_fill_gradientn(aesthetics = "fill",
+                          colours = temp_pal2,
+                          breaks = temp_breaks2,
+                          values = temp_breaks2,
+                          # values = temp_nbreaks2,
+                          labels = scales::label_number(accuracy = 0.1, scale = 1),
+                          limits = range(temp_breaks2),
+                          na.value = NA)
+  + scale_x_discrete(labels = usvi_genera_relabel,
+                     expand = c(0,0), name = "Taxon")
+  + scale_y_discrete(name = "Sampling time", expand = c(0,0))
+  + theme(panel.spacing = unit(1, "lines"),
+          panel.background = element_blank(),
+          axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+          axis.text.y = element_text(vjust = 0.5, hjust = 1),
+          panel.grid.major = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          panel.ontop = FALSE,
+          strip.text.y = element_blank())
+  + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+  # + guides(fill = guide_colorsteps(even.steps = TRUE, show.limits = TRUE,
+  # + guides(fill = guide_colorbar(nbin = 10, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
+                                   title = "Normalized \nabundance \ndensity", direction = "vertical",
+                                 theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+                                   override.aes = list(stroke = 1, color = "black")),
+           color = "none")
+  + coord_flip()
+)
+
+rm(list = apropos("g3_sda_.*", mode = "list"))
+# for(i in c(1)){
+for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
+  
+  namevar1 <- names(usvi_sda_asvs_day_time_median_list[i]) %>%
+    gsub("LB_seagrass", "Lameshur Bay", .) %>%
+    gsub("peak_photo", "afternoon", .)
+  temp_df1 <- usvi_sda_asvs_day_time_median_list[[i]] %>%
+    droplevels
+  if(nrow(temp_df1) > 0){
+  namevar2 <- paste0(unique(temp_df1$hold2), "_", unique(temp_df1$hold))
+    
+ temp_breaks1 <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::select(median) %>% tibble::deframe(.)
+  # temp_legendbreaks1 <- seq(floor(min(min(temp_breaks1, na.rm = TRUE), min(temp_breaks1, na.rm = TRUE))),
+  #                           ceiling(max(max(temp_breaks1, na.rm = TRUE), max(temp_breaks1, na.rm = TRUE))),
+  #                           length.out = 6)
+  # temp_legendbreaks1 <- temp_breaks1 %>% sort(.) %>%
+  #   range(.) %>%
+  #   quantile(., probs = seq(0, 1, 0.2), names = TRUE)
+  temp_pal1 <- colorRampPalette(pals::cubicyf(100))(100)
+  label_y <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::distinct(pair, sampling_day) %>%
+    dplyr::mutate(label = paste0(pair, ".", sampling_day)) %>%
+    dplyr::mutate(pair = recode(pair, !!!c(site_lookup, sampling_time_lookup))) %>%
+    droplevels %>%
+    dplyr::mutate(relabeled = paste0(pair, ".", sampling_day)) %>%
+    dplyr::select(label, relabeled) %>%
+    tibble::deframe(.)
+  
+ temp_g3a <- (
+   ggplot(data = temp_df1 %>%
+            droplevels, aes(x = asv_id, y = interaction(pair, sampling_day), group = group_label))
+   + theme_bw()
+   + geom_tile(aes(fill = median), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+   # + geom_text(aes(label = median_label), size = rel(2))
+   +  scale_fill_gradientn(aesthetics = "fill",
+                           colours = temp_pal1,
+                           transform = T_log10p1(),
+                           limits = range(log10p1_br(temp_breaks1)),
+                           labels = log10p1_lab(temp_breaks1), breaks = log10p1_br(temp_breaks1),
+                           na.value = "white")
+   + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon")
+   + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y)
+   + theme(panel.spacing = unit(1, "lines"),
+           panel.background = element_blank(),
+           axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+           axis.text.y = element_text(vjust = 0.5, hjust = 1),
+           panel.grid.major = element_blank(),
+           panel.grid.minor.y = element_blank(),
+           panel.grid.minor.x = element_blank(),
+           panel.ontop = FALSE,
+           strip.text.y = element_blank())
+   + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+   # + guides(fill = guide_colorbar(nbin = 10, show.limits = TRUE, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
+                                  title = "Relative \nabundance", direction = "vertical",
+                                  theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+                                  override.aes = list(stroke = 1, color = "black")),
+            color = "none")
+   + coord_flip()
+   + ggtitle(paste0("SDA ASVs in ", namevar1, " relative abundance"))
+ )
+  
+  temp_df2 <- temp_df1 %>%
+    dplyr::group_by(asv_id, group_label) %>%
+    dplyr::mutate(median = median/sum(median, na.rm = TRUE)) %>%
+    dplyr::mutate(median = tidyr::replace_na(median, 0))
+  
+  temp_breaks2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% 
+    quantile(., probs = seq(0, 1, 0.1), names = FALSE, na.rm = TRUE) %>% round(., digits = 1) %>% unique(.)
+  temp_breaks2 <- c(temp_breaks2, 0, 1)%>% unique(.) %>% sort(.)
+  # temp_pal2 <- colorRampPalette(pals::gnuplot(n = 10)[-1])(length(temp_breaks2))
+  temp_pal2 <- colorRampPalette(pals::gnuplot(100))(100)
+  temp_nbreaks2 <- (temp_breaks2)/2 %>% unique(.) %>% sort(.)
+  
+  temp_g3b <- (
+    ggplot(data = temp_df2 %>%
+             droplevels, aes(x = asv_id, y = interaction(pair, sampling_day), group = interaction(group_label)))
+    + theme_bw() 
+    + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+    # + geom_text(aes(label = median_norm_label), size = rel(2))
+    +  scale_fill_gradientn(aesthetics = "fill",
+                            colours = temp_pal2, 
+                            breaks = temp_breaks2,
+                            values = temp_breaks2,
+                            limits = range(temp_breaks2),
+                            na.value = NA)
+    + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon", position = "bottom")
+    + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y)
+    + theme(panel.spacing = unit(1, "lines"),
+            panel.background = element_blank(),
+            axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+            axis.text.y = element_text(vjust = 0.5, hjust = 1),
+            panel.grid.major = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.ontop = FALSE,
+            strip.text.y = element_blank())
+    + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+    # + guides(fill = guide_colorbar(nbin = 10, show.limits = TRUE, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
+                                   title = "Normalized \nabundance \ndensity", direction = "vertical",
+                                   theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+                                   override.aes = list(stroke = 1, color = "black")),
+             color = "none")
+    + coord_flip()
+    + ggtitle(paste0("SDA ASVs in ", namevar1, " normalized abundance density"))
+  )
+  label_y2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::distinct(pair, sampling_day) %>%
+    dplyr::mutate(label = paste0(sampling_day, ".", pair)) %>%
+    dplyr::mutate(pair = recode(pair, !!!c(site_lookup, sampling_time_lookup))) %>%
+    droplevels %>%
+    dplyr::mutate(relabeled = paste0(sampling_day, ".", pair)) %>%
+    dplyr::select(label, relabeled) %>%
+    tibble::deframe(.)
+  temp_g3c <- (
+    ggplot(data = temp_df2 %>%
+             droplevels, aes(x = asv_id, y = interaction(sampling_day, pair), group = interaction(group_label)))
+    + theme_bw() 
+    + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+    # + geom_text(aes(label = median_norm_label), size = rel(2))
+    +  scale_fill_gradientn(aesthetics = "fill",
+                            colours = temp_pal2, 
+                            breaks = temp_breaks2,
+                            values = temp_breaks2,
+                            limits = range(temp_breaks2),
+                            na.value = NA)
+    + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon", position = "bottom")
+    + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+    + theme(panel.spacing = unit(1, "lines"),
+            panel.background = element_blank(),
+            axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+            axis.text.y = element_text(vjust = 0.5, hjust = 1),
+            panel.grid.major = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.ontop = FALSE,
+            strip.text.y = element_blank())
+    + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+                                   # + guides(fill = guide_colorbar(nbin = 10, show.limits = TRUE, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
+                                   title = "Normalized \nabundance \ndensity", direction = "vertical",
+                                   theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+                                   override.aes = list(stroke = 1, color = "black")),
+             color = "none")
+    + coord_flip()
+  )
+  temp_g3b <- (temp_g3b + (temp_g3c + theme(axis.text.y.left = element_blank()))) + patchwork::plot_layout(guides = "collect")
+  temp_g3 <- (temp_g3a ) + (temp_g3b)
+  assign(paste0("g3_sda_", i, "_", namevar2), temp_g3, envir = .GlobalEnv, inherits = TRUE)
+  assign(paste0("g3_sda_", i, "_", namevar2, "_med_relabund"), temp_g3a, envir = .GlobalEnv, inherits = TRUE)
+  assign(paste0("g3_sda_", i, "_", namevar2, "_norm_relabund"), temp_g3b, envir = .GlobalEnv, inherits = TRUE)
+  
+  # if(!any(grepl(paste0(namevar2, "relabund", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_sda_asvs_g3_sda_.*.png")))){
+    ggsave(paste0(projectpath, "/", "usvi_sda_asvs_g3_sda_", i, "_", namevar2 , "-", Sys.Date(), ".png"),
+           temp_g3,
+           width = 20, height = 10, units = "in")
+  # }
+  rm(list = apropos("temp_df.*", mode = "list"))
+  rm(list = apropos("namevar.*", mode = "list"))
+  rm(list = apropos("temp_breaks.*", mode = "list"))
+  rm(list = apropos("temp_labels.*", mode = "list"))
+  rm(list = apropos("temp_pal.*", mode = "list"))
+  
+  }
+}
+
+
+
+# rm(list = apropos("g3_sda_.*", mode = "list"))
+# for(i in c(1)){
+# # for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
+# 
+#   namevar <- names(usvi_sda_asvs_day_time_median_list[i]) %>%
+#     gsub("LB_seagrass", "Lameshur Bay", .) %>%
+#     gsub("peak_photo", "afternoon", .)
+#   temp_df1 <- usvi_sda_asvs_day_time_median_list[[i]] %>%
+#     droplevels
+# 
+#   namevar2 <- paste0(unique(temp_df1$hold2), "_", unique(temp_df1$hold))
+#   temp_breaks <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::select(median) %>% tibble::deframe(.) %>% quantile(., probs = seq(0, 1, 0.25), names = FALSE) %>% log10(.)  %>% signif(., digits = 1)
+#   temp_breaks <- 10^(round(temp_breaks, digits = 0)) %>% unique(.)
+#   temp_breaks <- c(temp_breaks, round(max(temp_breaks)/2, digits = 0)) %>% sort(.)
+#   
+#   temp_g3 <- print(
+#     ggplot(data = temp_df1 %>%
+#              droplevels, aes(x = asv_id, y = interaction(pair, sampling_day), group = group_label))
+#     + theme_bw() 
+#     + geom_tile(aes(fill = median), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+#     +  scale_fill_gradientn(colors = colorRampPalette(viridisLite::viridis(n = 3))(100),
+#                             # limits = c(0.1, 10), 
+#                             # breaks = c(0.01, 0.1, 1.0, 5.0, 10.0),
+#                             breaks = temp_breaks, limits = range(temp_breaks),
+#                             transform = "pseudo_log",
+#                             aesthetics = "fill", na.value = "white")
+#     + scale_x_discrete(labels = usvi_genera_relabel,
+#                        expand = c(0,0), name = "Taxon")
+#     + scale_y_discrete(name = "Sampling time", expand = c(0,0))
+#     + theme(panel.spacing = unit(1, "lines"),
+#             panel.background = element_blank(),
+#             axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+#             axis.text.y = element_text(vjust = 0.5, hjust = 1),
+#             panel.grid.major = element_blank(),
+#             panel.grid.minor.y = element_blank(),
+#             panel.grid.minor.x = element_blank(),
+#             panel.ontop = FALSE,
+#             strip.text.y = element_blank())
+#     + guides(fill = guide_legend(order = 2, ncol = 1, title = "Relative abundance", direction = "vertical",
+#                                  override.aes = list(stroke = 1, color = "black")),
+#              color = "none")
+#     + coord_flip()
+#     + ggtitle(paste0("SDA ASVs in ", namevar, " relative abundance ranks"))
+#   )
+#     # assign(paste0("g3_sda_", i, "_", namevar2), temp_g3, envir = .GlobalEnv, inherits = TRUE)
+#   # rm(temp_g3)
+#   rm(namevar)
+#   rm(namevar2)
+#   # rm(temp_df1)
+# }
+
 # Plot mean relative abundance of SDA ASVs --------------------------------
 
 #Instead of plotting 25 points per group, calculate the mean relative abundance of that ASV in that group
 #plot point+sterr bars for each SDA ASV 
 
-usvi_sda_asvs_both_list <- shared_sda_asvs_idx_filtered_list
 usvi_sda_asvs_both_mean_list <- usvi_sda_asvs_both_list %>%
   map(., ~.x %>%
         droplevels %>%
@@ -1767,12 +2372,12 @@ usvi_sda_asvs_both_mean_list <- usvi_sda_asvs_both_list %>%
 
 #arrange the asvs by whether they are more abudant in first or second part of variable
 abundrank_labeller <- (c(`0` = "Abundant and SDA in ",
-                                    `1` = "Overall rare and SDA in "))
+                         `1` = "Overall rare and SDA in "))
 #test it out:
 
 
 {
-
+  
   temp_df1 <- usvi_sda_asvs_both_mean_list[[5]]
   (temp_df1 %>%
       dplyr::ungroup(.) %>%
@@ -1799,184 +2404,109 @@ abundrank_labeller <- (c(`0` = "Abundant and SDA in ",
                     paste0(., grouping)) %>%
     dplyr::arrange(enriched, abundrank, asv_id) %>%
     dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]])))
-
-# 
-#   temp_g1 <- (
-#     ggplot(data = temp_df1 %>%
-#              dplyr::filter(abundrank == 0) %>%
-#              # dplyr::filter(enriched == unique(.[["enriched"]])[1]) %>%
-#              droplevels,
-#            aes(x = rev(asv_id), y = mean, group = interaction(asv_id, group_label)))
-#     + theme_bw()
-#     + geom_errorbar(aes(ymin = (mean - sd), ymax = (mean + sd), color = group_label), width = 0.3,
-#                     position = position_dodge(width = 0.4, preserve = "total"),
-#                     show.legend = FALSE)
-#     + geom_point(aes(fill = group_label, shape = site), na.rm = TRUE,
-#                  position = position_dodge(width = 0.4, preserve = "total"),
-#                  alpha = 1, color = "black", size = 2, show.legend = TRUE)
-#     + scale_shape_manual(name = "Sampling site", values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
-#     + scale_discrete_manual(aesthetics = c("fill", "color"),
-#                             values = group_labels_colors, labels = c(group_labels_lookup), breaks = names(group_labels_lookup))
-#     # + scale_x_discrete(labels = usvi_genera_relabel,
-#     + scale_x_discrete(labels = NULL,
-#                        expand = expansion(mult = c(0.1)),
-#                        name = NULL)
-#     + scale_y_continuous(name = "Relative abundance (%)",
-#                          expand = expansion(mult = c(0.01,0.1)))
-#     + geom_hline(aes(yintercept = 0), color = "black")
-#     + guides(fill = guide_legend(order = 1, ncol = 1, title = "Variables",  direction = "vertical",
-#                                  override.aes = list(color = "black", shape = 21, size = 3)),
-#              shape = guide_legend(order = 1, ncol = 1, title = "Sampling site",  direction = "vertical",
-#                                   override.aes = list(color = "black", size = 3)),
-#              color = "none")
-#     + theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0, size = 5),
-#             # strip.text.y = element_text(size = rel(0.8), angle = 0),  #facet_wrap
-#             strip.text.y = element_blank(),
-#             strip.background = element_blank(),
-#             panel.grid.minor = element_blank(),
-#             panel.grid.major.x = element_line(linetype = "dotted", color = "grey"),
-#             panel.grid.major.y = element_line(linetype = "solid", color = "grey80", linewidth = 0.5),
-#             # axis.text.y = element_text(angle = -90),
-#             # strip.text.y.right = element_blank(),
-#             # strip.text.x = element_text(size = rel(0.8), angle = 0), strip.text.y= element_blank(), #facet_wrap
-#             # strip.text.y = element_text(size = rel(0.8), angle = -90), strip.text.x = element_blank(), #facet_grid
-#             legend.position = "none")
-#     # + facet_wrap(.~abundrank, ncol = 1, scales = "free", axes = "all", strip.position = "right",
-#     # + facet_grid(row = vars(enriched), cols = vars(abundrank), scales = "free", space = "free", axes = "all",
-#     + facet_grid(row = vars(grouping), scales = "free", space = "free", axes = "all",
-#     # + facet_grid(row = vars(abundrank), scales = "free", space = "free", axes = "all",
-#                  drop = TRUE, shrink = FALSE,
-#                  labeller = global_labeller)
-#     + coord_flip()
-#     # + ggtitle(paste0("Observed SDA ASVs in ", namevar))
-#   )
-#   temp_g1
-#   temp_g2 <- (
-#     ggplot(data = temp_df1 %>%
-#              dplyr::filter(abundrank == 1) %>%
-#              # dplyr::filter(enriched == unique(.[["enriched"]])[2]) %>%
-#              droplevels,
-#            aes(x = rev(asv_id), y = mean, group = interaction(asv_id, group_label)))
-#     + theme_bw()
-#     + geom_errorbar(aes(ymin = (mean - sd), ymax = (mean + sd), color = group_label), width = 0.3,
-#                     position = position_dodge(width = 0.4, preserve = "total"),
-#                     show.legend = FALSE)
-#     + geom_point(aes(fill = group_label, shape = site), na.rm = TRUE,
-#                  position = position_dodge(width = 0.4, preserve = "total"),
-#                  alpha = 1, color = "black", size = 2, show.legend = TRUE)
-#     + scale_shape_manual(name = "Sampling site", values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
-#     + scale_discrete_manual(aesthetics = c("fill", "color"),
-#                             values = group_labels_colors, labels = c(group_labels_lookup), breaks = names(group_labels_lookup))
-#     # + scale_x_discrete(labels = usvi_genera_relabel,
-#     + scale_x_discrete(labels = NULL,
-#                        expand = expansion(mult = c(0.1)),
-#                        name = NULL)
-#     + scale_y_continuous(name = "Relative abundance (%)",
-#                          expand = expansion(mult = c(0.01,0.1)))
-#     + geom_hline(aes(yintercept = 0), color = "black")
-#     + guides(fill = guide_legend(order = 1, ncol = 1, title = "Variables",  direction = "vertical",
-#                                  override.aes = list(color = "black", shape = 21, size = 3)),
-#              shape = guide_legend(order = 1, ncol = 1, title = "Sampling site",  direction = "vertical",
-#                                   override.aes = list(color = "black", size = 3)),
-#              color = "none")
-#     + theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0, size = 5),
-#             # strip.text.y = element_text(size = rel(0.8), angle = 0),  #facet_wrap
-#             strip.text.y = element_blank(),
-#             strip.background = element_blank(),
-#             panel.grid.minor = element_blank(),
-#             panel.grid.major.x = element_line(linetype = "dotted", color = "grey"),
-#             panel.grid.major.y = element_line(linetype = "solid", color = "grey80", linewidth = 0.5),
-#             # axis.text.y = element_text(angle = -90),
-#             # strip.text.y.right = element_blank(),
-#             # strip.text.x = element_text(size = rel(0.8), angle = 0), strip.text.y= element_blank(), #facet_wrap
-#             # strip.text.y = element_text(size = rel(0.8), angle = -90), strip.text.x = element_blank(), #facet_grid
-#             legend.position = "none")
-#     # + facet_wrap(.~abundrank, ncol = 2, scales = "free", axes = "all", strip.position = "right",
-#     # + facet_grid(row = vars(enriched), cols = vars(abundrank), scales = "free", space = "free", axes = "all",
-#     + facet_grid(row = vars(grouping), scales = "free", space = "free", axes = "all",
-#     # + facet_grid(col = vars(abundrank), scales = "free", space = "free", axes = "all",
-#                  drop = TRUE, shrink = FALSE,
-#                  labeller = global_labeller)
-#     + coord_flip()
-#     # + ggtitle(paste0("Observed SDA ASVs in ", namevar))
-#   )
-#   temp_g2
-# temp_g1 | temp_g2
-  }
-
-rm(list = apropos("g3_sda_.*", mode = "list"))
-# for(i in c(1)){
-for(i in seq_along(usvi_sda_asvs_both_mean_list)){
   
-  namevar <- names(usvi_sda_asvs_both_mean_list[i]) %>%
-    gsub("LB_seagrass", "Lameshur Bay", .) %>%
-    gsub("peak_photo", "afternoon", .)
-  temp_df1 <- usvi_sda_asvs_both_mean_list[[i]] %>%
-    droplevels
-  temp_df1 <- temp_df1 %>%
-    dplyr::left_join(., (temp_df1 %>%
-                           dplyr::ungroup(.) %>%
-                           dplyr::select(asv_id, pair, mean) %>%
-                           dplyr::group_by(asv_id) %>%
-                           dplyr::slice_max(mean, na_rm = TRUE) %>%
-                           dplyr::mutate(enriched = pair) %>%
-                           dplyr::ungroup(.) %>%
-                           dplyr::mutate(abundrank = dplyr::case_when(mean <= mean(.[["mean"]]) ~ 1, .default = 0)) %>%
-                           dplyr::select(asv_id, enriched, abundrank)), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-    dplyr::arrange(abundrank, enriched, asv_id) %>%
-    dplyr::rowwise(.) %>%
-    dplyr::mutate(grouping = recode(enriched, !!!c(group_labels_lookup, sampling_time_lookup, site_lookup))) %>%
-    dplyr::mutate(grouping = recode(abundrank, !!!abundrank_labeller) %>%
-                    paste0(., grouping)) %>%
-    dplyr::arrange(enriched, abundrank, asv_id) %>%
-    dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]])))
-  
-  namevar2 <- paste0(unique(temp_df1$hold2), "_", unique(temp_df1$hold))
-  if(nrow(temp_df1) > 1){
-    temp_g1 <- (
-      ggplot(data = temp_df1 %>%
-               droplevels,
-             aes(x = rev(asv_id), y = mean, group = interaction(asv_id, group_label)))
-      + theme_bw() 
-      + geom_errorbar(aes(ymin = (mean - sd), ymax = (mean + sd), color = group_label), width = 0.3,
-                      position = position_dodge(width = 0.4, preserve = "total"),
-                      show.legend = FALSE)
-      + geom_point(aes(fill = group_label, shape = site), na.rm = TRUE,
-                   position = position_dodge(width = 0.4, preserve = "total"),
-                   alpha = 1, color = "black", size = 2, show.legend = TRUE)
-      + scale_shape_manual(name = "Sampling site", values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
-      + scale_discrete_manual(aesthetics = c("fill", "color"), 
-                              values = group_labels_colors, labels = c(group_labels_lookup), breaks = names(group_labels_lookup))
-      + scale_x_discrete(labels = usvi_genera_relabel, expand = expansion(add = 1), name = NULL)
-      + scale_y_continuous(name = "Relative abundance (%)", labels = scaleFUN2,
-                           expand = expansion(mult = c(0.01,0.1)))
-      + geom_hline(aes(yintercept = 0), color = "black")
-      + guides(fill = guide_legend(order = 1, ncol = 1, title = "Variables",  direction = "vertical", 
-                                   override.aes = list(color = "black", shape = 21, size = 3)),
-               shape = guide_legend(order = 1, ncol = 1, title = "Sampling site",  direction = "vertical", 
-                                    override.aes = list(color = "black", size = 3)),
-               color = "none")
-      + theme(strip.text.y = element_text(size = rel(0.8), angle = 0),
-              strip.background = element_blank(),
-              legend.position = "none",
-              panel.grid.major.x = element_line(linetype = "dotted", color = "grey"),
-              panel.grid.major.y = element_line(linetype = "solid", color = "grey80", linewidth = 0.5),
-              axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0, size = rel(0.8)),
-              axis.text.y = element_text(angle = 0, size = rel(0.8)))
-      # + facet_wrap(vars(grouping), ncol = 1,
-      # + facet_wrap(.~enriched, ncol = 2,
-      + facet_grid(rows = vars(grouping), cols = NULL, space = "free", axes = "all",
-                   drop = TRUE, shrink = TRUE,
-                   labeller = global_labeller,
-                   scales = "free")
-      + coord_flip()
-      + ggtitle(paste0(namevar))
-    )
-    assign(paste0("g3_sda_", i, "_", namevar2), temp_g1, envir = .GlobalEnv, inherits = TRUE)
-  rm(temp_g1)
-  }
-  rm(namevar)
-  rm(temp_df1)
+  # 
+  #   temp_g1 <- (
+  #     ggplot(data = temp_df1 %>%
+  #              dplyr::filter(abundrank == 0) %>%
+  #              # dplyr::filter(enriched == unique(.[["enriched"]])[1]) %>%
+  #              droplevels,
+  #            aes(x = rev(asv_id), y = mean, group = interaction(asv_id, group_label)))
+  #     + theme_bw()
+  #     + geom_errorbar(aes(ymin = (mean - sd), ymax = (mean + sd), color = group_label), width = 0.3,
+  #                     position = position_dodge(width = 0.4, preserve = "total"),
+  #                     show.legend = FALSE)
+  #     + geom_point(aes(fill = group_label, shape = site), na.rm = TRUE,
+  #                  position = position_dodge(width = 0.4, preserve = "total"),
+  #                  alpha = 1, color = "black", size = 2, show.legend = TRUE)
+  #     + scale_shape_manual(name = "Sampling site", values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
+  #     + scale_discrete_manual(aesthetics = c("fill", "color"),
+  #                             values = group_labels_colors, labels = c(group_labels_lookup), breaks = names(group_labels_lookup))
+  #     # + scale_x_discrete(labels = usvi_genera_relabel,
+  #     + scale_x_discrete(labels = NULL,
+  #                        expand = expansion(mult = c(0.1)),
+  #                        name = NULL)
+  #     + scale_y_continuous(name = "Relative abundance (%)",
+  #                          expand = expansion(mult = c(0.01,0.1)))
+  #     + geom_hline(aes(yintercept = 0), color = "black")
+  #     + guides(fill = guide_legend(order = 1, ncol = 1, title = "Variables",  direction = "vertical",
+  #                                  override.aes = list(color = "black", shape = 21, size = 3)),
+  #              shape = guide_legend(order = 1, ncol = 1, title = "Sampling site",  direction = "vertical",
+  #                                   override.aes = list(color = "black", size = 3)),
+  #              color = "none")
+  #     + theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0, size = 5),
+  #             # strip.text.y = element_text(size = rel(0.8), angle = 0),  #facet_wrap
+  #             strip.text.y = element_blank(),
+  #             strip.background = element_blank(),
+  #             panel.grid.minor = element_blank(),
+  #             panel.grid.major.x = element_line(linetype = "dotted", color = "grey"),
+  #             panel.grid.major.y = element_line(linetype = "solid", color = "grey80", linewidth = 0.5),
+  #             # axis.text.y = element_text(angle = -90),
+  #             # strip.text.y.right = element_blank(),
+  #             # strip.text.x = element_text(size = rel(0.8), angle = 0), strip.text.y= element_blank(), #facet_wrap
+  #             # strip.text.y = element_text(size = rel(0.8), angle = -90), strip.text.x = element_blank(), #facet_grid
+  #             legend.position = "none")
+  #     # + facet_wrap(.~abundrank, ncol = 1, scales = "free", axes = "all", strip.position = "right",
+  #     # + facet_grid(row = vars(enriched), cols = vars(abundrank), scales = "free", space = "free", axes = "all",
+  #     + facet_grid(row = vars(grouping), scales = "free", space = "free", axes = "all",
+  #     # + facet_grid(row = vars(abundrank), scales = "free", space = "free", axes = "all",
+  #                  drop = TRUE, shrink = FALSE,
+  #                  labeller = global_labeller)
+  #     + coord_flip()
+  #     # + ggtitle(paste0("Observed SDA ASVs in ", namevar))
+  #   )
+  #   temp_g1
+  #   temp_g2 <- (
+  #     ggplot(data = temp_df1 %>%
+  #              dplyr::filter(abundrank == 1) %>%
+  #              # dplyr::filter(enriched == unique(.[["enriched"]])[2]) %>%
+  #              droplevels,
+  #            aes(x = rev(asv_id), y = mean, group = interaction(asv_id, group_label)))
+  #     + theme_bw()
+  #     + geom_errorbar(aes(ymin = (mean - sd), ymax = (mean + sd), color = group_label), width = 0.3,
+  #                     position = position_dodge(width = 0.4, preserve = "total"),
+  #                     show.legend = FALSE)
+  #     + geom_point(aes(fill = group_label, shape = site), na.rm = TRUE,
+  #                  position = position_dodge(width = 0.4, preserve = "total"),
+  #                  alpha = 1, color = "black", size = 2, show.legend = TRUE)
+  #     + scale_shape_manual(name = "Sampling site", values = c(22, 21, 23), labels = c(site_lookup, sampling_time_lookup), breaks = c(names(site_lookup), sampling_time_lookup))
+  #     + scale_discrete_manual(aesthetics = c("fill", "color"),
+  #                             values = group_labels_colors, labels = c(group_labels_lookup), breaks = names(group_labels_lookup))
+  #     # + scale_x_discrete(labels = usvi_genera_relabel,
+  #     + scale_x_discrete(labels = NULL,
+  #                        expand = expansion(mult = c(0.1)),
+  #                        name = NULL)
+  #     + scale_y_continuous(name = "Relative abundance (%)",
+  #                          expand = expansion(mult = c(0.01,0.1)))
+  #     + geom_hline(aes(yintercept = 0), color = "black")
+  #     + guides(fill = guide_legend(order = 1, ncol = 1, title = "Variables",  direction = "vertical",
+  #                                  override.aes = list(color = "black", shape = 21, size = 3)),
+  #              shape = guide_legend(order = 1, ncol = 1, title = "Sampling site",  direction = "vertical",
+  #                                   override.aes = list(color = "black", size = 3)),
+  #              color = "none")
+  #     + theme(axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0, size = 5),
+  #             # strip.text.y = element_text(size = rel(0.8), angle = 0),  #facet_wrap
+  #             strip.text.y = element_blank(),
+  #             strip.background = element_blank(),
+  #             panel.grid.minor = element_blank(),
+  #             panel.grid.major.x = element_line(linetype = "dotted", color = "grey"),
+  #             panel.grid.major.y = element_line(linetype = "solid", color = "grey80", linewidth = 0.5),
+  #             # axis.text.y = element_text(angle = -90),
+  #             # strip.text.y.right = element_blank(),
+  #             # strip.text.x = element_text(size = rel(0.8), angle = 0), strip.text.y= element_blank(), #facet_wrap
+  #             # strip.text.y = element_text(size = rel(0.8), angle = -90), strip.text.x = element_blank(), #facet_grid
+  #             legend.position = "none")
+  #     # + facet_wrap(.~abundrank, ncol = 2, scales = "free", axes = "all", strip.position = "right",
+  #     # + facet_grid(row = vars(enriched), cols = vars(abundrank), scales = "free", space = "free", axes = "all",
+  #     + facet_grid(row = vars(grouping), scales = "free", space = "free", axes = "all",
+  #     # + facet_grid(col = vars(abundrank), scales = "free", space = "free", axes = "all",
+  #                  drop = TRUE, shrink = FALSE,
+  #                  labeller = global_labeller)
+  #     + coord_flip()
+  #     # + ggtitle(paste0("Observed SDA ASVs in ", namevar))
+  #   )
+  #   temp_g2
+  # temp_g1 | temp_g2
 }
 
 rm(list = apropos("g4_sda_.*", mode = "list"))
