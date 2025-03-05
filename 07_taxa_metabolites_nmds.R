@@ -1530,6 +1530,38 @@ dist_usvi_metab_grouping_log2.d <- meta.seawater.grouping.list %>%
         as.matrix(.) %>% vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE))
         # droplevels)
 
+map(dist_usvi_metab_grouping_log2.d,
+    ~.x %>% median(., na.rm = TRUE))
+# $all
+# [1] 0.2441055
+# 
+# $LB_seagrass.dawn
+# [1] 0.1050437
+# 
+# $Tektite.dawn
+# [1] 0.2405862
+# 
+# $Yawzi.dawn
+# [1] 0.09317009
+# 
+# $LB_seagrass.peak_photo
+# [1] 0.1336742
+# 
+# $Tektite.peak_photo
+# [1] 0.2218558
+# 
+# $Yawzi.peak_photo
+# [1] 0.2408675
+# 
+# $LB_seagrass
+# [1] 0.1378801
+# 
+# $Tektite
+# [1] 0.2428545
+# 
+# $Yawzi
+# [1] 0.1882367
+
 dist_usvi_metab_grouping_log2.df <- map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
                                       ~vegan::betadisper(., type = "median",
                                                          add = TRUE,
