@@ -185,115 +185,140 @@ if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
 }
 
 sample_relabel <- metabolomics_sample_metadata %>%
-  dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
-  dplyr::distinct(., .keep_all = TRUE) %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
+  dplyr::filter(grepl("seawater", sample_type)) %>%
+  dplyr::select(metab_deriv_label, sample_id, site, sampling_day, sampling_time) %>%
+  dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+  dplyr::left_join(., metadata %>%
+                     dplyr::select(sample_id, replicate),
+                   by = join_by(sample_id)) %>%
   droplevels %>%
-  tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time), sep = "_", remove = TRUE)  %>%
+  dplyr::mutate(replA = LETTERS[replicate]) %>%
+  dplyr::select(sample_id, site, sampling_day, sampling_time, replA) %>%
+  dplyr::arrange(site, sampling_time, sampling_day, replA) %>%
+  droplevels %>%
+  tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time, replA), sep = "_", remove = FALSE)  %>%
+  # dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
+  # dplyr::distinct(., .keep_all = TRUE) %>%
+  # dplyr::arrange(site, sampling_time, sampling_day) %>%
+  # droplevels %>%
+  # tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time), sep = "_", remove = TRUE)  %>%
   tibble::deframe(.)
 
 
+
+# Read in Spearman correlation results ------------------------------------
+
+if(any(grepl("spearman.test.strong.filtered.list", list.files(projectpath, pattern = "usvi_.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_spearman.test.strong.filtered.list-.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+}
+if(any(grepl("spearman_full", list.files(projectpath, pattern = "usvi_.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_spearman_full-.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+}
+
 # Tidy datasets for analyses ----------------------------------------------
 
-#try first at the genus level
-
-usvi_sw_genus.taxa.df <- usvi_prok_filled.taxa.df %>%
-  dplyr::select(asv_id, Domain, Phylum, Class, Order, Family, Genus) %>%
-  dplyr::distinct(Domain, Phylum, Class, Order, Family, Genus, .keep_all = TRUE) %>%
-  droplevels
-
-usvi_sw_genus.tbl <- usvi_prok_asvs.df %>%
-  dplyr::right_join(., metadata %>%
-                      dplyr::filter(grepl("seawater", sample_type)) %>%
-                      dplyr::distinct(sample_ID) %>%
-                      droplevels,
-                    by = join_by("sample_ID"), relationship = "many-to-many", multiple = "all") %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = "asv_id",
-                     names_from = "sample_ID",
-                     values_from = "counts",
-                     values_fill = 0) %>%
-  otu_to_taxonomy(., usvi_prok_filled.taxa.df, level = "Genus") %>%
-  dplyr::left_join(., usvi_sw_genus.taxa.df,
-                   by = join_by(Domain, Phylum, Class, Order, Family, Genus)) %>%
-  dplyr::relocate(asv_id) %>%
-  dplyr::select(-c(Domain, Phylum, Class, Order, Family, Genus)) %>%
-  # tibble::column_to_rownames(var = "asv_id") %>%
-  droplevels
 
 
 #here are metabolites where we don't have LODs reported:
-usvi_sus_metabolites_idx <- usvi_metabolomics_long.df %>%
-  dplyr::arrange(LOD) %>%
-  dplyr::distinct(metabolites, LOD, LOQ, .keep_all = TRUE) %>%
-  dplyr::arrange(metabolites) %>%
-  dplyr::filter(is.na(LOD)) %>%
-  droplevels
+if(!exists("usvi_sus_metabolites_idx", envir = .GlobalEnv)){
+  usvi_sus_metabolites_idx <- data.frame(metabolites = c("2'deoxyguanosine", "HMP", "adenosine", "inosine", "pyridoxine", "4-aminobenzoic acid"))
+}
+
 
 drop <- c("CINAR_BC_73")
-usvi_metab.tbl <- usvi_metabolomics.df %>%
-  dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+usvi_metab.tbl <- usvi_metabolomics_long.df %>%
+  dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
+  dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+    dplyr::filter(!grepl(paste0(drop, collapse = "|"), metab_deriv_label)) %>%
+  dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
+  dplyr::filter(LODflag == 0) %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
                          dplyr::filter(grepl("seawater", sample_type)) %>%
-                         dplyr::select(sample_id, metab_deriv_label) %>%
+                         dplyr::filter(sample_id %in% colnames(usvi_metab_mat)) %>%
+                         dplyr::select(sample_id, site, metab_deriv_label) %>%
                          droplevels),
                    by = join_by(metab_deriv_label), multiple = "all", relationship = "many-to-many") %>%
+  dplyr::select(-LODflag) %>%
   dplyr::relocate(sample_id) %>%
-  tidyr::pivot_longer(., cols = !c(sample_id, metab_deriv_label),
-                      names_to = "simpleName",
-                      values_to = "conc") %>%
-  dplyr::filter(!(simpleName %in% usvi_sus_metabolites_idx[["metabolites"]])) %>%
-  droplevels %>%
   dplyr::mutate(across(c(sample_id, metab_deriv_label, simpleName), ~factor(.x))) %>%
   dplyr::ungroup(.) %>%
   dplyr::group_by(sample_id, simpleName) %>%
-  # dplyr::summarise(num = length(conc)) %>%
   dplyr::summarise(mean_conc = mean(conc, na.rm = TRUE), 
                    num = length(conc),
-                   # .by = c(sample_id, simpleName),
                    .groups = "keep",
                    sd = sd(conc, na.rm = TRUE)) %>%
   dplyr::rename(conc = "mean_conc") %>%
   dplyr::mutate(log_conc = ifelse(!(is.na(conc) | (conc < 0)),
                                   log2(conc+1), #log transform abundance (with +1 pseudocount)
-                                  0)) %>%
-  # dplyr::select(sample_id, simpleName, log_conc) %>%
+                                  NA)) %>%
+  dplyr::select(sample_id, simpleName, log_conc) %>%
   droplevels %>%
   tidyr::pivot_wider(., id_cols = "sample_id",
-                     # values_from = "log_conc",
-                     values_from = "conc",
+                     values_from = "log_conc",
+                     # values_from = "logabund",
                      names_from = "simpleName") %>%
   tibble::column_to_rownames(var = "sample_id") %>%
   droplevels
 
-usvi_top100_genus.tbl <- usvi_sw_genus.tbl %>%
+
+
+usvi_sw_asvs.tbl <- usvi_prok_asvs.df %>%
+  dplyr::filter(asv_id %in% usvi_prok_asvs.taxa[["asv_id"]]) %>%
+  dplyr::filter(sample_ID %in% rownames(usvi_metab.tbl)) %>%
+  droplevels %>%
+  tidyr::pivot_wider(., id_cols = "asv_id",
+                     names_from = "sample_ID",
+                     values_from = "counts",
+                     values_fill = 0) %>%
   tibble::column_to_rownames(var = "asv_id") %>%
   apply(., 2, relabund) %>%
   as.data.frame(.) %>%
   dplyr::slice(which(rowSums(.) > 0)) %>%
-  dplyr::mutate(TotAbund = rowSums(.)) %>%
-  dplyr::arrange(desc(TotAbund)) %>%
-  dplyr::slice_head(., n = 100) %>%
-  dplyr::select(-TotAbund) %>%
-  tibble::rownames_to_column(var = "asv_id") %>%
-  tidyr::pivot_longer(., cols = -c("asv_id"),
-                      names_to = "sample",
-                      values_to = "abundance")  %>%
-  droplevels %>%
-  tidyr::pivot_wider(., id_cols = "sample",
-                     values_from = "abundance",
-                     names_from = "asv_id") %>%
-  tibble::column_to_rownames(var = "sample") %>%
   tidyr::drop_na(.) %>%
+  dplyr::select(rownames(usvi_metab.tbl)) %>%
+  tibble::rownames_to_column(var = "asv_id") %>%
+  data.table::transpose(., keep.names = "sample_id", make.names = "asv_id")
+
+strongest_idx <- "sig_strong_corr_asvs_11_idx"
+spearman.test.sig_strong_corr_asvs_11.df <- bind_rows(spearman.test.site.time.strong.filtered.list[[strongest_idx]],
+                                                      spearman.test.site.strong.filtered.list[[strongest_idx]],
+                                                      spearman.test.strong.filtered.list[[strongest_idx]]) %>%
+  dplyr::select(-filtered_estimate) %>%
+  # dplyr::mutate(filtered_estimate = dplyr::case_when(is.na(filtered_estimate) & abs(estimate) >= 0.5 ~ estimate,
+  #                                                    .default = filtered_estimate)) %>%
+  dplyr::mutate(site = dplyr::case_when(is.na(site) ~ "all", .default = site),
+                sampling_time = dplyr::case_when(is.na(sampling_time) ~ "all", .default = sampling_time),
+                grouping = dplyr::case_when(is.na(grouping) ~ "all", .default = grouping)) %>%
+  dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
+  dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
+  droplevels
+
+spearman.sig.asvs_idx <- spearman.test.sig_strong_corr_asvs_11.df %>%
+  dplyr::ungroup(.) %>%
+  dplyr::distinct(asv_id) %>%
+  dplyr::arrange(asv_id) %>%
+  droplevels %>%
+  tibble::deframe(.) %>%
+  as.character %>%
+  sort(.)
+
+usvi_sw_sigasvs.tbl <- usvi_sw_asvs.tbl %>%
+  dplyr::filter(sample_id %in% rownames(usvi_metab.tbl)) %>%
+  dplyr::select(sample_id, all_of(spearman.sig.asvs_idx)) %>%
+  tibble::column_to_rownames(var = "sample_id") %>%
+# usvi_sw_sigasvs.tbl <- usvi_sw_asvs.tbl[rownames(usvi_metab.tbl), spearman.sig.asvs_idx] %>%
+  dplyr::select(which(colSums(.) > 0)) %>%
   droplevels
 
 
-usvi_top100_genus_with_metab.tbl <- usvi_top100_genus.tbl[rownames(usvi_metab.tbl),]
-
 usvi_metab.groups <- metabolomics_sample_metadata %>%
   dplyr::distinct(sample_id, sampling_time) %>%
-  dplyr::filter(sample_id %in% rownames(usvi_top100_genus_with_metab.tbl)) %>%
-  dplyr::mutate(sample_id = factor(sample_id, levels = rownames(usvi_top100_genus_with_metab.tbl))) %>%
+  dplyr::filter(sample_id %in% rownames(usvi_sw_sigasvs.tbl)) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = rownames(usvi_sw_sigasvs.tbl))) %>%
   droplevels %>%
   dplyr::mutate(sampling_time = dplyr::case_when(sampling_time == "dawn" ~ 1,
                                                  sampling_time == "peak_photo" ~ 2,
@@ -306,8 +331,412 @@ usvi_metab.groups <- metabolomics_sample_metadata %>%
 # spiec-easi and other methods for asv-asv analyses -----------------------
 
 
-
 #make a correlation matrix for ASVs
+
+if(file.exists( paste0(projectpath, "/", "se.usvi_spearman_strong_sig_asvs.mb", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi MB results from Spearman significant highly correlated ASVs.")
+  se.usvi_spearman_strong_sig_asvs.mb <- readr::read_rds(paste0(projectpath, "/", "se.usvi_spearman_strong_sig_asvs.mb", ".rds"))
+  
+} else {
+  cli::cli_alert_info("Conducting spiec-easi MB on Spearman significant highly correlated ASVs.")
+  se.usvi_spearman_strong_sig_asvs.mb <- spiec.easi(as.matrix(usvi_sw_sigasvs.tbl), 
+                                        method = "mb", 
+                                        pulsar.select = TRUE, 
+                                        pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 50, seed = 48105, ncores = nthreads))
+  
+  readr::write_rds(se.usvi_spearman_strong_sig_asvs.mb, paste0(projectpath, "/", "se.usvi_spearman_strong_sig_asvs.mb", ".rds"), compress = "gz")
+  
+}
+
+#try spiecieasi with the metabolites data
+usvi_metab_lc <- usvi_metab.tbl %>%
+  dplyr::mutate(across(everything(), ~ifelse(!(is.na(.x) | (.x < 0)),
+                                             log2(.x+1), #log transform abundance (with +1 pseudocount)
+                                             0))) %>%
+  droplevels %>%
+  apply(., 2, function(x) scale(x, center = FALSE, scale = FALSE), simplify = TRUE)
+rownames(usvi_metab_lc) <- rownames(usvi_metab.tbl)
+if(file.exists(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.gl", ".rds"))){
+  cli::cli_alert_info("Reading in speci-easi glasso results from metabolites and Spearman significant highly correlated ASVs.")
+  se.usvi_metab_spearman_strong_sig_asvs.gl <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.gl", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting speci-easi glasso on metabolites and Spearman significant highly correlated ASVs.")
+  se.usvi_metab_spearman_strong_sig_asvs.gl <- spiec.easi(list(as.matrix(usvi_sw_sigasvs.tbl), usvi_metab_lc), 
+                                                          method = "glasso", 
+                                                          pulsar.select = TRUE, 
+                                                          lambda.min.ratio = 0.01, 
+                                                          nlambda = 100, 
+                                                          pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+  readr::write_rds(se.usvi_metab_spearman_strong_sig_asvs.gl, paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.gl", ".rds"), compress = "gz")
+}
+if(file.exists(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.mb", ".rds"))){
+  cli::cli_alert_info("Reading in spiec-easi MB results on metabolites and Spearman significant highly correlated ASVs.")
+  se.usvi_metab_spearman_strong_sig_asvs.mb <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.mb", ".rds"))
+} else {
+  cli::cli_alert_info("Conducting spiec-easi MB on metabolites and Spearman significant highly correlated ASVs.")
+  se.usvi_metab_spearman_strong_sig_asvs.mb <- spiec.easi(list(as.matrix(usvi_sw_sigasvs.tbl), usvi_metab_lc), 
+                                                          method = "mb", 
+                                                          pulsar.select = TRUE, 
+                                                          lambda.min.ratio = 0.01, 
+                                                          nlambda = 20, 
+                                                          pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+  readr::write_rds(se.usvi_metab_spearman_strong_sig_asvs.mb, paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.mb", ".rds"), compress = "gz")
+}
+
+# getStability(se.usvi_metab_spearman_strong_sig_asvs.mb)
+# # 0.0469387
+# sum(getRefit(se.usvi_metab_spearman_strong_sig_asvs.mb))/2
+# #452
+# 
+# getStability(se.usvi_metab_spearman_strong_sig_asvs.gl)
+# # 0.04516152
+# sum(getRefit(se.usvi_metab_spearman_strong_sig_asvs.gl))/2
+# #870
+
+
+ig2.metab.gl <- adj2igraph(getRefit(se.usvi_metab_spearman_strong_sig_asvs.gl),
+                           rmEmptyNodes = TRUE,
+                           vertex.attr = list(name = se.usvi_metab_spearman_strong_sig_asvs.gl[["est"]][["data"]] %>% colnames(.)))
+dtype <- c(rep(1,ncol(usvi_sw_sigasvs.tbl)), rep(2,ncol(usvi_metab_lc)))
+plot(ig2.metab.gl, vertex.color = dtype+1)
+phyloseq::plot_network(ig2.metab.gl)
+
+#try the glasso networks:
+se.metab.gl <- getOptCov(se.usvi_metab_spearman_strong_sig_asvs.gl)
+se.metab.gl_cov <- se.metab.gl %>%
+  as.matrix(.) %>%
+  cov2cor(.)
+rownames(se.metab.gl_cov) <- colnames(se.usvi_metab_spearman_strong_sig_asvs.gl[["est"]][["data"]])
+colnames(se.metab.gl_cov) <- colnames(se.usvi_metab_spearman_strong_sig_asvs.gl[["est"]][["data"]])
+
+net_se.metab.gl <- NetCoMi::netConstruct(data = se.metab.gl_cov, 
+                                         dataType = "condDependence",
+                                         sparsMethod = "none",
+                                         cores = nthreads,
+                                         verbose = 1,
+                                         seed = 48105)
+netcom_se.metab.gl <- NetCoMi::netAnalyze(net_se.metab.gl, 
+                                          # centrLCC = FALSE, sPathAlgo = "automatic",
+                                          # hubPar = c("degree", "eigenvector"), gcmHeat = FALSE, hubQuant = 0.9, sPathNorm = FALSE, lnormFit = FALSE,
+                                          # normDeg = FALSE, normBetw = FALSE, normClose = FALSE, normEigen = FALSE,
+                                          clustMethod = "hierarchical")
+summary(netcom_se.metab.gl)
+nodeCols <- c(rep("lightblue", length(colnames(as.matrix(usvi_sw_sigasvs.tbl)))), rep("orange", length(colnames(usvi_metab_lc))))
+names(nodeCols) <- c(colnames(as.matrix(usvi_sw_sigasvs.tbl)), (colnames(usvi_metab_lc)))
+
+netcom_se.metab.gl %>%
+  plot(.,
+       layout = "spring",
+       repulsion = 1.2,
+       shortenLabels = "none",
+       labelScale = TRUE,
+       rmSingles = TRUE,
+       nodeSize = "eigenvector",
+       nodeSizeSpread = 2,
+       # nodeColor = "cluster",
+       nodeColor = "colorVec", colorVec = nodeCols,
+       # edgeFilter = "threshold", edgeFilterPar = se.mb_cutoff,
+       hubBorderCol = "gray60",
+       cexNodes = 1.8,
+       cexLabels = 2,
+       cexHubLabels = 2.2,
+       title1 = "Network for Genera/Metabolite data",
+       showTitle = TRUE,
+       cexTitle = 2.3)
+
+
+# Plot network map for site- and time-specific correlations ---------------
+
+#pick up here:
+
+spearman.test.site.time.asv.metab.df <- bind_rows(spearman.test.site.time.strong.filtered.list) %>%
+  dplyr::distinct(asv_id, simpleName, grouping, site, sampling_time) %>%
+  droplevels
+grouping_idx <- spearman.test.site.time.asv.metab.df %>%
+  dplyr::distinct(grouping) %>%
+  tibble::deframe(.) %>%
+  as.character
+# for(sampleset in unique(spearman.test.sig_strong_corr_asvs_11.df[["grouping"]])){
+# for(sampleset in grouping_idx){
+#   
+#   if(!file.exists(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.", namevar, ".gl", ".rds"))){
+#     cli::cli_alert_info("Conducting speci-easi glasso on metabolites and Spearman significant highly correlated ASVs from {sampleset}.")
+#     temp_metadata <- spearman.test.site.time.asv.metab.df %>%
+#       dplyr::filter(grouping == sampleset) %>%
+#       dplyr::select(site, sampling_time) %>%
+#       dplyr::distinct(.) %>%
+#       tidyr::complete(site, fill = list("Yawzi", "Tektite", "LB_seagrass")) %>%
+#       tidyr::complete(nesting(site), sampling_time, fill = list("dawn", "peak_photo")) %>%
+#       dplyr::mutate(site = dplyr::case_when(site == "all" ~ NA, .default = site),
+#                     sampling_time = dplyr::case_when(sampling_time == "all" ~ NA, .default = sampling_time)) %>%
+#       tidyr::drop_na(.) %>%
+#       dplyr::left_join(., metabolomics_sample_metadata %>%
+#                          dplyr::select(sample_id, metab_deriv_label, site, sampling_time, sampling_day) %>%
+#                          droplevels, by = join_by(site, sampling_time), relationship = "many-to-many", multiple = "all") %>%
+#       dplyr::arrange(site, sampling_time, sampling_day) %>%
+#       dplyr::mutate(sample_id = factor(sample_id, levels = unique(.[["sample_id"]]))) %>%
+#       dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = unique(.[["metab_deriv_label"]]))) %>%
+#       droplevels
+#     temp_idx <- spearman.test.site.time.asv.metab.df %>%
+#       dplyr::filter(grouping == sampleset) %>%
+#       droplevels %>%
+#       dplyr::distinct(asv_id) %>%
+#       dplyr::arrange(asv_id) %>%
+#       droplevels %>%
+#       tibble::deframe(.) %>%
+#       as.character %>%
+#       sort(.)
+#     temp_asvs.tbl <- usvi_sw_asvs.tbl %>%
+#       dplyr::filter(sample_id %in% unique(temp_metadata[["sample_id"]])) %>%
+#       dplyr::mutate(sample_id = factor(sample_id, levels = unique(.[["sample_id"]]))) %>%
+#       dplyr::select(sample_id, all_of(temp_idx)) %>%
+#       tibble::column_to_rownames(var = "sample_id") %>%
+#       dplyr::select(which(colSums(.) > 0)) %>%
+#       droplevels
+#     temp_idx <- spearman.test.site.time.asv.metab.df %>%
+#       dplyr::filter(grouping == sampleset) %>%
+#       droplevels %>%
+#       dplyr::distinct(simpleName) %>%
+#       droplevels %>%
+#       tibble::deframe(.) %>%
+#       as.character %>%
+#       sort(.)
+#     temp_metab.tbl <- usvi_metab.tbl %>%
+#       dplyr::filter(rownames(.) %in% unique(temp_metadata[["sample_id"]])) %>%
+#       dplyr::select(all_of(temp_idx)) %>%
+#       droplevels
+#     
+#     temp_metab_lc <- temp_metab.tbl %>%
+#       dplyr::mutate(across(everything(), ~ifelse(!(is.na(.x) | (.x < 0)),
+#                                                  log2(.x+1), #log transform abundance (with +1 pseudocount)
+#                                                  0))) %>%
+#       droplevels %>%
+#       apply(., 2, function(x) scale(x, center = FALSE, scale = FALSE), simplify = TRUE)
+#     rownames(temp_metab_lc) <- rownames(temp_metab.tbl)
+#     
+#     temp_se.usvi_metab_asvs.gl <- spiec.easi(list(as.matrix(temp_asvs.tbl), temp_metab_lc), 
+#                                              method = "glasso", 
+#                                              pulsar.select = TRUE, 
+#                                              lambda.min.ratio = 0.01, 
+#                                              nlambda = 100, 
+#                                              pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+#     assign(paste0("se.usvi_metab_spearman_strong_sig_asvs.", sampleset, ".gl"), temp_se.usvi_metab_asvs.gl, envir = .GlobalEnv)
+#     readr::write_rds(temp_se.usvi_metab_asvs.gl, paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.", sampleset, ".gl", ".rds"), compress = "gz")  
+#     rm(temp_se.usvi_metab_asvs.gl)
+#     rm(temp_asvs.tbl)
+#     rm(temp_metab_lc)
+#     rm(temp_metab.tbl)
+#   } else {
+#     cli::cli_alert_warning("Results from speci-easi glasso on metabolites and Spearman significant highly correlated ASVs already exists for: {sampleset}.")
+#   }
+# }
+
+
+#try out just Yawzi dawn
+sampleset <- "Yawzi.dawn"
+temp_metadata <- spearman.test.site.time.asv.metab.df %>%
+  dplyr::filter(grouping == sampleset) %>%
+  dplyr::select(site, sampling_time) %>%
+  dplyr::distinct(.) %>%
+  tidyr::complete(site, fill = list("Yawzi", "Tektite", "LB_seagrass")) %>%
+  tidyr::complete(nesting(site), sampling_time, fill = list("dawn", "peak_photo")) %>%
+  dplyr::mutate(site = dplyr::case_when(site == "all" ~ NA, .default = site),
+                sampling_time = dplyr::case_when(sampling_time == "all" ~ NA, .default = sampling_time)) %>%
+  tidyr::drop_na(.) %>%
+  dplyr::left_join(., metabolomics_sample_metadata %>%
+                     dplyr::select(sample_id, metab_deriv_label, site, sampling_time, sampling_day) %>%
+                     droplevels, by = join_by(site, sampling_time), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::arrange(site, sampling_time, sampling_day) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = unique(.[["sample_id"]]))) %>%
+  dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = unique(.[["metab_deriv_label"]]))) %>%
+  droplevels
+temp_idx <- spearman.test.site.time.asv.metab.df %>%
+  dplyr::filter(grouping == sampleset) %>%
+  droplevels %>%
+  dplyr::distinct(asv_id) %>%
+  dplyr::arrange(asv_id) %>%
+  droplevels %>%
+  tibble::deframe(.) %>%
+  as.character %>%
+  sort(.)
+temp_asvs.tbl <- usvi_sw_asvs.tbl %>%
+  dplyr::filter(sample_id %in% unique(temp_metadata[["sample_id"]])) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = unique(.[["sample_id"]]))) %>%
+  dplyr::select(sample_id, all_of(temp_idx)) %>%
+  tibble::column_to_rownames(var = "sample_id") %>%
+  dplyr::select(which(colSums(.) > 0)) %>%
+  droplevels
+temp_idx <- spearman.test.site.time.asv.metab.df %>%
+  dplyr::filter(grouping == sampleset) %>%
+  droplevels %>%
+  dplyr::distinct(simpleName) %>%
+  droplevels %>%
+  tibble::deframe(.) %>%
+  as.character %>%
+  sort(.)
+temp_metab.tbl <- usvi_metab.tbl %>%
+  dplyr::filter(rownames(.) %in% unique(temp_metadata[["sample_id"]])) %>%
+  dplyr::select(all_of(temp_idx)) %>%
+  droplevels
+
+temp_metab_lc <- temp_metab.tbl %>%
+  dplyr::mutate(across(everything(), ~ifelse(!(is.na(.x) | (.x < 0)),
+                                             log2(.x+1), #log transform abundance (with +1 pseudocount)
+                                             0))) %>%
+  droplevels %>%
+  apply(., 2, function(x) scale(x, center = FALSE, scale = FALSE), simplify = TRUE)
+rownames(temp_metab_lc) <- rownames(temp_metab.tbl)
+
+temp_se.usvi_metab_asvs.gl <- spiec.easi(list(as.matrix(temp_asvs.tbl), temp_metab_lc), 
+                                         method = "glasso", 
+                                         pulsar.select = TRUE, 
+                                         lambda.min.ratio = 0.01, 
+                                         nlambda = 100, 
+                                         pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+assign(paste0("se.usvi_metab_spearman_strong_sig_asvs.", sampleset, ".gl"), temp_se.usvi_metab_asvs.gl, envir = .GlobalEnv)
+readr::write_rds(temp_se.usvi_metab_asvs.gl, paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.", sampleset, ".gl", ".rds"), compress = "gz")  
+
+getStability(se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl)
+# 0.04621894
+sum(getRefit(se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl))/2
+# 171
+
+ig2.metab.gl <- adj2igraph(getRefit(se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl),
+                           rmEmptyNodes = TRUE,
+                           vertex.attr = list(name = se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl[["est"]][["data"]] %>% colnames(.)))
+dtype <- c(rep(1,ncol(temp_asvs.tbl)), rep(2,ncol(temp_metab_lc)))
+plot(ig2.metab.gl, vertex.color = dtype+1)
+phyloseq::plot_network(ig2.metab.gl)
+
+#try the glasso networks:
+se.metab.gl <- getOptCov(se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl)
+se.metab.gl_cov <- se.metab.gl %>%
+  as.matrix(.) %>%
+  cov2cor(.)
+rownames(se.metab.gl_cov) <- colnames(se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl[["est"]][["data"]])
+colnames(se.metab.gl_cov) <- colnames(se.usvi_metab_spearman_strong_sig_asvs.Yawzi.dawn.gl[["est"]][["data"]])
+
+net_se.metab.gl <- NetCoMi::netConstruct(data = se.metab.gl_cov, 
+                                         dataType = "condDependence",
+                                         sparsMethod = "none",
+                                         # sampleSize = c(12), 
+                                         # sparsMethod = "threshold", thresh = 0.3,
+                                         # sparsMethod = "t-test", alpha = c(0.05), adjust = "adaptBH",
+                                         cores = nthreads,
+                                         verbose = 1,
+                                         seed = 48105)
+
+netcom_se.metab.gl <- NetCoMi::netAnalyze(net_se.metab.gl, 
+                                          # centrLCC = FALSE, sPathAlgo = "automatic",
+                                          # hubPar = c("degree", "eigenvector"), gcmHeat = FALSE, hubQuant = 0.9, sPathNorm = FALSE, lnormFit = FALSE,
+                                          # normDeg = FALSE, normBetw = FALSE, normClose = FALSE, normEigen = FALSE,
+                                          clustMethod = "hierarchical")
+summary(netcom_se.metab.gl)
+nodeCols <- c(rep("lightblue", length(colnames(as.matrix(temp_asvs.tbl)))), rep("orange", length(colnames(temp_metab_lc))))
+names(nodeCols) <- c(colnames(as.matrix(temp_asvs.tbl)), (colnames(temp_metab_lc)))
+
+netcom_se.metab.gl %>%
+  plot(.,
+       layout = "spring",
+       repulsion = 1.2,
+       shortenLabels = "none",
+       labelScale = TRUE,
+       rmSingles = TRUE,
+       nodeSize = "eigenvector",
+       nodeSizeSpread = 2,
+       # nodeColor = "cluster",
+       nodeColor = "colorVec", colorVec = nodeCols,
+       # edgeFilter = "threshold", edgeFilterPar = se.mb_cutoff,
+       hubBorderCol = "gray60",
+       cexNodes = 1.8,
+       cexLabels = 2,
+       cexHubLabels = 2.2,
+       title1 = "Network for Genera/Metabolite data",
+       showTitle = TRUE,
+       cexTitle = 2.3)
+
+
+
+
+#try using the Spearman correlation coefficients for these as input to netConstruct
+temp_idx <- bind_rows(spearman.test.site.time.strong.filtered.list) %>%
+  dplyr::filter(grouping == sampleset) %>%
+  dplyr::distinct(asv_id, simpleName, grouping) %>%
+  tidyr::pivot_longer(., cols = !"grouping",
+                      names_to = "parameter",
+                      values_to = "idx") %>%
+  dplyr::distinct(grouping, parameter, idx) %>%
+  droplevels %>%
+  split(., f = .$parameter) %>%
+  map(., ~.x %>%
+        dplyr::distinct(idx) %>%
+        droplevels %>%
+        tibble::deframe(.) %>%
+        as.character(.))
+temp_spearman.tbl <- spearman.test.site.time.full.df %>%
+  dplyr::filter(grouping == sampleset) %>%
+  dplyr::filter(asv_id %in% temp_idx[["asv_id"]] & simpleName %in% temp_idx[["simpleName"]]) %>%
+  droplevels %>%
+  dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+                                            abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::select(asv_id, simpleName, estimate) %>%
+  dplyr::full_join(., data.frame(`simpleName` = c(temp_idx[["asv_id"]]),
+                                 asv_id = c(temp_idx[["asv_id"]]))) %>%
+  dplyr::full_join(., data.frame(asv_id = c(temp_idx[["simpleName"]]),
+                                 simpleName = c(temp_idx[["simpleName"]]))) %>%
+  dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+  dplyr::mutate(estimate = tidyr::replace_na(estimate, 0)) %>%
+  # dplyr::arrange(asv_id, simpleName) %>%
+  tidyr::pivot_wider(., id_cols = c("asv_id"),
+                     names_from = "simpleName",
+                     values_fill = 0,
+                     values_from = "estimate") %>%
+  tibble::column_to_rownames(var = "asv_id") %>%
+  droplevels %>%
+  as.matrix(.)
+
+net_se.spearman.corr <- NetCoMi::netConstruct(data = temp_spearman.tbl,
+                                         dataType = "condDependence",
+                                         sparsMethod = "none", #no filtering yet, just all the data
+                                         cores = nthreads,
+                                         verbose = 2,
+                                         seed = 48105)
+
+netprops_se.sites.mb <- NetCoMi::netAnalyze(net_se.sites.mb, 
+                                            clustMethod = "hierarchical")
+
+# 
+# usvi_sw_sigasvs.tbl <- usvi_sw_asvs.tbl %>%
+#   dplyr::filter(sample_id %in% rownames(usvi_metab.tbl)) %>%
+#   dplyr::select(sample_id, all_of(spearman.sig.asvs_idx)) %>%
+#   tibble::column_to_rownames(var = "sample_id") %>%
+#   # usvi_sw_sigasvs.tbl <- usvi_sw_asvs.tbl[rownames(usvi_metab.tbl), spearman.sig.asvs_idx] %>%
+#   dplyr::select(which(colSums(.) > 0)) %>%
+#   droplevels
+# 
+# usvi_metab_lc <- usvi_metab.tbl %>%
+#   dplyr::mutate(across(everything(), ~ifelse(!(is.na(.x) | (.x < 0)),
+#                                              log2(.x+1), #log transform abundance (with +1 pseudocount)
+#                                              0))) %>%
+#   droplevels %>%
+#   apply(., 2, function(x) scale(x, center = FALSE, scale = FALSE), simplify = TRUE)
+# rownames(usvi_metab_lc) <- rownames(usvi_metab.tbl)
+# if(file.exists(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.gl", ".rds"))){
+#   cli::cli_alert_info("Reading in speci-easi glasso results from metabolites and Spearman significant highly correlated ASVs.")
+#   se.usvi_metab_spearman_strong_sig_asvs.gl <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.gl", ".rds"))
+# } else {
+#   cli::cli_alert_info("Conducting speci-easi glasso on metabolites and Spearman significant highly correlated ASVs.")
+#   se.usvi_metab_spearman_strong_sig_asvs.gl <- spiec.easi(list(as.matrix(usvi_sw_sigasvs.tbl), usvi_metab_lc), 
+#                                                           method = "glasso", 
+#                                                           pulsar.select = TRUE, 
+#                                                           lambda.min.ratio = 0.01, 
+#                                                           nlambda = 100, 
+#                                                           pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+#   readr::write_rds(se.usvi_metab_spearman_strong_sig_asvs.gl, paste0(projectpath, "/","se.usvi_metab_spearman_strong_sig_asvs.gl", ".rds"), compress = "gz")
+# }
+
+
 
 ## usvi_top100_genus.cor <- cor(usvi_top100_genus_with_metab.tbl, method = "spearman")
 #try using spieceasi or Spring for microbial correlations
@@ -323,36 +752,36 @@ usvi_metab.groups <- metabolomics_sample_metadata %>%
 # }
 
 #this is genera to genera:
-
-
-if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))){
-  cli::cli_alert_info("Reading in spiec-easi MB results from top 100 genera.")
-  se.usvi_top100_genus.mb <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))
-  
-} else {
-  cli::cli_alert_info("Conducting spiec-easi MB on top 100 genera.")
-  se.usvi_top100_genus.mb <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), 
-                                        method = "mb", 
-                                        pulsar.select = TRUE, 
-                                        pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 50, seed = 48105, ncores = nthreads))
-  
-  readr::write_rds(se.usvi_top100_genus.mb, paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"), compress = "gz")
-  
-}
-
-if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))){
-  cli::cli_alert_info("Reading in spiec-easi glasso results from top 100 genera.")
-  se.usvi_top100_genus.gl <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))
-} else {
-  cli::cli_alert_info("Conducting spiec-easi glasso method on top 100 genera.")
-  se.usvi_top100_genus.gl <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), method = "glasso", 
-                                        pulsar.select = TRUE, 
-                                        lambda.min.ratio = 0.01, 
-                                        nlambda = 20, 
-                                        pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
-  readr::write_rds(se.usvi_top100_genus.gl, paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"), compress = "gz")
-  #it looks like "glasso" method with spiec-easi isn't as good as "mb" 
-}
+# 
+# 
+# if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))){
+#   cli::cli_alert_info("Reading in spiec-easi MB results from top 100 genera.")
+#   se.usvi_top100_genus.mb <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"))
+#   
+# } else {
+#   cli::cli_alert_info("Conducting spiec-easi MB on top 100 genera.")
+#   se.usvi_top100_genus.mb <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), 
+#                                         method = "mb", 
+#                                         pulsar.select = TRUE, 
+#                                         pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 50, seed = 48105, ncores = nthreads))
+#   
+#   readr::write_rds(se.usvi_top100_genus.mb, paste0(projectpath, "/", "se.usvi_top100_genus.mb", ".rds"), compress = "gz")
+#   
+# }
+# 
+# if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))){
+#   cli::cli_alert_info("Reading in spiec-easi glasso results from top 100 genera.")
+#   se.usvi_top100_genus.gl <- readr::read_rds(paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))
+# } else {
+#   cli::cli_alert_info("Conducting spiec-easi glasso method on top 100 genera.")
+#   se.usvi_top100_genus.gl <- spiec.easi(as.matrix(usvi_top100_genus_with_metab.tbl), method = "glasso", 
+#                                         pulsar.select = TRUE, 
+#                                         lambda.min.ratio = 0.01, 
+#                                         nlambda = 20, 
+#                                         pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+#   readr::write_rds(se.usvi_top100_genus.gl, paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"), compress = "gz")
+#   #it looks like "glasso" method with spiec-easi isn't as good as "mb" 
+# }
 
 
 # #can we do slr method? "sparse + low-rank decomposition"
@@ -632,26 +1061,21 @@ if(file.exists( paste0(projectpath, "/", "se.usvi_top100_genus.gl", ".rds"))){
 
 
 #try spiecieasi with the metabolites data
-usvi_metab_lc <- usvi_metab.tbl %>%
-  dplyr::mutate(across(everything(), ~ifelse(!(is.na(.x) | (.x < 0)),
-                                  log2(.x+1), #log transform abundance (with +1 pseudocount)
-                                  0))) %>%
-  droplevels %>%
-  apply(., 2, function(x) scale(x, center = FALSE, scale = FALSE), simplify = TRUE)
-rownames(usvi_metab_lc) <- rownames(usvi_metab.tbl)
-if(file.exists(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))){
-  cli::cli_alert_info("Reading in speci-easi glasso results from metabolites.")
-  se.usvi_metab_genus.gl <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))
-} else {
-  cli::cli_alert_info("Conducting speci-easi glasso on metabolites.")
-  se.usvi_metab_genus.gl <- spiec.easi(list(as.matrix(usvi_top100_genus_with_metab.tbl), usvi_metab_lc), 
-                                       method = "glasso", 
-                                       pulsar.select = TRUE, 
-                                       lambda.min.ratio = 0.01, 
-                                       nlambda = 100, 
-                                       pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
-  readr::write_rds(se.usvi_metab_genus.gl, paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"), compress = "gz")
-}
+
+
+# if(file.exists(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))){
+#   cli::cli_alert_info("Reading in speci-easi glasso results from metabolites.")
+#   se.usvi_metab_genus.gl <- readr::read_rds(paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"))
+# } else {
+#   cli::cli_alert_info("Conducting speci-easi glasso on metabolites.")
+#   se.usvi_metab_genus.gl <- spiec.easi(list(as.matrix(usvi_top100_genus_with_metab.tbl), usvi_metab_lc), 
+#                                        method = "glasso", 
+#                                        pulsar.select = TRUE, 
+#                                        lambda.min.ratio = 0.01, 
+#                                        nlambda = 100, 
+#                                        pulsar.params = list(thresh = 0.05, subsample.ratio = 0.8, rep.num = 20, seed = 48105, ncores = nthreads))
+#   readr::write_rds(se.usvi_metab_genus.gl, paste0(projectpath, "/","se.usvi_metab_genus.gl", ".rds"), compress = "gz")
+# }
 
 # getStability(se.usvi_metab_genus.gl)
 # # 0.04865092

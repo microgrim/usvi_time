@@ -159,7 +159,7 @@ P_betadisp <- function(dataset,
                        # facet_form, 
                        metric) {
   #x: site
-  #y: dissimilarity
+  #y: dispersion
   #z: fill, sampling_time
   #w: shape, site
   
@@ -177,12 +177,12 @@ P_betadisp <- function(dataset,
   
   g <- (ggplot(data = dataset)
   + theme_bw()
-  + geom_boxplot(aes(x = site, y = dissimilarity, 
+  + geom_boxplot(aes(x = site, y = dispersion, 
                      group = interaction(site, sampling_time)), 
                  color = "black",
                  position = position_dodge2(padding = 0.2, preserve = "single"),
                  show.legend = FALSE, outliers = FALSE)
-  + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
+  + geom_point(aes(x = site, y = dispersion, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
                alpha = 1.0, size = 3)
   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
@@ -243,34 +243,6 @@ for(file in to_import){
 }
 
 
-if(!exists("ps_usvi", envir = .GlobalEnv)){
-  if(file.exists(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))){
-    ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))
-  } else {
-    cli::cli_alert_warning("Please process the USVI data through Phyloseq.")
-    
-  }
-}
-if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))){
-  metabolomics_sample_metadata <- readr::read_delim(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"), delim = "\t", col_names = TRUE, show_col_types = FALSE)
-} else {
-  metabolomics_sample_metadata <- ps_usvi %>%
-    phyloseq::sample_data(.) %>%
-    tibble::as_tibble(., rownames = "sample_id") %>%
-    tidyr::drop_na(metab_deriv_label) %>%
-    tidyr::separate_longer_delim(., metab_deriv_label, delim = ", ") %>%
-    dplyr::mutate(metab_deriv_label = stringr::str_remove_all(metab_deriv_label, "[[:punct:]]") %>%
-                    stringr::str_replace_all(., "[[:alpha:]]{1,}", "CINAR_BC_")) %>%
-    dplyr::mutate(metab_deriv_label = dplyr::case_when(grepl("Metab_219", sample_id) ~ "CINAR_BC_81B",
-                                                       grepl("Metab_319", sample_id) ~ "CINAR_BC_81A",
-                                                       .default = metab_deriv_label)) %>%
-    droplevels
-  
-  readr::write_delim(metabolomics_sample_metadata, paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"),
-                     delim = "\t", col_names = TRUE, num_threads = nthreads)
-  
-}
-
 if(ncol(usvi_prok_decontam_idx) == 1){
   usvi_prok_decontam_idx <- usvi_prok_decontam_idx %>%
     tidyr::separate_wider_delim(1, names = c("asv_id", "keep"), delim = " ", cols_remove = TRUE, too_few = "align_start")
@@ -299,6 +271,34 @@ usvi_prok_filled.taxa.df <- usvi_prok_asvs.taxa %>%
                                           .default = Phylum)) %>%
   
   droplevels
+
+
+if(file.exists(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"))){
+  metabolomics_sample_metadata <- readr::read_delim(paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"), delim = "\t", col_names = TRUE, show_col_types = FALSE)
+} else {
+  if(!exists("ps_usvi", envir = .GlobalEnv)){
+    if(!file.exists(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))){
+      cli::cli_alert_warning("Please process the USVI data through Phyloseq.")
+    } else {
+      ps_usvi <- readr::read_rds(paste0(projectpath, "/", "usvi_prok_decontam_phyloseq", ".rds"))
+      
+      metabolomics_sample_metadata <- ps_usvi %>%
+        phyloseq::sample_data(.) %>%
+        tibble::as_tibble(., rownames = "sample_id") %>%
+        tidyr::drop_na(metab_deriv_label) %>%
+        tidyr::separate_longer_delim(., metab_deriv_label, delim = ", ") %>%
+        dplyr::mutate(metab_deriv_label = stringr::str_remove_all(metab_deriv_label, "[[:punct:]]") %>%
+                        stringr::str_replace_all(., "[[:alpha:]]{1,}", "CINAR_BC_")) %>%
+        dplyr::mutate(metab_deriv_label = dplyr::case_when(grepl("Metab_219", sample_id) ~ "CINAR_BC_81B",
+                                                           grepl("Metab_319", sample_id) ~ "CINAR_BC_81A",
+                                                           .default = metab_deriv_label)) %>%
+        droplevels
+      
+      readr::write_delim(metabolomics_sample_metadata, paste0(projectpath, "/", "metabolomics_sample_metadata", ".tsv"),
+                         delim = "\t", col_names = TRUE, num_threads = nthreads)
+    }
+  }
+}
 
 
 # Global labellers/renamers -----------------------------------------------
@@ -421,68 +421,13 @@ if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
     dplyr::select(metabolites, adaptedDervLabel, Site, Date, Time, starts_with("sampl", ignore.case = TRUE), concentration, LOD, LOQ, contains("flag")) %>%
     dplyr::mutate(LODflag = dplyr::case_when((LODflag == TRUE) ~ 0, (LODflag == FALSE) ~ 1, .default = NA)) %>% #"LODflag" == TRUE means that the metabolite was measured at a concentration above the LOD (so it's good)
     droplevels
-  # usvi_metabolomics_old.df <- readr::read_delim(paste0(projectpath, "/",
-  #                                                      "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_wideFormat_noMetadata.csv"),
-  #                                               # "USVI2021_CINARtemporal_BzCl_Exometabolite_QCd_wideFormat_outliersRmvd_log2_noMetadata_20250204.csv"),
-  #                                               col_names = TRUE, show_col_types = FALSE, delim = ",", num_threads = nthreads)
-  # colnames(usvi_metabolomics_old.df)[1] <- "metab_deriv_label"
-  # temp_df <- usvi_metabolomics_old_long.df %>%
-  #   dplyr::select(metabolites, adaptedDervLabel, concentration, LOD, LODflag, LOQ) %>% #"LODflag" == TRUE means that the metabolite was measured at a concentration above the LOD (so it's good)
-  #   dplyr::mutate(LODflag = dplyr::case_when((LODflag == TRUE) ~ 0, (LODflag == FALSE) ~ 1, .default = NA)) %>%
-  #   dplyr::rename(`LOD.old` = "LOD",
-  #                 `LODflag.old` = "LODflag",
-  #                 `LOQ.old` = "LOQ") %>%
-  #   droplevels %>%
-  #   dplyr::left_join(., usvi_metabolomics_long.df %>%
-  #                      dplyr::select(metabolites, adaptedDervLabel, concentration, LOD, LODflag, LOQ) %>% #"LODflag" == FALSE means that the metabolite was measured at a concentration above the LOD (so it's good)
-  #                      dplyr::mutate(LODflag = dplyr::case_when((LODflag == FALSE) ~ 0, (LODflag == TRUE) ~ 1, .default = NA)) %>%
-  #                      dplyr::rename(`LOD.new` = "LOD",
-  #                                    `LODflag.new` = "LODflag",
-  #                                    `LOQ.new` = "LOQ") %>%
-  #                      droplevels,
-  #                    by = join_by(metabolites, adaptedDervLabel), suffix = c(".old", ".new")) %>%
-  #   droplevels
-  # temp_df2 <- temp_df %>%
-  #   tidyr::drop_na(.) %>%
-  #   dplyr::group_by(metabolites, adaptedDervLabel) %>%
-  #   dplyr::mutate(LODflag_incons = across(starts_with("LODflag")) %>% purrr::reduce(`+`),
-  #                 LOQ_incons = across(c("LOQ.old", "LOQ.new")) %>% round(., digits = 3) %>% purrr::reduce(`-`),
-  #                 LOD_incons = across(c("LOD.old", "LOD.new")) %>% round(., digits = 3) %>% purrr::reduce(`-`),
-  #                 conc_incons = across(starts_with("concentration")) %>% round(., digits = 3) %>% purrr::reduce(`-`))
-  #   
-  # redo_metab_idx <- temp_df2 %>%
-  #   dplyr::ungroup(.) %>%
-  #   # dplyr::filter(LODflag_incons == 1) %>% dplyr::distinct(metabolites)
-  #   dplyr::filter(LODflag_incons != 1) %>% dplyr::filter(conc_incons != 0) %>% 
-  #   # dplyr::distinct(metabolites) 
-  #   # dplyr::distinct(metabolites, adaptedDervLabel)
-  #   dplyr::distinct(metabolites) %>% tibble::deframe(.)
-  # # temp_df3 <- temp_df2 %>%
-  # #   dplyr::ungroup(.) %>%
-  # #   dplyr::filter(!grepl("folate", metabolites)) %>%
-  # #   dplyr::filter(conc_incons != 0) %>%
-  # #   droplevels
-  # # temp_df3 %>%
-  # #   dplyr::ungroup(.) %>%
-  # #   dplyr::summarise(num_metab = length(metabolites), .by = "adaptedDervLabel") %>%
-  # #   # dplyr::arrange(desc(num_metab))
-  # #   dplyr::arrange(num_metab)
-  # #   
-  # # temp_df3 <- temp_df %>%
-  # #   dplyr::ungroup(.) %>%
-  # #   dplyr::filter(metabolites %in% redo_metab_idx) %>%
-  # #   dplyr::rowwise(.) %>%
-  # #   dplyr::mutate(LOD_incons = across(c("LOD.old", "LOD.new")) %>% round(., digits = 3) %>% purrr::reduce(`-`)) %>%
-  # #   droplevels
-  
+
   #q: can we throw out the below LOD entries for CINAR_BC_73, and still keep it in the NMDS?
   #a: no, even with the corrections in the updated dataset, taking only those metabolites above LOD in CINAR_BC_73, it still clusters with reef samples.
   usvi_metab_cinar_bc_73.df <- usvi_metabolomics_old_long.df %>%
     dplyr::ungroup(.) %>%
     dplyr::rowwise(.) %>%
     dplyr::filter(grepl("CINAR_BC_73", adaptedDervLabel)) %>%
-    # dplyr::mutate(LODflag = dplyr::case_when((LODflag == TRUE) ~ 0, (LODflag == FALSE) ~ 1, .default = NA)) %>%
-    # dplyr::filter(LODflag == 0) %>%
     dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
     dplyr::filter(metabolites %in% unique(usvi_metabolomics_long.df[["metabolites"]])) %>%
     droplevels %>%
@@ -513,27 +458,6 @@ if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
   }
   
 }
-
-# Make a genus-level asv table --------------------------------------------
-
-# usvi_sw_genus.taxa.df <- usvi_prok_filled.taxa.df %>%
-#   dplyr::select(asv_id, Domain, Phylum, Class, Order, Family, Genus) %>%
-#   dplyr::distinct(Domain, Phylum, Class, Order, Family, Genus, .keep_all = TRUE) %>%
-#   droplevels
-# 
-# usvi_sw_genus.tbl <- usvi_prok_asvs.df %>%
-#   droplevels %>%
-#   tidyr::pivot_wider(., id_cols = "asv_id",
-#                      names_from = "sample_ID",
-#                      values_from = "counts",
-#                      values_fill = 0) %>%
-#   otu_to_taxonomy(., usvi_prok_filled.taxa.df, level = "Genus") %>%
-#   dplyr::left_join(., usvi_sw_genus.taxa.df,
-#                    by = join_by(Domain, Phylum, Class, Order, Family, Genus)) %>%
-#   dplyr::relocate(asv_id) %>%
-#   dplyr::select(-c(Domain, Phylum, Class, Order, Family, Genus)) %>%
-#   droplevels
-
 sample_relabel <- metabolomics_sample_metadata %>%
   dplyr::select(sample_id, site, sampling_day, sampling_time) %>%
   dplyr::distinct(., .keep_all = TRUE) %>%
@@ -541,8 +465,6 @@ sample_relabel <- metabolomics_sample_metadata %>%
   droplevels %>%
   tidyr::unite("relabeled_sample", c(site, sampling_day, sampling_time), sep = "_", remove = TRUE)  %>%
   tibble::deframe(.)
-
-
 
 
 # NMDS on NPOC/TN profiles ------------------------------------------------
@@ -682,76 +604,69 @@ sample_relabel <- metabolomics_sample_metadata %>%
 
 # Plot metabolite profiles ------------------------------------------------
 
-
-#here are metabolites where we don't have LODs reported:
-temp_df <- usvi_metabolomics_old_long.df %>%
-  dplyr::arrange(LOD) %>%
-  dplyr::distinct(metabolites, LOD, LOQ, .keep_all = TRUE) %>%
-  dplyr::arrange(metabolites) %>%
-  dplyr::filter(is.na(LOD)) %>%
-  droplevels
-
-#we are dropping 4-aminobenozic acid and potentiall glutamic acid
-
-# usvi_metabolomics.unique.summary.df <- usvi_metabolomics_long.df %>%
-#   dplyr::select(metabolites, adaptedDervLabel, concentration, LOD, LOQ) %>%
-#   dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
-#   dplyr::mutate(dummy = dplyr::case_when((10*conc == LOD) ~ 0, 
-#                                          (conc < LOD) ~ 0,
-#                                          (is.na(conc)) ~ NA,
-#                                          .default = 1)) %>%
-#   dplyr::mutate(conc = dplyr::case_when((conc >= LOD) ~ conc,
-#                                         .default = NA)) %>%
-#   dplyr::group_by(simpleName) %>%
-#   dplyr::summarise(unique_obs = length(unique(na.omit(conc))),
-#                    total_obs = sum(dummy, na.rm = TRUE)) %>%
-#   dplyr::arrange((unique_obs)) %>%
-#   dplyr::mutate(simpleName = factor(simpleName, levels = unique(c(temp_df[["metabolites"]], .[["simpleName"]])))) %>%
-#   tidyr::pivot_longer(., cols = !c("simpleName"),
-#                       names_to = "metric",
-#                       values_to = "obs") %>%
-#   droplevels
-# 
-# g_sus <- print(ggplot(data = usvi_metabolomics.unique.summary.df)
-#       + geom_col(aes(x = simpleName, y = obs, fill = metric, group = interaction(simpleName, metric)),
-#                  position = position_dodge2(width = 0.5, preserve = "total", padding = 0.1), color = "grey20")
-#       + theme_bw()
-#       + scale_discrete_manual(aesthetics = "fill", values = c("navy", "limegreen"), labels = c("Total observations", "Unique concentrations"), breaks = c("total_obs", "unique_obs"))
-#       + scale_x_discrete(name = "Metabolite")
-#       + scale_y_continuous(name = "Number of observations", expand = expansion(mult = c(0, 0.1)))
-#       + theme(panel.grid= element_blank(),
-#               strip.text.y = element_text(size = rel(0.7), angle = 0),
-#               strip.text.x = element_text(size = rel(0.7), angle = 0),
-#               legend.position = "bottom",
-#               axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5, size = rel(1)))
-#       # + facet_grid(metric~., scales = "fixed", space = "fixed", drop = TRUE)
-#       )
-# g_sus <- g_sus + patchwork::plot_annotation(title = "Number of observations per metabolite across samples",
-#                                             subtitle = "Metabolites missing reported LODs are to the left")
-# 
-# ggsave(paste0(projectpath, "/", "usvi_sus_metabolite_dist-", Sys.Date(), ".png"),
-#        g_sus,
-#        width = 8, height = 6, units = "in")
-
-
-# sus_metab_threshold <- usvi_metabolomics.unique.summary.df %>%
-#   dplyr::filter(simpleName %in% temp_df[["metabolites"]]) %>%
-#   dplyr::filter(metric == "unique_obs") %>% dplyr::select(obs) %>%
-#   # dplyr::select(unique_obs) %>%
-#   tibble::deframe(.) %>%
-#   quantile(., probs = c(1), names = FALSE)
-# sus_metab_threshold <- usvi_metabolomics.unique.summary.df %>%
-#   dplyr::slice(which(unique_obs <= sus_metab_threshold)) %>%
-#   droplevels
+if(!exists("usvi_sus_metabolites_idx", envir = .GlobalEnv)){
+  #here are metabolites where we don't have LODs reported:
+  temp_df <- usvi_metabolomics_old_long.df %>%
+    dplyr::arrange(LOD) %>%
+    dplyr::distinct(metabolites, LOD, LOQ, .keep_all = TRUE) %>%
+    dplyr::arrange(metabolites) %>%
+    dplyr::filter(is.na(LOD)) %>%
+    droplevels
   
-drop_metab <- c("4-aminobenzoic acid")
-usvi_sus_metabolites_idx <- usvi_metabolomics_old_long.df %>%
-  dplyr::arrange(LOD) %>%
-  dplyr::distinct(metabolites, LOD, LOQ, .keep_all = TRUE) %>%
-  dplyr::arrange(metabolites) %>%
-  dplyr::filter(is.na(LOD) | metabolites %in% drop_metab) %>%
-  # dplyr::filter(metabolites %in% sus_metab_threshold[["simpleName"]]) %>%
-  droplevels
+  #we are dropping 4-aminobenozic acid and potentiall glutamic acid
+  
+  # usvi_metabolomics.unique.summary.df <- usvi_metabolomics_long.df %>%
+  #   dplyr::select(metabolites, adaptedDervLabel, concentration, LOD, LOQ) %>%
+  #   dplyr::rename(simpleName = "metabolites", metab_deriv_label = "adaptedDervLabel", conc = "concentration") %>%
+  #   dplyr::mutate(dummy = dplyr::case_when((10*conc == LOD) ~ 0, 
+  #                                          (conc < LOD) ~ 0,
+  #                                          (is.na(conc)) ~ NA,
+  #                                          .default = 1)) %>%
+  #   dplyr::mutate(conc = dplyr::case_when((conc >= LOD) ~ conc,
+  #                                         .default = NA)) %>%
+  #   dplyr::group_by(simpleName) %>%
+  #   dplyr::summarise(unique_obs = length(unique(na.omit(conc))),
+  #                    total_obs = sum(dummy, na.rm = TRUE)) %>%
+  #   dplyr::arrange((unique_obs)) %>%
+  #   dplyr::mutate(simpleName = factor(simpleName, levels = unique(c(temp_df[["metabolites"]], .[["simpleName"]])))) %>%
+  #   tidyr::pivot_longer(., cols = !c("simpleName"),
+  #                       names_to = "metric",
+  #                       values_to = "obs") %>%
+  #   droplevels
+  # 
+  # g_sus <- print(ggplot(data = usvi_metabolomics.unique.summary.df)
+  #       + geom_col(aes(x = simpleName, y = obs, fill = metric, group = interaction(simpleName, metric)),
+  #                  position = position_dodge2(width = 0.5, preserve = "total", padding = 0.1), color = "grey20")
+  #       + theme_bw()
+  #       + scale_discrete_manual(aesthetics = "fill", values = c("navy", "limegreen"), labels = c("Total observations", "Unique concentrations"), breaks = c("total_obs", "unique_obs"))
+  #       + scale_x_discrete(name = "Metabolite")
+  #       + scale_y_continuous(name = "Number of observations", expand = expansion(mult = c(0, 0.1)))
+  #       + theme(panel.grid= element_blank(),
+  #               strip.text.y = element_text(size = rel(0.7), angle = 0),
+  #               strip.text.x = element_text(size = rel(0.7), angle = 0),
+  #               legend.position = "bottom",
+  #               axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5, size = rel(1)))
+  #       # + facet_grid(metric~., scales = "fixed", space = "fixed", drop = TRUE)
+  #       )
+  # g_sus <- g_sus + patchwork::plot_annotation(title = "Number of observations per metabolite across samples",
+  #                                             subtitle = "Metabolites missing reported LODs are to the left")
+  # 
+  # ggsave(paste0(projectpath, "/", "usvi_sus_metabolite_dist-", Sys.Date(), ".png"),
+  #        g_sus,
+  #        width = 8, height = 6, units = "in")
+  
+  
+  
+  drop_metab <- c("4-aminobenzoic acid")
+  usvi_sus_metabolites_idx <- usvi_metabolomics_old_long.df %>%
+    dplyr::arrange(LOD) %>%
+    dplyr::distinct(metabolites, LOD, LOQ, .keep_all = TRUE) %>%
+    dplyr::arrange(metabolites) %>%
+    dplyr::filter(is.na(LOD) | metabolites %in% drop_metab) %>%
+    # dplyr::filter(metabolites %in% sus_metab_threshold[["simpleName"]]) %>%
+    droplevels
+}
+
               
   
 #spoiler: CINAR_BC_73 is suspicious, so drop it.
@@ -780,50 +695,11 @@ usvi_metab_outlier_summary.df <- usvi_metab_summary.df %>%
   dplyr::left_join(., (usvi_metab_summary.df %>%
                          dplyr::group_by(site, metabolite) %>%
                          dplyr::summarise(site_median = median(concentration, na.rm = TRUE))), by = join_by(site, metabolite)) %>%
-  # dplyr::mutate(rescaled_conc = (concentration - site_median)/(site_median), .by = c(site, metabolite)) %>%
   dplyr::mutate(rescaled_conc = dplyr::case_when((concentration != 0) ~ log2(concentration/site_median), .default = NA), .by = c(site, metabolite)) %>%
   dplyr::arrange(desc(site_median)) %>%
   dplyr::mutate(metabolite = factor(metabolite, levels = unique(.[["metabolite"]]))) %>%
   droplevels
 
-# temp_g <- print(
-#   ggplot(data = usvi_metab_outlier_summary.df %>%
-#            dplyr::filter(grepl("Day3", sampling_day)) %>%
-#            droplevels)
-#   + geom_segment(aes(x = metabolite, y = 0, yend = rescaled_conc, color = site, group = interaction(metabolite, site, sampling_time)), 
-#                  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.0), show.legend = FALSE,
-#                  alpha = 1.0, linewidth = 0.5)
-#   + geom_point(aes(x = metabolite, y = rescaled_conc, fill = site, group = interaction(metabolite, site, sampling_time), 
-#                    shape = site), 
-#                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.0),
-#                alpha = 1.0, size = 1)
-#   + geom_hline(aes(yintercept = 0))
-#   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "LogFC (concentration from median)")
-#   + scale_discrete_manual(aesthetics = c("fill", "color"),
-#                           values = site_colors, breaks = names(site_lookup), labels = site_lookup, name = "site")
-#                           # values = sampling_day_colors, labels = names(sampling_day_colors), name = "day")
-#                           # values = metab_colors, labels = names(metab_colors), name = "Metabolite")
-#   + scale_x_discrete(name = "Metabolite")
-#   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup), breaks = names(site_lookup))
-#   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-#           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-#           panel.grid = element_blank(),
-#           axis.title.x = element_blank(),
-#           legend.position = "bottom",
-#           legend.key = element_blank(),
-#           axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-#           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-#           legend.text = element_text(size = 12, colour = "grey30"))
-#   + facet_grid(space = "fixed", rows = NULL, cols = vars(sampling_day),
-#                drop = TRUE, scales = "free", shrink = TRUE,
-#                labeller = labeller(site = site_lookup))
-#   + guides(color = "none", 
-#            # fill = "none",
-#            fill = guide_legend(order = 2, nrow = 1, title = "Site", direction = "vertical",
-#                                override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-#            shape = "none")
-# )
-# 
 
 # usvi_metab_sus_summary.df <- usvi_metabolomics_long.df %>%
 #   dplyr::select(metabolites, adaptedDervLabel, concentration, LOD, LOQ) %>%
@@ -944,44 +820,6 @@ if(!file.exists(paste0(projectpath, "/", "usvi_metab_colors", ".rds"))){
   readr::write_rds(metab_colors, paste0(projectpath, "/", "usvi_metab_colors", ".rds"))  
 }
 
-# usvi_metab_filtered.df %>%
-#   dplyr::group_by(site, metabolite) %>%
-#   dplyr::summarise(outliers::outlier(concentration)) %>%
-#   dplyr::filter(grepl("LB", site))
-# 
-# temp_g <- print(
-#   ggplot(data = usvi_metab_filtered.df %>%
-#            dplyr::filter(grepl("LB", site)) %>%
-#            droplevels)
-#   + geom_boxplot(aes(x = metabolite, y = concentration, group = interaction(metabolite, site, sampling_time)), 
-#                  color = "black", position = position_dodge2(padding = 0.2, preserve = "single"),
-#                  outliers = FALSE, show.legend = FALSE)
-#   + geom_point(aes(x = metabolite, y = concentration, fill = metabolite, group = interaction(metabolite, site, sampling_time), shape = sampling_time), 
-#                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
-#                alpha = 1.0, size = 3)
-#   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Concentration")
-#   + scale_fill_manual(values = metab_colors, labels = names(metab_colors), name = "Metabolite")
-#   + scale_x_discrete(name = "Metabolite")
-#   + scale_shape_manual(values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA))
-#   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-#           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-#           panel.grid = element_blank(),
-#           axis.title.x = element_blank(),
-#           legend.position = "none",
-#           legend.key = element_blank(),
-#           axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-#           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-#           legend.text = element_text(size = 12, colour = "grey30"))
-#   + facet_grid(space = "fixed", rows = vars(sampling_time), cols = vars(sampling_day),
-#                drop = TRUE, scales = "free", shrink = TRUE,
-#                labeller = labeller(site = site_lookup))
-#   + guides(color = "none", 
-#            # fill = "none",
-#            fill = guide_legend(order = 2, ncol = 2, title = "Metabolite", direction = "vertical",
-#                                override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-#            shape = guide_legend(order = 1, ncol = 1, title = "Sampling time", direction = "vertical",
-#                                 override.aes = list(color = "black", stroke = 1, size = 2)))
-# )
 #if you want to plot the range of concentrations of the 49 metabolites:
 {
   metab_bw_legend <- print(ggplot(data = data.frame(
@@ -1202,69 +1040,43 @@ usvi_selected_metadata <- metabolomics_sample_metadata %>%
 #calculate Bray curtis, dispersions from site*sampling_time mean, and plot NMDS 
 #first on untransformed metabolite concentrations,
 #then on pseudolog (log2(x + 1)) transformed
-  # nmds_metab.df <- usvi_metabolomics.df %>%
-  #   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
-  #   tibble::column_to_rownames(var = "metab_deriv_label") %>%
-  #   dplyr::select(!usvi_sus_metabolites_idx[["metabolites"]]) %>%
-  #   as.matrix(.) %>%
-  #   vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE) %>%
-  #   ggplot2::fortify(.) %>%
-  #   as.data.frame %>%
-  #   dplyr::filter(score == "sites") %>%
-  #   dplyr::mutate(type = "sample") %>%
-  #   dplyr::select(-score) %>%
-  #   dplyr::left_join(., (metabolomics_sample_metadata %>%
-  #                          dplyr::filter(grepl("seawater", sample_type)) %>%
-  #                          dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, metab_deriv_label) %>%
-  #                          droplevels),
-  #                    by = c("label" = "metab_deriv_label")) %>%
-  #   #add labels:
-  #   dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-  #                                               .default = NA)) %>%
-# dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
-  #   droplevels
-# g3_all_ell <- P_nmds(dataset = nmds_metab.df, subtitle = "All vs all dissimilarity matrix", facet_form = "sampling_time ~ site")
+ 
+#q: can you pull out % variability eplained by axes in NMDS, like you can for PCoA?
+#a: no
+{
 
-#old method: using ggfortify
-# nmds_metab_log2.df <- usvi_metabolomics_long.df %>%
-# dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
-#   # dplyr::bind_rows(., usvi_metab_cinar_bc_73.df %>%
-#   #                    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
-#   #                    droplevels) %>%
+# temp_mds <- usvi_metabolomics_long.df %>%
+#   dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
 #   dplyr::rename(metabolite = "metabolites", metab_deriv_label = "adaptedDervLabel") %>%
-#   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
 #   dplyr::filter(LODflag == 0) %>%
 #   dplyr::select(-LODflag) %>%
+#   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
 #   tidyr::pivot_wider(., id_cols = "metab_deriv_label",
 #                      names_from = "metabolite",
 #                      # values_fill = 0,
 #                      values_from = "concentration") %>%
 #   tibble::column_to_rownames(var = "metab_deriv_label") %>%
 #   dplyr::select(!(intersect(usvi_sus_metabolites_idx[["metabolites"]], colnames(.)))) %>%
-# apply(., 2, function(x) log2(x + 1)) %>%
+#   apply(., 2, function(x) log2(x + 1)) %>%
 #   as.matrix(.) %>%
-#   vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE) %>%
-#   ggplot2::fortify(.) %>%
-#   as.data.frame %>%
-#   dplyr::filter(score == "sites") %>%
-#   dplyr::mutate(type = "sample") %>%
-#   dplyr::select(-score) %>%
-#   dplyr::left_join(., (metabolomics_sample_metadata %>%
-#                          dplyr::filter(grepl("seawater", sample_type)) %>%
-#                          dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, metab_deriv_label) %>%
-#                          droplevels),
-#                    by = c("label" = "metab_deriv_label")) %>%
-#   #add labels:
-#   dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) )~ label,
-#                                               .default = NA)) %>%
-#   dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
-#   droplevels
+#   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% 
+#   # vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE, tidy = TRUE)
+#   # stats::cmdscale(., k = 2, eig = TRUE, add = TRUE)
+#   vegan::wcmdscale(., k = 2, eig = TRUE, add = TRUE)
+# 
+# # % of variance explained by the MDS axes
+# # 
+# #if you used stats::cmdscale or vegan::wcmdscale(add = "cailliez") which is the default used in cmdscale
+# round(temp_mds$eig*100/sum(temp_mds$eig),1)[1:10]
+# # [1] 27.6 17.4  5.8  3.5  2.6  1.9  1.8  1.6  1.5  1.4
+# 
+# #if you used vegan::wcmdscale(add = "lingoes") which is the default for vegan
+# # [1] 16.4  9.8  3.0  2.2  1.6  1.5  1.4  1.4  1.4  1.3
+}
+
 
 nmds_metab_log2.df <- usvi_metabolomics_long.df %>%
   dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
-  # dplyr::bind_rows(., usvi_metab_cinar_bc_73.df %>%
-  #                    dplyr::select(metabolites, adaptedDervLabel, concentration, LODflag) %>%
-  #                    droplevels) %>%
   dplyr::rename(metabolite = "metabolites", metab_deriv_label = "adaptedDervLabel") %>%
   dplyr::filter(LODflag == 0) %>%
   dplyr::select(-LODflag) %>%
@@ -1284,21 +1096,15 @@ nmds_metab_log2.df <- usvi_metabolomics_long.df %>%
                          dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, metab_deriv_label) %>%
                          droplevels),
                    by = c("label" = "metab_deriv_label")) %>%
-  #add labels:
-  # dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) )~ label,
-  #                                             .default = NA)) %>%
   dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
   droplevels
 
 
 g3_all_log2_ell <- P_nmds(dataset = nmds_metab_log2.df, subtitle = "All vs all dissimilarity matrix", facet_form = ". ~ site")
-# g3_all_log2_ell <- P_nmds(dataset = nmds_metab_log2.df, subtitle = "All vs all dissimilarity matrix", facet_form = "sampling_time ~ site")
-# # g3_all_log2_ell + facet_grid(.~site, labeller = global_labeller)
-# g3_all_log2_ell <- g3_all_log2_ell + facet_grid(.~site, labeller = global_labeller) 
 
   # if(!any(grepl("nmds", list.files(projectpath, pattern = "usvi_metabolomics.*.png")))){
   #   ggsave(paste0(projectpath, "/", "usvi_metabolomics_nmds-", Sys.Date(), ".png"),
-  #          g3,
+  #          g3_all_log2_ell,
   #          width = 10, height = 8, units = "in")
   # }
   
@@ -1312,7 +1118,6 @@ usvi_metab.tbl <- usvi_metabolomics_long.df %>%
   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
   tidyr::pivot_wider(., id_cols = "metab_deriv_label",
                      names_from = "metabolite",
-                     # values_fill = 0,
                      values_from = "concentration") %>%
   tibble::column_to_rownames(var = "metab_deriv_label") %>%
   dplyr::select(!(intersect(usvi_sus_metabolites_idx[["metabolites"]], colnames(.)))) %>%
@@ -1323,10 +1128,11 @@ usvi_metab_log2.tbl <- usvi_metab.tbl %>%
 
 usvi_metab.meta <- metabolomics_sample_metadata %>%
   dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
-  dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site) %>%
+  dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site, sample_type) %>%
   dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
   droplevels %>%
   dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+  dplyr::mutate(grouping = as.character(grouping)) %>%
   tibble::column_to_rownames(., var = "metab_deriv_label") %>%
   droplevels
 
@@ -1344,28 +1150,14 @@ dist_usvi_metab.d <- vegan::vegdist(usvi_metab.tbl, method = "bray", binary = FA
   # TukeyHSD(temp.betadisp)
 }
 
-# dist_usvi_metab.df <- vegan::betadisper(dist_usvi_metab.d, type = "median",
-#                                        usvi_metab.meta$grouping) %>%
-#   purrr::pluck("distances") %>%
-#   tibble::enframe(value = "dissimilarity", name = "metab_deriv_label") %>%
-#   dplyr::left_join(., (metabolomics_sample_metadata %>%
-#                          dplyr::filter(grepl("seawater", sample_type)) %>%
-#                          dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
-#                          droplevels),
-#                    by = c("metab_deriv_label" = "metab_deriv_label")) %>%
-#   dplyr::mutate(potential_outlier = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", metab_deriv_label) | metab_deriv_label %in% potential_metab_outliers_idx)~ stringr::str_remove_all(metab_deriv_label, "CINAR_BC_"),  
-#                                                      .default = NA)) %>%
-#   dplyr::mutate(not_outlier = dplyr::case_when(is.na(potential_outlier) ~ stringr::str_remove_all(metab_deriv_label, "CINAR_BC_"),  
-#                                                .default = NA)) %>%
-#   droplevels
-
 dist_usvi_metab_log2.d <- vegan::vegdist(usvi_metab_log2.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
 
 dist_usvi_metab_log2.df <- vegan::betadisper(dist_usvi_metab_log2.d, 
                                              type = "median", #this is default
+                                             add = TRUE,
                                              usvi_metab.meta$grouping) %>%
   purrr::pluck("distances") %>%
-  tibble::enframe(value = "dissimilarity", name = "metab_deriv_label") %>%
+  tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
                          dplyr::filter(grepl("seawater", sample_type)) %>%
                          dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -1378,110 +1170,15 @@ dist_usvi_metab_log2.df <- vegan::betadisper(dist_usvi_metab_log2.d,
   dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
   droplevels
 
-
-# g3_all_disp + ggrepel::geom_text_repel(data = dist_usvi_metab.df, aes(label = not_outlier, x = site, 
-#                                                                   y = dissimilarity, fill = sampling_time,
-#                                                                   group = interaction(site, sampling_time)), size =4, seed = 48105, 
-#                                                               stat = "identity",  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-#                                                               colour = "grey", fontface = "bold") + 
-#   ggrepel::geom_text_repel(data = dist_usvi_metab.df, aes(label = potential_outlier, x = site,
-#                                y = dissimilarity, fill = sampling_time,
-#                                group = interaction(site, sampling_time)), size =4,
-#                            stat = "identity",  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-#                            seed = 48105, 
-#                            colour = "black", fontface = "bold")
-# g3_all_disp <- P_betadisp(dataset = dist_usvi_metab.df, subtitle = "All vs all dissimilarity matrix", metric = "Bray-Curtis") + guides(shape = "none") 
 g3_all_log2_disp <- P_betadisp(dataset = dist_usvi_metab_log2.df, subtitle = "All vs all dissimilarity matrix", metric = "Bray-Curtis") + guides(shape = "none")
 
 
 
 # print(g3_all_disp)
-# print(g3_all_log2_disp)
+print(g3_all_log2_disp)
 
-{
-  # g3_all_disp <- print(
-  #   ggplot(data = dist_usvi_metab.df)
-  #   + theme_bw()
-  #   + geom_boxplot(aes(x = site, y = dissimilarity, 
-  #                      group = interaction(site, sampling_time)), 
-  #                  color = "black",
-  #                  position = position_dodge2(padding = 0.2, preserve = "single"),
-  #                  show.legend = FALSE, outliers = FALSE)
-  #   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
-  #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
-  #                alpha = 1.0, size = 3)
-  #   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
-  #   + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-  #   + scale_y_continuous(expand = expansion(mult = c(0.1,0.1)), name = "Bray-Curtis dissimilarity")
-  #   + scale_x_discrete(labels = site_lookup, name = "Site")
-  #   + ggrepel::geom_text_repel(aes(label = not_outlier, x = site, 
-  #                   y = dissimilarity, fill = sampling_time,
-  #                   group = interaction(site, sampling_time)), size =4, seed = 48105, 
-  #               stat = "identity",  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-  #               colour = "grey", fontface = "bold")
-  #   + ggrepel::geom_text_repel(aes(label = potential_outlier, x = site,
-  #                                  y = dissimilarity, fill = sampling_time,
-  #                                  group = interaction(site, sampling_time)), size =4,
-  #                              stat = "identity",  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-  #                              seed = 48105, 
-  #                              colour = "black", fontface = "bold")
-  #   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-  #           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-  #           panel.grid = element_blank(),
-  #           legend.position = "right",
-  #           legend.key = element_blank(),
-  #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-  #           legend.text = element_text(size = 12, colour = "grey30"))
-  #   + facet_grid(. ~ site, drop = TRUE, scales = "free", space = "fixed", 
-  #                labeller = labeller(site = site_lookup))  
-  #   + guides(color = "none",
-  #            fill = guide_legend(order = 2, ncol = 1, title = "Sampling time", direction = "vertical",
-  #                                override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-  #            shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
-  #                                 override.aes = list(color = "black", stroke = 1, size = 2)))
-  # )
-  # 
-  # g3_all_log2_disp <- print(
-  #   ggplot(data = dist_usvi_metab_log2.df)
-  #   + theme_bw()
-  #   + geom_boxplot(aes(x = site, y = dissimilarity, 
-  #                      group = interaction(site, sampling_time)), 
-  #                  color = "black",
-  #                  position = position_dodge2(padding = 0.2, preserve = "single"),
-  #                  show.legend = FALSE, outliers = FALSE)
-  #   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
-  #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
-  #                alpha = 1.0, size = 3)
-  #   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
-  #   + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-  #   + scale_y_continuous(expand = expansion(mult = c(0,0.1)), name = "Bray-Curtis dissimilarity")
-  #   + scale_x_discrete(labels = site_lookup, name = "Site")
-  #   + ggrepel::geom_text_repel(aes(label = not_outlier, x = site, 
-  #                                  y = dissimilarity, fill = sampling_time,
-  #                                  group = interaction(site, sampling_time)), size =4, seed = 48105,
-  #                              position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-  #                              colour = "grey", fontface = "bold")
-  #   + ggrepel::geom_text_repel(aes(label = potential_outlier, x = site,
-  #                                  y = dissimilarity, fill = sampling_time,
-  #                                  group = interaction(site, sampling_time)), size =4, seed = 48105,
-  #                              position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2), hjust = "outward", angle = 0, 
-  #                              colour = "black", fontface = "bold")
-  #   + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-  #           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-  #           panel.grid = element_blank(),
-  #           legend.position = "right",
-  #           legend.key = element_blank(),
-  #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-  #           legend.text = element_text(size = 12, colour = "grey30"))
-  #   + facet_grid(. ~ site, drop = TRUE, scales = "free", space = "fixed", 
-  #                labeller = labeller(site = site_lookup))  
-  #   + guides(color = "none",
-  #            fill = guide_legend(order = 2, ncol = 1, title = "Sampling time", direction = "vertical",
-  #                                override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-  #            shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
-  #                                 override.aes = list(color = "black", stroke = 1, size = 2)))
-  # )
-}
+
+# Site-specific NMDS and betadisper on metabolomes ------------------------
 
 
 #run NMDS on just sites' metabolomes
@@ -1513,103 +1210,12 @@ g3_all_log2_disp <- P_betadisp(dataset = dist_usvi_metab_log2.df, subtitle = "Al
     dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
     droplevels
   
-# temp_df1 <- usvi_metabolomics.df %>%
-#     dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
-#   dplyr::filter(metab_deriv_label %in% (metabolomics_sample_metadata %>%
-#                   dplyr::filter(grepl("LB", site)) %>%
-#                   droplevels %>%
-#                   dplyr::select(metab_deriv_label) %>%
-#                     tibble::deframe(.))) %>%
-#     tibble::column_to_rownames(var = "metab_deriv_label") %>%
-#     dplyr::select(!(intersect(usvi_sus_metabolites_idx[["metabolites"]], colnames(.)))) %>%
-#     apply(., 2, function(x) log2(x + 1)) %>%
-#     as.matrix(.) %>%
-#     vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE, tidy = TRUE) %>% 
-#     purrr::pluck("points") %>% tibble::as_tibble(., rownames = "label") %>% dplyr::rename(NMDS1 = "MDS1", NMDS2 = "MDS2") %>%
-#     droplevels
-# temp_df2 <- usvi_metabolomics.df %>%
-#   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
-#   dplyr::filter(metab_deriv_label %in% (metabolomics_sample_metadata %>%
-#                                           dplyr::filter(grepl("Yawzi", site)) %>%
-#                                           droplevels %>%
-#                                           dplyr::select(metab_deriv_label) %>%
-#                                           tibble::deframe(.))) %>%
-#   tibble::column_to_rownames(var = "metab_deriv_label") %>%
-#   dplyr::select(!(intersect(usvi_sus_metabolites_idx[["metabolites"]], colnames(.)))) %>%
-#   apply(., 2, function(x) log2(x + 1)) %>%
-#   as.matrix(.) %>%
-#   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE, tidy = TRUE) %>% 
-#   purrr::pluck("points") %>% tibble::as_tibble(., rownames = "label") %>% dplyr::rename(NMDS1 = "MDS1", NMDS2 = "MDS2") %>%
-#   droplevels
-# 
-# temp_df3 <- usvi_metabolomics.df %>%
-#   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
-#   dplyr::filter(metab_deriv_label %in% (metabolomics_sample_metadata %>%
-#                                           dplyr::filter(grepl("Tektite", site)) %>%
-#                                           droplevels %>%
-#                                           dplyr::select(metab_deriv_label) %>%
-#                                           tibble::deframe(.))) %>%
-#   tibble::column_to_rownames(var = "metab_deriv_label") %>%
-#   dplyr::select(!(intersect(usvi_sus_metabolites_idx[["metabolites"]], colnames(.)))) %>%
-#   apply(., 2, function(x) log2(x + 1)) %>%
-#   as.matrix(.) %>%
-#   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE, tidy = TRUE) %>% 
-#   purrr::pluck("points") %>% tibble::as_tibble(., rownames = "label") %>% dplyr::rename(NMDS1 = "MDS1", NMDS2 = "MDS2") %>%
-#   droplevels
-
-# nmds_metab_sites_log2.df <- bind_rows(temp_df1, temp_df2, temp_df3) %>%
-#   dplyr::left_join(., (metabolomics_sample_metadata %>%
-#                          dplyr::filter(grepl("seawater", sample_type)) %>%
-#                          dplyr::select(sample_id, sample_type, sampling_date, sampling_time, sampling_day, site, metab_deriv_label) %>%
-#                          droplevels),
-#                    by = c("label" = "metab_deriv_label")) %>%
-#   #add labels:
-#   dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
-#                                               .default = NA)) %>%
-#   dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
-#   droplevels
 }
 
 g3_sites_log2_ell <- P_nmds(dataset = nmds_metab_sites_log2.df, subtitle = "Per-site dissimilarity matrices", facet_form = ".~site") + guides(shape = "none", fill = "none")
 
-{
-# g3_sites_log2_ell <- (ggplot(data = nmds_metab_sites_log2.df,
-#                        aes(x = NMDS1, y = NMDS2))
-#                 + theme(text = element_text(size=14))
-#                 + geom_point(data = (nmds_metab_sites_log2.df %>%
-#                                        dplyr::filter(type == "sample") %>%
-#                                        droplevels),
-#                              aes(shape = site, fill = addNA(sampling_time)), color = "black",
-#                              size = 5, stroke = 2, alpha = 1)
-#                 + ggrepel::geom_text_repel(aes(label = gsub("CINAR_BC_", "", label), x = NMDS1, y = NMDS2),
-#                                            direction = "both", segment.color = NA, seed = 48105, force = 1, force_pull = 1,
-#                                            point.padding = unit(0.01, "npc"), box.padding = unit(0.01, "npc"), colour = "black", fontface = "bold")
-#                 + stat_ellipse(aes(color = sampling_time,  group = interaction(site, sampling_time)), type = "t", 
-#                                level = 0.95, geom = "polygon", alpha = 0.05, show.legend = FALSE)
-#                 + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-#                 + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
-#                 + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
-#                 + theme(axis.title = element_text(size = 12, face = "bold", colour = "grey30"),
-#                         panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-#                         panel.grid = element_blank(),
-#                         legend.position = "bottom",
-#                         legend.key = element_blank(),
-#                         legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-#                         legend.text = element_text(size = 12, colour = "grey30"))
-#                 + facet_grid(sampling_time ~ site, drop = TRUE, scales = "free", space = "fixed", 
-#                              labeller = labeller(site = site_lookup, sampling_time = sampling_time_lookup))
-#                 + guides(color = "none",
-#                          fill = guide_legend(order = 2, ncol = 1, title = "Sampling time", direction = "vertical",
-#                                              override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
-#                          shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
-#                                               override.aes = list(color = "black", stroke = 1, size = 2)))
-# )
-}
-#site_specific beta dispersion
 
-# usvi_metabolomics.tbl <- usvi_metabolomics.df %>%
-#   dplyr::filter(!(metab_deriv_label %in% potential_metab_outliers_idx)) %>%
-#   tibble::column_to_rownames(var = "metab_deriv_label")
+#site_specific beta dispersion
 
 
 
@@ -1617,45 +1223,21 @@ meta.seawater.list <- metabolomics_sample_metadata %>%
   dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
   dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site) %>%
   dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+  dplyr::mutate(grouping = as.character(grouping)) %>%
   tibble::column_to_rownames(., var = "metab_deriv_label") %>%
   droplevels 
 
 meta.seawater.list <- meta.seawater.list[rownames(usvi_metab.tbl),] %>%
   split(., f = .$site) %>%
-  map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label"))
+  map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label") %>% 
+        droplevels)
 
-# dist_usvi_sites_metab.d <- meta.seawater.list %>%
-#   map(., ~.x %>% 
-#         droplevels %>%
-#         dplyr::select(metab_deriv_label) %>%
-#         dplyr::distinct(.) %>%
-#         dplyr::inner_join(., usvi_metabolomics.tbl %>%
-#                             tibble::rownames_to_column(var = "metab_deriv_label"),
-#                           by = join_by(metab_deriv_label)) %>%
-#         tibble::column_to_rownames(var = "metab_deriv_label") %>%
-#         as.matrix(.) %>% vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE))
-# 
-# dist_usvi_sites_metab.df <- map2(dist_usvi_sites_metab.d, meta.seawater.list,
-#                                  ~vegan::betadisper(., type = "median",
-#                                                     add = TRUE,
-#                                                     .y$grouping) %>%
-#                                    purrr::pluck("distances") %>%
-#                                    tibble::enframe(value = "dissimilarity", name = "metab_deriv_label") %>%
-#                                    dplyr::left_join(., (metabolomics_sample_metadata %>%
-#                                                           dplyr::filter(grepl("seawater", sample_type)) %>%
-#                                                           dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
-#                                                           dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
-#                                                           droplevels),
-#                                                     by = c("metab_deriv_label" = "metab_deriv_label")) %>%
-#                                    droplevels) %>%
-#   bind_rows(.) %>%
-#   dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-#                 sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-#   droplevels
+
 
 dist_usvi_sites_metab_log2.d <- meta.seawater.list %>%
   map(., ~.x %>% 
         droplevels %>%
+        dplyr::ungroup(.) %>%
         dplyr::select(metab_deriv_label) %>%
         dplyr::distinct(.) %>%
         dplyr::inner_join(., (usvi_metab.tbl %>%
@@ -1670,7 +1252,7 @@ dist_usvi_sites_metab_log2.df <- map2(dist_usvi_sites_metab_log2.d, meta.seawate
                                                          add = TRUE,
                                                          .y$grouping) %>%
                                         purrr::pluck("distances") %>%
-                                        tibble::enframe(value = "dissimilarity", name = "metab_deriv_label") %>%
+                                        tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
                                         dplyr::left_join(., (metabolomics_sample_metadata %>%
                                                                dplyr::filter(grepl("seawater", sample_type)) %>%
                                                                dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -1720,7 +1302,6 @@ temp.log2.betadisp <- list(map2(dist_usvi_sites_metab_log2.d, meta.seawater.list
 # 
 
 dist_usvi_metab.betadisp.df <- temp.log2.betadisp %>%
-# dist_usvi_metab.betadisp.df <- c(temp_sites.betadisp, temp.betadisp) %>%
   purrr::list_flatten(.) %>%
   bind_rows(.id = "model") %>%
   tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE) %>%
@@ -1736,21 +1317,13 @@ dist_usvi_metab.betadisp.df <- temp.log2.betadisp %>%
   dplyr::filter(first_site == second_site) %>%
   droplevels
 
-# g3_sites_disp <- P_betadisp(dataset = dist_usvi_sites_metab.df, metric = "Bray-Curtis", subtitle = "Per-site dissimilarity matrices") + guides(shape = "none")
 g3_sites_log2_disp <- P_betadisp(dataset = dist_usvi_sites_metab_log2.df, metric = "Bray-Curtis", subtitle = "Per-site dissimilarity matrices") + guides(shape = "none")
 
-# g3_all_disp_sig <- g3_all_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "all")),
-#                          inherit.aes = FALSE, aes(label = significance, x = site, y = 0.6, group = site), size = 10,  na.rm = TRUE)
-# g3_sites_disp_sig <- g3_sites_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site")),
-#                            inherit.aes = FALSE, aes(label = significance, x = site, y = 0.6, group = site),  size = 10, na.rm = TRUE)
 g3_all_log2_disp_sig <- g3_all_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "all_log2")),
                          inherit.aes = FALSE, aes(label = significance, x = site, y = 0.45, group = site), size = 10,  na.rm = TRUE)
 g3_sites_log2_disp_sig <- g3_sites_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site_log2")),
                            inherit.aes = FALSE, aes(label = significance, x = site, y = 0.45, group = site), size = 10, na.rm = TRUE)
 
-
-
-# g3_disp <- (g3_all_disp_sig + guides(fill = "none", shape = "none") + theme(axis.title.x = element_blank())) / (g3_sites_disp_sig + theme(axis.title.x = element_blank(), legend.position = "bottom")) + patchwork::plot_annotation(title = "Untransformed metabolite concentrations", tag_levels = "A")
 g3_log2_disp <- (g3_all_log2_disp_sig + guides(fill = "none", shape = "none") + theme(axis.title.x = element_blank())) / (g3_sites_log2_disp_sig + theme(axis.title.x = element_blank(), legend.position = "bottom")) + patchwork::plot_layout(tag_level = "new") + patchwork::plot_annotation(title = "Log2(x+1) transformed metabolite concentrations", tag_levels = list(c("C", "D")))
 
 
@@ -1762,28 +1335,28 @@ g3_log2_disp <- (g3_all_log2_disp_sig + guides(fill = "none", shape = "none") + 
 # dist_usvi_metab_log2_summary.df <- bind_rows(
 #   (dist_usvi_sites_metab_log2.df %>%
 #      dplyr::group_by(site, sampling_time) %>%
-#      dplyr::reframe(across(contains("dissimilarity"),
+#      dplyr::reframe(across(contains("dispersion"),
 #                            list(ou_1 = function(x) (outliers::outlier(x, opposite = FALSE)),
 #                                 ou_2 = function(x) (outliers::outlier(x, opposite = TRUE))))) %>%
 #      tidyr::pivot_longer(., cols = !c(site, sampling_time),
 #                          names_to = "direction",
-#                          values_to = "dissimilarity") %>%
+#                          values_to = "dispersion") %>%
 #      dplyr::left_join(., dist_usvi_sites_metab_log2.df %>%
-#                         dplyr::select(metab_deriv_label, sample_id, dissimilarity, site, sampling_time),
-#                       by = join_by(sampling_time, site, dissimilarity)) %>%
+#                         dplyr::select(metab_deriv_label, sample_id, dispersion, site, sampling_time),
+#                       by = join_by(sampling_time, site, dispersion)) %>%
 #      dplyr::mutate(metric = "site") %>%
 #      droplevels),
 #   (dist_usvi_metab_log2.df %>%
 #      dplyr::group_by(site, sampling_time) %>%
-#      dplyr::reframe(across(contains("dissimilarity"),
+#      dplyr::reframe(across(contains("dispersion"),
 #                            list(ou_1 = function(x) (outliers::outlier(x, opposite = FALSE)),
 #                                 ou_2 = function(x) (outliers::outlier(x, opposite = TRUE))))) %>%
 #      tidyr::pivot_longer(., cols = !c(site, sampling_time),
 #                          names_to = "direction",
-#                          values_to = "dissimilarity") %>%
+#                          values_to = "dispersion") %>%
 #      dplyr::left_join(., dist_usvi_metab_log2.df %>%
-#                         dplyr::select(metab_deriv_label, sample_id, dissimilarity, site, sampling_time),
-#                       by = join_by(sampling_time, site, dissimilarity)) %>%
+#                         dplyr::select(metab_deriv_label, sample_id, dispersion, site, sampling_time),
+#                       by = join_by(sampling_time, site, dispersion)) %>%
 #      dplyr::mutate(metric = "all") %>%
 #      droplevels))
 #   
@@ -1919,7 +1492,97 @@ if(!any(grepl("log2_bc_betadisp_nmds", list.files(projectpath, pattern = "usvi_m
   # )
 }
 
+#confirm that using site-specific beta dispersion is not different from all-sample beta-dispersion from the group emdian, and from all-sample median
 
+meta.list <- metabolomics_sample_metadata %>%
+  dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
+  dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site) %>%
+  dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+  tibble::column_to_rownames(., var = "metab_deriv_label") %>%
+  droplevels 
+
+meta.seawater.grouping.list <- list(meta.list[rownames(usvi_metab.tbl),] %>%
+  # dplyr::mutate(grouping = "all") %>%
+  tibble::rownames_to_column(var = "metab_deriv_label")) %>%
+  setNames(., c("all")) %>%
+  c(., (meta.list[rownames(usvi_metab.tbl),] %>%
+          split(., f = .$grouping) %>% #calculate a median specific to the site and time group
+          map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
+  c(., (meta.list[rownames(usvi_metab.tbl),] %>%
+          split(., f = .$site) %>% #calculate a median specific to the site
+          map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::mutate(grouping = as.character(grouping)))
+  
+
+dist_usvi_metab_grouping_log2.d <- meta.seawater.grouping.list %>%
+  map(., ~.x %>% 
+        droplevels %>%
+        dplyr::ungroup(.) %>%
+        dplyr::select(metab_deriv_label) %>%
+        dplyr::distinct(.) %>%
+        dplyr::inner_join(., (usvi_metab.tbl %>%
+                                apply(., 2, function(x) log2(x + 1)) %>%
+                                tibble::as_tibble(rownames = "metab_deriv_label")),
+                          by = join_by(metab_deriv_label)) %>%
+        tibble::column_to_rownames(var = "metab_deriv_label") %>%
+        as.matrix(.) %>% vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE))
+        # droplevels)
+
+dist_usvi_metab_grouping_log2.df <- map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
+                                      ~vegan::betadisper(., type = "median",
+                                                         add = TRUE,
+                                                         .y$grouping) %>%
+                                        purrr::pluck("distances") %>%
+                                        tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
+                                        droplevels) %>%
+  bind_rows(., .id = "grouping")%>%
+  dplyr::left_join(., (metabolomics_sample_metadata %>%
+                         dplyr::filter(grepl("seawater", sample_type)) %>%
+                         dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
+                         dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
+                         droplevels),
+                   by = c("metab_deriv_label" = "metab_deriv_label")) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site",
+                                              (grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site.time",
+                                              .default = grouping)) %>%
+    dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+  droplevels
+
+
+
+temp_g_betadisp <- print(ggplot(data = dist_usvi_metab_grouping_log2.df, 
+                                aes(x = grouping, y = dispersion, group = interaction(sampling_time, grouping)))
+      + theme_bw()
+      + geom_boxplot(color = "black", alpha = 0.7, 
+                     position = position_dodge2(padding = 0.2, preserve = "single"), outliers = FALSE,
+                     show.legend = FALSE)
+      + geom_point(aes(fill = sampling_time, shape = site), 
+                   position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
+                   alpha = 1.0, size = 2)
+      + facet_wrap(site~., drop = TRUE, 
+                   labeller = labeller(site = site_lookup))
+      # + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+      + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
+      + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+      + scale_x_discrete(name = "Median calculated by grouping")
+      + scale_y_continuous(name = "BC dispersion from centroid")
+      + guides(color = "none",
+             size = "none",
+             fill = guide_legend(order = 2, ncol = 1, title = "Sampling time", direction = "vertical",
+                                 override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+             shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
+                                  override.aes = list(color = "black", stroke = 1, size = 2)))
+      + theme(axis.text.x = element_text(angle = 90, size = rel(1)))
+)
+ggsave(paste0(projectpath, "/", "usvi_betadisper_metab_by_grouping-", Sys.Date(), ".png"),
+       temp_g_betadisp,
+       width = 8, height = 5, units = "in")
+readr::write_delim(dist_usvi_metab_grouping_log2.df, paste0(projectpath, "/", "usvi_betadisper_metab_by_grouping-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE,quote = "none")
 
 # Which metabolites drive the NMDS structure? -----------------------------
 
@@ -2320,7 +1983,7 @@ dist_usvi_asv.df <- vegan::betadisper(dist_usvi_asv.d, type = "median",
                                       add = TRUE,
                                       usvi_microb.meta$grouping) %>%
   purrr::pluck("distances") %>%
-  tibble::enframe(value = "dissimilarity", name = "sample_id") %>%
+  tibble::enframe(value = "dispersion", name = "sample_id") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
                          dplyr::filter(grepl("seawater", sample_type)) %>%
                          dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -2341,7 +2004,7 @@ dist_usvi_asv_log2.df <- vegan::betadisper(dist_usvi_asv_log2.d,
                                            add = TRUE,
                                            usvi_microb.meta$grouping) %>%
   purrr::pluck("distances") %>%
-  tibble::enframe(value = "dissimilarity", name = "sample_id") %>%
+  tibble::enframe(value = "dispersion", name = "sample_id") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
                          dplyr::filter(grepl("seawater", sample_type)) %>%
                          dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -2365,12 +2028,12 @@ g4_all_log2_disp <- P_betadisp(dataset = dist_usvi_asv_log2.df, subtitle = "All 
 # g4_all_disp <- print(
 #   ggplot(data = dist_usvi_asv.df)
 #   + theme_bw()
-#   + geom_boxplot(aes(x = site, y = dissimilarity, 
+#   + geom_boxplot(aes(x = site, y = dispersion, 
 #                      group = interaction(site, sampling_time)), 
 #                  color = "black",
 #                  position = position_dodge2(padding = 0.2, preserve = "single"),
 #                  show.legend = FALSE, outliers = FALSE)
-#   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
+#   + geom_point(aes(x = site, y = dispersion, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
 #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
 #                alpha = 1.0, size = 3)
 #   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
@@ -2396,14 +2059,14 @@ g4_all_log2_disp <- P_betadisp(dataset = dist_usvi_asv_log2.df, subtitle = "All 
 # g4_all_log2_disp <- print(
 #   ggplot(data = dist_usvi_asv_log2.df)
 #   + theme_bw()
-#   + geom_boxplot(aes(y = dissimilarity, 
+#   + geom_boxplot(aes(y = dispersion, 
 #                      x = site,
 #                      # x = interaction(site, sampling_time),
 #                      group = interaction(site, sampling_time)), 
 #                  color = "black",
 #                  position = position_dodge2(padding = 0.2, preserve = "single"),
 #                  show.legend = FALSE, outliers = FALSE)
-#   + geom_point(aes(y = dissimilarity, 
+#   + geom_point(aes(y = dispersion, 
 #                    x = site,
 #                    # x = interaction(site, sampling_time),
 #                    fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
@@ -2659,7 +2322,7 @@ dist_usvi_sites_asv.df <- map2(dist_usvi_sites_asv.d, meta.seawater.list,
                                                   add = TRUE,
                                                   .y$grouping) %>%
         purrr::pluck("distances") %>%
-        tibble::enframe(value = "dissimilarity", name = "sample_id") %>%
+        tibble::enframe(value = "dispersion", name = "sample_id") %>%
         dplyr::left_join(., (metabolomics_sample_metadata %>%
                                dplyr::filter(grepl("seawater", sample_type)) %>%
                                dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -2688,7 +2351,7 @@ dist_usvi_sites_asv.df <- map2(dist_usvi_sites_asv.d, meta.seawater.list,
 #                                                   add = TRUE,
 #                                                   .y$grouping) %>%
 #                                  purrr::pluck("distances") %>%
-#                                  tibble::enframe(value = "dissimilarity", name = "sample_id") %>%
+#                                  tibble::enframe(value = "dispersion", name = "sample_id") %>%
 #                                  dplyr::left_join(., (metabolomics_sample_metadata %>%
 #                                                         dplyr::filter(grepl("seawater", sample_type)) %>%
 #                                                         dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -2709,12 +2372,12 @@ g4_sites_disp <- P_betadisp(dataset = dist_usvi_sites_asv.df, subtitle = "Per-si
   # g4_sites_disp <- print(
   #   ggplot(data = dist_usvi_sites_asv.df)
   #   + theme_bw()
-  #   + geom_boxplot(aes(x = site, y = dissimilarity, 
+  #   + geom_boxplot(aes(x = site, y = dispersion, 
   #                      group = interaction(site, sampling_time)), 
   #                  color = "black",
   #                  position = position_dodge2(padding = 0.2, preserve = "single"),
   #                  show.legend = FALSE, outliers = FALSE)
-  #   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
+  #   + geom_point(aes(x = site, y = dispersion, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
   #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
   #                alpha = 1.0, size = 3)
   #   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
@@ -2740,12 +2403,12 @@ g4_sites_disp <- P_betadisp(dataset = dist_usvi_sites_asv.df, subtitle = "Per-si
   # g4_sites_log2_disp <- print(
   #   ggplot(data = dist_usvi_sites_asv_log2.df)
   #   + theme_bw()
-  #   + geom_boxplot(aes(x = site, y = dissimilarity, 
+  #   + geom_boxplot(aes(x = site, y = dispersion, 
   #                      group = interaction(site, sampling_time)), 
   #                  color = "black",
   #                  position = position_dodge2(padding = 0.2, preserve = "single"),
   #                  show.legend = FALSE, outliers = FALSE)
-  #   + geom_point(aes(x = site, y = dissimilarity, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
+  #   + geom_point(aes(x = site, y = dispersion, fill = sampling_time, group = interaction(site, sampling_time), shape = site), 
   #                position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
   #                alpha = 1.0, size = 3)
   #   + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
@@ -2823,28 +2486,28 @@ g4_sites_disp_sig <- g4_sites_disp +  geom_text(data = (dist_usvi_asv.betadisp.d
 # dist_usvi_asv_log2_summary.df <- bind_rows(
 #   (dist_usvi_sites_asv_log2.df %>%
 #      dplyr::group_by(site, sampling_time) %>%
-#      dplyr::reframe(across(contains("dissimilarity"),
+#      dplyr::reframe(across(contains("dispersion"),
 #                            list(ou_1 = function(x) (outliers::outlier(x, opposite = FALSE)),
 #                                 ou_2 = function(x) (outliers::outlier(x, opposite = TRUE))))) %>%
 #      tidyr::pivot_longer(., cols = !c(site, sampling_time),
 #                          names_to = "direction",
-#                          values_to = "dissimilarity") %>%
+#                          values_to = "dispersion") %>%
 #      dplyr::left_join(., dist_usvi_sites_asv_log2.df %>%
-#                         dplyr::select(metab_deriv_label, sample_id, dissimilarity, site, sampling_time),
-#                       by = join_by(sampling_time, site, dissimilarity)) %>%
+#                         dplyr::select(metab_deriv_label, sample_id, dispersion, site, sampling_time),
+#                       by = join_by(sampling_time, site, dispersion)) %>%
 #      dplyr::mutate(metric = "site") %>%
 #      droplevels),
 #   (dist_usvi_asv_log2.df %>%
 #      dplyr::group_by(site, sampling_time) %>%
-#      dplyr::reframe(across(contains("dissimilarity"),
+#      dplyr::reframe(across(contains("dispersion"),
 #                            list(ou_1 = function(x) (outliers::outlier(x, opposite = FALSE)),
 #                                 ou_2 = function(x) (outliers::outlier(x, opposite = TRUE))))) %>%
 #      tidyr::pivot_longer(., cols = !c(site, sampling_time),
 #                          names_to = "direction",
-#                          values_to = "dissimilarity") %>%
+#                          values_to = "dispersion") %>%
 #      dplyr::left_join(., dist_usvi_asv_log2.df %>%
-#                         dplyr::select(metab_deriv_label, sample_id, dissimilarity, site, sampling_time),
-#                       by = join_by(sampling_time, site, dissimilarity)) %>%
+#                         dplyr::select(metab_deriv_label, sample_id, dispersion, site, sampling_time),
+#                       by = join_by(sampling_time, site, dispersion)) %>%
 #      dplyr::mutate(metric = "all") %>%
 #      droplevels))
 
@@ -3206,7 +2869,8 @@ temp_nmds2 <- (ggplot(data = nmds_metab_microb.df %>%
 temp_df2 <- dist_usvi_sites_metab_log2.df %>%
   dplyr::mutate(setome = "metabolome") %>%
   bind_rows(., dist_usvi_sites_asv.df %>%
-              dplyr::mutate(setome = "microbiome"))
+              dplyr::mutate(setome = "microbiome")) %>%
+  droplevels
 # g3_sites_log2_disp_sig <- g3_sites_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site_log2")),
 #                                                           inherit.aes = FALSE, aes(label = significance, x = site, y = 0.45, group = site), size = 10, na.rm = TRUE)
 
@@ -3214,12 +2878,12 @@ temp_betadisp1 <-  (ggplot(data = temp_df2 %>%
                             dplyr::filter(setome == "metabolome") %>%
                             droplevels)
                         + theme_bw()
-                        + geom_boxplot(aes(x = site, y = dissimilarity, 
+                        + geom_boxplot(aes(x = site, y = dispersion, 
                                            group = interaction(site, sampling_time)), 
                                        color = "black",
                                        position = position_dodge2(padding = 0.2, preserve = "single"),
                                        show.legend = FALSE, outliers = FALSE)
-                        + geom_point(aes(x = site, y = dissimilarity, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
+                        + geom_point(aes(x = site, y = dispersion, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
                                      position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
                                      alpha = 1.0, size = 3)
                    +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site_log2") %>% dplyr::mutate(setome = "metabolome")),
@@ -3249,12 +2913,12 @@ temp_betadisp2 <-  (ggplot(data = temp_df2 %>%
                              dplyr::filter(setome == "microbiome") %>%
                              droplevels)
                     + theme_bw()
-                    + geom_boxplot(aes(x = site, y = dissimilarity, 
+                    + geom_boxplot(aes(x = site, y = dispersion, 
                                        group = interaction(site, sampling_time)), 
                                    color = "black",
                                    position = position_dodge2(padding = 0.2, preserve = "single"),
                                    show.legend = FALSE, outliers = FALSE)
-                    + geom_point(aes(x = site, y = dissimilarity, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
+                    + geom_point(aes(x = site, y = dispersion, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
                                  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
                                  alpha = 1.0, size = 3)
                     + scale_discrete_manual(aesthetics = c("shape"), values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA), drop = TRUE)
