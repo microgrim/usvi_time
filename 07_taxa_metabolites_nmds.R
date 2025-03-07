@@ -2344,7 +2344,7 @@ dist_usvi_sites_asv.d <- meta.seawater.list %>%
         dplyr::select(sample_id) %>%
         dplyr::distinct(.) %>%
         dplyr::inner_join(., usvi_asv.tbl %>%
-                           tibble::rownames_to_column(var = "sample_id"),
+                           tibble::as_tibble(rownames = "sample_id"),
                          by = join_by(sample_id)) %>%
           tibble::column_to_rownames(var = "sample_id") %>%
         as.matrix(.) %>% vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE))
@@ -2829,6 +2829,160 @@ if(!any(grepl("betadisp", list.files(projectpath, pattern = "usvi_metab_microb.*
          g_betadisp,
          width = 8, height = 12, units = "in")
 }
+
+
+# Extract beta dispersions for ASVs based on different median cent --------
+
+
+meta.list <- metabolomics_sample_metadata %>%
+  dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
+  dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
+  dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+  tibble::column_to_rownames(., var = "sample_id") %>%
+  droplevels 
+
+meta.seawater.grouping.list <- list(meta.list[rownames(usvi_asv.tbl),] %>%
+                                      tibble::rownames_to_column(var = "sample_id")) %>%
+  setNames(., c("all")) %>%
+  c(., (meta.list[rownames(usvi_asv.tbl),] %>%
+          split(., f = .$grouping) %>% #calculate a median specific to the site and time group
+          map(., ~.x %>% tibble::rownames_to_column(var = "sample_id")))) %>%
+  c(., (meta.list[rownames(usvi_asv.tbl),] %>%
+          split(., f = .$site) %>% #calculate a median specific to the site
+          map(., ~.x %>% tibble::rownames_to_column(var = "sample_id")))) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::mutate(grouping = as.character(grouping)))
+
+dist_usvi_asv_grouping.d <- meta.seawater.grouping.list %>%
+  map(., ~.x %>% 
+        droplevels %>%
+        dplyr::ungroup(.) %>%
+        dplyr::select(sample_id) %>%
+        dplyr::distinct(.) %>%
+        dplyr::inner_join(., usvi_asv.tbl %>%
+                            tibble::as_tibble(rownames = "sample_id"),
+                          by = join_by(sample_id)) %>%
+        tibble::column_to_rownames(var = "sample_id") %>%
+        as.matrix(.) %>% vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE))
+
+map(dist_usvi_asv_grouping.d,
+    ~.x %>% median(., na.rm = TRUE))
+# $all
+# [1] 0.1238592
+# 
+# $LB_seagrass.dawn
+# [1] 0.08612343
+# 
+# $Yawzi.dawn
+# [1] 0.04533796
+# 
+# $Tektite.dawn
+# [1] 0.04907733
+# 
+# $LB_seagrass.peak_photo
+# [1] 0.1606586
+# 
+# $Yawzi.peak_photo
+# [1] 0.03216735
+# 
+# $Tektite.peak_photo
+# [1] 0.06462692
+# 
+# $LB_seagrass
+# [1] 0.1064909
+# 
+# $Yawzi
+# [1] 0.0422085
+# 
+# $Tektite
+# [1] 0.0529286
+
+
+dist_usvi_asv_grouping.df <- map2(dist_usvi_asv_grouping.d, meta.seawater.grouping.list,
+                                  ~vegan::betadisper(., type = "median",
+                                                     add = TRUE,
+                                                     .y$grouping) %>%
+                                    purrr::pluck("distances") %>%
+                                    tibble::enframe(value = "dispersion", name = "sample_id") %>%
+                                    droplevels) %>%
+  bind_rows(., .id = "grouping")%>%
+  dplyr::left_join(., (metabolomics_sample_metadata %>%
+                         dplyr::filter(grepl("seawater", sample_type)) %>%
+                         dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
+                         dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+                         droplevels),
+                   by = c("sample_id" = "sample_id")) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+  dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site",
+                                            (grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site.time",
+                                            .default = grouping)) %>%
+  dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+  droplevels
+
+#checking if beta dispersions are significantly different dependent on whether we use "all" samples for the centroid, or site-specific medians
+#no, no change
+# temp.grouping.betadisp <- list(vegan::betadisper(dist_usvi_asv_grouping.d[["all"]], type = "median", add = TRUE, meta.seawater.grouping.list[["all"]]$grouping),
+#                                vegan::betadisper(dist_usvi_asv_grouping.d[["LB_seagrass"]], type = "median", add = TRUE, meta.seawater.grouping.list[["LB_seagrass"]]$grouping),
+#                                vegan::betadisper(dist_usvi_asv_grouping.d[["Yawzi"]], type = "median", add = TRUE, meta.seawater.grouping.list[["Yawzi"]]$grouping),
+#                                vegan::betadisper(dist_usvi_asv_grouping.d[["Tektite"]], type = "median", add = TRUE, meta.seawater.grouping.list[["Tektite"]]$grouping)) %>%
+#   setNames(., c("all", "LB_seagrass", "Yawzi", "Tektite")) %>%
+#   map(., ~.x %>%
+#         TukeyHSD(.)) %>%
+#   map(., ~.x %>%
+#         broom::tidy(.))
+# 
+# dist_usvi_asv_grouping.betadisp.df <- c(temp.grouping.betadisp) %>%
+#   purrr::list_flatten(.) %>%
+#   bind_rows(.id = "model") %>%
+#   tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE) %>%
+#   tidyr::separate_wider_delim(first, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
+#   tidyr::separate_wider_delim(second, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
+#   dplyr::mutate(site = first_site) %>%
+#   dplyr::mutate(across(c(site, first_site, second_site), ~factor(.x, levels = names(site_lookup))),
+#                 across(c(first_time, second_time), ~factor(.x, levels = names(sampling_time_lookup)))) %>%
+#   dplyr::mutate(significance = dplyr::case_when(adj.p.value < 0.05 ~ "**",
+#                                                 adj.p.value < 0.1 ~ "*",
+#                                                 # .default = "n.s.")) %>%
+#                                                 .default = NA)) %>%
+#   dplyr::filter(first_site == second_site) %>%
+#   droplevels
+
+
+temp_g_betadisp_asv <- print(ggplot(data = dist_usvi_asv_grouping.df, 
+                                aes(x = grouping, y = dispersion, group = interaction(sampling_time, grouping)))
+                         + theme_bw()
+                         + geom_boxplot(color = "black", alpha = 0.7, 
+                                        position = position_dodge2(padding = 0.2, preserve = "single"), outliers = FALSE,
+                                        show.legend = FALSE)
+                         + geom_point(aes(fill = sampling_time, shape = site), 
+                                      position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
+                                      alpha = 1.0, size = 2)
+                         + facet_wrap(site~., drop = TRUE, 
+                                      labeller = labeller(site = site_lookup))
+                         # + scale_color_manual(name = "sampling time", values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+                         + scale_shape_manual(values = c(22, 21, 23), labels = c(site_lookup, "NA"), breaks = c(names(site_lookup), NA))
+                         + scale_fill_manual(values = sampling_time_colors, labels = sampling_time_lookup, breaks = names(sampling_time_lookup))
+                         + scale_x_discrete(name = "Median calculated by grouping")
+                         + scale_y_continuous(name = "MH dispersion from centroid")
+                         + guides(color = "none",
+                                  size = "none",
+                                  fill = guide_legend(order = 2, ncol = 1, title = "Sampling time", direction = "vertical",
+                                                      override.aes = list(color = "black", stroke = 1, shape = 21, size = 2)),
+                                  shape = guide_legend(order = 1, ncol = 1, title = "Site", direction = "vertical",
+                                                       override.aes = list(color = "black", stroke = 1, size = 2)))
+                         + theme(axis.text.x = element_text(angle = 90, size = rel(1)))
+                         + ggtitle("Microbial community diversity")
+)
+ggsave(paste0(projectpath, "/", "usvi_betadisper_microb_by_grouping-", Sys.Date(), ".png"),
+       temp_g_betadisp_asv,
+       width = 8, height = 5, units = "in")
+readr::write_delim(dist_usvi_asv_grouping.df, paste0(projectpath, "/", "usvi_betadisper_microb_by_grouping-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE,quote = "none")
 
 
 # Plot "final" figure of NMDSes -------------------------------------------

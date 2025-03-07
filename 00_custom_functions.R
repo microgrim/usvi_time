@@ -282,3 +282,43 @@ t_pseudolog10 <- scales::new_transform("pseudolog10",
                                        function(x)( log10(x+1)), 
                                        function(x)( 10^(x) - 1), 
                                        domain = c(0, Inf))
+
+#making our own labeller:
+{
+  log10p1 <- function(x){ log10(x + 1) }
+  log10p1_inv <- function(x){ exp(x) - 1 }
+  log10p1_br <- function(x) { 
+    temp_b <- quantile((x+1), probs = seq(0, 1, 0.2), names = FALSE, na.rm = TRUE)
+    temp_b <- c(0, temp_b)
+    temp_b <- c(signif(temp_b, digits = 1), max(x), signif(max(x), digits = 1)/2)
+    temp_b <- sort(unique(temp_b))
+    return(temp_b)
+  }
+  # log10p1_lab <- function(x) { 
+  #   temp_b <- log10p1_br(x)
+  #   temp_b <- scaleFUN1(temp_b)
+  #   # temp_b <- paste0(temp_b, "%")
+  #   return(temp_b)
+  # }
+  log10p1_lab_na <- function(x) { 
+    temp_b <- log10p1_br(x)
+    if(any(diff(temp_b) < 1)){ #if first or last 2 breaks on the legend are too close together for visual represntation
+      drop_idx <- which(diff(temp_b) < 1)
+      temp_b <- scaleFUN1(temp_b)
+      temp_b[drop_idx] <- ""
+      return(temp_b)
+    } else {
+      temp_b <- scaleFUN1(temp_b)
+      return(temp_b)
+    }
+    
+  }
+}
+T_log10p1 <- function(){ scales::new_transform(name = "log10p1", 
+                                               transform = log10p1, inverse = log10p1_inv,
+                                               d_transform = NULL, d_inverse = NULL,
+                                               breaks = log10p1_br, 
+                                               minor_breaks = minor_breaks_n(10),
+                                               format = log10p1_lab,
+                                               # format = log10p1_lab_na,
+                                               domain = c(0, Inf)) }
