@@ -1494,97 +1494,138 @@ if(!any(grepl("log2_bc_betadisp_nmds", list.files(projectpath, pattern = "usvi_m
 
 #confirm that using site-specific beta dispersion is not different from all-sample beta-dispersion from the group emdian, and from all-sample median
 
-meta.list <- metabolomics_sample_metadata %>%
-  dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
-  dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site) %>%
-  dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
-  tibble::column_to_rownames(., var = "metab_deriv_label") %>%
-  droplevels 
+if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
+  if(any(grepl("metab_by_grouping", list.files(projectpath, pattern = "usvi_betadisper_.*.tsv")))){
+    temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_betadisper_metab_by_grouping-.*.tsv"))
+    dist_usvi_metab_grouping_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+                                                          delim = "\t", col_names = TRUE,
+                                                          show_col_types = FALSE)
+    rm(temp_file)
+  } else {
+    meta.list <- metabolomics_sample_metadata %>%
+      dplyr::filter(metab_deriv_label %in% rownames(usvi_metab.tbl)) %>%
+      dplyr::select(metab_deriv_label, sample_id, sampling_time, sampling_day, site) %>%
+      dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+      tibble::column_to_rownames(., var = "metab_deriv_label") %>%
+      droplevels 
+    
+    meta.seawater.grouping.list <- list(meta.list[rownames(usvi_metab.tbl),] %>%
+                                          # dplyr::mutate(grouping = "all") %>%
+                                          tibble::rownames_to_column(var = "metab_deriv_label")) %>%
+      setNames(., c("all")) %>%
+      c(., (meta.list[rownames(usvi_metab.tbl),] %>%
+              split(., f = .$grouping) %>% #calculate a median specific to the site and time group
+              map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
+      c(., (meta.list[rownames(usvi_metab.tbl),] %>%
+              split(., f = .$site) %>% #calculate a median specific to the site
+              map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
+      map(., ~.x %>%
+            droplevels %>%
+            dplyr::mutate(grouping = as.character(grouping)))
+    
+    
+    dist_usvi_metab_grouping_log2.d <- meta.seawater.grouping.list %>%
+      map(., ~.x %>% 
+            droplevels %>%
+            dplyr::ungroup(.) %>%
+            dplyr::select(metab_deriv_label) %>%
+            dplyr::distinct(.) %>%
+            dplyr::inner_join(., (usvi_metab.tbl %>%
+                                    apply(., 2, function(x) log2(x + 1)) %>%
+                                    tibble::as_tibble(rownames = "metab_deriv_label")),
+                              by = join_by(metab_deriv_label)) %>%
+            tibble::column_to_rownames(var = "metab_deriv_label") %>%
+            as.matrix(.) %>% vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE))
+    # droplevels)
+    
+    map(dist_usvi_metab_grouping_log2.d,
+        ~.x %>% median(., na.rm = TRUE))
+    # $all
+    # [1] 0.2441055
+    # 
+    # $LB_seagrass.dawn
+    # [1] 0.1050437
+    # 
+    # $Tektite.dawn
+    # [1] 0.2405862
+    # 
+    # $Yawzi.dawn
+    # [1] 0.09317009
+    # 
+    # $LB_seagrass.peak_photo
+    # [1] 0.1336742
+    # 
+    # $Tektite.peak_photo
+    # [1] 0.2218558
+    # 
+    # $Yawzi.peak_photo
+    # [1] 0.2408675
+    # 
+    # $LB_seagrass
+    # [1] 0.1378801
+    # 
+    # $Tektite
+    # [1] 0.2428545
+    # 
+    # $Yawzi
+    # [1] 0.1882367
+    
+    dist_usvi_metab_grouping_log2.df <- map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
+                                             ~vegan::betadisper(., type = "median",
+                                                                add = TRUE,
+                                                                .y$grouping) %>%
+                                               purrr::pluck("distances") %>%
+                                               tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
+                                               droplevels) %>%
+      bind_rows(., .id = "grouping")%>%
+      dplyr::left_join(., (metabolomics_sample_metadata %>%
+                             dplyr::filter(grepl("seawater", sample_type)) %>%
+                             dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
+                             dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
+                             droplevels),
+                       by = c("metab_deriv_label" = "metab_deriv_label")) %>%
+      dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                    sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+      dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site",
+                                                (grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site.time",
+                                                .default = grouping)) %>%
+      dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+      droplevels
+    
+    readr::write_delim(dist_usvi_metab_grouping_log2.df, paste0(projectpath, "/", "usvi_betadisper_metab_by_grouping-", Sys.Date(), ".tsv"),
+                       delim = "\t", col_names = TRUE,quote = "none")
+    
+  }
+}
 
-meta.seawater.grouping.list <- list(meta.list[rownames(usvi_metab.tbl),] %>%
-  # dplyr::mutate(grouping = "all") %>%
-  tibble::rownames_to_column(var = "metab_deriv_label")) %>%
-  setNames(., c("all")) %>%
-  c(., (meta.list[rownames(usvi_metab.tbl),] %>%
-          split(., f = .$grouping) %>% #calculate a median specific to the site and time group
-          map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
-  c(., (meta.list[rownames(usvi_metab.tbl),] %>%
-          split(., f = .$site) %>% #calculate a median specific to the site
-          map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
-  map(., ~.x %>%
-        droplevels %>%
-        dplyr::mutate(grouping = as.character(grouping)))
-  
 
-dist_usvi_metab_grouping_log2.d <- meta.seawater.grouping.list %>%
-  map(., ~.x %>% 
-        droplevels %>%
-        dplyr::ungroup(.) %>%
-        dplyr::select(metab_deriv_label) %>%
-        dplyr::distinct(.) %>%
-        dplyr::inner_join(., (usvi_metab.tbl %>%
-                                apply(., 2, function(x) log2(x + 1)) %>%
-                                tibble::as_tibble(rownames = "metab_deriv_label")),
-                          by = join_by(metab_deriv_label)) %>%
-        tibble::column_to_rownames(var = "metab_deriv_label") %>%
-        as.matrix(.) %>% vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE))
-        # droplevels)
-
-map(dist_usvi_metab_grouping_log2.d,
-    ~.x %>% median(., na.rm = TRUE))
-# $all
-# [1] 0.2441055
-# 
-# $LB_seagrass.dawn
-# [1] 0.1050437
-# 
-# $Tektite.dawn
-# [1] 0.2405862
-# 
-# $Yawzi.dawn
-# [1] 0.09317009
-# 
-# $LB_seagrass.peak_photo
-# [1] 0.1336742
-# 
-# $Tektite.peak_photo
-# [1] 0.2218558
-# 
-# $Yawzi.peak_photo
-# [1] 0.2408675
-# 
-# $LB_seagrass
-# [1] 0.1378801
-# 
-# $Tektite
-# [1] 0.2428545
-# 
-# $Yawzi
-# [1] 0.1882367
-
-dist_usvi_metab_grouping_log2.df <- map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
-                                      ~vegan::betadisper(., type = "median",
-                                                         add = TRUE,
-                                                         .y$grouping) %>%
-                                        purrr::pluck("distances") %>%
-                                        tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
-                                        droplevels) %>%
-  bind_rows(., .id = "grouping")%>%
-  dplyr::left_join(., (metabolomics_sample_metadata %>%
-                         dplyr::filter(grepl("seawater", sample_type)) %>%
-                         dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
-                         dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
-                         droplevels),
-                   by = c("metab_deriv_label" = "metab_deriv_label")) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-    dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site",
-                                              (grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site.time",
-                                              .default = grouping)) %>%
-    dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
-  droplevels
-
-
+#calculate the average dispersions for each site
+dist_usvi_metab_grouping_log2.df %>%
+  dplyr::group_by(site, grouping, sampling_time) %>%
+  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
+  dplyr::arrange(grouping, site, sampling_time)
+# # A tibble: 18 × 4
+# # Groups:   site, grouping [9]
+# site        grouping  sampling_time mean_disp
+# <chr>       <chr>     <chr>             <dbl>
+#   1 LB_seagrass all       dawn             0.303 
+# 2 LB_seagrass all       peak_photo       0.303 
+# 3 Tektite     all       dawn             0.346 
+# 4 Tektite     all       peak_photo       0.336 
+# 5 Yawzi       all       dawn             0.308 
+# 6 Yawzi       all       peak_photo       0.346 
+# 7 LB_seagrass site      dawn             0.103 
+# 8 LB_seagrass site      peak_photo       0.106 
+# 9 Tektite     site      dawn             0.254 
+# 10 Tektite     site      peak_photo       0.243 
+# 11 Yawzi       site      dawn             0.162 
+# 12 Yawzi       site      peak_photo       0.224 
+# 13 LB_seagrass site.time dawn             0.0931
+# 14 LB_seagrass site.time peak_photo       0.0941
+# 15 Tektite     site.time dawn             0.204 
+# 16 Tektite     site.time peak_photo       0.209 
+# 17 Yawzi       site.time dawn             0.103 
+# 18 Yawzi       site.time peak_photo       0.219 
 
 temp_g_betadisp <- print(ggplot(data = dist_usvi_metab_grouping_log2.df, 
                                 aes(x = grouping, y = dispersion, group = interaction(sampling_time, grouping)))
@@ -1613,8 +1654,6 @@ temp_g_betadisp <- print(ggplot(data = dist_usvi_metab_grouping_log2.df,
 ggsave(paste0(projectpath, "/", "usvi_betadisper_metab_by_grouping-", Sys.Date(), ".png"),
        temp_g_betadisp,
        width = 8, height = 5, units = "in")
-readr::write_delim(dist_usvi_metab_grouping_log2.df, paste0(projectpath, "/", "usvi_betadisper_metab_by_grouping-", Sys.Date(), ".tsv"),
-                   delim = "\t", col_names = TRUE,quote = "none")
 
 # Which metabolites drive the NMDS structure? -----------------------------
 
@@ -2834,6 +2873,15 @@ if(!any(grepl("betadisp", list.files(projectpath, pattern = "usvi_metab_microb.*
 # Extract beta dispersions for ASVs based on different median cent --------
 
 
+if(!exists("dist_usvi_asv_grouping.df", envir = .GlobalEnv)){
+  if(any(grepl("microb_by_grouping", list.files(projectpath, pattern = "usvi_betadisper_.*.tsv")))){
+    temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_betadisper_microb_by_grouping-.*.tsv"))
+    dist_usvi_asv_grouping.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+                                                          delim = "\t", col_names = TRUE,
+                                                          show_col_types = FALSE)
+    rm(temp_file)
+  } else {
+
 meta.list <- metabolomics_sample_metadata %>%
   dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
   dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
@@ -2952,6 +3000,40 @@ dist_usvi_asv_grouping.df <- map2(dist_usvi_asv_grouping.d, meta.seawater.groupi
 #   dplyr::filter(first_site == second_site) %>%
 #   droplevels
 
+readr::write_delim(dist_usvi_asv_grouping.df, paste0(projectpath, "/", "usvi_betadisper_microb_by_grouping-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE,quote = "none")
+
+  }
+}
+
+
+
+dist_usvi_asv_grouping.df %>%
+  dplyr::group_by(site, grouping, sampling_time) %>%
+  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
+  dplyr::arrange(grouping, site, sampling_time)
+# # A tibble: 18 × 4
+# # Groups:   site, grouping [9]
+# site        grouping  sampling_time mean_disp
+# <chr>       <chr>     <chr>             <dbl>
+#   1 LB_seagrass all       dawn             0.480 
+# 2 LB_seagrass all       peak_photo       0.487 
+# 3 Tektite     all       dawn             0.478 
+# 4 Tektite     all       peak_photo       0.480 
+# 5 Yawzi       all       dawn             0.479 
+# 6 Yawzi       all       peak_photo       0.475 
+# 7 LB_seagrass site      dawn             0.215 
+# 8 LB_seagrass site      peak_photo       0.233 
+# 9 Tektite     site      dawn             0.199 
+# 10 Tektite     site      peak_photo       0.203 
+# 11 Yawzi       site      dawn             0.204 
+# 12 Yawzi       site      peak_photo       0.197 
+# 13 LB_seagrass site.time dawn             0.113 
+# 14 LB_seagrass site.time peak_photo       0.195 
+# 15 Tektite     site.time dawn             0.102 
+# 16 Tektite     site.time peak_photo       0.163 
+# 17 Yawzi       site.time dawn             0.140 
+# 18 Yawzi       site.time peak_photo       0.0955  
 
 temp_g_betadisp_asv <- print(ggplot(data = dist_usvi_asv_grouping.df, 
                                 aes(x = grouping, y = dispersion, group = interaction(sampling_time, grouping)))
@@ -2981,8 +3063,46 @@ temp_g_betadisp_asv <- print(ggplot(data = dist_usvi_asv_grouping.df,
 ggsave(paste0(projectpath, "/", "usvi_betadisper_microb_by_grouping-", Sys.Date(), ".png"),
        temp_g_betadisp_asv,
        width = 8, height = 5, units = "in")
-readr::write_delim(dist_usvi_asv_grouping.df, paste0(projectpath, "/", "usvi_betadisper_microb_by_grouping-", Sys.Date(), ".tsv"),
-                   delim = "\t", col_names = TRUE,quote = "none")
+
+#save your results
+
+#calculate the average dispersions for each site
+dist_usvi_betadisp_grouping.df <- map(dist_usvi_metab_grouping_log2.d,
+                                      ~.x %>% median(., na.rm = TRUE)) %>%
+  tibble::as_tibble(.) %>%
+  tidyr::pivot_longer(., cols = everything(),
+                      names_to = "grouping", 
+                      values_to = "median_dist") %>%
+  dplyr::mutate(setome = "metabolome") %>%
+  dplyr::bind_rows(., (map(dist_usvi_asv_grouping.d,
+                           ~.x %>% median(., na.rm = TRUE)) %>%
+                         tibble::as_tibble(.) %>%
+                         tidyr::pivot_longer(., cols = everything(),
+                                             names_to = "grouping", 
+                                             values_to = "median_dist") %>%
+                         dplyr::mutate(setome = "microbiome"))) %>%
+  dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+  dplyr::mutate(sampling_time = dplyr::case_when(is.na(sampling_time) ~ "all",
+                                                 .default = sampling_time)) %>%
+  droplevels
+
+#calcualte the mean beta dispersions for each site and sampling time, based on using the different medians as above
+dist_usvi_mean_betadisp_grouping.df <- dist_usvi_metab_grouping_log2.df %>%
+  dplyr::group_by(site, grouping, sampling_time) %>%
+  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
+  dplyr::arrange(grouping, site, sampling_time) %>%
+  dplyr::mutate(setome = "metabolome") %>%
+  bind_rows(., dist_usvi_asv_grouping.df %>%
+              dplyr::group_by(site, grouping, sampling_time) %>%
+              dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
+              dplyr::arrange(grouping, site, sampling_time) %>%
+              dplyr::mutate(setome = "microbiome"))
+
+readr::write_delim(dist_usvi_mean_betadisp_grouping.df, paste0(projectpath, "/", "dist_usvi_mean_betadisp_grouping.df-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+readr::write_delim(dist_usvi_betadisp_grouping.df, paste0(projectpath, "/", "dist_usvi_betadisp_grouping.df-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
 
 
 # Plot "final" figure of NMDSes -------------------------------------------

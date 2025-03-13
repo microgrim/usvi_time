@@ -109,6 +109,7 @@ F_ttest_gn <- function(dataset, variable, f){
     t() %>%
     as.data.frame() %>%
     setNames(., c("pair1", "pair2")) %>%
+    dplyr::mutate(contrast = paste0(pair1, ":", pair2)) %>%
     dplyr::mutate(p.value = NA)
   for(i in seq_len(nrow(ttest_res))){
     var1 <- ttest_res[i, 1]
@@ -125,6 +126,52 @@ F_ttest_gn <- function(dataset, variable, f){
   }
   
   #list the resulting p-values from t-testing LB vs Yawzi, LB vs Tektite, and Yawzi vs Tektite
+  # ttest_res %>% dplyr::select(p.value) %>% tibble::deframe(.)
+  ttest_res %>% dplyr::select(contrast, p.value) %>% tibble::deframe(.)
+}
+
+F_ttest_rn <- function(dataset, mle){
+  #mle is a required component for the ran.gen argument in boot::boot
+  #but know that it is functionally equivalent to "resample_depth" calculated in F_ttest_gn
+  #dataset is agrouped dataset, by "variable", so that you correctly resample
+  resample_depth <- mle
+  
+  out <- dataset %>%
+    dplyr::slice_sample(., n = resample_depth) %>%
+    droplevels
+  out
+}
+
+
+
+F_ttest_para <- function(dataset, variable){ 
+  #this version is for parametric simulation using resampling and correctly reports the full sampleset p-value
+  #d is a dataframe containing all the measurements by site
+  #variable is your factor you want to examine pairwise the levels
+  variable <- rlang::parse_expr(variable)
+  temp_vars <- unique(dataset[[variable]])
+  
+  ttest_res <- combn(temp_vars, 2) %>%
+    t() %>%
+    as.data.frame() %>%
+    setNames(., c("pair1", "pair2")) %>%
+    dplyr::mutate(p.value = NA)
+  for(i in seq_len(nrow(ttest_res))){
+    var1 <- ttest_res[i, 1]
+    var2 <- ttest_res[i, 2]
+    temp_i_a <- dataset %>%
+      dplyr::ungroup(.) %>%
+      dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
+      dplyr::select(dissimilarity) %>%
+      tibble::deframe(.)
+    temp_i_b <- dataset %>%
+      dplyr::ungroup(.) %>%
+      dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
+      dplyr::select(dissimilarity) %>%
+      tibble::deframe(.)
+    ttest_res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
+  }
+  
   ttest_res %>% dplyr::select(p.value) %>% tibble::deframe(.)
 }
 
@@ -601,10 +648,30 @@ usvi_light_temp_metadata.df <- bind_rows(
 
 #look at specifically 5-7am and 12-2pm
 
+interval <- lubridate::as.interval(duration(hours = 1), ymd_hms("2021-01-21 13:00:00", tz = "America/Virgin")) 
+interval_vector_peak <- list(interval,
+                             lubridate::int_shift(interval, days(1)),
+                             lubridate::int_shift(interval, days(2)),
+                             lubridate::int_shift(interval, days(3)),
+                             lubridate::int_shift(interval, days(4)),
+                             lubridate::int_shift(interval, days(5)))
+
+interval <- lubridate::as.interval(duration(hours = 1), ymd_hms("2021-01-21 06:00:00", tz = "America/Virgin")) 
+interval_vector_dawn <- list(interval,
+                             lubridate::int_shift(interval, days(1)),
+                             lubridate::int_shift(interval, days(2)),
+                             lubridate::int_shift(interval, days(3)),
+                             lubridate::int_shift(interval, days(4)),
+                             lubridate::int_shift(interval, days(5)))
+
+
 usvi_hobo_light_temp_sampling.df <- usvi_hobo_light_temp_filtered.df %>%
   dplyr::filter(grepl("temp|PAR", parameter)) %>%
   tidyr::drop_na(sampling_time) %>%
-  # dplyr::group_by(site, day, sampling_time, parameter) %>%
+  dplyr::mutate(sampled_sw = dplyr::case_when(date_ast %within% interval_vector_peak ~ 1,
+                                                 date_ast %within% interval_vector_dawn ~ 1,
+                                                 .default = NA)) %>%
+  dplyr::mutate(sampled_sw = sampled_sw*min(value,na.rm = TRUE), .by = parameter) %>%
   droplevels
 
 g1_par <- print(
@@ -615,6 +682,10 @@ g1_par <- print(
   + geom_point(data = usvi_hobo_light_temp_sampling.df %>%
                  dplyr::filter(grepl("PAR", parameter)),
                aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)), shape = 19, size = 1)
+  + geom_crossbar(data = usvi_hobo_light_temp_sampling.df %>%
+                     dplyr::filter(grepl("PAR", parameter)) %>%
+                     tidyr::drop_na(sampled_sw),
+                   aes(xmin= date_ast, xmax = date_ast, y = sampled_sw, group = interaction(day, site, parameter, sampling_time)), color = "black", linewidth = 1, alpha = 1) 
   + theme_bw()
   + facet_grid(site~., labeller = labeller(site = site_lookup),
                scales = "free_y")
@@ -868,8 +939,8 @@ dist_usvi_asv_log2.mat <- as.matrix(dist_usvi_asv_log2.d)
     dplyr::mutate(perc_variation = sq_root/(sum(sq_root, na.rm = TRUE))*100)
 }
 
-#SS(total) for microbiomes: 1.239223
-(1/nrow(dist_usvi_asv.mat))*(sum((dist_usvi_asv.mat[lower.tri(dist_usvi_asv.mat, diag = FALSE)])^2))
+# #SS(total) for microbiomes: 1.239223
+# (1/nrow(dist_usvi_asv.mat))*(sum((dist_usvi_asv.mat[lower.tri(dist_usvi_asv.mat, diag = FALSE)])^2))
 
 #per-site Sum of Squares
 dist_usvi_asv.ss <- meta.microb %>%
@@ -891,6 +962,7 @@ dist_usvi_asv.ss <- meta.microb %>%
 #site:sampling_time
 #site:sampling_day
 #site:sampling_time:sampling_day
+
 
 
 #do samplign day before ssite:
@@ -1115,8 +1187,12 @@ with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutatio
 
 # Calculate estimates of variation ----------------------------------------
 
-
-
+if(any(grepl("sites-", list.files(projectpath, pattern = "usvi_permanova_.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_permanova_sites.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+} else {
+ 
 permanova_asv_estimate_variation.df <- with(meta.microb, vegan::adonis2(data = meta.microb, method = "horn", permutations = 9999,
                                              # strata = site,
                                              formula = dist_usvi_asv.d ~ sampling_time + sampling_day + site + (sampling_day:site)/sampling_time,
@@ -1166,7 +1242,8 @@ dist_usvi_asv.df <- meta.microb %>%
   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "site")
+  bind_rows(., .id = "site") %>%
+  dplyr::group_by(site)
 
   
 dist_usvi_asv.df %>%
@@ -1185,39 +1262,12 @@ dist_usvi_asv.df %>%
 # 2 Tektite       0.0807  0.00273    0.423             0.190           0.00645             0.997
 # 3 Yawzi         0.0634  0.00258    0.376             0.149           0.00607             0.886
 
+# 
+# dist_usvi_asv.df %>%
+#   dplyr::group_by(site) %>%
+#   TukeyHSD(.)
 
-dist_usvi_asv.df %>%
-  dplyr::group_by(site) %>%
-  TukeyHSD(.)
-
-#is it different with log-transformed?
-
-meta.microb %>%
-  split(., f = .$site) %>%
-  map(., ~.x %>%
-        tibble::rownames_to_column(var = "sample_id") %>%
-        dplyr::select(sample_id) %>%
-        tibble::deframe(.)) %>%
-  map(., ~dist_usvi_asv_log2.mat[.x, .x])  %>%
-  map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
-  map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "site") %>%
-  dplyr::group_by(site) %>%
-  dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE))
-# site        avg_dist
-# <chr>          <dbl>
-#   1 LB_seagrass   0.119 
-# 2 Tektite       0.0600
-# 3 Yawzi         0.0390
-
-#what about if we used bray-curtis instead of MH?
-#still LB is higher than Tektite and higher than Yawzi
-
-# dist_usvi_asv_bc.mat <- usvi_sw_asv.tbl %>% 
-#   dplyr::select(rownames(meta.microb)) %>%
-#   t() %>%
-#   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>%
-#   as.matrix(.)
+# #is it different with log-transformed?
 # 
 # meta.microb %>%
 #   split(., f = .$site) %>%
@@ -1225,7 +1275,7 @@ meta.microb %>%
 #         tibble::rownames_to_column(var = "sample_id") %>%
 #         dplyr::select(sample_id) %>%
 #         tibble::deframe(.)) %>%
-#   map(., ~dist_usvi_asv_bc.mat[.x, .x])  %>%
+#   map(., ~dist_usvi_asv_log2.mat[.x, .x])  %>%
 #   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
 #   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
 #   bind_rows(., .id = "site") %>%
@@ -1233,63 +1283,66 @@ meta.microb %>%
 #   dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE))
 # # site        avg_dist
 # # <chr>          <dbl>
-# #   1 LB_seagrass    0.311
-# # 2 Tektite        0.205
-# # 3 Yawzi          0.182
+# #   1 LB_seagrass   0.119 
+# # 2 Tektite       0.0600
+# # 3 Yawzi         0.0390
+
+#what about if we used bray-curtis instead of MH?
+#still LB is higher than Tektite and higher than Yawzi
 
 
 #approach 1: Kruskal-Wallis testing
 {
-  #Tektite vs Yawzi:
-  dist_usvi_asv.df %>%
-    dplyr::filter(!grepl("LB", site)) %>%
-    kruskal.test(dissimilarity ~ site, .)
-  # Kruskal-Wallis rank sum test
+  # #Tektite vs Yawzi:
+  # dist_usvi_asv.df %>%
+  #   dplyr::filter(!grepl("LB", site)) %>%
+  #   kruskal.test(dissimilarity ~ site, .)
+  # # Kruskal-Wallis rank sum test
+  # # 
+  # # data:  dissimilarity by site
+  # # Kruskal-Wallis chi-squared = 10.624, df = 1, p-value = 0.001116
   # 
-  # data:  dissimilarity by site
-  # Kruskal-Wallis chi-squared = 10.624, df = 1, p-value = 0.001116
-  
-  #Yawzi vs LB:
-  dist_usvi_asv.df %>%
-    dplyr::filter(!grepl("Tektite", site)) %>%
-    kruskal.test(dissimilarity ~ site, .)
-  # Kruskal-Wallis rank sum test
+  # #Yawzi vs LB:
+  # dist_usvi_asv.df %>%
+  #   dplyr::filter(!grepl("Tektite", site)) %>%
+  #   kruskal.test(dissimilarity ~ site, .)
+  # # Kruskal-Wallis rank sum test
+  # # 
+  # # data:  dissimilarity by site
+  # # Kruskal-Wallis chi-squared = 94.392, df = 1, p-value < 2.2e-16
   # 
-  # data:  dissimilarity by site
-  # Kruskal-Wallis chi-squared = 94.392, df = 1, p-value < 2.2e-16
-  
-  #Tektite vs LB:
-  dist_usvi_asv.df %>%
-    dplyr::filter(!grepl("Yawzi", site)) %>%
-    kruskal.test(dissimilarity ~ site, .)
-  # Kruskal-Wallis rank sum test
+  # #Tektite vs LB:
+  # dist_usvi_asv.df %>%
+  #   dplyr::filter(!grepl("Yawzi", site)) %>%
+  #   kruskal.test(dissimilarity ~ site, .)
+  # # Kruskal-Wallis rank sum test
+  # # 
+  # # data:  dissimilarity by site
+  # # Kruskal-Wallis chi-squared = 48.111, df = 1, p-value = 4.028e-12
   # 
-  # data:  dissimilarity by site
-  # Kruskal-Wallis chi-squared = 48.111, df = 1, p-value = 4.028e-12
-  
-  #all 3:
-  dist_usvi_asv.df %>%
-    kruskal.test(dissimilarity ~ site, .)
-  # Kruskal-Wallis rank sum test
+  # #all 3:
+  # dist_usvi_asv.df %>%
+  #   kruskal.test(dissimilarity ~ site, .)
+  # # Kruskal-Wallis rank sum test
+  # # 
+  # # data:  dissimilarity by site
+  # # Kruskal-Wallis chi-squared = 100.96, df = 2, p-value < 2.2e-16
   # 
-  # data:  dissimilarity by site
-  # Kruskal-Wallis chi-squared = 100.96, df = 2, p-value < 2.2e-16
-  
-  
-  #which is identical to:
-  
-  # temp_list <- meta.microb %>%
-  #   split(., f = .$site) %>%
-  #   map(., ~.x %>%
-  #         tibble::rownames_to_column(var = "sample_id") %>%
-  #         dplyr::select(sample_id) %>%
-  #         tibble::deframe(.)) %>%
-  #   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
-  #   map(., ~.x[lower.tri(.x, diag = FALSE)])
   # 
-  # kruskal.test(temp_list)
-  #Kruskal-Wallis chi-squared = 167.83, df = 2, p-value < 2.2e-16
+  # #which is identical to:
   # 
+  # # temp_list <- meta.microb %>%
+  # #   split(., f = .$site) %>%
+  # #   map(., ~.x %>%
+  # #         tibble::rownames_to_column(var = "sample_id") %>%
+  # #         dplyr::select(sample_id) %>%
+  # #         tibble::deframe(.)) %>%
+  # #   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
+  # #   map(., ~.x[lower.tri(.x, diag = FALSE)])
+  # # 
+  # # kruskal.test(temp_list)
+  # #Kruskal-Wallis chi-squared = 167.83, df = 2, p-value < 2.2e-16
+  # # 
   }
 
 
@@ -1488,15 +1541,23 @@ kruskal.test(temp_list)
 
 
 #testing it:
-# F_ttest_gn(dataset=dist_usvi_asv.df, variable = "site")
 
-dist_usvi_asv_sites.boot <- boot::boot(dist_usvi_asv.df, F_ttest_gn, variable = "site", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+set.seed(48105)
+# dist_usvi_asv_sites.boot <- boot::boot(dist_usvi_asv.df, F_ttest_gn, variable = "site", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
 
-(dist_usvi_asv_sites.boot$t %>%
-    as.data.frame() %>%
-    dplyr::reframe(across(everything(), quantile, probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE, type = 7)))
-    
-    # dplyr::reframe(across(everything(), quantile, probs = 0.10, na.rm = TRUE, names = FALSE, type = 7)) %>% t())
+resample_depth <- dist_usvi_asv.df %>%
+    split(., f = .$site) %>%
+    map(., ~round(nrow(.x)/10)) %>%
+    purrr::reduce(mean)
+dist_usvi_asv_sites.boot <- boot::boot(dist_usvi_asv.df, F_ttest_para, variable = "site", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
+
+
+
+# (dist_usvi_asv_sites.boot$t %>%
+#     as.data.frame() %>%
+#     dplyr::reframe(across(everything(), \(x) quantile(x, probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE, type = 7))))
+#     
+#     # dplyr::reframe(across(everything(), quantile, probs = 0.10, na.rm = TRUE, names = FALSE, type = 7)) %>% t())
 
 #for reference: 
 # q_value <- 0.10
@@ -1505,7 +1566,8 @@ dist_usvi_asv_sites.boot.summary.df <- unique(dist_usvi_asv.df[["site"]]) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_asv_sites.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_asv_sites.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value appears to be random based on repeating this bootstrpaping procedure.
+  # bind_cols(., tibble::enframe(dist_usvi_asv_sites.boot$t0, name = NULL, value = "p.value")) %>%
   bind_cols(., data.frame("q05" = (dist_usvi_asv_sites.boot$t %>%
                                  as.data.frame() %>%
                                  dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -1514,12 +1576,7 @@ dist_usvi_asv_sites.boot.summary.df <- unique(dist_usvi_asv.df[["site"]]) %>%
                                          as.data.frame() %>%
                                          dplyr::reframe(across(everything(), quantile, probs = 0.10, na.rm = TRUE, names = FALSE, type = 7)) %>%
                                          t())))
-
-# dist_usvi_asv_sites.boot$t0[1] #0.01252829
-# dist_usvi_asv_sites.boot$t0[2] #0.0004707492
-# dist_usvi_asv_sites.boot$t0[3] #0.8469945
-# 
-
+# hist(dist_usvi_asv_sites.boot$t[,1])
 
 #older method, not generalized to any variable:
 {
@@ -1569,10 +1626,15 @@ dist_usvi_asv_sites.boot.summary.df <- unique(dist_usvi_asv.df[["site"]]) %>%
 }
 
 
-
-
-
-# Test the metabolomes in PERMANOVA ---------------------------------------
+t.test(dist_usvi_asv.df %>%
+         dplyr::filter(grepl("Yawzi", site)) %>%
+         dplyr::select(dissimilarity) %>%
+         tibble::deframe(.),
+       dist_usvi_asv.df %>%
+         dplyr::filter(grepl("Tektite", site)) %>%
+         dplyr::select(dissimilarity) %>%
+         tibble::deframe(.),
+       conf.level = 0.95)
 
 
 #reepat for the metabolomes:
@@ -1653,7 +1715,8 @@ dist_usvi_metab.df <- meta.metab %>%
   map(., ~dist_usvi_metab.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "site")
+  bind_rows(., .id = "site") %>%
+  dplyr::group_by(site)
 dist_usvi_metab.df %>%
   dplyr::group_by(site) %>%
   # dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE),
@@ -1669,53 +1732,66 @@ dist_usvi_metab.df %>%
 # 2 Tektite        0.251   0.0294    0.605             0.414            0.0485             1    
 # 3 Yawzi          0.203   0.0350    0.529             0.335            0.0577             0.873
 
-#Tektite vs Yawzi:
-dist_usvi_metab.df %>%
-  dplyr::filter(!grepl("LB", site)) %>%
-  kruskal.test(dissimilarity ~ site, .)
+# dist_usvi_metab.df %>%
+#   dplyr::group_by(site) %>%
+#   dplyr::summarise(min_dist = min(dissimilarity, na.rm = TRUE),
+#                    max_dist = max(dissimilarity, na.rm = TRUE)) %>%
+#   tidyr::pivot_longer(., cols = contains("dist"),
+#                       names_to = "metric",
+#                       values_to = "dist") %>%
+#   dplyr::mutate(dist = dplyr::case_when(grepl("min", metric) ~ -(dist),
+#                                             .default = dist)) %>%
+#   dplyr::group_by(site) %>%
+#   dplyr::summarise(delta_beta = sum(dist, na.rm = TRUE)) %>%
+#   droplevels
 
-# data:  dissimilarity by site
-# Kruskal-Wallis chi-squared = 24.227, df = 1, p-value = 8.563e-07
-
-#Yawzi vs LB:
-dist_usvi_metab.df %>%
-  dplyr::filter(!grepl("Tektite", site)) %>%
-  kruskal.test(dissimilarity ~ site, .)
-# Kruskal-Wallis chi-squared = 24.928, df = 1, p-value = 5.952e-07
-
-#Tektite vs LB:
-dist_usvi_metab.df %>%
-  dplyr::filter(!grepl("Yawzi", site)) %>%
-  kruskal.test(dissimilarity ~ site, .)
-# Kruskal-Wallis chi-squared = 123.09, df = 1, p-value < 2.2e-16
-
-#all 3:
-dist_usvi_metab.df %>%
-  kruskal.test(dissimilarity ~ site, .)
-# data:  dissimilarity by site
-# Kruskal-Wallis chi-squared = 112.63, df = 2, p-value < 2.2e-16
-
-
-pairwise.t.test((dist_usvi_metab.df %>%
-                   split(., f = .$site) %>%
-                   map(., ~.x %>%
-                         dplyr::select(dissimilarity) %>%
-                         tibble::deframe(.)) %>%
-                   purrr::reduce(c)),
-                (dist_usvi_metab.df %>%
-                   split(., f = .$site) %>%
-                   map(., ~.x %>%
-                         dplyr::select(site) %>%
-                         tibble::deframe(.)) %>%
-                   purrr::reduce(c)),
-                pool.sd = FALSE, paired = FALSE, alternative = "two.sided",
-                p.adjust.method = "BH")
-
-# LB_seagrass Tektite
-# Tektite < 2e-16     -      
-#   Yawzi   2.0e-14     8.6e-07
+# #Tektite vs Yawzi:
+# dist_usvi_metab.df %>%
+#   dplyr::filter(!grepl("LB", site)) %>%
+#   kruskal.test(dissimilarity ~ site, .)
 # 
-# P value adjustment method: BH 
+# # data:  dissimilarity by site
+# # Kruskal-Wallis chi-squared = 24.227, df = 1, p-value = 8.563e-07
+# 
+# #Yawzi vs LB:
+# dist_usvi_metab.df %>%
+#   dplyr::filter(!grepl("Tektite", site)) %>%
+#   kruskal.test(dissimilarity ~ site, .)
+# # Kruskal-Wallis chi-squared = 24.928, df = 1, p-value = 5.952e-07
+# 
+# #Tektite vs LB:
+# dist_usvi_metab.df %>%
+#   dplyr::filter(!grepl("Yawzi", site)) %>%
+#   kruskal.test(dissimilarity ~ site, .)
+# # Kruskal-Wallis chi-squared = 123.09, df = 1, p-value < 2.2e-16
+# 
+# #all 3:
+# dist_usvi_metab.df %>%
+#   kruskal.test(dissimilarity ~ site, .)
+# # data:  dissimilarity by site
+# # Kruskal-Wallis chi-squared = 112.63, df = 2, p-value < 2.2e-16
+# 
+# 
+# pairwise.t.test((dist_usvi_metab.df %>%
+#                    split(., f = .$site) %>%
+#                    map(., ~.x %>%
+#                          dplyr::select(dissimilarity) %>%
+#                          tibble::deframe(.)) %>%
+#                    purrr::reduce(c)),
+#                 (dist_usvi_metab.df %>%
+#                    split(., f = .$site) %>%
+#                    map(., ~.x %>%
+#                          dplyr::select(site) %>%
+#                          tibble::deframe(.)) %>%
+#                    purrr::reduce(c)),
+#                 pool.sd = FALSE, paired = FALSE, alternative = "two.sided",
+#                 p.adjust.method = "BH")
+# 
+# # LB_seagrass Tektite
+# # Tektite < 2e-16     -      
+# #   Yawzi   2.0e-14     8.6e-07
+# # 
+# # P value adjustment method: BH 
 
 
 #old method:
@@ -1796,8 +1872,65 @@ pairwise.t.test((dist_usvi_metab.df %>%
   }
 }
 
+set.seed(48105)
+#try with strata?
+# temp_df <- dist_usvi_metab.df %>%
+#   # dplyr::mutate(series = as.character(site)) %>%
+#   dplyr::mutate(series = dplyr::case_when(site == "LB_seagrass" ~ 1,
+#                                           site == "Yawzi" ~ 2,
+#                                           site == "Tektite" ~ 3)) %>%
+# dplyr::group_by(site)
+# 
+# temp.boot <- boot::boot(temp_df, F_ttest_gn, variable = "site", 
+#                         strata = temp_df[["series"]], 
+#                         sim = "permutation",
+#                         R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+# # hist(temp.boot$t[,1], breaks = c(0, 0.01, 0.05, 0.1, 0.25, 0.5, 1))
+# # hist(temp.boot$t[,2], breaks = c(0, 0.01, 0.05, 0.1, 0.25, 0.5, 1))
+# # hist(temp.boot$t[,3], breaks = c(0, 0.01, 0.05, 0.1, 0.25, 0.5, 1))
+# 
+# temp.boot.summary.df <- unique(dist_usvi_metab.df[["site"]]) %>%
+#   combn(., 2) %>%
+#   t() %>%
+#   as.data.frame() %>%
+#   setNames(., c("pair1", "pair2")) %>%
+#   bind_cols(., tibble::enframe(temp.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value appears to be random based on repeating this bootstrpaping procedure.
+#   # bind_cols(., tibble::enframe(dist_usvi_metab_sites.boot$t0, name = NULL, value = "p.value")) %>%
+#   # bind_cols(., data.frame("q.value" = (dist_usvi_metab_sites.boot$t %>%
+#   #                                        setNames(., c("V1", "V2", "V3")) %>%
+#   #                                        as.data.frame() %>%
+#   #                                        dplyr::reframe(across(everything(), quantile, probs = q_value, na.rm = TRUE, names = FALSE, type = 7)) %>%
+#   #                                        t())))
+#   bind_cols(., data.frame("q05" = (temp.boot$t %>%
+#                                      as.data.frame() %>%
+#                                      dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
+#                                      t()))) %>%
+#   bind_cols(., data.frame("q10" = (temp.boot$t %>%
+#                                      as.data.frame() %>%
+#                                      dplyr::reframe(across(everything(), quantile, probs = 0.10, na.rm = TRUE, names = FALSE, type = 7)) %>%
+#                                      t())))
 
-dist_usvi_metab_sites.boot <- boot::boot(dist_usvi_metab.df, F_ttest_gn, variable = "site", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+# 
+# temp_df %>%
+#   # dplyr::group_by({variable2}) %>%
+#   dplyr::slice_sample(., n = 25) %>%
+#   droplevels
+
+# #know that mle = resample_depth
+# temp.boot <- boot::boot(temp_df, F_ttest_para, variable = "site", 
+#                        R = 999, sim = "parametric", 
+#                        # strata = temp_df[["series"]], 
+#                        ran.gen = F_ttest_rn, mle = 25)
+
+
+# dist_usvi_metab_sites.boot <- boot::boot(dist_usvi_metab.df, F_ttest_gn, variable = "site", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+resample_depth <- dist_usvi_metab.df %>%
+  split(., f = .$site) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_metab_sites.boot <- boot::boot(dist_usvi_metab.df, F_ttest_para, variable = "site", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
+
+
 
 #for reference: 
 q_value <- 0.10
@@ -1806,7 +1939,8 @@ dist_usvi_metab_sites.boot.summary.df <- unique(dist_usvi_metab.df[["site"]]) %>
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_metab_sites.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_metab_sites.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value appears to be random based on repeating this bootstrpaping procedure.
+  # bind_cols(., tibble::enframe(dist_usvi_metab_sites.boot$t0, name = NULL, value = "p.value")) %>%
   # bind_cols(., data.frame("q.value" = (dist_usvi_metab_sites.boot$t %>%
   #                                        setNames(., c("V1", "V2", "V3")) %>%
   #                                        as.data.frame() %>%
@@ -1821,8 +1955,9 @@ bind_cols(., data.frame("q05" = (dist_usvi_metab_sites.boot$t %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.10, na.rm = TRUE, names = FALSE, type = 7)) %>%
                                      t())))
 
-
-
+# hist(dist_usvi_metab_sites.boot$t[,1], breaks = c(0, 0.01, 0.05, 0.1, 0.25, 0.5, 1))
+# hist(dist_usvi_metab_sites.boot$t[,2], breaks = c(0, 0.01, 0.05, 0.1, 0.25, 0.5, 1))
+# hist(dist_usvi_metab_sites.boot$t[,3], breaks = c(0, 0.01, 0.05, 0.1, 0.25, 0.5, 1))
 
 
 t.test(dist_usvi_metab.df %>%
@@ -1877,46 +2012,67 @@ t.test(dist_usvi_metab.df %>%
 
 #Summarizing intra-site distances via pariwise t-tests:
 
-
-length_v <- c("LB_seagrass", "Tektite", "Yawzi")
+length_v <- unique(dist_usvi_metab.df[["site"]]) %>% as.character(.)
+# length_v <- c("LB_seagrass", "Tektite", "Yawzi")
 ttest_res <- combn(length_v, 2) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  # dplyr::mutate(p.value = NA) %>%
-  dplyr::mutate(t = NA)
+  dplyr::mutate(t = NA)  %>%
+  dplyr::mutate(p.value = NA)
 ttest_usvi_metab_sites.res <- ttest_res
 ttest_usvi_asv_sites.res <- ttest_res
 for(i in seq_len(nrow(ttest_res))){
   var1 <- ttest_res[i, 1]
   var2 <- ttest_res[i, 2]
   temp_i_a <- dist_usvi_metab.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_b <- dist_usvi_metab.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_metab_sites.res[i, "t"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$statistic
-  # ttest_usvi_metab_sites.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
+  ttest_usvi_metab_sites.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
   
   temp_i_c <- dist_usvi_asv.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_d <- dist_usvi_asv.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_asv_sites.res[i, "t"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$statistic
-  # ttest_usvi_asv_sites.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
+  ttest_usvi_asv_sites.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
 }
 
 ttest_usvi_metab_sites.res <- ttest_usvi_metab_sites.res %>%
-  dplyr::left_join(., dist_usvi_metab_sites.boot.summary.df)
+  dplyr::left_join(., dist_usvi_metab_sites.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 ttest_usvi_asv_sites.res <- ttest_usvi_asv_sites.res %>%
-  dplyr::left_join(., dist_usvi_asv_sites.boot.summary.df)
+  dplyr::left_join(., dist_usvi_asv_sites.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
+
+readr::write_delim(ttest_usvi_metab_sites.res, paste0(projectpath, "/", "permanova_ttest_usvi_metab_sites.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+readr::write_delim(ttest_usvi_asv_sites.res, paste0(projectpath, "/", "permanova_ttest_usvi_asv_sites.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+
+save(dist_usvi_metab_sites.boot, dist_usvi_metab_sites.boot.summary.df, 
+     permanova_metab_estimate_variation.df, meta.metab, dist_usvi_metab.df,
+     dist_usvi_asv_sites.boot, dist_usvi_asv_sites.boot.summary.df, 
+     permanova_asv_estimate_variation.df, meta.microb, dist_usvi_asv.df,
+     ttest_usvi_metab_sites.res, ttest_usvi_asv_sites.res,
+     file = paste0(projectpath, "/", "usvi_permanova_sites-", Sys.Date(), ".RData"))
+
+}
+
 
 # Look at within-site within-sampling time --------------------------------
 
@@ -1956,6 +2112,12 @@ meta.metab %>%
 # 2 peak_photo       0.250
 
 
+if(any(grepl("time-", list.files(projectpath, pattern = "usvi_permanova_.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_permanova_time.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+} else {
+  
 #bootstrap and save the results for 'dawn' vs 'aftenroon":
 dist_usvi_metab_time.df <- meta.metab %>%
   split(., f = .$sampling_time) %>%
@@ -1966,21 +2128,40 @@ dist_usvi_metab_time.df <- meta.metab %>%
   map(., ~dist_usvi_metab.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "sampling_time")
+  bind_rows(., .id = "sampling_time") %>%
+  dplyr::group_by(sampling_time)
 
-dist_usvi_metab_time.boot <- boot::boot(dist_usvi_metab_time.df, F_ttest_gn, variable = "sampling_time", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+t.test(dist_usvi_metab_time.df %>%
+         dplyr::filter(grepl("dawn", sampling_time)) %>%
+         dplyr::select(dissimilarity) %>%
+         tibble::deframe(.),
+       dist_usvi_metab_time.df %>%
+         dplyr::filter(grepl("peak", sampling_time)) %>%
+         dplyr::select(dissimilarity) %>%
+         tibble::deframe(.),
+       conf.level = 0.95)
 
+# dist_usvi_metab_time.boot <- boot::boot(dist_usvi_metab_time.df, F_ttest_gn, variable = "sampling_time", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+resample_depth <- dist_usvi_metab_time.df %>%
+  split(., f = .$sampling_time) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_metab_time.boot <- boot::boot(dist_usvi_metab_time.df, F_ttest_para, variable = "sampling_time", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
+
+
+hist(dist_usvi_metab_time.boot$t[,1])
 # q_value <- 0.10
 dist_usvi_metab_time.boot.summary.df <- unique(dist_usvi_metab_time.df[["sampling_time"]]) %>%
   combn(., 2) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_metab_time.boot$t0, name = NULL, value = "p.value")) %>%
+  # bind_cols(., tibble::enframe(dist_usvi_metab_time.boot$t0, name = NULL, value = "p.value")) %>%
   # bind_cols(., data.frame("q.value" = (dist_usvi_metab_time.boot$t %>%
   #                                        as.data.frame() %>%
   #                                        dplyr::reframe(across(everything(), quantile, probs = q_value, na.rm = TRUE, names = FALSE, type = 7)) %>%
   #                                        t())))
+  bind_cols(., tibble::enframe(dist_usvi_metab_time.boot$t0, name = NULL, value = "boot.p.value")) %>%
   bind_cols(., data.frame("q05" = (dist_usvi_metab_time.boot$t %>%
                                      as.data.frame() %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -1998,9 +2179,19 @@ dist_usvi_asv_time.df <- meta.microb %>%
   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "sampling_time")
+  bind_rows(., .id = "sampling_time") %>%
+  dplyr::group_by(sampling_time)
 
-dist_usvi_asv_time.boot <- boot::boot(dist_usvi_asv_time.df, F_ttest_gn, variable = "sampling_time", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+
+# dist_usvi_asv_time.boot <- boot::boot(dist_usvi_asv_time.df, F_ttest_gn, variable = "sampling_time", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+resample_depth <- dist_usvi_asv_time.df %>%
+  split(., f = .$sampling_time) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_asv_time.boot <- boot::boot(dist_usvi_asv_time.df, F_ttest_para, variable = "sampling_time", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
+
+
+hist(dist_usvi_asv_time.boot$t[,1])
 
 # q_value <- 0.10
 dist_usvi_asv_time.boot.summary.df <- unique(dist_usvi_asv_time.df[["sampling_time"]]) %>%
@@ -2008,7 +2199,8 @@ dist_usvi_asv_time.boot.summary.df <- unique(dist_usvi_asv_time.df[["sampling_ti
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_asv_time.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_asv_time.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value appears to be random based on repeating this bootstrpaping procedure.
+  # bind_cols(., tibble::enframe(dist_usvi_asv_time.boot$t0, name = NULL, value = "p.value")) %>%
   # bind_cols(., data.frame("q.value" = (dist_usvi_asv_time.boot$t %>%
   #                                        as.data.frame() %>%
   #                                        dplyr::reframe(across(everything(), quantile, probs = q_value, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -2027,47 +2219,72 @@ ttest_res <- combn(length_v, 2) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  dplyr::mutate(t = NA)
+  dplyr::mutate(t = NA) %>%
+  dplyr::mutate(`p.value` = NA)
 ttest_usvi_metab_time.res <- ttest_res
 ttest_usvi_asv_time.res <- ttest_res
 for(i in seq_len(nrow(ttest_res))){
   var1 <- ttest_res[i, 1]
   var2 <- ttest_res[i, 2]
   temp_i_a <- dist_usvi_metab_time.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_b <- dist_usvi_metab_time.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_metab_time.res[i, "t"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$statistic
-  
+  ttest_usvi_metab_time.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
   
   temp_i_c <- dist_usvi_asv_time.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_d <- dist_usvi_asv_time.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_asv_time.res[i, "t"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$statistic
-  
+  ttest_usvi_asv_time.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
 }
 
 ttest_usvi_metab_time.res <- ttest_usvi_metab_time.res %>%
-  dplyr::left_join(., dist_usvi_metab_time.boot.summary.df)
+  dplyr::left_join(., dist_usvi_metab_time.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 ttest_usvi_asv_time.res <- ttest_usvi_asv_time.res %>%
-  dplyr::left_join(., dist_usvi_asv_time.boot.summary.df)
+  dplyr::left_join(., dist_usvi_asv_time.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 
 ttest_usvi_metab_time.res
 
 ttest_usvi_asv_time.res
 
+readr::write_delim(ttest_usvi_metab_time.res, paste0(projectpath, "/", "permanova_ttest_usvi_metab_time.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+readr::write_delim(ttest_usvi_asv_time.res, paste0(projectpath, "/", "permanova_ttest_usvi_asv_time.res-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+
+
+
+save(dist_usvi_metab_time.boot, dist_usvi_metab_time.boot.summary.df, dist_usvi_metab_time.df,
+     dist_usvi_asv_time.boot, dist_usvi_asv_time.boot.summary.df, dist_usvi_asv_time.df,
+     ttest_usvi_metab_time.res, ttest_usvi_asv_time.res,
+     file = paste0(projectpath, "/", "usvi_permanova_time-", Sys.Date(), ".RData"))
+
+}
 # Site by time ------------------------------------------------------------
 
-
+if(any(grepl("site_time-", list.files(projectpath, pattern = "usvi_permanova_.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_permanova_site_time.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+} else {
+  
 #so look at site x time:
 dist_usvi_asv_grouping.df <- meta.microb %>%
   split(., f = .$grouping) %>%
@@ -2078,7 +2295,8 @@ dist_usvi_asv_grouping.df <- meta.microb %>%
   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "grouping")
+  bind_rows(., .id = "grouping") %>%
+  dplyr::group_by(grouping)
 
 dist_usvi_asv_grouping.df %>%
   dplyr::group_by(grouping) %>%
@@ -2095,9 +2313,32 @@ dist_usvi_asv_grouping.df %>%
 # 5 Yawzi.dawn               0.0749  0.00259    0.278             0.187           0.00646             0.693
 # 6 Yawzi.peak_photo         0.0444  0.00500    0.198             0.111           0.0125              0.493
 
+dist_usvi_asv_grouping.df %>%
+  dplyr::group_by(grouping) %>%
+  dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE)) %>%
+  dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+  dplyr::mutate(across(c(site, time), ~factor(.x))) %>%
+  dplyr::mutate(avg_dist = dplyr::case_when(time == "dawn" ~ -(avg_dist),
+                                            .default = avg_dist)) %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(delta_beta = sum(avg_dist, na.rm = TRUE)) %>%
+  droplevels
+# # A tibble: 3 × 2
+# site        delta_beta
+# <fct>            <dbl>
+#   1 LB_seagrass     0.0645
+# 2 Tektite         0.0149
+# 3 Yawzi          -0.0305
 
+set.seed(48105)
+# dist_usvi_asv_grouping.boot <- boot::boot(dist_usvi_asv_grouping.df, F_ttest_gn, variable = "grouping", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+resample_depth <- dist_usvi_asv_grouping.df %>%
+  split(., f = .$grouping) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_asv_grouping.boot <- boot::boot(dist_usvi_asv_grouping.df, F_ttest_para, variable = "grouping", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
 
-dist_usvi_asv_grouping.boot <- boot::boot(dist_usvi_asv_grouping.df, F_ttest_gn, variable = "grouping", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
 
 # q_value <- 0.10
 dist_usvi_asv_grouping.boot.summary.df <- unique(dist_usvi_asv_grouping.df[["grouping"]]) %>%
@@ -2105,7 +2346,8 @@ dist_usvi_asv_grouping.boot.summary.df <- unique(dist_usvi_asv_grouping.df[["gro
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_asv_grouping.boot$t0, name = NULL, value = "p.value")) %>%
+  # bind_cols(., tibble::enframe(dist_usvi_asv_grouping.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_asv_grouping.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value appears to be random based on repeating this bootstrpaping procedure.
   bind_cols(., data.frame("q05" = (dist_usvi_asv_grouping.boot$t %>%
                                      as.data.frame() %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -2114,7 +2356,6 @@ dist_usvi_asv_grouping.boot.summary.df <- unique(dist_usvi_asv_grouping.df[["gro
                                      as.data.frame() %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.10, na.rm = TRUE, names = FALSE, type = 7)) %>%
                                      t())))
-
 
 dist_usvi_metab_grouping.df <- meta.metab %>%
   split(., f = .$grouping) %>%
@@ -2125,7 +2366,8 @@ dist_usvi_metab_grouping.df <- meta.metab %>%
   map(., ~dist_usvi_metab.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "grouping")
+  bind_rows(., .id = "grouping") %>%
+  dplyr::group_by(grouping)
 
 
 dist_usvi_metab_grouping.df %>%
@@ -2143,9 +2385,30 @@ dist_usvi_metab_grouping.df %>%
 # 5 Yawzi.dawn                0.134   0.0350    0.332             0.230            0.0601             0.571
 # 6 Yawzi.peak_photo          0.259   0.0686    0.529             0.445            0.118              0.909
 
+dist_usvi_metab_grouping.df %>%
+  dplyr::group_by(grouping) %>%
+  dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE)) %>%
+  dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+  dplyr::mutate(across(c(site, time), ~factor(.x))) %>%
+  dplyr::mutate(avg_dist = dplyr::case_when(time == "dawn" ~ -(avg_dist),
+                                            .default = avg_dist)) %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(delta_beta = sum(avg_dist, na.rm = TRUE)) %>%
+  droplevels
+# # A tibble: 3 × 2
+# site        delta_beta
+# <fct>            <dbl>
+#   1 LB_seagrass    0.00551
+# 2 Tektite       -0.0277 
+# 3 Yawzi          0.125  
 
-
-dist_usvi_metab_grouping.boot <- boot::boot(dist_usvi_metab_grouping.df, F_ttest_gn, variable = "grouping", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+set.seed(48105)
+resample_depth <- dist_usvi_metab_grouping.df %>%
+  split(., f = .$grouping) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_metab_grouping.boot <- boot::boot(dist_usvi_metab_grouping.df, F_ttest_para, variable = "grouping", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
 
 # q_value <- 0.10
 dist_usvi_metab_grouping.boot.summary.df <- unique(dist_usvi_metab_grouping.df[["grouping"]]) %>%
@@ -2153,7 +2416,8 @@ dist_usvi_metab_grouping.boot.summary.df <- unique(dist_usvi_metab_grouping.df[[
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_metab_grouping.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_metab_grouping.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value appears to be random based on repeating this bootstrpaping procedure.
+  # bind_cols(., tibble::enframe(dist_usvi_metab_grouping.boot$t0, name = NULL, value = "p.value")) %>%
   bind_cols(., data.frame("q05" = (dist_usvi_metab_grouping.boot$t %>%
                                      as.data.frame() %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -2168,74 +2432,84 @@ ttest_res <- combn(length_v, 2) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  dplyr::mutate(t = NA)
+  dplyr::mutate(t = NA) %>%
+  dplyr::mutate(p.value = NA)
 ttest_usvi_metab_grouping.res <- ttest_res
 ttest_usvi_asv_grouping.res <- ttest_res
 for(i in seq_len(nrow(ttest_res))){
   var1 <- ttest_res[i, 1]
   var2 <- ttest_res[i, 2]
   temp_i_a <- dist_usvi_metab_grouping.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_b <- dist_usvi_metab_grouping.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_metab_grouping.res[i, "t"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$statistic
-
+  ttest_usvi_metab_grouping.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
   
   temp_i_c <- dist_usvi_asv_grouping.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_d <- dist_usvi_asv_grouping.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   ttest_usvi_asv_grouping.res[i, "t"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$statistic
+  ttest_usvi_asv_grouping.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
   
 }
 
 ttest_usvi_metab_grouping.res <- ttest_usvi_metab_grouping.res %>%
-  dplyr::left_join(., dist_usvi_metab_grouping.boot.summary.df)
+  # dplyr::left_join(., dist_usvi_metab_grouping.boot.summary.df)
+  dplyr::left_join(., dist_usvi_metab_grouping.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 ttest_usvi_asv_grouping.res <- ttest_usvi_asv_grouping.res %>%
-  dplyr::left_join(., dist_usvi_asv_grouping.boot.summary.df)
+  # dplyr::left_join(., dist_usvi_asv_grouping.boot.summary.df)
+  dplyr::left_join(., dist_usvi_asv_grouping.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 
 ttest_usvi_metab_grouping.res
 # pair1                  pair2           t      p.value         q05         q10
-# 1        LB_seagrass.dawn           Tektite.dawn -7.18817569 5.321676e-02 0.002758328 0.006083877
-# 2        LB_seagrass.dawn             Yawzi.dawn -0.47572203 9.686167e-01 0.059214958 0.117838564
-# 3        LB_seagrass.dawn LB_seagrass.peak_photo -0.53043075 4.450320e-01 0.062402979 0.114532315
-# 4        LB_seagrass.dawn     Tektite.peak_photo -7.07125354 4.546985e-01 0.002981541 0.006671974
-# 5        LB_seagrass.dawn       Yawzi.peak_photo -7.61852425 6.256565e-05 0.001666413 0.003803501
-# 6            Tektite.dawn             Yawzi.dawn  6.39916002 5.896709e-03 0.003429367 0.007244320
-# 7            Tektite.dawn LB_seagrass.peak_photo  6.81924084 2.294792e-01 0.002939000 0.006695651
-# 8            Tektite.dawn     Tektite.peak_photo  1.30189416 7.134075e-01 0.053413922 0.100838118
-# 9            Tektite.dawn       Yawzi.peak_photo  0.04674720 6.999404e-01 0.063232660 0.118093116
-# 10             Yawzi.dawn LB_seagrass.peak_photo  0.02861654 8.211875e-01 0.047691199 0.105516094
-# 11             Yawzi.dawn     Tektite.peak_photo -6.00281601 1.464716e-02 0.003917349 0.009198496
-# 12             Yawzi.dawn       Yawzi.peak_photo -6.71707758 6.592589e-01 0.002274322 0.005408756
-# 13 LB_seagrass.peak_photo     Tektite.peak_photo -6.59460114 8.768453e-01 0.003670466 0.008052648
-# 14 LB_seagrass.peak_photo       Yawzi.peak_photo -7.21474369 1.274978e-02 0.001752675 0.004516424
-# 15     Tektite.peak_photo       Yawzi.peak_photo -1.31343777 2.521958e-01 0.049374040 0.099594771
+# 1        LB_seagrass.dawn           Tektite.dawn -7.18817569 5.879049e-02 0.002838329 0.006115816
+# 2        LB_seagrass.dawn             Yawzi.dawn -0.47572203 1.629540e-02 0.059171237 0.114628017
+# 3        LB_seagrass.dawn LB_seagrass.peak_photo -0.53043075 6.372982e-01 0.070538418 0.121354236
+# 4        LB_seagrass.dawn     Tektite.peak_photo -7.07125354 3.284103e-07 0.002657340 0.006489542
+# 5        LB_seagrass.dawn       Yawzi.peak_photo -7.61852425 1.505827e-02 0.001502684 0.003824924
+# 6            Tektite.dawn             Yawzi.dawn  6.39916002 1.423647e-01 0.003158393 0.006926526
+# 7            Tektite.dawn LB_seagrass.peak_photo  6.81924084 7.541640e-01 0.003044016 0.007031463
+# 8            Tektite.dawn     Tektite.peak_photo  1.30189416 9.267313e-01 0.053462899 0.101644100
+# 9            Tektite.dawn       Yawzi.peak_photo  0.04674720 8.979607e-01 0.066708965 0.126135985
+# 10             Yawzi.dawn LB_seagrass.peak_photo  0.02861654 5.370420e-01 0.042630277 0.097260366
+# 11             Yawzi.dawn     Tektite.peak_photo -6.00281601 5.546100e-01 0.003977986 0.008832722
+# 12             Yawzi.dawn       Yawzi.peak_photo -6.71707758 2.745982e-01 0.002222292 0.005185253
+# 13 LB_seagrass.peak_photo     Tektite.peak_photo -6.59460114 6.061675e-02 0.003388207 0.008130165
+# 14 LB_seagrass.peak_photo       Yawzi.peak_photo -7.21474369 4.199997e-01 0.002016677 0.004734910
+# 15     Tektite.peak_photo       Yawzi.peak_photo -1.31343777 9.405063e-01 0.050585101 0.099311294
 ttest_usvi_asv_grouping.res
-# pair1                  pair2            t     p.value          q05         q10
-# 1        LB_seagrass.dawn           Tektite.dawn  1.410729901 0.350471576 0.0384374267 0.080602490
-# 2        LB_seagrass.dawn             Yawzi.dawn  1.391956585 0.934693703 0.0360098006 0.077990147
-# 3        LB_seagrass.dawn LB_seagrass.peak_photo -4.270729785 0.330865247 0.0069950376 0.016259863
-# 4        LB_seagrass.dawn     Tektite.peak_photo  0.137144000 0.223616842 0.0676430542 0.121083301
-# 5        LB_seagrass.dawn       Yawzi.peak_photo  4.945466223 0.292701120 0.0074007070 0.016070732
-# 6            Tektite.dawn             Yawzi.dawn  0.005695843 0.839836345 0.0800386719 0.129575312
-# 7            Tektite.dawn LB_seagrass.peak_photo -5.354195172 0.003468633 0.0028802207 0.007361411
-# 8            Tektite.dawn     Tektite.peak_photo -1.166492963 0.108259189 0.0641803280 0.106624237
-# 9            Tektite.dawn       Yawzi.peak_photo  3.175916699 0.506617325 0.0410686583 0.065203973
-# 10             Yawzi.dawn LB_seagrass.peak_photo -5.301768123 0.232303058 0.0029964669 0.007745069
-# 11             Yawzi.dawn     Tektite.peak_photo -1.154447771 0.949962926 0.0635638932 0.108689922
-# 12             Yawzi.dawn       Yawzi.peak_photo  3.087296629 0.047051687 0.0397269976 0.067310321
-# 13 LB_seagrass.peak_photo     Tektite.peak_photo  4.172437573 0.238754156 0.0053803311 0.013791106
-# 14 LB_seagrass.peak_photo       Yawzi.peak_photo  8.288106126 0.015918016 0.0007158567 0.001808310
-# 15     Tektite.peak_photo       Yawzi.peak_photo  4.238559560 0.385644007 0.0212285301 0.036293287
+# pair1                  pair2            t    p.value          q05         q10
+# 1        LB_seagrass.dawn           Tektite.dawn  1.410729901 0.30252946 0.0391881551 0.079333501
+# 2        LB_seagrass.dawn             Yawzi.dawn  1.391956585 0.94932343 0.0375353927 0.083367831
+# 3        LB_seagrass.dawn LB_seagrass.peak_photo -4.270729785 0.00933399 0.0074522812 0.017894323
+# 4        LB_seagrass.dawn     Tektite.peak_photo  0.137144000 0.57207990 0.0656889120 0.123106245
+# 5        LB_seagrass.dawn       Yawzi.peak_photo  4.945466223 0.05298388 0.0081880989 0.017390905
+# 6            Tektite.dawn             Yawzi.dawn  0.005695843 0.22500250 0.0819694534 0.132361170
+# 7            Tektite.dawn LB_seagrass.peak_photo -5.354195172 0.16193637 0.0029496823 0.007127690
+# 8            Tektite.dawn     Tektite.peak_photo -1.166492963 0.84264153 0.0657565985 0.109702051
+# 9            Tektite.dawn       Yawzi.peak_photo  3.175916699 0.44402908 0.0388328193 0.062521063
+# 10             Yawzi.dawn LB_seagrass.peak_photo -5.301768123 0.12500506 0.0027059068 0.007034590
+# 11             Yawzi.dawn     Tektite.peak_photo -1.154447771 0.16792411 0.0631370396 0.106698918
+# 12             Yawzi.dawn       Yawzi.peak_photo  3.087296629 0.85116696 0.0404019377 0.067588469
+# 13 LB_seagrass.peak_photo     Tektite.peak_photo  4.172437573 0.05602462 0.0060249461 0.013647421
+# 14 LB_seagrass.peak_photo       Yawzi.peak_photo  8.288106126 0.02527052 0.0007432683 0.001861703
+# 15     Tektite.peak_photo       Yawzi.peak_photo  4.238559560 0.36369284 0.0207406480 0.036856611
 
 #in the microbiomes, significant differences between:
 #Yawzi dawn vs afternoon
@@ -2258,9 +2532,22 @@ readr::write_delim(ttest_usvi_metab_grouping.res, paste0(projectpath, "/", "perm
 readr::write_delim(ttest_usvi_asv_grouping.res, paste0(projectpath, "/", "permanova_ttest_usvi_asv_site_time.res-", Sys.Date(), ".tsv"),
                    delim = "\t", col_names = TRUE)
 
+save(dist_usvi_metab_grouping.boot, dist_usvi_metab_grouping.boot.summary.df, dist_usvi_metab_grouping.df,
+     dist_usvi_asv_grouping.boot, dist_usvi_asv_grouping.boot.summary.df, dist_usvi_asv_grouping.df,
+     ttest_usvi_metab_grouping.res, ttest_usvi_asv_grouping.res,
+     file = paste0(projectpath, "/", "usvi_permanova_site_time-", Sys.Date(), ".RData"))
+
+}
 
 # Pairwise t-tests for day and site ---------------------------------------
 
+
+if(any(grepl("site_day-", list.files(projectpath, pattern = "usvi_permanova_.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_permanova_site_day.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+} else {
+  
 #note that day was significant for microbiomes, but not metabolomes:
 
 dist_usvi_day.df <- meta.microb %>%
@@ -2272,7 +2559,8 @@ dist_usvi_day.df <- meta.microb %>%
   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "sampling_day")
+  bind_rows(., .id = "sampling_day") %>%
+  dplyr::group_by(sampling_day)
 dist_usvi_day.df %>% 
   dplyr::group_by(sampling_day) %>%
   dplyr::summarise(avg_dist = mean(dissimilarity, na.rm = TRUE))
@@ -2295,7 +2583,8 @@ dist_usvi_day.df <- dist_usvi_day.df %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
   bind_rows(., .id = "sampling_day") %>%
-    dplyr::mutate(type = "metab")))
+    dplyr::mutate(type = "metab"))) %>%
+  dplyr::group_by(sampling_day)
 
 
 dist_usvi_day.df %>%
@@ -2329,7 +2618,8 @@ dist_usvi_asv_site_day.df <- meta.microb %>%
   map(., ~dist_usvi_asv.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "site_day")
+  bind_rows(., .id = "site_day") %>%
+  dplyr::group_by(site_day)
 
 dist_usvi_asv_site_day.df %>%
   dplyr::group_by(site_day) %>%
@@ -2355,7 +2645,12 @@ dist_usvi_asv_site_day.df %>%
 
 
 
-dist_usvi_asv_site_day.boot <- boot::boot(dist_usvi_asv_site_day.df, F_ttest_gn, variable = "site_day", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+# dist_usvi_asv_site_day.boot <- boot::boot(dist_usvi_asv_site_day.df, F_ttest_gn, variable = "site_day", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+resample_depth <- dist_usvi_asv_site_day.df %>%
+  split(., f = .$site_day) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_asv_site_day.boot <- boot::boot(dist_usvi_asv_site_day.df, F_ttest_para, variable = "site_day", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
 
 # q_value <- 0.10
 dist_usvi_asv_site_day.boot.summary.df <- unique(dist_usvi_asv_site_day.df[["site_day"]]) %>%
@@ -2363,7 +2658,8 @@ dist_usvi_asv_site_day.boot.summary.df <- unique(dist_usvi_asv_site_day.df[["sit
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_asv_site_day.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_asv_site_day.boot$t0, name = NULL, value = "boot.p.value")) %>% #this value is essentially random...
+  # bind_cols(., tibble::enframe(dist_usvi_asv_site_day.boot$t0, name = NULL, value = "p.value")) %>%
   bind_cols(., data.frame("q05" = (dist_usvi_asv_site_day.boot$t %>%
                                      as.data.frame() %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -2384,7 +2680,8 @@ dist_usvi_metab_site_day.df <- meta.metab %>%
   map(., ~dist_usvi_metab.mat[.x, .x])  %>%
   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
-  bind_rows(., .id = "site_day")
+  bind_rows(., .id = "site_day") %>%
+  dplyr::group_by(site_day)
 
 
 dist_usvi_metab_site_day.df %>%
@@ -2410,7 +2707,13 @@ dist_usvi_metab_site_day.df %>%
 # 12 Yawzi.Day5         0.206              0.374
 
 
-dist_usvi_metab_site_day.boot <- boot::boot(dist_usvi_metab_site_day.df, F_ttest_gn, variable = "site_day", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+# dist_usvi_metab_site_day.boot <- boot::boot(dist_usvi_metab_site_day.df, F_ttest_gn, variable = "site_day", sim = "permutation", R = 9999, stype = "f", parallel = "multicore", ncpus = nthreads)
+resample_depth <- dist_usvi_metab_site_day.df %>%
+  split(., f = .$site_day) %>%
+  map(., ~round(nrow(.x)/10)) %>%
+  purrr::reduce(mean)
+dist_usvi_metab_site_day.boot <- boot::boot(dist_usvi_metab_site_day.df, F_ttest_para, variable = "site_day", sim = "parametric", R = 9999, ran.gen = F_ttest_rn, mle = resample_depth, parallel = "multicore", ncpus = nthreads)
+
 
 # q_value <- 0.10
 dist_usvi_metab_site_day.boot.summary.df <- unique(dist_usvi_metab_site_day.df[["site_day"]]) %>%
@@ -2418,7 +2721,8 @@ dist_usvi_metab_site_day.boot.summary.df <- unique(dist_usvi_metab_site_day.df[[
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  bind_cols(., tibble::enframe(dist_usvi_metab_site_day.boot$t0, name = NULL, value = "p.value")) %>%
+  bind_cols(., tibble::enframe(dist_usvi_metab_site_day.boot$t0, name = NULL, value = "boot.p.value")) %>%
+  # bind_cols(., tibble::enframe(dist_usvi_metab_site_day.boot$t0, name = NULL, value = "p.value")) %>%
   bind_cols(., data.frame("q05" = (dist_usvi_metab_site_day.boot$t %>%
                                      as.data.frame() %>%
                                      dplyr::reframe(across(everything(), quantile, probs = 0.05, na.rm = TRUE, names = FALSE, type = 7)) %>%
@@ -2433,47 +2737,56 @@ ttest_res <- combn(length_v, 2) %>%
   t() %>%
   as.data.frame() %>%
   setNames(., c("pair1", "pair2")) %>%
-  dplyr::mutate(t = NA)
+  dplyr::mutate(t = NA) %>%
+  dplyr::mutate(`p.value` = NA)
 ttest_usvi_metab_site_day.res <- ttest_res
 ttest_usvi_asv_site_day.res <- ttest_res
 for(i in seq_len(nrow(ttest_res))){
   var1 <- ttest_res[i, 1]
   var2 <- ttest_res[i, 2]
   temp_i_a <- dist_usvi_metab_site_day.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_b <- dist_usvi_metab_site_day.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   if(length(temp_i_a) > 0 & length(temp_i_b) > 0){
     ttest_usvi_metab_site_day.res[i, "t"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$statistic  
+    ttest_usvi_metab_site_day.res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value  
   } else {
     ttest_usvi_metab_site_day.res[i, "t"] <- NA
   }
 
   temp_i_c <- dist_usvi_asv_site_day.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   temp_i_d <- dist_usvi_asv_site_day.df %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
     dplyr::select(dissimilarity) %>%
     tibble::deframe(.)
   if(length(temp_i_c) > 0 & length(temp_i_d) > 0){
     ttest_usvi_asv_site_day.res[i, "t"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$statistic
+    ttest_usvi_asv_site_day.res[i, "p.value"] <- t.test(temp_i_c, temp_i_d, conf.level = 0.95)$p.value
   } else {
     ttest_usvi_asv_site_day.res[i, "t"] <- NA
   }
 }
 
 ttest_usvi_metab_site_day.res <- ttest_usvi_metab_site_day.res %>%
-  tidyr::drop_na(t) %>%
-  dplyr::left_join(., dist_usvi_metab_site_day.boot.summary.df)
+  # tidyr::drop_na(t) %>%
+  dplyr::left_join(., dist_usvi_metab_site_day.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 ttest_usvi_asv_site_day.res <- ttest_usvi_asv_site_day.res %>%
-  tidyr::drop_na(t) %>%
-  dplyr::left_join(., dist_usvi_asv_site_day.boot.summary.df)
+  # tidyr::drop_na(t) %>%
+  dplyr::left_join(., dist_usvi_asv_site_day.boot.summary.df) %>%
+  dplyr::mutate(sig = dplyr::case_when(p.value < q05 ~ p.value, .default = NA))
 
 
 readr::write_delim(ttest_usvi_metab_site_day.res, paste0(projectpath, "/", "permanova_ttest_usvi_metab_site_day.res-", Sys.Date(), ".tsv"),
@@ -2482,20 +2795,23 @@ readr::write_delim(ttest_usvi_asv_site_day.res, paste0(projectpath, "/", "perman
                    delim = "\t", col_names = TRUE)
 
 ttest_usvi_asv_site_day.res %>%
-  dplyr::filter(p.value < 0.1) %>%
+  dplyr::filter(p.value < 0.05) %>%
   # dplyr::summarise(num_SDA = length(t))
   droplevels
-#66 results, of which 12 have bootstrapped p-values < 0.1
 
 ttest_usvi_metab_site_day.res %>%
-  dplyr::filter(p.value < 0.1) %>%
+  dplyr::filter(p.value < 0.05) %>%
   # dplyr::summarise(num_SDA = length(t))
   droplevels
-#66 results, of which 7 have bootstrapped p-values < 0.1
 #2 comparisons are between days at LB
 #2 comparisons are between Yawzi and LB on days 3 and 4
 #1 comparison is between Yawzi and Tektite on day 4
+save(dist_usvi_metab_site_day.boot, dist_usvi_metab_site_day.boot.summary.df, dist_usvi_metab_site_day.df,
+     dist_usvi_asv_site_day.boot, dist_usvi_asv_site_day.boot.summary.df, dist_usvi_asv_site_day.df,
+     ttest_usvi_metab_site_day.res, ttest_usvi_asv_site_day.res,
+     file = paste0(projectpath, "/", "usvi_permanova_site_day-", Sys.Date(), ".RData"))
 
+}
 ###STOP HERE: 20250208
 
 
