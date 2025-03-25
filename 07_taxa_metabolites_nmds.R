@@ -2950,6 +2950,7 @@ map(dist_usvi_asv_grouping.d,
 # [1] 0.0529286
 
 
+
 dist_usvi_asv_grouping.df <- map2(dist_usvi_asv_grouping.d, meta.seawater.grouping.list,
                                   ~vegan::betadisper(., type = "median",
                                                      add = TRUE,
@@ -3006,7 +3007,13 @@ readr::write_delim(dist_usvi_asv_grouping.df, paste0(projectpath, "/", "usvi_bet
   }
 }
 
-
+# what do the PCoA results from betadisper look like?
+# dist_usvi_asv_betadisp.list <- map2(dist_usvi_asv_grouping.d, meta.seawater.grouping.list,
+#      ~vegan::betadisper(., type = "median",
+#                         add = TRUE,
+#                         .y$grouping))
+# 
+# scores(dist_usvi_asv_betadisp.list[[1]], 1:4, display = "centroids")
 
 dist_usvi_asv_grouping.df %>%
   dplyr::group_by(site, grouping, sampling_time) %>%
@@ -3090,12 +3097,14 @@ dist_usvi_betadisp_grouping.df <- map(dist_usvi_metab_grouping_log2.d,
 #calcualte the mean beta dispersions for each site and sampling time, based on using the different medians as above
 dist_usvi_mean_betadisp_grouping.df <- dist_usvi_metab_grouping_log2.df %>%
   dplyr::group_by(site, grouping, sampling_time) %>%
-  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
+  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE),
+                   med_disp = median(dispersion, na.rm = TRUE)) %>%
   dplyr::arrange(grouping, site, sampling_time) %>%
   dplyr::mutate(setome = "metabolome") %>%
   bind_rows(., dist_usvi_asv_grouping.df %>%
               dplyr::group_by(site, grouping, sampling_time) %>%
-              dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
+              dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE),
+                               med_disp = median(dispersion, na.rm = TRUE)) %>%
               dplyr::arrange(grouping, site, sampling_time) %>%
               dplyr::mutate(setome = "microbiome"))
 
