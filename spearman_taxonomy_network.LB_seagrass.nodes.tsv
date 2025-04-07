@@ -1,0 +1,475 @@
+Label	Id	direction	num_obs	omics_type
+Acidimicrobia; Candidatus Actinomarina	1	down	1	microbe
+Acidimicrobia; Candidatus Actinomarina	2	down	3	microbe
+Acidimicrobia; Candidatus Actinomarina	3	down	2	microbe
+Acidimicrobia; Candidatus Actinomarina	4	down	4	microbe
+Acidimicrobia; Ilumatobacteraceae	5	down	1	microbe
+Acidimicrobia; Microtrichaceae	6	down	1	microbe
+Acidimicrobia; Sva0996 marine group	7	up	1	microbe
+Actinobacteria; Candidatus Aquiluna	8	up	1	microbe
+Actinobacteria; ML602J-51	9	up	1	microbe
+Actinobacteria; Microbacteriaceae	10	up	1	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	11	down	2	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	12	down	5	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	13	down	1	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	14	down	4	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	15	down	3	microbe
+Alphaproteobacteria; Aestuariicoccus	16	up	1	microbe
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	17	down	1	microbe
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	18	up	1	microbe
+Alphaproteobacteria; Candidatus Megaira	19	up	1	microbe
+Alphaproteobacteria; Celeribacter	20	up	1	microbe
+Alphaproteobacteria; Defluviicoccales	21	down	1	microbe
+Alphaproteobacteria; Defluviicoccales	22	up	1	microbe
+Alphaproteobacteria; Erythrobacter	23	down	1	microbe
+Alphaproteobacteria; Erythrobacter	24	up	1	microbe
+Alphaproteobacteria; HIMB11	25	up	1	microbe
+Alphaproteobacteria; Hirschia	26	up	1	microbe
+Alphaproteobacteria; Holosporaceae	27	up	1	microbe
+Alphaproteobacteria; Hyphomonadaceae	28	up	1	microbe
+Alphaproteobacteria; Leisingera	29	up	1	microbe
+Alphaproteobacteria; Limibaculum	30	up	1	microbe
+Alphaproteobacteria; Litorimicrobium	31	up	1	microbe
+Alphaproteobacteria; Methyloligellaceae	32	up	1	microbe
+Alphaproteobacteria; PS1 clade	33	down	1	microbe
+Alphaproteobacteria; PS1 clade	34	down	2	microbe
+Alphaproteobacteria; PS1 clade	35	up	1	microbe
+Alphaproteobacteria; Ponticaulis	36	up	1	microbe
+Alphaproteobacteria; Rhizobiaceae	37	up	1	microbe
+Alphaproteobacteria; Rhizobiales	38	up	1	microbe
+Alphaproteobacteria; Rhodobacteraceae	39	down	1	microbe
+Alphaproteobacteria; Rhodobacteraceae	40	down	2	microbe
+Alphaproteobacteria; Rhodobacteraceae	41	down	3	microbe
+Alphaproteobacteria; Rhodobacteraceae	42	up	2	microbe
+Alphaproteobacteria; Rhodobacteraceae	43	up	1	microbe
+Alphaproteobacteria; Rhodobacteraceae	44	up	6	microbe
+Alphaproteobacteria; Rhodobacteraceae	45	up	4	microbe
+Alphaproteobacteria; Rhodobacteraceae	46	up	5	microbe
+Alphaproteobacteria; Rhodobacteraceae	47	up	3	microbe
+Alphaproteobacteria; Rickettsiaceae	48	up	1	microbe
+Alphaproteobacteria; Rickettsiales	49	down	1	microbe
+Alphaproteobacteria; Roseobacter clade CHAB-I-5 lineage	50	up	1	microbe
+Alphaproteobacteria; Ruegeria	51	up	1	microbe
+Alphaproteobacteria; S25-593	52	down	1	microbe
+Alphaproteobacteria; SAR11 Clade II	53	down	1	microbe
+Alphaproteobacteria; SAR11 Clade II	54	up	1	microbe
+Alphaproteobacteria; SAR11 Clade III	55	down	1	microbe
+Alphaproteobacteria; SAR11 Clade IV	56	down	1	microbe
+Alphaproteobacteria; SAR11 Clade Ia	57	down	1	microbe
+Alphaproteobacteria; SAR11 Clade Ia	58	down	4	microbe
+Alphaproteobacteria; SAR11 Clade Ia	59	down	7	microbe
+Alphaproteobacteria; SAR11 Clade Ia	60	down	2	microbe
+Alphaproteobacteria; SAR11 Clade Ia	61	down	5	microbe
+Alphaproteobacteria; SAR11 Clade Ia	62	down	3	microbe
+Alphaproteobacteria; SAR11 Clade Ia	63	up	1	microbe
+Alphaproteobacteria; SAR11 Clade Ib	64	down	2	microbe
+Alphaproteobacteria; SAR11 Clade Ib	65	down	3	microbe
+Alphaproteobacteria; SAR11 Clade Ib	66	down	1	microbe
+Alphaproteobacteria; SAR11 Clade Ib	67	up	1	microbe
+Alphaproteobacteria; SAR116 clade	68	down	1	microbe
+Alphaproteobacteria; SAR116 clade	69	down	3	microbe
+Alphaproteobacteria; SAR116 clade	70	down	2	microbe
+Alphaproteobacteria; SAR116 clade	71	down	7	microbe
+Alphaproteobacteria; SAR116 clade	72	down	4	microbe
+Alphaproteobacteria; SAR116 clade	73	up	1	microbe
+Alphaproteobacteria; Sphingobium	74	up	1	microbe
+Alphaproteobacteria; Sphingomonadaceae	75	up	1	microbe
+Alphaproteobacteria; Stappiaceae	76	up	2	microbe
+Alphaproteobacteria; Stappiaceae	77	up	1	microbe
+Alphaproteobacteria; Thalassobius	78	up	1	microbe
+Bacilli; Candidatus Hepatoplasma	79	up	1	microbe
+Bacteria	80	up	1	microbe
+Bacteria; Marinimicrobia (SAR406 clade)	81	down	1	microbe
+Bacteria; Marinimicrobia (SAR406 clade)	82	down	3	microbe
+Bacteria; Marinimicrobia (SAR406 clade)	83	down	2	microbe
+Bacteria; Marinimicrobia (SAR406 clade)	84	up	1	microbe
+Bacteria; Proteobacteria	85	up	1	microbe
+Bacteria; SAR324 clade(Marine group B)	86	down	1	microbe
+Bacteria; WPS-2	87	up	1	microbe
+Bacteroidia; Actibacter	88	up	1	microbe
+Bacteroidia; Algitalea	89	up	1	microbe
+Bacteroidia; Algoriphagus	90	up	1	microbe
+Bacteroidia; Amoebophilaceae	91	up	1	microbe
+Bacteroidia; Aureicoccus	92	up	1	microbe
+Bacteroidia; Aureispira	93	down	1	microbe
+Bacteroidia; Aureitalea	94	up	1	microbe
+Bacteroidia; Bacteroidales	95	down	1	microbe
+Bacteroidia; Bacteroidales	96	up	2	microbe
+Bacteroidia; Bacteroidales	97	up	1	microbe
+Bacteroidia; Bacteroides	98	up	1	microbe
+Bacteroidia; Bacteroidetes VC2.1 Bac22	99	up	1	microbe
+Bacteroidia; Chitinophagales	100	down	1	microbe
+Bacteroidia; Chitinophagales	101	up	1	microbe
+Bacteroidia; Crocinitomix	102	up	1	microbe
+Bacteroidia; Crocinitomix	103	up	3	microbe
+Bacteroidia; Cryomorphaceae	104	down	1	microbe
+Bacteroidia; Cryomorphaceae	105	up	1	microbe
+Bacteroidia; Cryomorphaceae	106	up	2	microbe
+Bacteroidia; Cryomorphaceae	107	up	4	microbe
+Bacteroidia; Cryomorphaceae	108	up	3	microbe
+Bacteroidia; Cyclobacteriaceae	109	up	1	microbe
+Bacteroidia; Cyclobacteriaceae	110	up	2	microbe
+Bacteroidia; Cytophagales	111	up	1	microbe
+Bacteroidia; Ekhidna	112	down	1	microbe
+Bacteroidia; Fabibacter	113	up	1	microbe
+Bacteroidia; Flavicella	114	up	1	microbe
+Bacteroidia; Flavobacteriaceae	115	down	1	microbe
+Bacteroidia; Flavobacteriaceae	116	up	1	microbe
+Bacteroidia; Flavobacteriaceae	117	up	5	microbe
+Bacteroidia; Flavobacteriaceae	118	up	2	microbe
+Bacteroidia; Flavobacteriales	119	up	1	microbe
+Bacteroidia; Formosa	120	up	1	microbe
+Bacteroidia; Fulvivirga	121	down	1	microbe
+Bacteroidia; Fulvivirga	122	up	1	microbe
+Bacteroidia; Lewinella	123	up	1	microbe
+Bacteroidia; Macellibacteroides	124	down	1	microbe
+Bacteroidia; Macellibacteroides	125	up	1	microbe
+Bacteroidia; Marinifilaceae	126	up	1	microbe
+Bacteroidia; Marinoscillum	127	down	1	microbe
+Bacteroidia; Marinoscillum	128	up	1	microbe
+Bacteroidia; Mesoflavibacter	129	up	1	microbe
+Bacteroidia; Muribaculaceae	130	down	1	microbe
+Bacteroidia; Muribaculaceae	131	up	1	microbe
+Bacteroidia; Muribaculaceae	132	up	2	microbe
+Bacteroidia; Muricauda	133	down	1	microbe
+Bacteroidia; NS11-12 marine group	134	down	2	microbe
+Bacteroidia; NS11-12 marine group	135	down	1	microbe
+Bacteroidia; NS11-12 marine group	136	up	1	microbe
+Bacteroidia; NS2b marine group	137	down	1	microbe
+Bacteroidia; NS4 marine group	138	down	1	microbe
+Bacteroidia; NS4 marine group	139	down	2	microbe
+Bacteroidia; NS4 marine group	140	down	3	microbe
+Bacteroidia; NS4 marine group	141	up	3	microbe
+Bacteroidia; NS4 marine group	142	up	5	microbe
+Bacteroidia; NS5 marine group	143	down	1	microbe
+Bacteroidia; NS5 marine group	144	down	2	microbe
+Bacteroidia; NS5 marine group	145	up	2	microbe
+Bacteroidia; NS5 marine group	146	up	1	microbe
+Bacteroidia; NS5 marine group	147	up	9	microbe
+Bacteroidia; NS5 marine group	148	up	5	microbe
+Bacteroidia; NS5 marine group	149	up	6	microbe
+Bacteroidia; NS5 marine group	150	up	3	microbe
+Bacteroidia; NS7 marine group	151	down	1	microbe
+Bacteroidia; NS7 marine group	152	up	1	microbe
+Bacteroidia; NS9 marine group	153	down	1	microbe
+Bacteroidia; NS9 marine group	154	up	1	microbe
+Bacteroidia; NS9 marine group	155	up	2	microbe
+Bacteroidia; Nonlabens	156	up	1	microbe
+Bacteroidia; Paludibacter	157	down	1	microbe
+Bacteroidia; Paludibacter	158	up	1	microbe
+Bacteroidia; Prevotellaceae UCG-004	159	up	1	microbe
+Bacteroidia; Roseimarinus	160	up	1	microbe
+Bacteroidia; Saprospiraceae	161	down	1	microbe
+Bacteroidia; Saprospiraceae	162	up	1	microbe
+Bacteroidia; Saprospiraceae	163	up	2	microbe
+Bacteroidia; Saprospiraceae	164	up	3	microbe
+Bacteroidia; Saprospiraceae	165	up	4	microbe
+Bacteroidia; Tenacibaculum	166	up	1	microbe
+Bacteroidia; Tenacibaculum	167	up	2	microbe
+Bacteroidia; Winogradskyella	168	up	1	microbe
+Bacteroidota; Bacteroidia	169	up	1	microbe
+Bdellovibrionia; Bacteriovoracaceae	170	up	1	microbe
+Bdellovibrionia; Halobacteriovorax	171	down	1	microbe
+Bdellovibrionia; OM27 clade	172	down	1	microbe
+Bdellovibrionia; OM27 clade	173	down	2	microbe
+Bdellovibrionia; OM27 clade	174	down	3	microbe
+Bdellovibrionia; OM27 clade	175	up	2	microbe
+Campylobacteria; Arcobacteraceae	176	up	1	microbe
+Campylobacteria; Sulfurimonas	177	down	1	microbe
+Clostridia; Clostridium sensu stricto 1	178	up	1	microbe
+Clostridia; Hungateiclostridiaceae	179	down	1	microbe
+Clostridia; Lachnospiraceae UCG-007	180	up	1	microbe
+Clostridia; Sarcina	181	down	1	microbe
+Clostridia; Sarcina	182	up	1	microbe
+Cyanobacteria; Cyanobacteria	183	down	1	microbe
+Cyanobacteria; Cyanobiaceae	184	up	1	microbe
+Cyanobacteria; Cyanobium PCC-6307	185	down	1	microbe
+Cyanobacteria; Cyanobium PCC-6307	186	down	2	microbe
+Cyanobacteria; Oscillatoriaceae	187	up	1	microbe
+Cyanobacteria; Prochlorococcus MIT9313	188	down	1	microbe
+Cyanobacteria; Synechococcus CC9902	189	down	2	microbe
+Cyanobacteria; Synechococcus CC9902	190	down	1	microbe
+Cyanobacteria; Synechococcus CC9902	191	down	4	microbe
+Cyanobacteria; Synechococcus CC9902	192	down	6	microbe
+Cyanobacteria; Synechococcus CC9902	193	up	1	microbe
+Cyanobacteria; Synechococcus CC9902	194	up	4	microbe
+Dadabacteria; Dadabacteriales	195	down	1	microbe
+Desulfobacteria; Sva0081 sediment group	196	up	1	microbe
+Desulfobulbia; Desulfocapsaceae	197	up	1	microbe
+Desulfuromonadia; Bradymonadales	198	up	1	microbe
+Fusobacteria; Cetobacterium	199	up	1	microbe
+Fusobacteria; Fusobacterium	200	up	1	microbe
+Fusobacteria; Propionigenium	201	up	1	microbe
+Gammaproteobacteria; Aestuariibacter	202	up	1	microbe
+Gammaproteobacteria; Alcanivorax	203	down	1	microbe
+Gammaproteobacteria; Aliiglaciecola	204	up	1	microbe
+Gammaproteobacteria; Alteromonadaceae	205	up	1	microbe
+Gammaproteobacteria; Alteromonas	206	up	1	microbe
+Gammaproteobacteria; Aquabacterium	207	down	1	microbe
+Gammaproteobacteria; Aquabacterium	208	up	1	microbe
+Gammaproteobacteria; BD1-7 clade	209	down	1	microbe
+Gammaproteobacteria; Cellvibrionaceae	210	up	1	microbe
+Gammaproteobacteria; Coxiella	211	down	1	microbe
+Gammaproteobacteria; Coxiella	212	up	1	microbe
+Gammaproteobacteria; Delftia	213	up	1	microbe
+Gammaproteobacteria; Ectothiorhodospiraceae	214	down	1	microbe
+Gammaproteobacteria; Eionea	215	up	1	microbe
+Gammaproteobacteria; Endozoicomonas	216	down	1	microbe
+Gammaproteobacteria; Endozoicomonas	217	up	1	microbe
+Gammaproteobacteria; Francisella	218	up	1	microbe
+Gammaproteobacteria; Grimontia	219	up	1	microbe
+Gammaproteobacteria; Halieaceae	220	up	1	microbe
+Gammaproteobacteria; KI89A clade	221	down	1	microbe
+Gammaproteobacteria; Kistimonas	222	up	1	microbe
+Gammaproteobacteria; Legionellaceae	223	up	1	microbe
+Gammaproteobacteria; Litoricola	224	up	1	microbe
+Gammaproteobacteria; Luminiphilus	225	up	1	microbe
+Gammaproteobacteria; Marinobacterium	226	up	1	microbe
+Gammaproteobacteria; Methylophaga	227	up	1	microbe
+Gammaproteobacteria; OM60(NOR5) clade	228	down	1	microbe
+Gammaproteobacteria; OM60(NOR5) clade	229	down	3	microbe
+Gammaproteobacteria; OM60(NOR5) clade	230	up	1	microbe
+Gammaproteobacteria; Photobacterium	231	down	1	microbe
+Gammaproteobacteria; Photobacterium	232	up	1	microbe
+Gammaproteobacteria; Photobacterium	233	up	2	microbe
+Gammaproteobacteria; Photobacterium	234	up	3	microbe
+Gammaproteobacteria; Pseudoalteromonas	235	up	1	microbe
+Gammaproteobacteria; Pseudohaliea	236	up	1	microbe
+Gammaproteobacteria; Pseudohongiella	237	down	1	microbe
+Gammaproteobacteria; Pseudomonadales	238	down	1	microbe
+Gammaproteobacteria; Pseudomonadales	239	up	2	microbe
+Gammaproteobacteria; Pseudomonadales	240	up	1	microbe
+Gammaproteobacteria; Pseudomonas	241	down	3	microbe
+Gammaproteobacteria; Pseudomonas	242	up	1	microbe
+Gammaproteobacteria; Pseudomonas	243	up	4	microbe
+Gammaproteobacteria; Pseudomonas	244	up	2	microbe
+Gammaproteobacteria; Pseudomonas	245	up	3	microbe
+Gammaproteobacteria; SAR86 clade	246	down	1	microbe
+Gammaproteobacteria; SAR86 clade	247	down	8	microbe
+Gammaproteobacteria; SAR86 clade	248	down	3	microbe
+Gammaproteobacteria; SAR86 clade	249	down	2	microbe
+Gammaproteobacteria; SAR86 clade	250	down	10	microbe
+Gammaproteobacteria; SAR86 clade	251	down	5	microbe
+Gammaproteobacteria; SAR86 clade	252	down	12	microbe
+Gammaproteobacteria; SAR86 clade	253	up	2	microbe
+Gammaproteobacteria; SAR86 clade	254	up	1	microbe
+Gammaproteobacteria; SAR92 clade	255	down	1	microbe
+Gammaproteobacteria; SAR92 clade	256	up	1	microbe
+Gammaproteobacteria; Sedimenticola	257	up	1	microbe
+Gammaproteobacteria; Stenotrophomonas	258	down	1	microbe
+Gammaproteobacteria; Stenotrophomonas	259	up	1	microbe
+Gammaproteobacteria; Thiomicrorhabdus	260	up	1	microbe
+Gammaproteobacteria; Thiotrichaceae	261	down	1	microbe
+Gammaproteobacteria; Thiotrichaceae	262	up	1	microbe
+Gammaproteobacteria; Unknown Family	263	up	1	microbe
+Gammaproteobacteria; Vibrio	264	up	1	microbe
+Gammaproteobacteria; Vibrio	265	up	2	microbe
+Gammaproteobacteria; Vibrionaceae	266	down	1	microbe
+Gammaproteobacteria; Vibrionaceae	267	up	1	microbe
+Kiritimatiellae; R76-B128	268	down	1	microbe
+Kiritimatiellae; WCHB1-41	269	down	1	microbe
+Lentisphaeria; Lentisphaera	270	down	1	microbe
+Myxococcia; P3OB-42	271	down	1	microbe
+Nanoarchaeia; Woesearchaeales	272	up	1	microbe
+Nitrososphaeria; Candidatus Nitrosopumilus	273	up	1	microbe
+Oligoflexia; Oligoflexaceae	274	down	1	microbe
+Oligoflexia; Oligoflexaceae	275	up	1	microbe
+Oligoflexia; Silvanigrellaceae	276	up	1	microbe
+Phycisphaerae; Phycisphaera	277	down	1	microbe
+Phycisphaerae; SM1A02	278	down	1	microbe
+Phycisphaerae; Urania-1B-19 marine sediment group	279	down	1	microbe
+Planctomycetota; OM190	280	down	1	microbe
+Planctomycetota; OM190	281	up	1	microbe
+Polyangia; Nannocystaceae	282	up	1	microbe
+Proteobacteria; Alphaproteobacteria	283	down	1	microbe
+Proteobacteria; Alphaproteobacteria	284	up	2	microbe
+Proteobacteria; Alphaproteobacteria	285	up	1	microbe
+Proteobacteria; Gammaproteobacteria	286	down	1	microbe
+Proteobacteria; Gammaproteobacteria	287	up	1	microbe
+Proteobacteria; Gammaproteobacteria	288	up	2	microbe
+Rhodothermia; Balneola	289	down	1	microbe
+Rhodothermia; Balneola	290	up	1	microbe
+Thermoanaerobaculia; Subgroup 10	291	up	1	microbe
+Thermoplasmata; Marine Group II	292	down	1	microbe
+Thermoplasmata; Marine Group II	293	down	2	microbe
+Thermoplasmata; Marine Group II	294	down	3	microbe
+Thermoplasmata; Marine Group II	295	up	1	microbe
+Verrucomicrobiae; Chthoniobacteraceae	296	down	1	microbe
+Verrucomicrobiae; Coraliomargarita	297	down	1	microbe
+Verrucomicrobiae; DEV007	298	up	1	microbe
+Verrucomicrobiae; MB11C04 marine group	299	down	1	microbe
+Verrucomicrobiae; MB11C04 marine group	300	down	2	microbe
+Verrucomicrobiae; MB11C04 marine group	301	down	3	microbe
+Verrucomicrobiae; MB11C04 marine group	302	up	1	microbe
+Verrucomicrobiae; Methylacidiphilaceae	303	down	1	microbe
+Verrucomicrobiae; Methylacidiphilaceae	304	up	1	microbe
+Verrucomicrobiae; Rubritalea	305	down	1	microbe
+Verrucomicrobiae; Rubritalea	306	up	1	microbe
+Verrucomicrobiae; Verruc-01	307	up	1	microbe
+Verrucomicrobiota; Lentisphaeria	308	down	1	microbe
+tryptamine	309	down	1	metabolite
+tryptamine	310	up	1	metabolite
+tryptamine	311	up	2	metabolite
+methionine	312	down	1	metabolite
+methionine	313	down	2	metabolite
+methionine	314	up	1	metabolite
+putrescine 2	315	down	1	metabolite
+putrescine 2	316	down	2	metabolite
+putrescine 2	317	up	1	metabolite
+spermidine 3	318	down	1	metabolite
+spermidine 3	319	up	1	metabolite
+homoserine betaine	320	down	1	metabolite
+homoserine betaine	321	down	2	metabolite
+homoserine betaine	322	down	3	metabolite
+homoserine betaine	323	up	1	metabolite
+homoserine betaine	324	up	2	metabolite
+asparagine	325	down	1	metabolite
+asparagine	326	down	2	metabolite
+asparagine	327	up	1	metabolite
+asparagine	328	up	2	metabolite
+glycine	329	down	3	metabolite
+glycine	330	down	2	metabolite
+glycine	331	down	1	metabolite
+glycine	332	down	4	metabolite
+glycine	333	down	8	metabolite
+glycine	334	up	1	metabolite
+glycine	335	up	2	metabolite
+kynurenine	336	down	2	metabolite
+kynurenine	337	down	1	metabolite
+kynurenine	338	down	3	metabolite
+kynurenine	339	up	1	metabolite
+kynurenine	340	up	3	metabolite
+tryptophan	341	down	2	metabolite
+tryptophan	342	down	1	metabolite
+tryptophan	343	up	1	metabolite
+tryptophan	344	up	2	metabolite
+histidine	345	down	1	metabolite
+aspartate	346	down	2	metabolite
+aspartate	347	down	1	metabolite
+aspartate	348	up	1	metabolite
+proline	349	down	1	metabolite
+proline	350	up	1	metabolite
+alanine	351	down	1	metabolite
+alanine	352	down	2	metabolite
+lysine 2	353	down	2	metabolite
+lysine 2	354	down	1	metabolite
+lysine 2	355	up	1	metabolite
+phenylalanine	356	down	3	metabolite
+phenylalanine	357	down	1	metabolite
+phenylalanine	358	down	2	metabolite
+phenylalanine	359	up	1	metabolite
+phenylalanine	360	up	3	metabolite
+phenylalanine	361	up	2	metabolite
+citrulline	362	down	1	metabolite
+citrulline	363	up	1	metabolite
+ornithine 2	364	down	1	metabolite
+ornithine 2	365	up	1	metabolite
+serine	366	down	1	metabolite
+serine	367	up	1	metabolite
+threonine	368	down	1	metabolite
+threonine	369	up	1	metabolite
+valine	370	down	1	metabolite
+valine	371	up	1	metabolite
+isoleucine	372	down	1	metabolite
+isoleucine	373	up	1	metabolite
+leucine	374	down	1	metabolite
+leucine	375	up	1	metabolite
+guanosine	376	down	1	metabolite
+guanosine	377	down	2	metabolite
+guanosine	378	down	3	metabolite
+guanosine	379	up	2	metabolite
+guanosine	380	up	1	metabolite
+pantothenic acid	381	down	4	metabolite
+pantothenic acid	382	down	5	metabolite
+pantothenic acid	383	down	1	metabolite
+pantothenic acid	384	down	2	metabolite
+pantothenic acid	385	down	3	metabolite
+pantothenic acid	386	down	7	metabolite
+pantothenic acid	387	down	10	metabolite
+pantothenic acid	388	up	1	metabolite
+pantothenic acid	389	up	6	metabolite
+pantothenic acid	390	up	3	metabolite
+pantothenic acid	391	up	4	metabolite
+pantothenic acid	392	up	5	metabolite
+pantothenic acid	393	up	9	metabolite
+pantothenic acid	394	up	2	metabolite
+cysteine 2	395	down	1	metabolite
+cysteine 2	396	up	1	metabolite
+uridine	397	down	1	metabolite
+uridine	398	up	1	metabolite
+uridine	399	up	2	metabolite
+cysteate	400	down	3	metabolite
+cysteate	401	down	2	metabolite
+cysteate	402	down	1	metabolite
+cysteate	403	down	8	metabolite
+cysteate	404	up	1	metabolite
+cysteate	405	up	4	metabolite
+cysteate	406	up	2	metabolite
+cysteate	407	up	5	metabolite
+taurine	408	down	2	metabolite
+taurine	409	down	1	metabolite
+taurine	410	down	5	metabolite
+taurine	411	down	4	metabolite
+taurine	412	up	1	metabolite
+taurine	413	up	2	metabolite
+taurine	414	up	3	metabolite
+taurine	415	up	6	metabolite
+ciliatine	416	down	4	metabolite
+ciliatine	417	down	1	metabolite
+ciliatine	418	down	2	metabolite
+ciliatine	419	down	3	metabolite
+ciliatine	420	down	12	metabolite
+ciliatine	421	up	1	metabolite
+ciliatine	422	up	5	metabolite
+ciliatine	423	up	3	metabolite
+ciliatine	424	up	2	metabolite
+ciliatine	425	up	6	metabolite
+GABA	426	down	3	metabolite
+GABA	427	down	1	metabolite
+GABA	428	down	2	metabolite
+GABA	429	down	8	metabolite
+GABA	430	up	1	metabolite
+GABA	431	up	5	metabolite
+GABA	432	up	2	metabolite
+GABA	433	up	3	metabolite
+5'AMP	434	down	1	metabolite
+3'AMP	435	down	1	metabolite
+3'AMP	436	down	3	metabolite
+3'AMP	437	up	1	metabolite
+3'AMP	438	up	4	metabolite
+DHPS	439	down	1	metabolite
+DHPS	440	up	1	metabolite
+glutamine	441	down	1	metabolite
+glutamine	442	up	1	metabolite
+glutamic acid	443	down	1	metabolite
+glutamic acid	444	up	1	metabolite
+isethionate	445	down	1	metabolite
+isethionate	446	down	2	metabolite
+isethionate	447	down	4	metabolite
+isethionate	448	up	1	metabolite
+isethionate	449	up	2	metabolite
+isethionate	450	up	3	metabolite
+arginine	451	down	2	metabolite
+arginine	452	down	1	metabolite
+arginine	453	down	3	metabolite
+arginine	454	down	8	metabolite
+arginine	455	up	1	metabolite
+arginine	456	up	3	metabolite
+arginine	457	up	2	metabolite
+glutathione 2	458	down	1	metabolite
+glutathione 2	459	down	2	metabolite
+glutathione 2	460	down	6	metabolite
+glutathione 2	461	up	1	metabolite
+sarcosine	462	down	1	metabolite
+sarcosine	463	up	1	metabolite
+sarcosine	464	up	2	metabolite
+malic acid	465	down	1	metabolite
+malic acid	466	up	1	metabolite
+5'UMP	467	down	1	metabolite
+5'UMP	468	down	3	metabolite
+5'UMP	469	down	2	metabolite
+5'UMP	470	up	1	metabolite
+sn-glycerol 3-phosphate	471	down	1	metabolite
+sn-glycerol 3-phosphate	472	down	3	metabolite
+sn-glycerol 3-phosphate	473	up	1	metabolite
+sn-glycerol 3-phosphate	474	up	4	metabolite

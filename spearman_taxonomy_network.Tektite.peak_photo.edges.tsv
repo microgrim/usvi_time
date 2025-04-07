@@ -1,0 +1,427 @@
+taxonomy	simpleName	Source	Target	Type	Weight	estimate_direction
+Acidimicrobia; Candidatus Actinomarina	cysteine 2	1	124	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	2	92	Undirected	4	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	2	93	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	2	94	Undirected	2	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	2	95	Undirected	3	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	2	96	Undirected	8	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	3	92	Undirected	4	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	3	93	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	3	94	Undirected	2	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	3	95	Undirected	3	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	3	96	Undirected	8	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	2	130	Undirected	2	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	2	131	Undirected	3	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	2	132	Undirected	5	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	2	133	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	2	134	Undirected	4	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	3	130	Undirected	2	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	3	131	Undirected	3	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	3	132	Undirected	5	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	3	133	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	ciliatine	3	134	Undirected	4	0.5
+Alphaproteobacteria; Ascidiaceihabitans	ciliatine	4	128	Undirected	1	-0.5
+Alphaproteobacteria; Ascidiaceihabitans	ciliatine	4	129	Undirected	3	-0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	uridine	5	126	Undirected	1	0.5
+Alphaproteobacteria; Erythrobacter	spermidine 3	6	89	Undirected	1	-0.5
+Alphaproteobacteria; OM75 clade	homoserine betaine	7	92	Undirected	4	0.5
+Alphaproteobacteria; OM75 clade	homoserine betaine	7	93	Undirected	1	0.5
+Alphaproteobacteria; OM75 clade	homoserine betaine	7	94	Undirected	2	0.5
+Alphaproteobacteria; OM75 clade	homoserine betaine	7	95	Undirected	3	0.5
+Alphaproteobacteria; OM75 clade	homoserine betaine	7	96	Undirected	8	0.5
+Alphaproteobacteria; PS1 clade	DHPS	8	138	Undirected	1	-0.5
+Alphaproteobacteria; PS1 clade	5'UMP	8	149	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	homoserine betaine	9	90	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	homoserine betaine	9	91	Undirected	2	-0.5
+Alphaproteobacteria; S25-593	homoserine betaine	11	92	Undirected	4	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	11	93	Undirected	1	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	11	94	Undirected	2	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	11	95	Undirected	3	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	11	96	Undirected	8	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	12	92	Undirected	4	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	12	93	Undirected	1	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	12	94	Undirected	2	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	12	95	Undirected	3	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	12	96	Undirected	8	0.5
+Alphaproteobacteria; S25-593	pantothenic acid	10	120	Undirected	1	-0.5
+Alphaproteobacteria; S25-593	pantothenic acid	10	121	Undirected	4	-0.5
+Alphaproteobacteria; S25-593	ciliatine	11	130	Undirected	2	0.5
+Alphaproteobacteria; S25-593	ciliatine	11	131	Undirected	3	0.5
+Alphaproteobacteria; S25-593	ciliatine	11	132	Undirected	5	0.5
+Alphaproteobacteria; S25-593	ciliatine	11	133	Undirected	1	0.5
+Alphaproteobacteria; S25-593	ciliatine	11	134	Undirected	4	0.5
+Alphaproteobacteria; S25-593	ciliatine	12	130	Undirected	2	0.5
+Alphaproteobacteria; S25-593	ciliatine	12	131	Undirected	3	0.5
+Alphaproteobacteria; S25-593	ciliatine	12	132	Undirected	5	0.5
+Alphaproteobacteria; S25-593	ciliatine	12	133	Undirected	1	0.5
+Alphaproteobacteria; S25-593	ciliatine	12	134	Undirected	4	0.5
+Alphaproteobacteria; S25-593	5'UMP	10	149	Undirected	1	-0.5
+Alphaproteobacteria; S25-593	5'UMP	11	150	Undirected	1	0.5
+Alphaproteobacteria; S25-593	5'UMP	12	150	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	14	92	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	14	93	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	14	94	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	14	95	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	14	96	Undirected	8	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	15	92	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	15	93	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	15	94	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	15	95	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	15	96	Undirected	8	0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	13	120	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	13	121	Undirected	4	-0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	14	130	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	14	131	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	14	132	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	14	133	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	14	134	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	15	130	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	15	131	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	15	132	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	15	133	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	15	134	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade III	spermidine 3	16	89	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade III	ciliatine	17	130	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade III	ciliatine	17	131	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade III	ciliatine	17	132	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade III	ciliatine	17	133	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade III	ciliatine	17	134	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade Ia	ciliatine	19	130	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade Ia	ciliatine	19	131	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade Ia	ciliatine	19	132	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade Ia	ciliatine	19	133	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade Ia	ciliatine	19	134	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade Ia	sn-glycerol 3-phosphate	18	151	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	20	92	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	20	93	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	20	94	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	20	95	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	20	96	Undirected	8	0.5
+Alphaproteobacteria; SAR11 Clade Ib	ciliatine	20	130	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade Ib	ciliatine	20	131	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade Ib	ciliatine	20	132	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade Ib	ciliatine	20	133	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade Ib	ciliatine	20	134	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	21	92	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	21	93	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	21	94	Undirected	2	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	21	95	Undirected	3	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	21	96	Undirected	8	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	22	92	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	22	93	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	22	94	Undirected	2	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	22	95	Undirected	3	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	22	96	Undirected	8	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	21	130	Undirected	2	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	21	131	Undirected	3	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	21	132	Undirected	5	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	21	133	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	21	134	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	22	130	Undirected	2	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	22	131	Undirected	3	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	22	132	Undirected	5	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	22	133	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	22	134	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	isethionate	21	142	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	isethionate	22	142	Undirected	1	0.5
+Alphaproteobacteria; SM2D12	5'UMP	23	150	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	24	90	Undirected	1	-0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	24	91	Undirected	2	-0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	25	92	Undirected	4	0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	25	93	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	25	94	Undirected	2	0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	25	95	Undirected	3	0.5
+Alphaproteobacteria; Stappiaceae	homoserine betaine	25	96	Undirected	8	0.5
+Alphaproteobacteria; Stappiaceae	ciliatine	25	130	Undirected	2	0.5
+Alphaproteobacteria; Stappiaceae	ciliatine	25	131	Undirected	3	0.5
+Alphaproteobacteria; Stappiaceae	ciliatine	25	132	Undirected	5	0.5
+Alphaproteobacteria; Stappiaceae	ciliatine	25	133	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	ciliatine	25	134	Undirected	4	0.5
+Alphaproteobacteria; Stappiaceae	5'UMP	24	149	Undirected	1	-0.5
+Alphaproteobacteria; Thalassobius	homoserine betaine	26	90	Undirected	1	-0.5
+Alphaproteobacteria; Thalassobius	homoserine betaine	26	91	Undirected	2	-0.5
+Bacteria; Bdellovibrionota	glutamine	27	140	Undirected	1	0.5
+Bacteria; Bdellovibrionota	glutamic acid	27	141	Undirected	1	0.5
+Bacteria; Bdellovibrionota	glutathione 2	27	144	Undirected	1	0.5
+Bacteria; Margulisbacteria	putrescine 2	29	88	Undirected	1	0.5
+Bacteria; Margulisbacteria	5'AMP	28	136	Undirected	1	-0.5
+Bacteria; Margulisbacteria	sn-glycerol 3-phosphate	28	151	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	30	92	Undirected	4	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	30	93	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	30	94	Undirected	2	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	30	95	Undirected	3	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	30	96	Undirected	8	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	31	92	Undirected	4	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	31	93	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	31	94	Undirected	2	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	31	95	Undirected	3	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	31	96	Undirected	8	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	alanine	30	107	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	alanine	31	107	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	lysine 2	30	108	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	lysine 2	31	108	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	phenylalanine	30	110	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	phenylalanine	31	110	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	citrulline	30	111	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	citrulline	31	111	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	30	130	Undirected	2	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	30	131	Undirected	3	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	30	132	Undirected	5	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	30	133	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	30	134	Undirected	4	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	31	130	Undirected	2	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	31	131	Undirected	3	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	31	132	Undirected	5	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	31	133	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	ciliatine	31	134	Undirected	4	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	glutamine	30	140	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	glutamine	31	140	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	sn-glycerol 3-phosphate	30	152	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	sn-glycerol 3-phosphate	31	152	Undirected	1	0.5
+Bacteria; NB1-j	pantothenic acid	32	120	Undirected	1	-0.5
+Bacteria; NB1-j	pantothenic acid	32	121	Undirected	4	-0.5
+Bacteria; Proteobacteria	homoserine betaine	33	92	Undirected	4	0.5
+Bacteria; Proteobacteria	homoserine betaine	33	93	Undirected	1	0.5
+Bacteria; Proteobacteria	homoserine betaine	33	94	Undirected	2	0.5
+Bacteria; Proteobacteria	homoserine betaine	33	95	Undirected	3	0.5
+Bacteria; Proteobacteria	homoserine betaine	33	96	Undirected	8	0.5
+Bacteria; Proteobacteria	ciliatine	33	130	Undirected	2	0.5
+Bacteria; Proteobacteria	ciliatine	33	131	Undirected	3	0.5
+Bacteria; Proteobacteria	ciliatine	33	132	Undirected	5	0.5
+Bacteria; Proteobacteria	ciliatine	33	133	Undirected	1	0.5
+Bacteria; Proteobacteria	ciliatine	33	134	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	aspartate	34	104	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	35	122	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	35	123	Undirected	2	0.5
+Bacteroidia; Formosa	pantothenic acid	36	122	Undirected	1	0.5
+Bacteroidia; Formosa	pantothenic acid	36	123	Undirected	2	0.5
+Bacteroidia; NS2b marine group	ciliatine	37	128	Undirected	1	-0.5
+Bacteroidia; NS2b marine group	ciliatine	37	129	Undirected	3	-0.5
+Bacteroidia; NS2b marine group	malic acid	37	147	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	putrescine 2	38	87	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	pantothenic acid	39	122	Undirected	1	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	39	123	Undirected	2	0.5
+Bacteroidia; NS5 marine group	homoserine betaine	40	90	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	homoserine betaine	40	91	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	aspartate	41	104	Undirected	1	0.5
+Bacteroidia; NS5 marine group	aspartate	42	104	Undirected	1	0.5
+Bacteroidia; NS5 marine group	ornithine 2	41	112	Undirected	1	0.5
+Bacteroidia; NS5 marine group	ornithine 2	42	112	Undirected	1	0.5
+Bacteroidia; NS5 marine group	pantothenic acid	41	122	Undirected	1	0.5
+Bacteroidia; NS5 marine group	pantothenic acid	41	123	Undirected	2	0.5
+Bacteroidia; NS5 marine group	pantothenic acid	42	122	Undirected	1	0.5
+Bacteroidia; NS5 marine group	pantothenic acid	42	123	Undirected	2	0.5
+Bacteroidia; NS5 marine group	ciliatine	40	128	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	ciliatine	40	129	Undirected	3	-0.5
+Bacteroidia; NS5 marine group	GABA	41	135	Undirected	1	0.5
+Bacteroidia; NS5 marine group	GABA	42	135	Undirected	1	0.5
+Bacteroidia; NS5 marine group	glutamine	41	140	Undirected	1	0.5
+Bacteroidia; NS5 marine group	glutamine	42	140	Undirected	1	0.5
+Bacteroidia; NS9 marine group	homoserine betaine	43	90	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	homoserine betaine	43	91	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	homoserine betaine	44	90	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	homoserine betaine	44	91	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	histidine	45	103	Undirected	1	0.5
+Bacteroidia; NS9 marine group	proline	45	106	Undirected	1	0.5
+Bacteroidia; NS9 marine group	ciliatine	43	128	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	ciliatine	43	129	Undirected	3	-0.5
+Bacteroidia; NS9 marine group	ciliatine	44	128	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	ciliatine	44	129	Undirected	3	-0.5
+Bacteroidia; Saprospiraceae	asparagine	46	97	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	malic acid	47	147	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	malic acid	48	148	Undirected	1	0.5
+Bdellovibrionia; OM27 clade	5'UMP	48	150	Undirected	1	0.5
+Cyanobacteria; Cyanobium PCC-6307	ciliatine	49	128	Undirected	1	-0.5
+Cyanobacteria; Cyanobium PCC-6307	ciliatine	49	129	Undirected	3	-0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	50	92	Undirected	4	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	50	93	Undirected	1	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	50	94	Undirected	2	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	50	95	Undirected	3	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	50	96	Undirected	8	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	51	92	Undirected	4	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	51	93	Undirected	1	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	51	94	Undirected	2	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	51	95	Undirected	3	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	51	96	Undirected	8	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	50	130	Undirected	2	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	50	131	Undirected	3	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	50	132	Undirected	5	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	50	133	Undirected	1	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	50	134	Undirected	4	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	51	130	Undirected	2	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	51	131	Undirected	3	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	51	132	Undirected	5	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	51	133	Undirected	1	0.5
+Cyanobacteria; Prochlorococcus MIT9313	ciliatine	51	134	Undirected	4	0.5
+Cyanobacteria; Synechococcus CC9902	homoserine betaine	52	90	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	homoserine betaine	52	91	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	homoserine betaine	53	90	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	homoserine betaine	53	91	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	pantothenic acid	54	122	Undirected	1	0.5
+Cyanobacteria; Synechococcus CC9902	pantothenic acid	54	123	Undirected	2	0.5
+Cyanobacteria; Synechococcus CC9902	ciliatine	52	128	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	ciliatine	52	129	Undirected	3	-0.5
+Cyanobacteria; Synechococcus CC9902	ciliatine	53	128	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	ciliatine	53	129	Undirected	3	-0.5
+Dadabacteria; Dadabacteriales	pantothenic acid	55	120	Undirected	1	-0.5
+Dadabacteria; Dadabacteriales	pantothenic acid	55	121	Undirected	4	-0.5
+Dadabacteria; Dadabacteriales	ciliatine	56	130	Undirected	2	0.5
+Dadabacteria; Dadabacteriales	ciliatine	56	131	Undirected	3	0.5
+Dadabacteria; Dadabacteriales	ciliatine	56	132	Undirected	5	0.5
+Dadabacteria; Dadabacteriales	ciliatine	56	133	Undirected	1	0.5
+Dadabacteria; Dadabacteriales	ciliatine	56	134	Undirected	4	0.5
+Gammaproteobacteria; Alcanivorax	glutamine	57	140	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	58	90	Undirected	1	-0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	58	91	Undirected	2	-0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	59	92	Undirected	4	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	59	93	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	59	94	Undirected	2	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	59	95	Undirected	3	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	59	96	Undirected	8	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	60	92	Undirected	4	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	60	93	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	60	94	Undirected	2	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	60	95	Undirected	3	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	60	96	Undirected	8	0.5
+Gammaproteobacteria; Coxiella	asparagine	59	98	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	asparagine	60	98	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	glycine	59	99	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	glycine	60	99	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	kynurenine	59	100	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	kynurenine	60	100	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	aspartate	59	104	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	aspartate	60	104	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	alanine	59	107	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	alanine	60	107	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	lysine 2	59	108	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	lysine 2	60	108	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	isoleucine	59	118	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	isoleucine	60	118	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	pantothenic acid	59	122	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	pantothenic acid	59	123	Undirected	2	0.5
+Gammaproteobacteria; Coxiella	pantothenic acid	60	122	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	pantothenic acid	60	123	Undirected	2	0.5
+Gammaproteobacteria; Coxiella	cysteine 2	59	124	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	cysteine 2	60	124	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	uridine	59	126	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	uridine	60	126	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	taurine	59	127	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	taurine	60	127	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	ciliatine	58	128	Undirected	1	-0.5
+Gammaproteobacteria; Coxiella	ciliatine	58	129	Undirected	3	-0.5
+Gammaproteobacteria; Coxiella	glutathione 2	59	144	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	glutathione 2	60	144	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	sarcosine	59	146	Undirected	2	0.5
+Gammaproteobacteria; Coxiella	sarcosine	60	146	Undirected	2	0.5
+Gammaproteobacteria; Coxiella	5'UMP	59	150	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	5'UMP	60	150	Undirected	1	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	uridine	61	126	Undirected	1	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	isethionate	61	142	Undirected	1	0.5
+Gammaproteobacteria; Ga0077536	pantothenic acid	62	120	Undirected	1	-0.5
+Gammaproteobacteria; Ga0077536	pantothenic acid	62	121	Undirected	4	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	63	128	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	63	129	Undirected	3	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	64	130	Undirected	2	0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	64	131	Undirected	3	0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	64	132	Undirected	5	0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	64	133	Undirected	1	0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	64	134	Undirected	4	0.5
+Gammaproteobacteria; Photobacterium	homoserine betaine	65	90	Undirected	1	-0.5
+Gammaproteobacteria; Photobacterium	homoserine betaine	65	91	Undirected	2	-0.5
+Gammaproteobacteria; Pseudohongiella	glutamine	66	140	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	taurine	67	127	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	69	92	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	69	93	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	69	94	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	69	95	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	69	96	Undirected	8	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	70	92	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	70	93	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	70	94	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	70	95	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	70	96	Undirected	8	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	71	92	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	71	93	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	71	94	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	71	95	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	71	96	Undirected	8	0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	69	102	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	70	102	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	71	102	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	alanine	69	107	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	alanine	70	107	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	alanine	71	107	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	citrulline	69	111	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	citrulline	70	111	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	citrulline	71	111	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	valine	68	115	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	valine	69	116	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	valine	70	116	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	valine	71	116	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	68	120	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	68	121	Undirected	4	-0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	69	130	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	69	131	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	69	132	Undirected	5	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	69	133	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	69	134	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	70	130	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	70	131	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	70	132	Undirected	5	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	70	133	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	70	134	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	71	130	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	71	131	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	71	132	Undirected	5	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	71	133	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	ciliatine	71	134	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	malic acid	69	148	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	malic acid	70	148	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	malic acid	71	148	Undirected	1	0.5
+Gammaproteobacteria; Vibrio	homoserine betaine	72	90	Undirected	1	-0.5
+Gammaproteobacteria; Vibrio	homoserine betaine	72	91	Undirected	2	-0.5
+Gammaproteobacteria; Vibrionaceae	homoserine betaine	73	90	Undirected	1	-0.5
+Gammaproteobacteria; Vibrionaceae	homoserine betaine	73	91	Undirected	2	-0.5
+Gammaproteobacteria; mle1-7	5'AMP	74	137	Undirected	1	0.5
+Myxococcia; P3OB-42	homoserine betaine	75	92	Undirected	4	0.5
+Myxococcia; P3OB-42	homoserine betaine	75	93	Undirected	1	0.5
+Myxococcia; P3OB-42	homoserine betaine	75	94	Undirected	2	0.5
+Myxococcia; P3OB-42	homoserine betaine	75	95	Undirected	3	0.5
+Myxococcia; P3OB-42	homoserine betaine	75	96	Undirected	8	0.5
+Phycisphaerae; Phycisphaera	tryptophan	76	101	Undirected	1	-0.5
+Phycisphaerae; Phycisphaera	proline	76	105	Undirected	1	-0.5
+Phycisphaerae; Phycisphaera	phenylalanine	76	109	Undirected	1	-0.5
+Phycisphaerae; Phycisphaera	serine	76	113	Undirected	1	-0.5
+Phycisphaerae; Phycisphaera	threonine	76	114	Undirected	1	-0.5
+Phycisphaerae; Phycisphaera	isoleucine	76	117	Undirected	1	-0.5
+Phycisphaerae; Phycisphaera	leucine	76	119	Undirected	1	-0.5
+Phycisphaerae; SM1A02	asparagine	77	98	Undirected	1	0.5
+Phycisphaerae; SM1A02	uridine	77	126	Undirected	1	0.5
+Phycisphaerae; SM1A02	arginine	77	143	Undirected	1	0.5
+Planctomycetota; OM190	pantothenic acid	78	120	Undirected	1	-0.5
+Planctomycetota; OM190	pantothenic acid	78	121	Undirected	4	-0.5
+Planctomycetota; OM190	DHPS	79	139	Undirected	1	0.5
+Proteobacteria; Alphaproteobacteria	5'UMP	80	150	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	pantothenic acid	81	120	Undirected	1	-0.5
+Proteobacteria; Gammaproteobacteria	pantothenic acid	81	121	Undirected	4	-0.5
+Rhodothermia; Balneola	homoserine betaine	82	90	Undirected	1	-0.5
+Rhodothermia; Balneola	homoserine betaine	82	91	Undirected	2	-0.5
+Verrucomicrobiae; A714019	uridine	83	125	Undirected	1	-0.5
+Verrucomicrobiae; A714019	sarcosine	83	145	Undirected	1	-0.5
+Verrucomicrobiae; DEV007	asparagine	84	97	Undirected	1	-0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	85	92	Undirected	4	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	85	93	Undirected	1	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	85	94	Undirected	2	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	85	95	Undirected	3	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	85	96	Undirected	8	0.5
+Verrucomicrobiae; Lentimonas	ciliatine	85	130	Undirected	2	0.5
+Verrucomicrobiae; Lentimonas	ciliatine	85	131	Undirected	3	0.5
+Verrucomicrobiae; Lentimonas	ciliatine	85	132	Undirected	5	0.5
+Verrucomicrobiae; Lentimonas	ciliatine	85	133	Undirected	1	0.5
+Verrucomicrobiae; Lentimonas	ciliatine	85	134	Undirected	4	0.5
+Verrucomicrobiae; Rubritalea	homoserine betaine	86	92	Undirected	4	0.5
+Verrucomicrobiae; Rubritalea	homoserine betaine	86	93	Undirected	1	0.5
+Verrucomicrobiae; Rubritalea	homoserine betaine	86	94	Undirected	2	0.5
+Verrucomicrobiae; Rubritalea	homoserine betaine	86	95	Undirected	3	0.5
+Verrucomicrobiae; Rubritalea	homoserine betaine	86	96	Undirected	8	0.5
+Verrucomicrobiae; Rubritalea	5'UMP	86	150	Undirected	1	0.5

@@ -1,0 +1,111 @@
+Label	Id	direction	num_obs	omics_type
+Acidimicrobia; Candidatus Actinomarina	1	up	1	microbe
+Acidimicrobia; Candidatus Actinomarina	2	up	3	microbe
+Acidimicrobia; Candidatus Actinomarina	3	up	2	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	4	down	1	microbe
+Alphaproteobacteria; AEGEAN-169 marine group	5	up	1	microbe
+Alphaproteobacteria; HIMB11	6	down	1	microbe
+Alphaproteobacteria; OCS116 clade	7	up	1	microbe
+Alphaproteobacteria; Rhodobacteraceae	8	down	1	microbe
+Alphaproteobacteria; Rhodobacteraceae	9	up	1	microbe
+Alphaproteobacteria; Rickettsiaceae	10	down	1	microbe
+Alphaproteobacteria; S25-593	11	up	1	microbe
+Alphaproteobacteria; SAR11 Clade II	12	up	1	microbe
+Alphaproteobacteria; SAR11 Clade III	13	up	1	microbe
+Alphaproteobacteria; SAR11 Clade Ia	14	up	1	microbe
+Alphaproteobacteria; SAR116 clade	15	down	1	microbe
+Alphaproteobacteria; SAR116 clade	16	up	1	microbe
+Bacteria; Marinimicrobia (SAR406 clade)	17	down	1	microbe
+Bacteria; Marinimicrobia (SAR406 clade)	18	up	1	microbe
+Bacteroidia; Chitinophagales	19	down	1	microbe
+Bacteroidia; Cryomorphaceae	20	down	1	microbe
+Bacteroidia; Cryomorphaceae	21	down	2	microbe
+Bacteroidia; Cyclobacteriaceae	22	up	1	microbe
+Bacteroidia; Flavobacteriaceae	23	down	1	microbe
+Bacteroidia; NS5 marine group	24	down	1	microbe
+Bacteroidia; NS5 marine group	25	up	1	microbe
+Bacteroidia; NS9 marine group	26	down	1	microbe
+Bdellovibrionia; OM27 clade	27	down	2	microbe
+Bdellovibrionia; OM27 clade	28	down	1	microbe
+Dadabacteria; Dadabacteriales	29	up	1	microbe
+Desulfuromonadia; Bradymonadales	30	down	1	microbe
+Desulfuromonadia; Bradymonadales	31	up	1	microbe
+Fusobacteria; Propionigenium	32	up	1	microbe
+Gammaproteobacteria; Alteromonas	33	up	1	microbe
+Gammaproteobacteria; Coxiella	34	up	1	microbe
+Gammaproteobacteria; Ectothiorhodospiraceae	35	down	1	microbe
+Gammaproteobacteria; Luminiphilus	36	down	1	microbe
+Gammaproteobacteria; Marinobacterium	37	down	1	microbe
+Gammaproteobacteria; OM60(NOR5) clade	38	down	1	microbe
+Gammaproteobacteria; OM60(NOR5) clade	39	up	1	microbe
+Gammaproteobacteria; Pseudomonadales	40	down	1	microbe
+Gammaproteobacteria; Pseudomonas	41	up	1	microbe
+Gammaproteobacteria; SAR86 clade	42	up	1	microbe
+Gammaproteobacteria; Salinimonas	43	down	1	microbe
+Gammaproteobacteria; Stenotrophomonas	44	up	1	microbe
+Gammaproteobacteria; Vibrionaceae	45	up	1	microbe
+Proteobacteria; Alphaproteobacteria	46	down	1	microbe
+Proteobacteria; Gammaproteobacteria	47	up	1	microbe
+Thermoplasmata; Marine Group II	48	down	1	microbe
+Verrucomicrobiae; MB11C04 marine group	49	down	1	microbe
+Verrucomicrobiae; MB11C04 marine group	50	up	1	microbe
+homoserine betaine	51	down	1	metabolite
+homoserine betaine	52	up	1	metabolite
+asparagine	53	down	1	metabolite
+asparagine	54	up	1	metabolite
+glycine	55	down	1	metabolite
+glycine	56	up	1	metabolite
+kynurenine	57	down	1	metabolite
+kynurenine	58	up	1	metabolite
+tryptophan	59	down	1	metabolite
+tryptophan	60	up	1	metabolite
+histidine	61	down	2	metabolite
+histidine	62	up	1	metabolite
+aspartate	63	down	1	metabolite
+aspartate	64	up	1	metabolite
+proline	65	down	1	metabolite
+proline	66	up	3	metabolite
+proline	67	up	1	metabolite
+alanine	68	down	1	metabolite
+alanine	69	down	2	metabolite
+alanine	70	up	1	metabolite
+lysine 2	71	down	1	metabolite
+lysine 2	72	up	1	metabolite
+phenylalanine	73	down	1	metabolite
+phenylalanine	74	up	1	metabolite
+citrulline	75	down	1	metabolite
+citrulline	76	up	2	metabolite
+citrulline	77	up	1	metabolite
+ornithine 2	78	down	1	metabolite
+ornithine 2	79	down	2	metabolite
+ornithine 2	80	up	1	metabolite
+serine	81	down	1	metabolite
+serine	82	up	2	metabolite
+serine	83	up	1	metabolite
+threonine	84	down	1	metabolite
+threonine	85	up	1	metabolite
+valine	86	down	1	metabolite
+valine	87	up	1	metabolite
+isoleucine	88	down	1	metabolite
+isoleucine	89	up	1	metabolite
+leucine	90	up	1	metabolite
+pantothenic acid	91	down	1	metabolite
+pantothenic acid	92	up	1	metabolite
+uridine	93	down	1	metabolite
+uridine	94	up	1	metabolite
+taurine	95	down	1	metabolite
+taurine	96	up	1	metabolite
+5'AMP	97	down	1	metabolite
+5'AMP	98	up	1	metabolite
+3'AMP	99	down	1	metabolite
+DHPS	100	down	1	metabolite
+DHPS	101	up	1	metabolite
+glutamine	102	down	1	metabolite
+glutamine	103	up	1	metabolite
+glutamic acid	104	down	1	metabolite
+glutamic acid	105	up	1	metabolite
+isethionate	106	up	1	metabolite
+sarcosine	107	down	1	metabolite
+sarcosine	108	up	1	metabolite
+5'UMP	109	down	1	metabolite
+5'UMP	110	up	1	metabolite

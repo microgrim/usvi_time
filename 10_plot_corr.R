@@ -703,7 +703,177 @@ for(i in seq_len(length(spearman.sig.filtered.list))){
 }
 
 
+#how to decide which nodes and edges to plot?
 
+temp_spearman.df <- spearman.sig.filtered.list[["LB_seagrass"]] %>%
+  tibble::as_tibble(.) %>%
+  dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "label")) %>%
+  dplyr::mutate(taxonomy = stringr::str_split_i(label, ": ", 2))
+
+
+#what if we agglomerated by taxonomy and direction of correlation?
+# temp_spearman_filtered.df <- temp_spearman.df %>%
+#   dplyr::mutate(direction = round(estimate, digits = 0)) %>%
+#   dplyr::mutate(direction = dplyr::case_when(direction < 0 ~ "down", direction > 0 ~ "up", .default = NA)) %>%
+#   dplyr::mutate(direction = factor(direction)) %>%
+#   dplyr::group_by(taxonomy, simpleName, direction) %>%
+#   dplyr::summarise(num_obs = length(direction)) %>%
+#   dplyr::mutate(estimate_direction = dplyr::case_when(direction == "up" ~ 0.5, direction == "down" ~ -0.5, .default = NA)) %>%
+#   dplyr::arrange(taxonomy, simpleName, desc(num_obs))
+# 
+# temp_spearman_filtered.df %>%
+#   dplyr::group_by(simpleName) %>%
+#   dplyr::reframe(distribution = quantile(num_obs, probs = seq(1, 0, -0.25), na.rm = TRUE, names = TRUE)) %>%
+#   dplyr::distinct(.) %>%
+#   dplyr::arrange(desc(distribution)) %>%
+#   dplyr::mutate(simpleName = factor(simpleName, levels = unique(.[["simpleName"]]))) %>%
+#   dplyr::arrange(simpleName, desc(distribution))
+# 
+# readr::write_delim(temp_spearman_filtered.df, paste0(projectpath, "/", "temp_spearman_filtered.df", ".tsv"),
+#                    delim = "\t", col_names = TRUE)
+# 
+# 
+#simplify it for Gephi
+
+{
+  temp_spearman_filtered.graph.nodes <- temp_spearman_filtered.df %>%
+    dplyr::ungroup(.) %>%
+    dplyr::select(taxonomy, direction, num_obs) %>%
+    dplyr::rename(name = "taxonomy") %>%
+    dplyr::mutate(omics_type = "microbe") %>%
+    dplyr::arrange(name, omics_type, direction) %>%
+    bind_rows(., (temp_spearman_filtered.df %>%
+                    dplyr::ungroup(.) %>%
+                    dplyr::select(simpleName, direction, num_obs) %>%
+                    dplyr::rename(name = "simpleName") %>%
+                    dplyr::mutate(omics_type = "metabolite") %>%
+                    dplyr::arrange(name, omics_type, direction))) %>%
+    dplyr::distinct(name, direction, num_obs, omics_type)
+  
+  temp_spearman_filtered.graph.nodes <- temp_spearman_filtered.graph.nodes %>%
+    tibble::rowid_to_column(var = "Id") %>%
+    dplyr::rename(Label = "name") %>%
+    dplyr::relocate(Label)
+  
+  temp_spearman_filtered.graph.edges <- temp_spearman_filtered.df %>%
+    dplyr::select(taxonomy, simpleName, direction, num_obs, estimate_direction) %>% 
+    dplyr::inner_join(temp_spearman_filtered.graph.nodes, by = join_by("taxonomy" == "Label", direction, num_obs)) %>%
+    dplyr::rename(Source = "Id") %>%
+    dplyr::inner_join(temp_spearman_filtered.graph.nodes, by = join_by("simpleName" == "Label", direction, num_obs)) %>%
+    dplyr::rename(Target = "Id") %>%
+    dplyr::select(-contains("omics_type")) %>%
+    dplyr::mutate(Type = "Undirected") %>%
+    dplyr::mutate(Weight = num_obs) %>%
+    dplyr::distinct(Source, Target, Type, Weight, estimate_direction) %>%
+    droplevels
+  
+  temp_spearman.graph <- temp_spearman_filtered.graph.edges %>%
+    dplyr::select(taxonomy, simpleName, estimate_direction) %>% dplyr::distinct(., .keep_all = TRUE) %>%
+    igraph::graph_from_data_frame(., directed = TRUE, vertices = NULL)
+  plot(temp_spearman.graph)
+
+  # readr::write_delim(temp_spearman_filtered.graph.nodes, paste0(projectpath, "/", "temp_spearman_filtered.graph.nodes", ".tsv"),
+  #                    delim = "\t", col_names = TRUE)
+  # 
+  # readr::write_delim(temp_spearman_filtered.graph.edges, paste0(projectpath, "/", "temp_spearman_filtered.graph.edges", ".tsv"),
+  #                    delim = "\t", col_names = TRUE)
+
+  }
+
+#generalize the loop to export the results:
+
+for(i in seq_len(length(spearman.sig.filtered.list))){
+  namevar <- names(spearman.sig.filtered.list)[i]
+  temp_spearman.df <- spearman.sig.filtered.list[[i]] %>%
+    tibble::as_tibble(.) %>%
+    dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "label")) %>%
+    dplyr::mutate(taxonomy = stringr::str_split_i(label, ": ", 2))
+  
+  temp_spearman_filtered.df <- temp_spearman.df %>%
+    dplyr::mutate(direction = round(estimate, digits = 0)) %>%
+    dplyr::mutate(direction = dplyr::case_when(direction < 0 ~ "down", direction > 0 ~ "up", .default = NA)) %>%
+    dplyr::mutate(direction = factor(direction)) %>%
+    dplyr::group_by(taxonomy, simpleName, direction) %>%
+    dplyr::summarise(num_obs = length(direction)) %>%
+    dplyr::mutate(estimate_direction = dplyr::case_when(direction == "up" ~ 0.5, direction == "down" ~ -0.5, .default = NA)) %>%
+    dplyr::arrange(taxonomy, simpleName, desc(num_obs))
+  temp_spearman_filtered.graph.nodes <- temp_spearman_filtered.df %>%
+    dplyr::ungroup(.) %>%
+    dplyr::select(taxonomy, direction, num_obs) %>%
+    dplyr::rename(name = "taxonomy") %>%
+    dplyr::mutate(omics_type = "microbe") %>%
+    dplyr::arrange(name, omics_type, direction) %>%
+    bind_rows(., (temp_spearman_filtered.df %>%
+                    dplyr::ungroup(.) %>%
+                    dplyr::select(simpleName, direction, num_obs) %>%
+                    dplyr::rename(name = "simpleName") %>%
+                    dplyr::mutate(omics_type = "metabolite") %>%
+                    dplyr::arrange(name, omics_type, direction))) %>%
+    dplyr::distinct(name, direction, num_obs, omics_type)
+  
+  temp_spearman_filtered.graph.nodes <- temp_spearman_filtered.graph.nodes %>%
+    tibble::rowid_to_column(var = "Id") %>%
+    dplyr::rename(Label = "name") %>%
+    dplyr::relocate(Label)
+  
+  temp_spearman_filtered.graph.edges <- temp_spearman_filtered.df %>%
+    dplyr::select(taxonomy, simpleName, direction, num_obs, estimate_direction) %>% 
+    dplyr::inner_join(temp_spearman_filtered.graph.nodes, by = join_by("taxonomy" == "Label", direction)) %>%
+    dplyr::rename(Source = "Id") %>%
+    dplyr::inner_join(temp_spearman_filtered.graph.nodes, by = join_by("simpleName" == "Label", direction)) %>%
+    dplyr::rename(Target = "Id") %>%
+    dplyr::select(-contains("omics_type")) %>%
+    dplyr::mutate(Type = "Undirected") %>%
+    dplyr::mutate(Weight = num_obs) %>%
+    dplyr::distinct(Source, Target, Type, Weight, estimate_direction) %>%
+    droplevels
+  
+  readr::write_delim(temp_spearman_filtered.graph.nodes, paste0(projectpath, "/", "spearman_taxonomy_network.", namevar, ".nodes", ".tsv"),
+                     delim = "\t", col_names = TRUE)
+  
+  readr::write_delim(temp_spearman_filtered.graph.edges, paste0(projectpath, "/", "spearman_taxonomy_network.", namevar, ".edges", ".tsv"),
+                     delim = "\t", col_names = TRUE)
+  rm(temp_spearman_filtered.graph.nodes)
+  rm(temp_spearman_filtered.graph.edges)
+}
+
+
+
+#what if we retained only those ASVs with a lot of correlations?
+{
+  # temp_spearman_rankabund <- temp_spearman.df %>%
+  #   dplyr::group_by(asv_id) %>%
+  #   # dplyr::group_by(simpleName) %>%
+  #   dplyr::summarise(num_obs = length(estimate)) %>%
+  #   dplyr::arrange(desc(num_obs)) %>%
+  #   dplyr::reframe(distribution = quantile(num_obs, probs = seq(1, 0, -0.25), na.rm = TRUE, names = TRUE)) %>%
+  #   tibble::deframe(.)
+  # 
+  # 
+  # temp_spearman_filtered.df <- temp_spearman.df %>%
+  #   dplyr::right_join(., temp_spearman.df %>%
+  #                       dplyr::group_by(asv_id) %>%
+  #                       # dplyr::group_by(simpleName) %>%
+  #                       dplyr::summarise(num_obs = length(estimate)) %>% dplyr::arrange(desc(num_obs)) %>% dplyr::filter(num_obs >= temp_spearman_rankabund[2]),
+  #                     by = join_by(asv_id), relationship = "many-to-many", multiple = "all")
+  # 
+  # temp_spearman_filtered.df %>%
+  #   dplyr::group_by(simpleName) %>%
+  #   dplyr::summarise(num_obs = length(estimate)) %>%
+  #   dplyr::arrange(desc(num_obs))
+}
+
+
+
+# temp_spearman.graph.nodes <- temp_spearman.tbl %>%
+#   dplyr::select(from) %>%
+#   dplyr::rename(name = "from") %>%
+#   dplyr::mutate(omics_type = "ASV") %>%
+#   bind_rows(., (temp_spearman.tbl %>%
+#                   dplyr::select(to) %>%
+#                   dplyr::rename(name = "to") %>%
+#                   dplyr::mutate(omics_type = "metabolite"))) %>%
+#   dplyr::distinct(name, omics_type)
 # temp_spearman.graph <- temp_spearman.tbl %>%
 #   dplyr::select(from, to, estimate) %>% dplyr::distinct(., .keep_all = TRUE) %>% 
 #   igraph::graph_from_data_frame(., directed = TRUE, vertices = temp_spearman.graph.nodes)

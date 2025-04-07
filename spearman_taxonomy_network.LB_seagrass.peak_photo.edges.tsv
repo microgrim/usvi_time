@@ -1,0 +1,1354 @@
+taxonomy	simpleName	Source	Target	Type	Weight	estimate_direction
+Acidimicrobia; Candidatus Actinomarina	kynurenine	1	154	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	kynurenine	2	154	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	lysine 2	1	168	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	lysine 2	1	169	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	lysine 2	2	168	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	lysine 2	2	169	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	phenylalanine	1	171	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	phenylalanine	2	171	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	pantothenic acid	1	187	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	pantothenic acid	1	188	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	pantothenic acid	2	187	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	pantothenic acid	2	188	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	cysteate	1	194	Undirected	3	-0.5
+Acidimicrobia; Candidatus Actinomarina	cysteate	1	195	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	cysteate	1	196	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	cysteate	2	194	Undirected	3	-0.5
+Acidimicrobia; Candidatus Actinomarina	cysteate	2	195	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	cysteate	2	196	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	GABA	1	206	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	GABA	1	207	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	GABA	2	206	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	GABA	2	207	Undirected	2	-0.5
+Acidimicrobia; Candidatus Actinomarina	malic acid	1	233	Undirected	1	-0.5
+Acidimicrobia; Candidatus Actinomarina	malic acid	2	233	Undirected	1	-0.5
+Actinobacteria; Candidatus Aquiluna	pantothenic acid	3	189	Undirected	1	0.5
+Actinobacteria; Candidatus Aquiluna	pantothenic acid	3	190	Undirected	4	0.5
+Actinobacteria; Candidatus Aquiluna	pantothenic acid	3	191	Undirected	2	0.5
+Actinobacteria; Candidatus Aquiluna	pantothenic acid	3	192	Undirected	3	0.5
+Actinobacteria; ML602J-51	kynurenine	4	155	Undirected	1	0.5
+Actinobacteria; ML602J-51	kynurenine	4	156	Undirected	5	0.5
+Actinobacteria; ML602J-51	kynurenine	4	157	Undirected	2	0.5
+Actinobacteria; ML602J-51	kynurenine	4	158	Undirected	4	0.5
+Actinobacteria; ML602J-51	phenylalanine	4	172	Undirected	1	0.5
+Actinobacteria; ML602J-51	phenylalanine	4	173	Undirected	2	0.5
+Actinobacteria; ML602J-51	pantothenic acid	4	189	Undirected	1	0.5
+Actinobacteria; ML602J-51	pantothenic acid	4	190	Undirected	4	0.5
+Actinobacteria; ML602J-51	pantothenic acid	4	191	Undirected	2	0.5
+Actinobacteria; ML602J-51	pantothenic acid	4	192	Undirected	3	0.5
+Actinobacteria; ML602J-51	cysteate	4	197	Undirected	1	0.5
+Actinobacteria; ML602J-51	cysteate	4	198	Undirected	3	0.5
+Actinobacteria; ML602J-51	cysteate	4	199	Undirected	2	0.5
+Actinobacteria; ML602J-51	ciliatine	4	204	Undirected	1	0.5
+Actinobacteria; ML602J-51	ciliatine	4	205	Undirected	2	0.5
+Actinobacteria; ML602J-51	GABA	4	208	Undirected	1	0.5
+Actinobacteria; ML602J-51	GABA	4	209	Undirected	2	0.5
+Actinobacteria; ML602J-51	arginine	4	226	Undirected	1	0.5
+Actinobacteria; ML602J-51	arginine	4	227	Undirected	2	0.5
+Actinobacteria; ML602J-51	arginine	4	228	Undirected	3	0.5
+Actinobacteria; Microbacteriaceae	phenylalanine	5	172	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	phenylalanine	5	173	Undirected	2	0.5
+Actinobacteria; Microbacteriaceae	pantothenic acid	5	189	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	pantothenic acid	5	190	Undirected	4	0.5
+Actinobacteria; Microbacteriaceae	pantothenic acid	5	191	Undirected	2	0.5
+Actinobacteria; Microbacteriaceae	pantothenic acid	5	192	Undirected	3	0.5
+Actinobacteria; Microbacteriaceae	cysteate	5	197	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	cysteate	5	198	Undirected	3	0.5
+Actinobacteria; Microbacteriaceae	cysteate	5	199	Undirected	2	0.5
+Actinobacteria; Microbacteriaceae	ciliatine	5	204	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	ciliatine	5	205	Undirected	2	0.5
+Actinobacteria; Microbacteriaceae	GABA	5	208	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	GABA	5	209	Undirected	2	0.5
+Actinobacteria; Microbacteriaceae	arginine	5	226	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	arginine	5	227	Undirected	2	0.5
+Actinobacteria; Microbacteriaceae	arginine	5	228	Undirected	3	0.5
+Actinobacteria; Microbacteriaceae	sn-glycerol 3-phosphate	5	238	Undirected	1	0.5
+Actinobacteria; Microbacteriaceae	sn-glycerol 3-phosphate	5	239	Undirected	2	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	cysteate	6	194	Undirected	3	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	cysteate	6	195	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	cysteate	6	196	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	3'AMP	6	211	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	3'AMP	6	212	Undirected	2	-0.5
+Alphaproteobacteria; Aestuariicoccus	kynurenine	7	155	Undirected	1	0.5
+Alphaproteobacteria; Aestuariicoccus	kynurenine	7	156	Undirected	5	0.5
+Alphaproteobacteria; Aestuariicoccus	kynurenine	7	157	Undirected	2	0.5
+Alphaproteobacteria; Aestuariicoccus	kynurenine	7	158	Undirected	4	0.5
+Alphaproteobacteria; Aestuariicoccus	pantothenic acid	7	189	Undirected	1	0.5
+Alphaproteobacteria; Aestuariicoccus	pantothenic acid	7	190	Undirected	4	0.5
+Alphaproteobacteria; Aestuariicoccus	pantothenic acid	7	191	Undirected	2	0.5
+Alphaproteobacteria; Aestuariicoccus	pantothenic acid	7	192	Undirected	3	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	cysteate	8	197	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	cysteate	8	198	Undirected	3	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	cysteate	8	199	Undirected	2	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	GABA	8	208	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	GABA	8	209	Undirected	2	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	DHPS	8	217	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	DHPS	8	218	Undirected	2	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	arginine	8	226	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	arginine	8	227	Undirected	2	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	arginine	8	228	Undirected	3	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	malic acid	8	234	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	malic acid	8	235	Undirected	2	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	sn-glycerol 3-phosphate	8	238	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	sn-glycerol 3-phosphate	8	239	Undirected	2	0.5
+Alphaproteobacteria; Ascidiaceihabitans	5'UMP	9	236	Undirected	1	-0.5
+Alphaproteobacteria; Candidatus Megaira	phenylalanine	10	172	Undirected	1	0.5
+Alphaproteobacteria; Candidatus Megaira	phenylalanine	10	173	Undirected	2	0.5
+Alphaproteobacteria; Candidatus Megaira	pantothenic acid	10	189	Undirected	1	0.5
+Alphaproteobacteria; Candidatus Megaira	pantothenic acid	10	190	Undirected	4	0.5
+Alphaproteobacteria; Candidatus Megaira	pantothenic acid	10	191	Undirected	2	0.5
+Alphaproteobacteria; Candidatus Megaira	pantothenic acid	10	192	Undirected	3	0.5
+Alphaproteobacteria; HIMB11	kynurenine	11	155	Undirected	1	0.5
+Alphaproteobacteria; HIMB11	kynurenine	11	156	Undirected	5	0.5
+Alphaproteobacteria; HIMB11	kynurenine	11	157	Undirected	2	0.5
+Alphaproteobacteria; HIMB11	kynurenine	11	158	Undirected	4	0.5
+Alphaproteobacteria; HIMB11	3'AMP	11	213	Undirected	1	0.5
+Alphaproteobacteria; HIMB11	3'AMP	11	214	Undirected	2	0.5
+Alphaproteobacteria; HIMB11	3'AMP	11	215	Undirected	4	0.5
+Alphaproteobacteria; Hirschia	cysteate	12	197	Undirected	1	0.5
+Alphaproteobacteria; Hirschia	cysteate	12	198	Undirected	3	0.5
+Alphaproteobacteria; Hirschia	cysteate	12	199	Undirected	2	0.5
+Alphaproteobacteria; Hyphomonadaceae	kynurenine	13	155	Undirected	1	0.5
+Alphaproteobacteria; Hyphomonadaceae	kynurenine	13	156	Undirected	5	0.5
+Alphaproteobacteria; Hyphomonadaceae	kynurenine	13	157	Undirected	2	0.5
+Alphaproteobacteria; Hyphomonadaceae	kynurenine	13	158	Undirected	4	0.5
+Alphaproteobacteria; Hyphomonadaceae	guanosine	13	186	Undirected	1	0.5
+Alphaproteobacteria; Leisingera	pantothenic acid	14	189	Undirected	1	0.5
+Alphaproteobacteria; Leisingera	pantothenic acid	14	190	Undirected	4	0.5
+Alphaproteobacteria; Leisingera	pantothenic acid	14	191	Undirected	2	0.5
+Alphaproteobacteria; Leisingera	pantothenic acid	14	192	Undirected	3	0.5
+Alphaproteobacteria; Leisingera	GABA	14	208	Undirected	1	0.5
+Alphaproteobacteria; Leisingera	GABA	14	209	Undirected	2	0.5
+Alphaproteobacteria; Leisingera	arginine	14	226	Undirected	1	0.5
+Alphaproteobacteria; Leisingera	arginine	14	227	Undirected	2	0.5
+Alphaproteobacteria; Leisingera	arginine	14	228	Undirected	3	0.5
+Alphaproteobacteria; Leisingera	sn-glycerol 3-phosphate	14	238	Undirected	1	0.5
+Alphaproteobacteria; Leisingera	sn-glycerol 3-phosphate	14	239	Undirected	2	0.5
+Alphaproteobacteria; Methyloceanibacter	cysteate	15	197	Undirected	1	0.5
+Alphaproteobacteria; Methyloceanibacter	cysteate	15	198	Undirected	3	0.5
+Alphaproteobacteria; Methyloceanibacter	cysteate	15	199	Undirected	2	0.5
+Alphaproteobacteria; Methyloligellaceae	putrescine 2	16	145	Undirected	1	-0.5
+Alphaproteobacteria; Methyloligellaceae	kynurenine	17	155	Undirected	1	0.5
+Alphaproteobacteria; Methyloligellaceae	kynurenine	17	156	Undirected	5	0.5
+Alphaproteobacteria; Methyloligellaceae	kynurenine	17	157	Undirected	2	0.5
+Alphaproteobacteria; Methyloligellaceae	kynurenine	17	158	Undirected	4	0.5
+Alphaproteobacteria; PS1 clade	cysteate	18	194	Undirected	3	-0.5
+Alphaproteobacteria; PS1 clade	cysteate	18	195	Undirected	1	-0.5
+Alphaproteobacteria; PS1 clade	cysteate	18	196	Undirected	2	-0.5
+Alphaproteobacteria; PS1 clade	3'AMP	18	211	Undirected	1	-0.5
+Alphaproteobacteria; PS1 clade	3'AMP	18	212	Undirected	2	-0.5
+Alphaproteobacteria; Rhizobiales	pantothenic acid	19	189	Undirected	1	0.5
+Alphaproteobacteria; Rhizobiales	pantothenic acid	19	190	Undirected	4	0.5
+Alphaproteobacteria; Rhizobiales	pantothenic acid	19	191	Undirected	2	0.5
+Alphaproteobacteria; Rhizobiales	pantothenic acid	19	192	Undirected	3	0.5
+Alphaproteobacteria; Rhizobiales	GABA	19	208	Undirected	1	0.5
+Alphaproteobacteria; Rhizobiales	GABA	19	209	Undirected	2	0.5
+Alphaproteobacteria; Rhizobiales	arginine	19	226	Undirected	1	0.5
+Alphaproteobacteria; Rhizobiales	arginine	19	227	Undirected	2	0.5
+Alphaproteobacteria; Rhizobiales	arginine	19	228	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	putrescine 2	20	145	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	putrescine 2	21	145	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	asparagine	20	147	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	asparagine	20	148	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	asparagine	21	147	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	asparagine	21	148	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	22	155	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	22	156	Undirected	5	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	22	157	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	22	158	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	23	155	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	23	156	Undirected	5	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	23	157	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	23	158	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	24	155	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	24	156	Undirected	5	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	24	157	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	24	158	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	25	155	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	25	156	Undirected	5	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	25	157	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	kynurenine	25	158	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	aspartate	20	161	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	aspartate	20	162	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	aspartate	21	161	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	aspartate	21	162	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	proline	20	163	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	proline	21	163	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	alanine	20	165	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	alanine	20	166	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	alanine	21	165	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	alanine	21	166	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	22	172	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	22	173	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	23	172	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	23	173	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	24	172	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	24	173	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	25	172	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	25	173	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	20	171	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	phenylalanine	21	171	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	22	189	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	22	190	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	22	191	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	22	192	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	23	189	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	23	190	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	23	191	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	23	192	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	24	189	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	24	190	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	24	191	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	24	192	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	25	189	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	25	190	Undirected	4	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	25	191	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	pantothenic acid	25	192	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	uridine	20	193	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	uridine	21	193	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	20	194	Undirected	3	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	20	195	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	20	196	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	21	194	Undirected	3	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	21	195	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	21	196	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	22	197	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	22	198	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	22	199	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	23	197	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	23	198	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	23	199	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	24	197	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	24	198	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	24	199	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	25	197	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	25	198	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	cysteate	25	199	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	ciliatine	20	202	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	ciliatine	20	203	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	ciliatine	21	202	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	ciliatine	21	203	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	22	208	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	22	209	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	23	208	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	23	209	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	24	208	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	24	209	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	25	208	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	25	209	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	20	206	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	20	207	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	21	206	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	GABA	21	207	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	3'AMP	20	211	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	3'AMP	20	212	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	3'AMP	21	211	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	3'AMP	21	212	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	DHPS	20	216	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	DHPS	21	216	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	glutamic acid	20	220	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	glutamic acid	21	220	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	isethionate	20	221	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	isethionate	20	222	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	isethionate	21	221	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	isethionate	21	222	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	22	226	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	22	227	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	22	228	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	23	226	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	23	227	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	23	228	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	24	226	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	24	227	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	24	228	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	25	226	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	25	227	Undirected	2	0.5
+Alphaproteobacteria; Rhodobacteraceae	arginine	25	228	Undirected	3	0.5
+Alphaproteobacteria; Rhodobacteraceae	5'UMP	20	236	Undirected	1	-0.5
+Alphaproteobacteria; Rhodobacteraceae	5'UMP	21	236	Undirected	1	-0.5
+Alphaproteobacteria; Rickettsiales	cysteate	26	194	Undirected	3	-0.5
+Alphaproteobacteria; Rickettsiales	cysteate	26	195	Undirected	1	-0.5
+Alphaproteobacteria; Rickettsiales	cysteate	26	196	Undirected	2	-0.5
+Alphaproteobacteria; Rickettsiales	DHPS	26	216	Undirected	1	-0.5
+Alphaproteobacteria; Roseobacter clade CHAB-I-5 lineage	kynurenine	27	155	Undirected	1	0.5
+Alphaproteobacteria; Roseobacter clade CHAB-I-5 lineage	kynurenine	27	156	Undirected	5	0.5
+Alphaproteobacteria; Roseobacter clade CHAB-I-5 lineage	kynurenine	27	157	Undirected	2	0.5
+Alphaproteobacteria; Roseobacter clade CHAB-I-5 lineage	kynurenine	27	158	Undirected	4	0.5
+Alphaproteobacteria; S25-593	spermidine 3	28	146	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	3'AMP	29	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	3'AMP	29	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade III	kynurenine	30	154	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade III	3'AMP	30	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade III	3'AMP	30	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	kynurenine	31	154	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	cysteate	31	194	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	cysteate	31	195	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	cysteate	31	196	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	GABA	31	206	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	GABA	31	207	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	3'AMP	31	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	3'AMP	31	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	cysteate	32	194	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	cysteate	32	195	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	cysteate	32	196	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	cysteate	33	194	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	cysteate	33	195	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	cysteate	33	196	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	3'AMP	32	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	3'AMP	32	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	3'AMP	33	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	3'AMP	33	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	arginine	32	224	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	arginine	32	225	Undirected	4	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	arginine	33	224	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	arginine	33	225	Undirected	4	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	34	154	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	35	154	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	pantothenic acid	34	187	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	pantothenic acid	34	188	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	pantothenic acid	35	187	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	pantothenic acid	35	188	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	cysteate	34	194	Undirected	3	-0.5
+Alphaproteobacteria; SAR116 clade	cysteate	34	195	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	cysteate	34	196	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	cysteate	35	194	Undirected	3	-0.5
+Alphaproteobacteria; SAR116 clade	cysteate	35	195	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	cysteate	35	196	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	GABA	34	206	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	GABA	34	207	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	GABA	35	206	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	GABA	35	207	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	3'AMP	34	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	3'AMP	34	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	3'AMP	35	211	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	3'AMP	35	212	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	arginine	34	224	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	arginine	34	225	Undirected	4	-0.5
+Alphaproteobacteria; SAR116 clade	arginine	35	224	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	arginine	35	225	Undirected	4	-0.5
+Alphaproteobacteria; SAR116 clade	malic acid	34	233	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	malic acid	35	233	Undirected	1	-0.5
+Alphaproteobacteria; Stappiaceae	kynurenine	36	155	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	kynurenine	36	156	Undirected	5	0.5
+Alphaproteobacteria; Stappiaceae	kynurenine	36	157	Undirected	2	0.5
+Alphaproteobacteria; Stappiaceae	kynurenine	36	158	Undirected	4	0.5
+Alphaproteobacteria; Stappiaceae	pantothenic acid	36	189	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	pantothenic acid	36	190	Undirected	4	0.5
+Alphaproteobacteria; Stappiaceae	pantothenic acid	36	191	Undirected	2	0.5
+Alphaproteobacteria; Stappiaceae	pantothenic acid	36	192	Undirected	3	0.5
+Alphaproteobacteria; Stappiaceae	GABA	36	208	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	GABA	36	209	Undirected	2	0.5
+Bacilli; Acholeplasma	citrulline	37	174	Undirected	1	0.5
+Bacilli; Candidatus Hepatoplasma	pantothenic acid	38	189	Undirected	1	0.5
+Bacilli; Candidatus Hepatoplasma	pantothenic acid	38	190	Undirected	4	0.5
+Bacilli; Candidatus Hepatoplasma	pantothenic acid	38	191	Undirected	2	0.5
+Bacilli; Candidatus Hepatoplasma	pantothenic acid	38	192	Undirected	3	0.5
+Bacilli; Candidatus Hepatoplasma	ciliatine	38	204	Undirected	1	0.5
+Bacilli; Candidatus Hepatoplasma	ciliatine	38	205	Undirected	2	0.5
+Bacilli; Candidatus Hepatoplasma	GABA	38	208	Undirected	1	0.5
+Bacilli; Candidatus Hepatoplasma	GABA	38	209	Undirected	2	0.5
+Bacilli; Candidatus Hepatoplasma	arginine	38	226	Undirected	1	0.5
+Bacilli; Candidatus Hepatoplasma	arginine	38	227	Undirected	2	0.5
+Bacilli; Candidatus Hepatoplasma	arginine	38	228	Undirected	3	0.5
+Bacilli; Candidatus Hepatoplasma	sn-glycerol 3-phosphate	38	238	Undirected	1	0.5
+Bacilli; Candidatus Hepatoplasma	sn-glycerol 3-phosphate	38	239	Undirected	2	0.5
+Bacteria	glycine	39	152	Undirected	1	0.5
+Bacteria	glycine	39	153	Undirected	2	0.5
+Bacteria	kynurenine	39	155	Undirected	1	0.5
+Bacteria	kynurenine	39	156	Undirected	5	0.5
+Bacteria	kynurenine	39	157	Undirected	2	0.5
+Bacteria	kynurenine	39	158	Undirected	4	0.5
+Bacteria	taurine	39	201	Undirected	1	0.5
+Bacteria	glutathione 2	39	230	Undirected	1	0.5
+Bacteria	sarcosine	39	232	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	cysteate	40	194	Undirected	3	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	cysteate	40	195	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	cysteate	40	196	Undirected	2	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	cysteate	41	194	Undirected	3	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	cysteate	41	195	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	cysteate	41	196	Undirected	2	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	GABA	40	206	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	GABA	40	207	Undirected	2	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	GABA	41	206	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	GABA	41	207	Undirected	2	-0.5
+Bacteria; Proteobacteria	3'AMP	42	211	Undirected	1	-0.5
+Bacteria; Proteobacteria	3'AMP	42	212	Undirected	2	-0.5
+Bacteria; SAR324 clade(Marine group B)	kynurenine	43	154	Undirected	1	-0.5
+Bacteria; SAR324 clade(Marine group B)	pantothenic acid	43	187	Undirected	1	-0.5
+Bacteria; SAR324 clade(Marine group B)	pantothenic acid	43	188	Undirected	2	-0.5
+Bacteroidia; Actibacter	pantothenic acid	44	189	Undirected	1	0.5
+Bacteroidia; Actibacter	pantothenic acid	44	190	Undirected	4	0.5
+Bacteroidia; Actibacter	pantothenic acid	44	191	Undirected	2	0.5
+Bacteroidia; Actibacter	pantothenic acid	44	192	Undirected	3	0.5
+Bacteroidia; Amoebophilaceae	cysteate	45	197	Undirected	1	0.5
+Bacteroidia; Amoebophilaceae	cysteate	45	198	Undirected	3	0.5
+Bacteroidia; Amoebophilaceae	cysteate	45	199	Undirected	2	0.5
+Bacteroidia; Amoebophilaceae	sn-glycerol 3-phosphate	45	238	Undirected	1	0.5
+Bacteroidia; Amoebophilaceae	sn-glycerol 3-phosphate	45	239	Undirected	2	0.5
+Bacteroidia; Bacteroidales	kynurenine	46	155	Undirected	1	0.5
+Bacteroidia; Bacteroidales	kynurenine	46	156	Undirected	5	0.5
+Bacteroidia; Bacteroidales	kynurenine	46	157	Undirected	2	0.5
+Bacteroidia; Bacteroidales	kynurenine	46	158	Undirected	4	0.5
+Bacteroidia; Bacteroidales	phenylalanine	46	172	Undirected	1	0.5
+Bacteroidia; Bacteroidales	phenylalanine	46	173	Undirected	2	0.5
+Bacteroidia; Bacteroidales	pantothenic acid	46	189	Undirected	1	0.5
+Bacteroidia; Bacteroidales	pantothenic acid	46	190	Undirected	4	0.5
+Bacteroidia; Bacteroidales	pantothenic acid	46	191	Undirected	2	0.5
+Bacteroidia; Bacteroidales	pantothenic acid	46	192	Undirected	3	0.5
+Bacteroidia; Bacteroidales	ciliatine	46	204	Undirected	1	0.5
+Bacteroidia; Bacteroidales	ciliatine	46	205	Undirected	2	0.5
+Bacteroidia; Bacteroidales	GABA	46	208	Undirected	1	0.5
+Bacteroidia; Bacteroidales	GABA	46	209	Undirected	2	0.5
+Bacteroidia; Chitinophagales	3'AMP	47	213	Undirected	1	0.5
+Bacteroidia; Chitinophagales	3'AMP	47	214	Undirected	2	0.5
+Bacteroidia; Chitinophagales	3'AMP	47	215	Undirected	4	0.5
+Bacteroidia; Crocinitomix	kynurenine	48	155	Undirected	1	0.5
+Bacteroidia; Crocinitomix	kynurenine	48	156	Undirected	5	0.5
+Bacteroidia; Crocinitomix	kynurenine	48	157	Undirected	2	0.5
+Bacteroidia; Crocinitomix	kynurenine	48	158	Undirected	4	0.5
+Bacteroidia; Crocinitomix	ciliatine	48	204	Undirected	1	0.5
+Bacteroidia; Crocinitomix	ciliatine	48	205	Undirected	2	0.5
+Bacteroidia; Crocinitomix	GABA	48	208	Undirected	1	0.5
+Bacteroidia; Crocinitomix	GABA	48	209	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	asparagine	49	149	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	asparagine	50	149	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	asparagine	51	149	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	glycine	49	152	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	glycine	49	153	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	glycine	50	152	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	glycine	50	153	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	glycine	51	152	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	glycine	51	153	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	49	155	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	49	156	Undirected	5	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	49	157	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	49	158	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	50	155	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	50	156	Undirected	5	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	50	157	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	50	158	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	51	155	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	51	156	Undirected	5	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	51	157	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	kynurenine	51	158	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	alanine	49	167	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	alanine	50	167	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	alanine	51	167	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	lysine 2	49	170	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	lysine 2	50	170	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	lysine 2	51	170	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	phenylalanine	49	172	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	phenylalanine	49	173	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	phenylalanine	50	172	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	phenylalanine	50	173	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	phenylalanine	51	172	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	phenylalanine	51	173	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	threonine	49	178	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	threonine	50	178	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	threonine	51	178	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	valine	49	180	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	valine	50	180	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	valine	51	180	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	isoleucine	49	182	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	isoleucine	50	182	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	isoleucine	51	182	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	leucine	49	184	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	leucine	50	184	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	leucine	51	184	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	49	189	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	49	190	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	49	191	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	49	192	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	50	189	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	50	190	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	50	191	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	50	192	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	51	189	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	51	190	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	51	191	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	51	192	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	cysteate	49	197	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	cysteate	49	198	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	cysteate	49	199	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	cysteate	50	197	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	cysteate	50	198	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	cysteate	50	199	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	cysteate	51	197	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	cysteate	51	198	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	cysteate	51	199	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	ciliatine	49	204	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	ciliatine	49	205	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	ciliatine	50	204	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	ciliatine	50	205	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	ciliatine	51	204	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	ciliatine	51	205	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	GABA	49	208	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	GABA	49	209	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	GABA	50	208	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	GABA	50	209	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	GABA	51	208	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	GABA	51	209	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	DHPS	49	217	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	DHPS	49	218	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	DHPS	50	217	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	DHPS	50	218	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	DHPS	51	217	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	DHPS	51	218	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	isethionate	49	223	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	isethionate	50	223	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	isethionate	51	223	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	arginine	49	226	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	arginine	49	227	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	arginine	49	228	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	arginine	50	226	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	arginine	50	227	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	arginine	50	228	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	arginine	51	226	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	arginine	51	227	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	arginine	51	228	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	malic acid	49	234	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	malic acid	49	235	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	malic acid	50	234	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	malic acid	50	235	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	malic acid	51	234	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	malic acid	51	235	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	sn-glycerol 3-phosphate	49	238	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	sn-glycerol 3-phosphate	49	239	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	sn-glycerol 3-phosphate	50	238	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	sn-glycerol 3-phosphate	50	239	Undirected	2	0.5
+Bacteroidia; Cryomorphaceae	sn-glycerol 3-phosphate	51	238	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	sn-glycerol 3-phosphate	51	239	Undirected	2	0.5
+Bacteroidia; Cyclobacteriaceae	cysteate	52	197	Undirected	1	0.5
+Bacteroidia; Cyclobacteriaceae	cysteate	52	198	Undirected	3	0.5
+Bacteroidia; Cyclobacteriaceae	cysteate	52	199	Undirected	2	0.5
+Bacteroidia; Cyclobacteriaceae	ciliatine	52	204	Undirected	1	0.5
+Bacteroidia; Cyclobacteriaceae	ciliatine	52	205	Undirected	2	0.5
+Bacteroidia; Cyclobacteriaceae	GABA	52	208	Undirected	1	0.5
+Bacteroidia; Cyclobacteriaceae	GABA	52	209	Undirected	2	0.5
+Bacteroidia; Cyclobacteriaceae	sn-glycerol 3-phosphate	52	238	Undirected	1	0.5
+Bacteroidia; Cyclobacteriaceae	sn-glycerol 3-phosphate	52	239	Undirected	2	0.5
+Bacteroidia; Ekhidna	asparagine	53	147	Undirected	2	-0.5
+Bacteroidia; Ekhidna	asparagine	53	148	Undirected	1	-0.5
+Bacteroidia; Ekhidna	cysteate	53	194	Undirected	3	-0.5
+Bacteroidia; Ekhidna	cysteate	53	195	Undirected	1	-0.5
+Bacteroidia; Ekhidna	cysteate	53	196	Undirected	2	-0.5
+Bacteroidia; Ekhidna	GABA	53	206	Undirected	1	-0.5
+Bacteroidia; Ekhidna	GABA	53	207	Undirected	2	-0.5
+Bacteroidia; Ekhidna	DHPS	53	216	Undirected	1	-0.5
+Bacteroidia; Ekhidna	isethionate	53	221	Undirected	2	-0.5
+Bacteroidia; Ekhidna	isethionate	53	222	Undirected	1	-0.5
+Bacteroidia; Fabibacter	pantothenic acid	54	189	Undirected	1	0.5
+Bacteroidia; Fabibacter	pantothenic acid	54	190	Undirected	4	0.5
+Bacteroidia; Fabibacter	pantothenic acid	54	191	Undirected	2	0.5
+Bacteroidia; Fabibacter	pantothenic acid	54	192	Undirected	3	0.5
+Bacteroidia; Fabibacter	cysteate	54	197	Undirected	1	0.5
+Bacteroidia; Fabibacter	cysteate	54	198	Undirected	3	0.5
+Bacteroidia; Fabibacter	cysteate	54	199	Undirected	2	0.5
+Bacteroidia; Fabibacter	ciliatine	54	204	Undirected	1	0.5
+Bacteroidia; Fabibacter	ciliatine	54	205	Undirected	2	0.5
+Bacteroidia; Fabibacter	arginine	54	226	Undirected	1	0.5
+Bacteroidia; Fabibacter	arginine	54	227	Undirected	2	0.5
+Bacteroidia; Fabibacter	arginine	54	228	Undirected	3	0.5
+Bacteroidia; Fabibacter	sn-glycerol 3-phosphate	54	238	Undirected	1	0.5
+Bacteroidia; Fabibacter	sn-glycerol 3-phosphate	54	239	Undirected	2	0.5
+Bacteroidia; Flavicella	cysteate	55	197	Undirected	1	0.5
+Bacteroidia; Flavicella	cysteate	55	198	Undirected	3	0.5
+Bacteroidia; Flavicella	cysteate	55	199	Undirected	2	0.5
+Bacteroidia; Flavicella	ciliatine	55	204	Undirected	1	0.5
+Bacteroidia; Flavicella	ciliatine	55	205	Undirected	2	0.5
+Bacteroidia; Flavicella	GABA	55	208	Undirected	1	0.5
+Bacteroidia; Flavicella	GABA	55	209	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	putrescine 2	56	145	Undirected	1	-0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	57	155	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	57	156	Undirected	5	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	57	157	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	57	158	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	58	155	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	58	156	Undirected	5	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	58	157	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	58	158	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	59	155	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	59	156	Undirected	5	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	59	157	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	kynurenine	59	158	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	57	189	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	57	190	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	57	191	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	57	192	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	58	189	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	58	190	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	58	191	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	58	192	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	59	189	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	59	190	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	59	191	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	pantothenic acid	59	192	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	57	197	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	57	198	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	57	199	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	58	197	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	58	198	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	58	199	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	59	197	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	59	198	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	cysteate	59	199	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	ciliatine	57	204	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	ciliatine	57	205	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	ciliatine	58	204	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	ciliatine	58	205	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	ciliatine	59	204	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	ciliatine	59	205	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	GABA	57	208	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	GABA	57	209	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	GABA	58	208	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	GABA	58	209	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	GABA	59	208	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	GABA	59	209	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	57	213	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	57	214	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	57	215	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	58	213	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	58	214	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	58	215	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	59	213	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	59	214	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	3'AMP	59	215	Undirected	4	0.5
+Bacteroidia; Flavobacteriaceae	arginine	57	226	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	arginine	57	227	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	arginine	57	228	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	arginine	58	226	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	arginine	58	227	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	arginine	58	228	Undirected	3	0.5
+Bacteroidia; Flavobacteriaceae	arginine	59	226	Undirected	1	0.5
+Bacteroidia; Flavobacteriaceae	arginine	59	227	Undirected	2	0.5
+Bacteroidia; Flavobacteriaceae	arginine	59	228	Undirected	3	0.5
+Bacteroidia; Fluviicola	citrulline	60	174	Undirected	1	0.5
+Bacteroidia; Formosa	3'AMP	61	213	Undirected	1	0.5
+Bacteroidia; Formosa	3'AMP	61	214	Undirected	2	0.5
+Bacteroidia; Formosa	3'AMP	61	215	Undirected	4	0.5
+Bacteroidia; Macellibacteroides	kynurenine	62	155	Undirected	1	0.5
+Bacteroidia; Macellibacteroides	kynurenine	62	156	Undirected	5	0.5
+Bacteroidia; Macellibacteroides	kynurenine	62	157	Undirected	2	0.5
+Bacteroidia; Macellibacteroides	kynurenine	62	158	Undirected	4	0.5
+Bacteroidia; Marinoscillum	cysteate	63	197	Undirected	1	0.5
+Bacteroidia; Marinoscillum	cysteate	63	198	Undirected	3	0.5
+Bacteroidia; Marinoscillum	cysteate	63	199	Undirected	2	0.5
+Bacteroidia; Marinoscillum	GABA	63	208	Undirected	1	0.5
+Bacteroidia; Marinoscillum	GABA	63	209	Undirected	2	0.5
+Bacteroidia; Mesoflavibacter	kynurenine	64	155	Undirected	1	0.5
+Bacteroidia; Mesoflavibacter	kynurenine	64	156	Undirected	5	0.5
+Bacteroidia; Mesoflavibacter	kynurenine	64	157	Undirected	2	0.5
+Bacteroidia; Mesoflavibacter	kynurenine	64	158	Undirected	4	0.5
+Bacteroidia; Mesoflavibacter	phenylalanine	64	172	Undirected	1	0.5
+Bacteroidia; Mesoflavibacter	phenylalanine	64	173	Undirected	2	0.5
+Bacteroidia; Mesoflavibacter	pantothenic acid	64	189	Undirected	1	0.5
+Bacteroidia; Mesoflavibacter	pantothenic acid	64	190	Undirected	4	0.5
+Bacteroidia; Mesoflavibacter	pantothenic acid	64	191	Undirected	2	0.5
+Bacteroidia; Mesoflavibacter	pantothenic acid	64	192	Undirected	3	0.5
+Bacteroidia; Mesoflavibacter	ciliatine	64	204	Undirected	1	0.5
+Bacteroidia; Mesoflavibacter	ciliatine	64	205	Undirected	2	0.5
+Bacteroidia; Mesoflavibacter	GABA	64	208	Undirected	1	0.5
+Bacteroidia; Mesoflavibacter	GABA	64	209	Undirected	2	0.5
+Bacteroidia; NS11-12 marine group	aspartate	65	161	Undirected	1	-0.5
+Bacteroidia; NS11-12 marine group	aspartate	65	162	Undirected	2	-0.5
+Bacteroidia; NS11-12 marine group	proline	65	163	Undirected	1	-0.5
+Bacteroidia; NS11-12 marine group	uridine	65	193	Undirected	1	-0.5
+Bacteroidia; NS11-12 marine group	malic acid	66	234	Undirected	1	0.5
+Bacteroidia; NS11-12 marine group	malic acid	66	235	Undirected	2	0.5
+Bacteroidia; NS11-12 marine group	5'UMP	65	236	Undirected	1	-0.5
+Bacteroidia; NS2b marine group	3'AMP	67	213	Undirected	1	0.5
+Bacteroidia; NS2b marine group	3'AMP	67	214	Undirected	2	0.5
+Bacteroidia; NS2b marine group	3'AMP	67	215	Undirected	4	0.5
+Bacteroidia; NS4 marine group	asparagine	68	147	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	asparagine	68	148	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	asparagine	69	147	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	asparagine	69	148	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	kynurenine	70	155	Undirected	1	0.5
+Bacteroidia; NS4 marine group	kynurenine	70	156	Undirected	5	0.5
+Bacteroidia; NS4 marine group	kynurenine	70	157	Undirected	2	0.5
+Bacteroidia; NS4 marine group	kynurenine	70	158	Undirected	4	0.5
+Bacteroidia; NS4 marine group	kynurenine	71	155	Undirected	1	0.5
+Bacteroidia; NS4 marine group	kynurenine	71	156	Undirected	5	0.5
+Bacteroidia; NS4 marine group	kynurenine	71	157	Undirected	2	0.5
+Bacteroidia; NS4 marine group	kynurenine	71	158	Undirected	4	0.5
+Bacteroidia; NS4 marine group	kynurenine	72	155	Undirected	1	0.5
+Bacteroidia; NS4 marine group	kynurenine	72	156	Undirected	5	0.5
+Bacteroidia; NS4 marine group	kynurenine	72	157	Undirected	2	0.5
+Bacteroidia; NS4 marine group	kynurenine	72	158	Undirected	4	0.5
+Bacteroidia; NS4 marine group	kynurenine	73	155	Undirected	1	0.5
+Bacteroidia; NS4 marine group	kynurenine	73	156	Undirected	5	0.5
+Bacteroidia; NS4 marine group	kynurenine	73	157	Undirected	2	0.5
+Bacteroidia; NS4 marine group	kynurenine	73	158	Undirected	4	0.5
+Bacteroidia; NS4 marine group	aspartate	68	161	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	aspartate	68	162	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	aspartate	69	161	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	aspartate	69	162	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	alanine	68	165	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	alanine	68	166	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	alanine	69	165	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	alanine	69	166	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	lysine 2	68	168	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	lysine 2	68	169	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	lysine 2	69	168	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	lysine 2	69	169	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	phenylalanine	68	171	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	phenylalanine	69	171	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	threonine	68	177	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	threonine	69	177	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	valine	68	179	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	valine	69	179	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	isoleucine	68	181	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	isoleucine	69	181	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	leucine	68	183	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	leucine	69	183	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	leucine	70	184	Undirected	1	0.5
+Bacteroidia; NS4 marine group	leucine	71	184	Undirected	1	0.5
+Bacteroidia; NS4 marine group	leucine	72	184	Undirected	1	0.5
+Bacteroidia; NS4 marine group	leucine	73	184	Undirected	1	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	70	189	Undirected	1	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	70	190	Undirected	4	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	70	191	Undirected	2	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	70	192	Undirected	3	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	71	189	Undirected	1	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	71	190	Undirected	4	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	71	191	Undirected	2	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	71	192	Undirected	3	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	72	189	Undirected	1	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	72	190	Undirected	4	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	72	191	Undirected	2	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	72	192	Undirected	3	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	73	189	Undirected	1	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	73	190	Undirected	4	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	73	191	Undirected	2	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	73	192	Undirected	3	0.5
+Bacteroidia; NS4 marine group	pantothenic acid	68	187	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	pantothenic acid	68	188	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	pantothenic acid	69	187	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	pantothenic acid	69	188	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	uridine	68	193	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	uridine	69	193	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	cysteate	68	194	Undirected	3	-0.5
+Bacteroidia; NS4 marine group	cysteate	68	195	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	cysteate	68	196	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	cysteate	69	194	Undirected	3	-0.5
+Bacteroidia; NS4 marine group	cysteate	69	195	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	cysteate	69	196	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	taurine	68	200	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	taurine	69	200	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	ciliatine	70	204	Undirected	1	0.5
+Bacteroidia; NS4 marine group	ciliatine	70	205	Undirected	2	0.5
+Bacteroidia; NS4 marine group	ciliatine	71	204	Undirected	1	0.5
+Bacteroidia; NS4 marine group	ciliatine	71	205	Undirected	2	0.5
+Bacteroidia; NS4 marine group	ciliatine	72	204	Undirected	1	0.5
+Bacteroidia; NS4 marine group	ciliatine	72	205	Undirected	2	0.5
+Bacteroidia; NS4 marine group	ciliatine	73	204	Undirected	1	0.5
+Bacteroidia; NS4 marine group	ciliatine	73	205	Undirected	2	0.5
+Bacteroidia; NS4 marine group	GABA	70	208	Undirected	1	0.5
+Bacteroidia; NS4 marine group	GABA	70	209	Undirected	2	0.5
+Bacteroidia; NS4 marine group	GABA	71	208	Undirected	1	0.5
+Bacteroidia; NS4 marine group	GABA	71	209	Undirected	2	0.5
+Bacteroidia; NS4 marine group	GABA	72	208	Undirected	1	0.5
+Bacteroidia; NS4 marine group	GABA	72	209	Undirected	2	0.5
+Bacteroidia; NS4 marine group	GABA	73	208	Undirected	1	0.5
+Bacteroidia; NS4 marine group	GABA	73	209	Undirected	2	0.5
+Bacteroidia; NS4 marine group	5'AMP	68	210	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	5'AMP	69	210	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	3'AMP	70	213	Undirected	1	0.5
+Bacteroidia; NS4 marine group	3'AMP	70	214	Undirected	2	0.5
+Bacteroidia; NS4 marine group	3'AMP	70	215	Undirected	4	0.5
+Bacteroidia; NS4 marine group	3'AMP	71	213	Undirected	1	0.5
+Bacteroidia; NS4 marine group	3'AMP	71	214	Undirected	2	0.5
+Bacteroidia; NS4 marine group	3'AMP	71	215	Undirected	4	0.5
+Bacteroidia; NS4 marine group	3'AMP	72	213	Undirected	1	0.5
+Bacteroidia; NS4 marine group	3'AMP	72	214	Undirected	2	0.5
+Bacteroidia; NS4 marine group	3'AMP	72	215	Undirected	4	0.5
+Bacteroidia; NS4 marine group	3'AMP	73	213	Undirected	1	0.5
+Bacteroidia; NS4 marine group	3'AMP	73	214	Undirected	2	0.5
+Bacteroidia; NS4 marine group	3'AMP	73	215	Undirected	4	0.5
+Bacteroidia; NS4 marine group	DHPS	68	216	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	DHPS	69	216	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	isethionate	68	221	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	isethionate	68	222	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	isethionate	69	221	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	isethionate	69	222	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	arginine	68	224	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	arginine	68	225	Undirected	4	-0.5
+Bacteroidia; NS4 marine group	arginine	69	224	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	arginine	69	225	Undirected	4	-0.5
+Bacteroidia; NS4 marine group	5'UMP	68	236	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	5'UMP	69	236	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	asparagine	74	147	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	asparagine	74	148	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	asparagine	75	147	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	asparagine	75	148	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	glycine	74	150	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	glycine	74	151	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	glycine	75	150	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	glycine	75	151	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	kynurenine	76	155	Undirected	1	0.5
+Bacteroidia; NS5 marine group	kynurenine	76	156	Undirected	5	0.5
+Bacteroidia; NS5 marine group	kynurenine	76	157	Undirected	2	0.5
+Bacteroidia; NS5 marine group	kynurenine	76	158	Undirected	4	0.5
+Bacteroidia; NS5 marine group	kynurenine	77	155	Undirected	1	0.5
+Bacteroidia; NS5 marine group	kynurenine	77	156	Undirected	5	0.5
+Bacteroidia; NS5 marine group	kynurenine	77	157	Undirected	2	0.5
+Bacteroidia; NS5 marine group	kynurenine	77	158	Undirected	4	0.5
+Bacteroidia; NS5 marine group	kynurenine	78	155	Undirected	1	0.5
+Bacteroidia; NS5 marine group	kynurenine	78	156	Undirected	5	0.5
+Bacteroidia; NS5 marine group	kynurenine	78	157	Undirected	2	0.5
+Bacteroidia; NS5 marine group	kynurenine	78	158	Undirected	4	0.5
+Bacteroidia; NS5 marine group	tryptophan	76	160	Undirected	1	0.5
+Bacteroidia; NS5 marine group	tryptophan	77	160	Undirected	1	0.5
+Bacteroidia; NS5 marine group	tryptophan	78	160	Undirected	1	0.5
+Bacteroidia; NS5 marine group	aspartate	74	161	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	aspartate	74	162	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	aspartate	75	161	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	aspartate	75	162	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	alanine	74	165	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	alanine	74	166	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	alanine	75	165	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	alanine	75	166	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	phenylalanine	74	171	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	phenylalanine	75	171	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	guanosine	74	185	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	guanosine	75	185	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	pantothenic acid	74	187	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	pantothenic acid	74	188	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	pantothenic acid	75	187	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	pantothenic acid	75	188	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	uridine	74	193	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	uridine	75	193	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	cysteate	76	197	Undirected	1	0.5
+Bacteroidia; NS5 marine group	cysteate	76	198	Undirected	3	0.5
+Bacteroidia; NS5 marine group	cysteate	76	199	Undirected	2	0.5
+Bacteroidia; NS5 marine group	cysteate	77	197	Undirected	1	0.5
+Bacteroidia; NS5 marine group	cysteate	77	198	Undirected	3	0.5
+Bacteroidia; NS5 marine group	cysteate	77	199	Undirected	2	0.5
+Bacteroidia; NS5 marine group	cysteate	78	197	Undirected	1	0.5
+Bacteroidia; NS5 marine group	cysteate	78	198	Undirected	3	0.5
+Bacteroidia; NS5 marine group	cysteate	78	199	Undirected	2	0.5
+Bacteroidia; NS5 marine group	ciliatine	74	202	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	ciliatine	74	203	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	ciliatine	75	202	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	ciliatine	75	203	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	ciliatine	76	204	Undirected	1	0.5
+Bacteroidia; NS5 marine group	ciliatine	76	205	Undirected	2	0.5
+Bacteroidia; NS5 marine group	ciliatine	77	204	Undirected	1	0.5
+Bacteroidia; NS5 marine group	ciliatine	77	205	Undirected	2	0.5
+Bacteroidia; NS5 marine group	ciliatine	78	204	Undirected	1	0.5
+Bacteroidia; NS5 marine group	ciliatine	78	205	Undirected	2	0.5
+Bacteroidia; NS5 marine group	3'AMP	76	213	Undirected	1	0.5
+Bacteroidia; NS5 marine group	3'AMP	76	214	Undirected	2	0.5
+Bacteroidia; NS5 marine group	3'AMP	76	215	Undirected	4	0.5
+Bacteroidia; NS5 marine group	3'AMP	77	213	Undirected	1	0.5
+Bacteroidia; NS5 marine group	3'AMP	77	214	Undirected	2	0.5
+Bacteroidia; NS5 marine group	3'AMP	77	215	Undirected	4	0.5
+Bacteroidia; NS5 marine group	3'AMP	78	213	Undirected	1	0.5
+Bacteroidia; NS5 marine group	3'AMP	78	214	Undirected	2	0.5
+Bacteroidia; NS5 marine group	3'AMP	78	215	Undirected	4	0.5
+Bacteroidia; NS5 marine group	DHPS	74	216	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	DHPS	75	216	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	glutamic acid	74	220	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	glutamic acid	75	220	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	isethionate	74	221	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	isethionate	74	222	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	isethionate	75	221	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	isethionate	75	222	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	arginine	76	226	Undirected	1	0.5
+Bacteroidia; NS5 marine group	arginine	76	227	Undirected	2	0.5
+Bacteroidia; NS5 marine group	arginine	76	228	Undirected	3	0.5
+Bacteroidia; NS5 marine group	arginine	77	226	Undirected	1	0.5
+Bacteroidia; NS5 marine group	arginine	77	227	Undirected	2	0.5
+Bacteroidia; NS5 marine group	arginine	77	228	Undirected	3	0.5
+Bacteroidia; NS5 marine group	arginine	78	226	Undirected	1	0.5
+Bacteroidia; NS5 marine group	arginine	78	227	Undirected	2	0.5
+Bacteroidia; NS5 marine group	arginine	78	228	Undirected	3	0.5
+Bacteroidia; NS5 marine group	glutathione 2	74	229	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	glutathione 2	75	229	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	malic acid	76	234	Undirected	1	0.5
+Bacteroidia; NS5 marine group	malic acid	76	235	Undirected	2	0.5
+Bacteroidia; NS5 marine group	malic acid	77	234	Undirected	1	0.5
+Bacteroidia; NS5 marine group	malic acid	77	235	Undirected	2	0.5
+Bacteroidia; NS5 marine group	malic acid	78	234	Undirected	1	0.5
+Bacteroidia; NS5 marine group	malic acid	78	235	Undirected	2	0.5
+Bacteroidia; NS5 marine group	5'UMP	74	236	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	5'UMP	75	236	Undirected	1	-0.5
+Bacteroidia; NS7 marine group	asparagine	79	147	Undirected	2	-0.5
+Bacteroidia; NS7 marine group	asparagine	79	148	Undirected	1	-0.5
+Bacteroidia; NS7 marine group	cysteate	79	194	Undirected	3	-0.5
+Bacteroidia; NS7 marine group	cysteate	79	195	Undirected	1	-0.5
+Bacteroidia; NS7 marine group	cysteate	79	196	Undirected	2	-0.5
+Bacteroidia; NS7 marine group	DHPS	79	216	Undirected	1	-0.5
+Bacteroidia; NS7 marine group	isethionate	79	221	Undirected	2	-0.5
+Bacteroidia; NS7 marine group	isethionate	79	222	Undirected	1	-0.5
+Bacteroidia; NS7 marine group	arginine	79	224	Undirected	1	-0.5
+Bacteroidia; NS7 marine group	arginine	79	225	Undirected	4	-0.5
+Bacteroidia; NS7 marine group	sarcosine	79	231	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	asparagine	80	147	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	asparagine	80	148	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	kynurenine	81	155	Undirected	1	0.5
+Bacteroidia; NS9 marine group	kynurenine	81	156	Undirected	5	0.5
+Bacteroidia; NS9 marine group	kynurenine	81	157	Undirected	2	0.5
+Bacteroidia; NS9 marine group	kynurenine	81	158	Undirected	4	0.5
+Bacteroidia; NS9 marine group	kynurenine	82	155	Undirected	1	0.5
+Bacteroidia; NS9 marine group	kynurenine	82	156	Undirected	5	0.5
+Bacteroidia; NS9 marine group	kynurenine	82	157	Undirected	2	0.5
+Bacteroidia; NS9 marine group	kynurenine	82	158	Undirected	4	0.5
+Bacteroidia; NS9 marine group	aspartate	80	161	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	aspartate	80	162	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	alanine	80	165	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	alanine	80	166	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	phenylalanine	80	171	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	citrulline	81	174	Undirected	1	0.5
+Bacteroidia; NS9 marine group	citrulline	82	174	Undirected	1	0.5
+Bacteroidia; NS9 marine group	valine	80	179	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	isoleucine	80	181	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	leucine	80	183	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	pantothenic acid	80	187	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	pantothenic acid	80	188	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	cysteate	80	194	Undirected	3	-0.5
+Bacteroidia; NS9 marine group	cysteate	80	195	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	cysteate	80	196	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	ciliatine	80	202	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	ciliatine	80	203	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	GABA	80	206	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	GABA	80	207	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	3'AMP	81	213	Undirected	1	0.5
+Bacteroidia; NS9 marine group	3'AMP	81	214	Undirected	2	0.5
+Bacteroidia; NS9 marine group	3'AMP	81	215	Undirected	4	0.5
+Bacteroidia; NS9 marine group	3'AMP	82	213	Undirected	1	0.5
+Bacteroidia; NS9 marine group	3'AMP	82	214	Undirected	2	0.5
+Bacteroidia; NS9 marine group	3'AMP	82	215	Undirected	4	0.5
+Bacteroidia; NS9 marine group	DHPS	80	216	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	glutamic acid	80	220	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	isethionate	80	221	Undirected	2	-0.5
+Bacteroidia; NS9 marine group	isethionate	80	222	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	glutathione 2	80	229	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	5'UMP	80	236	Undirected	1	-0.5
+Bacteroidia; Nonlabens	kynurenine	83	155	Undirected	1	0.5
+Bacteroidia; Nonlabens	kynurenine	83	156	Undirected	5	0.5
+Bacteroidia; Nonlabens	kynurenine	83	157	Undirected	2	0.5
+Bacteroidia; Nonlabens	kynurenine	83	158	Undirected	4	0.5
+Bacteroidia; Nonlabens	phenylalanine	83	172	Undirected	1	0.5
+Bacteroidia; Nonlabens	phenylalanine	83	173	Undirected	2	0.5
+Bacteroidia; Nonlabens	pantothenic acid	83	189	Undirected	1	0.5
+Bacteroidia; Nonlabens	pantothenic acid	83	190	Undirected	4	0.5
+Bacteroidia; Nonlabens	pantothenic acid	83	191	Undirected	2	0.5
+Bacteroidia; Nonlabens	pantothenic acid	83	192	Undirected	3	0.5
+Bacteroidia; Nonlabens	ciliatine	83	204	Undirected	1	0.5
+Bacteroidia; Nonlabens	ciliatine	83	205	Undirected	2	0.5
+Bacteroidia; Nonlabens	GABA	83	208	Undirected	1	0.5
+Bacteroidia; Nonlabens	GABA	83	209	Undirected	2	0.5
+Bacteroidia; Tenacibaculum	cysteate	84	197	Undirected	1	0.5
+Bacteroidia; Tenacibaculum	cysteate	84	198	Undirected	3	0.5
+Bacteroidia; Tenacibaculum	cysteate	84	199	Undirected	2	0.5
+Bdellovibrionia; OM27 clade	lysine 2	85	168	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	lysine 2	85	169	Undirected	2	-0.5
+Bdellovibrionia; OM27 clade	lysine 2	86	168	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	lysine 2	86	169	Undirected	2	-0.5
+Bdellovibrionia; OM27 clade	isoleucine	85	181	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	isoleucine	86	181	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	leucine	85	183	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	leucine	86	183	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	cysteate	85	194	Undirected	3	-0.5
+Bdellovibrionia; OM27 clade	cysteate	85	195	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	cysteate	85	196	Undirected	2	-0.5
+Bdellovibrionia; OM27 clade	cysteate	86	194	Undirected	3	-0.5
+Bdellovibrionia; OM27 clade	cysteate	86	195	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	cysteate	86	196	Undirected	2	-0.5
+Bdellovibrionia; OM27 clade	taurine	85	200	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	taurine	86	200	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	arginine	85	224	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	arginine	85	225	Undirected	4	-0.5
+Bdellovibrionia; OM27 clade	arginine	86	224	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	arginine	86	225	Undirected	4	-0.5
+Bdellovibrionia; OM27 clade	sn-glycerol 3-phosphate	85	237	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	sn-glycerol 3-phosphate	86	237	Undirected	1	-0.5
+Cyanobacteria; Cyanobiaceae	3'AMP	87	213	Undirected	1	0.5
+Cyanobacteria; Cyanobiaceae	3'AMP	87	214	Undirected	2	0.5
+Cyanobacteria; Cyanobiaceae	3'AMP	87	215	Undirected	4	0.5
+Cyanobacteria; Cyanobium PCC-6307	3'AMP	88	213	Undirected	1	0.5
+Cyanobacteria; Cyanobium PCC-6307	3'AMP	88	214	Undirected	2	0.5
+Cyanobacteria; Cyanobium PCC-6307	3'AMP	88	215	Undirected	4	0.5
+Cyanobacteria; Oscillatoriaceae	pantothenic acid	89	189	Undirected	1	0.5
+Cyanobacteria; Oscillatoriaceae	pantothenic acid	89	190	Undirected	4	0.5
+Cyanobacteria; Oscillatoriaceae	pantothenic acid	89	191	Undirected	2	0.5
+Cyanobacteria; Oscillatoriaceae	pantothenic acid	89	192	Undirected	3	0.5
+Cyanobacteria; Oscillatoriaceae	cysteate	89	197	Undirected	1	0.5
+Cyanobacteria; Oscillatoriaceae	cysteate	89	198	Undirected	3	0.5
+Cyanobacteria; Oscillatoriaceae	cysteate	89	199	Undirected	2	0.5
+Cyanobacteria; Oscillatoriaceae	ciliatine	89	204	Undirected	1	0.5
+Cyanobacteria; Oscillatoriaceae	ciliatine	89	205	Undirected	2	0.5
+Cyanobacteria; Oscillatoriaceae	GABA	89	208	Undirected	1	0.5
+Cyanobacteria; Oscillatoriaceae	GABA	89	209	Undirected	2	0.5
+Cyanobacteria; Synechococcus CC9902	asparagine	90	147	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	asparagine	90	148	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	asparagine	91	147	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	asparagine	91	148	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	aspartate	90	161	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	aspartate	90	162	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	aspartate	91	161	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	aspartate	91	162	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	alanine	90	165	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	alanine	90	166	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	alanine	91	165	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	alanine	91	166	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	lysine 2	90	168	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	lysine 2	90	169	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	lysine 2	91	168	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	lysine 2	91	169	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	phenylalanine	90	171	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	phenylalanine	91	171	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	ornithine 2	90	175	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	ornithine 2	91	175	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	threonine	90	177	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	threonine	91	177	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	valine	90	179	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	valine	91	179	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	isoleucine	90	181	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	isoleucine	91	181	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	leucine	90	183	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	leucine	91	183	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	uridine	90	193	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	uridine	91	193	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	3'AMP	92	213	Undirected	1	0.5
+Cyanobacteria; Synechococcus CC9902	3'AMP	92	214	Undirected	2	0.5
+Cyanobacteria; Synechococcus CC9902	3'AMP	92	215	Undirected	4	0.5
+Cyanobacteria; Synechococcus CC9902	DHPS	90	216	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	DHPS	91	216	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	glutamic acid	90	220	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	glutamic acid	91	220	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	isethionate	90	221	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	isethionate	90	222	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	isethionate	91	221	Undirected	2	-0.5
+Cyanobacteria; Synechococcus CC9902	isethionate	91	222	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	5'UMP	90	236	Undirected	1	-0.5
+Cyanobacteria; Synechococcus CC9902	5'UMP	91	236	Undirected	1	-0.5
+Dadabacteria; Dadabacteriales	cysteate	93	194	Undirected	3	-0.5
+Dadabacteria; Dadabacteriales	cysteate	93	195	Undirected	1	-0.5
+Dadabacteria; Dadabacteriales	cysteate	93	196	Undirected	2	-0.5
+Dadabacteria; Dadabacteriales	malic acid	93	233	Undirected	1	-0.5
+Desulfobacteria; Sva0081 sediment group	cysteate	94	197	Undirected	1	0.5
+Desulfobacteria; Sva0081 sediment group	cysteate	94	198	Undirected	3	0.5
+Desulfobacteria; Sva0081 sediment group	cysteate	94	199	Undirected	2	0.5
+Desulfobacteria; Sva0081 sediment group	sn-glycerol 3-phosphate	94	238	Undirected	1	0.5
+Desulfobacteria; Sva0081 sediment group	sn-glycerol 3-phosphate	94	239	Undirected	2	0.5
+Desulfobulbia; Desulfocapsaceae	cysteate	95	197	Undirected	1	0.5
+Desulfobulbia; Desulfocapsaceae	cysteate	95	198	Undirected	3	0.5
+Desulfobulbia; Desulfocapsaceae	cysteate	95	199	Undirected	2	0.5
+Desulfuromonadia; Bradymonadales	cysteate	96	197	Undirected	1	0.5
+Desulfuromonadia; Bradymonadales	cysteate	96	198	Undirected	3	0.5
+Desulfuromonadia; Bradymonadales	cysteate	96	199	Undirected	2	0.5
+Gammaproteobacteria; Aestuariibacter	kynurenine	97	155	Undirected	1	0.5
+Gammaproteobacteria; Aestuariibacter	kynurenine	97	156	Undirected	5	0.5
+Gammaproteobacteria; Aestuariibacter	kynurenine	97	157	Undirected	2	0.5
+Gammaproteobacteria; Aestuariibacter	kynurenine	97	158	Undirected	4	0.5
+Gammaproteobacteria; Alteromonadaceae	arginine	98	226	Undirected	1	0.5
+Gammaproteobacteria; Alteromonadaceae	arginine	98	227	Undirected	2	0.5
+Gammaproteobacteria; Alteromonadaceae	arginine	98	228	Undirected	3	0.5
+Gammaproteobacteria; Alteromonadaceae	malic acid	98	234	Undirected	1	0.5
+Gammaproteobacteria; Alteromonadaceae	malic acid	98	235	Undirected	2	0.5
+Gammaproteobacteria; Alteromonas	cysteate	99	197	Undirected	1	0.5
+Gammaproteobacteria; Alteromonas	cysteate	99	198	Undirected	3	0.5
+Gammaproteobacteria; Alteromonas	cysteate	99	199	Undirected	2	0.5
+Gammaproteobacteria; Alteromonas	GABA	99	208	Undirected	1	0.5
+Gammaproteobacteria; Alteromonas	GABA	99	209	Undirected	2	0.5
+Gammaproteobacteria; Alteromonas	arginine	99	226	Undirected	1	0.5
+Gammaproteobacteria; Alteromonas	arginine	99	227	Undirected	2	0.5
+Gammaproteobacteria; Alteromonas	arginine	99	228	Undirected	3	0.5
+Gammaproteobacteria; Alteromonas	sarcosine	99	232	Undirected	1	0.5
+Gammaproteobacteria; Alteromonas	malic acid	99	234	Undirected	1	0.5
+Gammaproteobacteria; Alteromonas	malic acid	99	235	Undirected	2	0.5
+Gammaproteobacteria; Alteromonas	sn-glycerol 3-phosphate	99	238	Undirected	1	0.5
+Gammaproteobacteria; Alteromonas	sn-glycerol 3-phosphate	99	239	Undirected	2	0.5
+Gammaproteobacteria; Aquabacterium	pantothenic acid	100	189	Undirected	1	0.5
+Gammaproteobacteria; Aquabacterium	pantothenic acid	100	190	Undirected	4	0.5
+Gammaproteobacteria; Aquabacterium	pantothenic acid	100	191	Undirected	2	0.5
+Gammaproteobacteria; Aquabacterium	pantothenic acid	100	192	Undirected	3	0.5
+Gammaproteobacteria; Aquabacterium	cysteate	100	197	Undirected	1	0.5
+Gammaproteobacteria; Aquabacterium	cysteate	100	198	Undirected	3	0.5
+Gammaproteobacteria; Aquabacterium	cysteate	100	199	Undirected	2	0.5
+Gammaproteobacteria; Aquabacterium	ciliatine	100	204	Undirected	1	0.5
+Gammaproteobacteria; Aquabacterium	ciliatine	100	205	Undirected	2	0.5
+Gammaproteobacteria; Aquabacterium	GABA	100	208	Undirected	1	0.5
+Gammaproteobacteria; Aquabacterium	GABA	100	209	Undirected	2	0.5
+Gammaproteobacteria; Aquabacterium	arginine	100	226	Undirected	1	0.5
+Gammaproteobacteria; Aquabacterium	arginine	100	227	Undirected	2	0.5
+Gammaproteobacteria; Aquabacterium	arginine	100	228	Undirected	3	0.5
+Gammaproteobacteria; BD1-7 clade	3'AMP	101	211	Undirected	1	-0.5
+Gammaproteobacteria; BD1-7 clade	3'AMP	101	212	Undirected	2	-0.5
+Gammaproteobacteria; Delftia	cysteate	102	197	Undirected	1	0.5
+Gammaproteobacteria; Delftia	cysteate	102	198	Undirected	3	0.5
+Gammaproteobacteria; Delftia	cysteate	102	199	Undirected	2	0.5
+Gammaproteobacteria; Endozoicomonas	glutamine	103	219	Undirected	1	0.5
+Gammaproteobacteria; Francisella	proline	104	164	Undirected	1	0.5
+Gammaproteobacteria; KI89A clade	cysteate	105	194	Undirected	3	-0.5
+Gammaproteobacteria; KI89A clade	cysteate	105	195	Undirected	1	-0.5
+Gammaproteobacteria; KI89A clade	cysteate	105	196	Undirected	2	-0.5
+Gammaproteobacteria; Litoricola	3'AMP	106	211	Undirected	1	-0.5
+Gammaproteobacteria; Litoricola	3'AMP	106	212	Undirected	2	-0.5
+Gammaproteobacteria; MWH-UniP1 aquatic group	kynurenine	107	154	Undirected	1	-0.5
+Gammaproteobacteria; MWH-UniP1 aquatic group	3'AMP	107	211	Undirected	1	-0.5
+Gammaproteobacteria; MWH-UniP1 aquatic group	3'AMP	107	212	Undirected	2	-0.5
+Gammaproteobacteria; Marinobacterium	cysteate	108	197	Undirected	1	0.5
+Gammaproteobacteria; Marinobacterium	cysteate	108	198	Undirected	3	0.5
+Gammaproteobacteria; Marinobacterium	cysteate	108	199	Undirected	2	0.5
+Gammaproteobacteria; Marinobacterium	GABA	108	208	Undirected	1	0.5
+Gammaproteobacteria; Marinobacterium	GABA	108	209	Undirected	2	0.5
+Gammaproteobacteria; Marinobacterium	arginine	108	226	Undirected	1	0.5
+Gammaproteobacteria; Marinobacterium	arginine	108	227	Undirected	2	0.5
+Gammaproteobacteria; Marinobacterium	arginine	108	228	Undirected	3	0.5
+Gammaproteobacteria; Marinobacterium	malic acid	108	234	Undirected	1	0.5
+Gammaproteobacteria; Marinobacterium	malic acid	108	235	Undirected	2	0.5
+Gammaproteobacteria; Methylophaga	kynurenine	109	155	Undirected	1	0.5
+Gammaproteobacteria; Methylophaga	kynurenine	109	156	Undirected	5	0.5
+Gammaproteobacteria; Methylophaga	kynurenine	109	157	Undirected	2	0.5
+Gammaproteobacteria; Methylophaga	kynurenine	109	158	Undirected	4	0.5
+Gammaproteobacteria; OM60(NOR5) clade	pantothenic acid	110	187	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	pantothenic acid	110	188	Undirected	2	-0.5
+Gammaproteobacteria; Photobacterium	kynurenine	111	155	Undirected	1	0.5
+Gammaproteobacteria; Photobacterium	kynurenine	111	156	Undirected	5	0.5
+Gammaproteobacteria; Photobacterium	kynurenine	111	157	Undirected	2	0.5
+Gammaproteobacteria; Photobacterium	kynurenine	111	158	Undirected	4	0.5
+Gammaproteobacteria; Pseudoalteromonas	kynurenine	112	155	Undirected	1	0.5
+Gammaproteobacteria; Pseudoalteromonas	kynurenine	112	156	Undirected	5	0.5
+Gammaproteobacteria; Pseudoalteromonas	kynurenine	112	157	Undirected	2	0.5
+Gammaproteobacteria; Pseudoalteromonas	kynurenine	112	158	Undirected	4	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	113	189	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	113	190	Undirected	4	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	113	191	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	113	192	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	114	189	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	114	190	Undirected	4	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	114	191	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	pantothenic acid	114	192	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonadales	ciliatine	113	204	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	ciliatine	113	205	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	ciliatine	114	204	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	ciliatine	114	205	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	GABA	113	208	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	GABA	113	209	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	GABA	114	208	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	GABA	114	209	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	arginine	113	226	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	arginine	113	227	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	arginine	113	228	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonadales	arginine	114	226	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	arginine	114	227	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	arginine	114	228	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonadales	malic acid	113	234	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	malic acid	113	235	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonadales	malic acid	114	234	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonadales	malic acid	114	235	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	cysteate	115	197	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	cysteate	115	198	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonas	cysteate	115	199	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	cysteate	116	197	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	cysteate	116	198	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonas	cysteate	116	199	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	GABA	115	208	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	GABA	115	209	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	GABA	116	208	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	GABA	116	209	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	arginine	115	226	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	arginine	115	227	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	arginine	115	228	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonas	arginine	116	226	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	arginine	116	227	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	arginine	116	228	Undirected	3	0.5
+Gammaproteobacteria; Pseudomonas	malic acid	115	234	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	malic acid	115	235	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	malic acid	116	234	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	malic acid	116	235	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	sn-glycerol 3-phosphate	115	238	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	sn-glycerol 3-phosphate	115	239	Undirected	2	0.5
+Gammaproteobacteria; Pseudomonas	sn-glycerol 3-phosphate	116	238	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	sn-glycerol 3-phosphate	116	239	Undirected	2	0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	117	187	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	117	188	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	118	187	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	118	188	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	cysteate	117	194	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	cysteate	117	195	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	cysteate	117	196	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	cysteate	118	194	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	cysteate	118	195	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	cysteate	118	196	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	3'AMP	117	211	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	3'AMP	117	212	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	3'AMP	118	211	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	3'AMP	118	212	Undirected	2	-0.5
+Gammaproteobacteria; SAR92 clade	3'AMP	119	211	Undirected	1	-0.5
+Gammaproteobacteria; SAR92 clade	3'AMP	119	212	Undirected	2	-0.5
+Gammaproteobacteria; Stenotrophomonas	cysteate	120	197	Undirected	1	0.5
+Gammaproteobacteria; Stenotrophomonas	cysteate	120	198	Undirected	3	0.5
+Gammaproteobacteria; Stenotrophomonas	cysteate	120	199	Undirected	2	0.5
+Gammaproteobacteria; Stenotrophomonas	ciliatine	120	204	Undirected	1	0.5
+Gammaproteobacteria; Stenotrophomonas	ciliatine	120	205	Undirected	2	0.5
+Gammaproteobacteria; Stenotrophomonas	GABA	120	208	Undirected	1	0.5
+Gammaproteobacteria; Stenotrophomonas	GABA	120	209	Undirected	2	0.5
+Gammaproteobacteria; Stenotrophomonas	arginine	120	226	Undirected	1	0.5
+Gammaproteobacteria; Stenotrophomonas	arginine	120	227	Undirected	2	0.5
+Gammaproteobacteria; Stenotrophomonas	arginine	120	228	Undirected	3	0.5
+Gammaproteobacteria; Stenotrophomonas	malic acid	120	234	Undirected	1	0.5
+Gammaproteobacteria; Stenotrophomonas	malic acid	120	235	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	121	155	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	121	156	Undirected	5	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	121	157	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	121	158	Undirected	4	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	122	155	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	122	156	Undirected	5	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	122	157	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	kynurenine	122	158	Undirected	4	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	121	189	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	121	190	Undirected	4	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	121	191	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	121	192	Undirected	3	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	122	189	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	122	190	Undirected	4	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	122	191	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	pantothenic acid	122	192	Undirected	3	0.5
+Gammaproteobacteria; Thiomicrorhabdus	cysteate	121	197	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	cysteate	121	198	Undirected	3	0.5
+Gammaproteobacteria; Thiomicrorhabdus	cysteate	121	199	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	cysteate	122	197	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	cysteate	122	198	Undirected	3	0.5
+Gammaproteobacteria; Thiomicrorhabdus	cysteate	122	199	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	ciliatine	121	204	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	ciliatine	121	205	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	ciliatine	122	204	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	ciliatine	122	205	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	GABA	121	208	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	GABA	121	209	Undirected	2	0.5
+Gammaproteobacteria; Thiomicrorhabdus	GABA	122	208	Undirected	1	0.5
+Gammaproteobacteria; Thiomicrorhabdus	GABA	122	209	Undirected	2	0.5
+Gammaproteobacteria; Thiothrix	glycine	123	152	Undirected	1	0.5
+Gammaproteobacteria; Thiothrix	glycine	123	153	Undirected	2	0.5
+Gammaproteobacteria; Thiothrix	taurine	123	201	Undirected	1	0.5
+Gammaproteobacteria; Thiothrix	glutathione 2	123	230	Undirected	1	0.5
+Gammaproteobacteria; Thiothrix	sarcosine	123	232	Undirected	1	0.5
+Gammaproteobacteria; Thiotrichaceae	cysteate	124	194	Undirected	3	-0.5
+Gammaproteobacteria; Thiotrichaceae	cysteate	124	195	Undirected	1	-0.5
+Gammaproteobacteria; Thiotrichaceae	cysteate	124	196	Undirected	2	-0.5
+Gammaproteobacteria; Thiotrichaceae	malic acid	124	233	Undirected	1	-0.5
+Gammaproteobacteria; Vibrio	pantothenic acid	125	189	Undirected	1	0.5
+Gammaproteobacteria; Vibrio	pantothenic acid	125	190	Undirected	4	0.5
+Gammaproteobacteria; Vibrio	pantothenic acid	125	191	Undirected	2	0.5
+Gammaproteobacteria; Vibrio	pantothenic acid	125	192	Undirected	3	0.5
+Gammaproteobacteria; Vibrio	cysteate	125	197	Undirected	1	0.5
+Gammaproteobacteria; Vibrio	cysteate	125	198	Undirected	3	0.5
+Gammaproteobacteria; Vibrio	cysteate	125	199	Undirected	2	0.5
+Kiritimatiellae; R76-B128	cysteate	126	194	Undirected	3	-0.5
+Kiritimatiellae; R76-B128	cysteate	126	195	Undirected	1	-0.5
+Kiritimatiellae; R76-B128	cysteate	126	196	Undirected	2	-0.5
+Kiritimatiellae; WCHB1-41	cysteate	127	197	Undirected	1	0.5
+Kiritimatiellae; WCHB1-41	cysteate	127	198	Undirected	3	0.5
+Kiritimatiellae; WCHB1-41	cysteate	127	199	Undirected	2	0.5
+Lentisphaeria; Lentisphaera	kynurenine	128	154	Undirected	1	-0.5
+Lentisphaeria; Lentisphaera	tryptophan	128	159	Undirected	1	-0.5
+Nanoarchaeia; Woesearchaeales	sn-glycerol 3-phosphate	129	238	Undirected	1	0.5
+Nanoarchaeia; Woesearchaeales	sn-glycerol 3-phosphate	129	239	Undirected	2	0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	glycine	130	150	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	glycine	130	151	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	aspartate	130	161	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	aspartate	130	162	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	alanine	130	165	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	alanine	130	166	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	lysine 2	130	168	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	lysine 2	130	169	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	phenylalanine	130	171	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	threonine	130	177	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	valine	130	179	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	isoleucine	130	181	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	leucine	130	183	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	pantothenic acid	130	187	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	pantothenic acid	130	188	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	ciliatine	130	202	Undirected	1	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	ciliatine	130	203	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	isethionate	130	221	Undirected	2	-0.5
+Phycisphaerae; Urania-1B-19 marine sediment group	isethionate	130	222	Undirected	1	-0.5
+Planctomycetes; Rubripirellula	3'AMP	131	213	Undirected	1	0.5
+Planctomycetes; Rubripirellula	3'AMP	131	214	Undirected	2	0.5
+Planctomycetes; Rubripirellula	3'AMP	131	215	Undirected	4	0.5
+Polyangia; Nannocystaceae	kynurenine	132	155	Undirected	1	0.5
+Polyangia; Nannocystaceae	kynurenine	132	156	Undirected	5	0.5
+Polyangia; Nannocystaceae	kynurenine	132	157	Undirected	2	0.5
+Polyangia; Nannocystaceae	kynurenine	132	158	Undirected	4	0.5
+Polyangia; Nannocystaceae	pantothenic acid	132	189	Undirected	1	0.5
+Polyangia; Nannocystaceae	pantothenic acid	132	190	Undirected	4	0.5
+Polyangia; Nannocystaceae	pantothenic acid	132	191	Undirected	2	0.5
+Polyangia; Nannocystaceae	pantothenic acid	132	192	Undirected	3	0.5
+Polyangia; Nannocystaceae	GABA	132	208	Undirected	1	0.5
+Polyangia; Nannocystaceae	GABA	132	209	Undirected	2	0.5
+Polyangia; Nannocystaceae	arginine	132	226	Undirected	1	0.5
+Polyangia; Nannocystaceae	arginine	132	227	Undirected	2	0.5
+Polyangia; Nannocystaceae	arginine	132	228	Undirected	3	0.5
+Polyangia; Sandaracinaceae	putrescine 2	133	145	Undirected	1	-0.5
+Proteobacteria; Alphaproteobacteria	citrulline	135	174	Undirected	1	0.5
+Proteobacteria; Alphaproteobacteria	cysteate	134	194	Undirected	3	-0.5
+Proteobacteria; Alphaproteobacteria	cysteate	134	195	Undirected	1	-0.5
+Proteobacteria; Alphaproteobacteria	cysteate	134	196	Undirected	2	-0.5
+Proteobacteria; Alphaproteobacteria	cysteate	135	197	Undirected	1	0.5
+Proteobacteria; Alphaproteobacteria	cysteate	135	198	Undirected	3	0.5
+Proteobacteria; Alphaproteobacteria	cysteate	135	199	Undirected	2	0.5
+Proteobacteria; Alphaproteobacteria	GABA	134	206	Undirected	1	-0.5
+Proteobacteria; Alphaproteobacteria	GABA	134	207	Undirected	2	-0.5
+Proteobacteria; Alphaproteobacteria	malic acid	134	233	Undirected	1	-0.5
+Proteobacteria; Gammaproteobacteria	phenylalanine	137	172	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	phenylalanine	137	173	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	pantothenic acid	137	189	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	pantothenic acid	137	190	Undirected	4	0.5
+Proteobacteria; Gammaproteobacteria	pantothenic acid	137	191	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	pantothenic acid	137	192	Undirected	3	0.5
+Proteobacteria; Gammaproteobacteria	cysteate	137	197	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	cysteate	137	198	Undirected	3	0.5
+Proteobacteria; Gammaproteobacteria	cysteate	137	199	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	ciliatine	137	204	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	ciliatine	137	205	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	GABA	137	208	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	GABA	137	209	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	arginine	137	226	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	arginine	137	227	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	arginine	137	228	Undirected	3	0.5
+Proteobacteria; Gammaproteobacteria	sn-glycerol 3-phosphate	136	237	Undirected	1	-0.5
+Proteobacteria; Gammaproteobacteria	sn-glycerol 3-phosphate	137	238	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	sn-glycerol 3-phosphate	137	239	Undirected	2	0.5
+Rhodothermia; Balneola	pantothenic acid	138	187	Undirected	1	-0.5
+Rhodothermia; Balneola	pantothenic acid	138	188	Undirected	2	-0.5
+Thermoplasmata; Marine Group II	pantothenic acid	139	187	Undirected	1	-0.5
+Thermoplasmata; Marine Group II	pantothenic acid	139	188	Undirected	2	-0.5
+Thermoplasmata; Marine Group II	3'AMP	139	211	Undirected	1	-0.5
+Thermoplasmata; Marine Group II	3'AMP	139	212	Undirected	2	-0.5
+Verrucomicrobiae; DBS1	pantothenic acid	140	189	Undirected	1	0.5
+Verrucomicrobiae; DBS1	pantothenic acid	140	190	Undirected	4	0.5
+Verrucomicrobiae; DBS1	pantothenic acid	140	191	Undirected	2	0.5
+Verrucomicrobiae; DBS1	pantothenic acid	140	192	Undirected	3	0.5
+Verrucomicrobiae; DBS1	ciliatine	140	204	Undirected	1	0.5
+Verrucomicrobiae; DBS1	ciliatine	140	205	Undirected	2	0.5
+Verrucomicrobiae; DBS1	GABA	140	208	Undirected	1	0.5
+Verrucomicrobiae; DBS1	GABA	140	209	Undirected	2	0.5
+Verrucomicrobiae; MB11C04 marine group	kynurenine	141	154	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	proline	141	163	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	ornithine 2	141	175	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	serine	141	176	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	threonine	141	177	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	valine	141	179	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	pantothenic acid	141	187	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	pantothenic acid	141	188	Undirected	2	-0.5
+Verrucomicrobiae; MB11C04 marine group	uridine	141	193	Undirected	1	-0.5
+Verrucomicrobiae; Rubritalea	pantothenic acid	143	189	Undirected	1	0.5
+Verrucomicrobiae; Rubritalea	pantothenic acid	143	190	Undirected	4	0.5
+Verrucomicrobiae; Rubritalea	pantothenic acid	143	191	Undirected	2	0.5
+Verrucomicrobiae; Rubritalea	pantothenic acid	143	192	Undirected	3	0.5
+Verrucomicrobiae; Rubritalea	ciliatine	143	204	Undirected	1	0.5
+Verrucomicrobiae; Rubritalea	ciliatine	143	205	Undirected	2	0.5
+Verrucomicrobiae; Rubritalea	GABA	143	208	Undirected	1	0.5
+Verrucomicrobiae; Rubritalea	GABA	143	209	Undirected	2	0.5
+Verrucomicrobiae; Rubritalea	glutathione 2	142	229	Undirected	1	-0.5
+Verrucomicrobiota; Lentisphaeria	proline	144	163	Undirected	1	-0.5
+Verrucomicrobiota; Lentisphaeria	lysine 2	144	168	Undirected	1	-0.5
+Verrucomicrobiota; Lentisphaeria	lysine 2	144	169	Undirected	2	-0.5
+Verrucomicrobiota; Lentisphaeria	taurine	144	200	Undirected	1	-0.5
+Verrucomicrobiota; Lentisphaeria	arginine	144	224	Undirected	1	-0.5
+Verrucomicrobiota; Lentisphaeria	arginine	144	225	Undirected	4	-0.5

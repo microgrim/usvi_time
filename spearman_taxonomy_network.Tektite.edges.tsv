@@ -1,0 +1,623 @@
+taxonomy	simpleName	Source	Target	Type	Weight	estimate_direction
+Acidimicrobia; Sva0996 marine group	phenylalanine	1	151	Undirected	1	0.5
+Acidimicrobia; Sva0996 marine group	pantothenic acid	1	174	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	putrescine 2	2	116	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	putrescine 2	2	117	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	putrescine 2	3	116	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	putrescine 2	3	117	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	putrescine 2	4	116	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	putrescine 2	4	117	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	5	123	Undirected	5	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	5	124	Undirected	1	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	5	125	Undirected	3	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	5	126	Undirected	4	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	homoserine betaine	5	127	Undirected	9	0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	2	132	Undirected	3	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	2	133	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	2	134	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	2	135	Undirected	5	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	3	132	Undirected	3	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	3	133	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	3	134	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	3	135	Undirected	5	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	4	132	Undirected	3	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	4	133	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	4	134	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	kynurenine	4	135	Undirected	5	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	tryptophan	2	137	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	tryptophan	2	138	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	tryptophan	3	137	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	tryptophan	3	138	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	tryptophan	4	137	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	tryptophan	4	138	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	histidine	2	140	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	histidine	3	140	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	histidine	4	140	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	2	170	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	2	171	Undirected	5	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	2	172	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	2	173	Undirected	3	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	3	170	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	3	171	Undirected	5	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	3	172	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	3	173	Undirected	3	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	4	170	Undirected	2	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	4	171	Undirected	5	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	4	172	Undirected	1	-0.5
+Alphaproteobacteria; AEGEAN-169 marine group	pantothenic acid	4	173	Undirected	3	-0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	putrescine 2	6	118	Undirected	1	0.5
+Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	uridine	6	178	Undirected	1	0.5
+Alphaproteobacteria; Ascidiaceihabitans	kynurenine	7	132	Undirected	3	-0.5
+Alphaproteobacteria; Ascidiaceihabitans	kynurenine	7	133	Undirected	1	-0.5
+Alphaproteobacteria; Ascidiaceihabitans	kynurenine	7	134	Undirected	2	-0.5
+Alphaproteobacteria; Ascidiaceihabitans	kynurenine	7	135	Undirected	5	-0.5
+Alphaproteobacteria; Ascidiaceihabitans	ciliatine	7	182	Undirected	1	-0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	homoserine betaine	9	123	Undirected	5	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	homoserine betaine	9	124	Undirected	1	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	homoserine betaine	9	125	Undirected	3	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	homoserine betaine	9	126	Undirected	4	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	homoserine betaine	9	127	Undirected	9	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	uridine	9	178	Undirected	1	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	arginine	9	196	Undirected	1	0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	sarcosine	8	199	Undirected	1	-0.5
+Alphaproteobacteria; Candidatus Puniceispirillum	sarcosine	9	200	Undirected	1	0.5
+Alphaproteobacteria; Defluviicoccales	kynurenine	10	132	Undirected	3	-0.5
+Alphaproteobacteria; Defluviicoccales	kynurenine	10	133	Undirected	1	-0.5
+Alphaproteobacteria; Defluviicoccales	kynurenine	10	134	Undirected	2	-0.5
+Alphaproteobacteria; Defluviicoccales	kynurenine	10	135	Undirected	5	-0.5
+Alphaproteobacteria; Defluviicoccales	malic acid	10	201	Undirected	1	-0.5
+Alphaproteobacteria; HIMB11	pantothenic acid	11	174	Undirected	1	0.5
+Alphaproteobacteria; Limibaculum	tryptophan	12	137	Undirected	1	-0.5
+Alphaproteobacteria; Limibaculum	tryptophan	12	138	Undirected	2	-0.5
+Alphaproteobacteria; Parvibaculaceae	kynurenine	13	132	Undirected	3	-0.5
+Alphaproteobacteria; Parvibaculaceae	kynurenine	13	133	Undirected	1	-0.5
+Alphaproteobacteria; Parvibaculaceae	kynurenine	13	134	Undirected	2	-0.5
+Alphaproteobacteria; Parvibaculaceae	kynurenine	13	135	Undirected	5	-0.5
+Alphaproteobacteria; Parvibaculaceae	tryptophan	13	137	Undirected	1	-0.5
+Alphaproteobacteria; Parvibaculaceae	tryptophan	13	138	Undirected	2	-0.5
+Alphaproteobacteria; Rhodobacteraceae	ornithine 2	14	156	Undirected	1	0.5
+Alphaproteobacteria; Rhodobacteraceae	threonine	14	161	Undirected	1	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	17	123	Undirected	5	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	17	124	Undirected	1	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	17	125	Undirected	3	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	17	126	Undirected	4	0.5
+Alphaproteobacteria; S25-593	homoserine betaine	17	127	Undirected	9	0.5
+Alphaproteobacteria; S25-593	kynurenine	15	132	Undirected	3	-0.5
+Alphaproteobacteria; S25-593	kynurenine	15	133	Undirected	1	-0.5
+Alphaproteobacteria; S25-593	kynurenine	15	134	Undirected	2	-0.5
+Alphaproteobacteria; S25-593	kynurenine	15	135	Undirected	5	-0.5
+Alphaproteobacteria; S25-593	kynurenine	16	132	Undirected	3	-0.5
+Alphaproteobacteria; S25-593	kynurenine	16	133	Undirected	1	-0.5
+Alphaproteobacteria; S25-593	kynurenine	16	134	Undirected	2	-0.5
+Alphaproteobacteria; S25-593	kynurenine	16	135	Undirected	5	-0.5
+Alphaproteobacteria; S25-593	tryptophan	15	137	Undirected	1	-0.5
+Alphaproteobacteria; S25-593	tryptophan	15	138	Undirected	2	-0.5
+Alphaproteobacteria; S25-593	tryptophan	16	137	Undirected	1	-0.5
+Alphaproteobacteria; S25-593	tryptophan	16	138	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	20	123	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	20	124	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	20	125	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	20	126	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	20	127	Undirected	9	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	21	123	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	21	124	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	21	125	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	21	126	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	21	127	Undirected	9	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	22	123	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	22	124	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	22	125	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	22	126	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade II	homoserine betaine	22	127	Undirected	9	0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	18	132	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	18	133	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	18	134	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	18	135	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	19	132	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	19	133	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	19	134	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	kynurenine	19	135	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade II	tryptophan	18	137	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	tryptophan	18	138	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	tryptophan	19	137	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	tryptophan	19	138	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	18	170	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	18	171	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	18	172	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	18	173	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	19	170	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	19	171	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	19	172	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade II	pantothenic acid	19	173	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	20	183	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	20	184	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	21	183	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	21	184	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	22	183	Undirected	2	0.5
+Alphaproteobacteria; SAR11 Clade II	ciliatine	22	184	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	GABA	20	186	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	GABA	21	186	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	GABA	22	186	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	5'UMP	20	203	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	5'UMP	21	203	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade II	5'UMP	22	203	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade III	spermidine 3	23	119	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade III	homoserine betaine	24	123	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade III	homoserine betaine	24	124	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade III	homoserine betaine	24	125	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade III	homoserine betaine	24	126	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade III	homoserine betaine	24	127	Undirected	9	0.5
+Alphaproteobacteria; SAR11 Clade III	guanosine	23	169	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade IV	isethionate	25	193	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	homoserine betaine	27	123	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade Ia	homoserine betaine	27	124	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade Ia	homoserine betaine	27	125	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade Ia	homoserine betaine	27	126	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade Ia	homoserine betaine	27	127	Undirected	9	0.5
+Alphaproteobacteria; SAR11 Clade Ia	pantothenic acid	26	170	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	pantothenic acid	26	171	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	pantothenic acid	26	172	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ia	pantothenic acid	26	173	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	putrescine 2	28	116	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	putrescine 2	28	117	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	putrescine 2	29	116	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	putrescine 2	29	117	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	30	123	Undirected	5	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	30	124	Undirected	1	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	30	125	Undirected	3	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	30	126	Undirected	4	0.5
+Alphaproteobacteria; SAR11 Clade Ib	homoserine betaine	30	127	Undirected	9	0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	28	170	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	28	171	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	28	172	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	28	173	Undirected	3	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	29	170	Undirected	2	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	29	171	Undirected	5	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	29	172	Undirected	1	-0.5
+Alphaproteobacteria; SAR11 Clade Ib	pantothenic acid	29	173	Undirected	3	-0.5
+Alphaproteobacteria; SAR116 clade	putrescine 2	31	116	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	putrescine 2	31	117	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	putrescine 2	32	116	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	putrescine 2	32	117	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	33	123	Undirected	5	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	33	124	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	33	125	Undirected	3	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	33	126	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	33	127	Undirected	9	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	34	123	Undirected	5	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	34	124	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	34	125	Undirected	3	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	34	126	Undirected	4	0.5
+Alphaproteobacteria; SAR116 clade	homoserine betaine	34	127	Undirected	9	0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	31	132	Undirected	3	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	31	133	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	31	134	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	31	135	Undirected	5	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	32	132	Undirected	3	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	32	133	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	32	134	Undirected	2	-0.5
+Alphaproteobacteria; SAR116 clade	kynurenine	32	135	Undirected	5	-0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	33	183	Undirected	2	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	33	184	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	34	183	Undirected	2	0.5
+Alphaproteobacteria; SAR116 clade	ciliatine	34	184	Undirected	1	0.5
+Alphaproteobacteria; SAR116 clade	isethionate	31	193	Undirected	1	-0.5
+Alphaproteobacteria; SAR116 clade	isethionate	32	193	Undirected	1	-0.5
+Alphaproteobacteria; SM2D12	5'UMP	35	203	Undirected	1	0.5
+Alphaproteobacteria; Stappiaceae	glycine	36	131	Undirected	1	-0.5
+Alphaproteobacteria; Stappiaceae	guanosine	36	169	Undirected	1	-0.5
+Alphaproteobacteria; Thalassobaculales	kynurenine	37	132	Undirected	3	-0.5
+Alphaproteobacteria; Thalassobaculales	kynurenine	37	133	Undirected	1	-0.5
+Alphaproteobacteria; Thalassobaculales	kynurenine	37	134	Undirected	2	-0.5
+Alphaproteobacteria; Thalassobaculales	kynurenine	37	135	Undirected	5	-0.5
+Bacteria	5'AMP	38	187	Undirected	1	-0.5
+Bacteria	DHPS	38	188	Undirected	1	-0.5
+Bacteria	5'UMP	38	202	Undirected	1	-0.5
+Bacteria; Margulisbacteria	putrescine 2	39	116	Undirected	2	-0.5
+Bacteria; Margulisbacteria	putrescine 2	39	117	Undirected	1	-0.5
+Bacteria; Margulisbacteria	spermidine 3	39	119	Undirected	1	-0.5
+Bacteria; Margulisbacteria	ciliatine	40	183	Undirected	2	0.5
+Bacteria; Margulisbacteria	ciliatine	40	184	Undirected	1	0.5
+Bacteria; Margulisbacteria	5'AMP	39	187	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	42	123	Undirected	5	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	42	124	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	42	125	Undirected	3	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	42	126	Undirected	4	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	42	127	Undirected	9	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	43	123	Undirected	5	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	43	124	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	43	125	Undirected	3	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	43	126	Undirected	4	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	homoserine betaine	43	127	Undirected	9	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	kynurenine	41	132	Undirected	3	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	kynurenine	41	133	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	kynurenine	41	134	Undirected	2	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	kynurenine	41	135	Undirected	5	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	GABA	41	185	Undirected	1	-0.5
+Bacteria; Marinimicrobia (SAR406 clade)	isethionate	42	194	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	isethionate	43	194	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	glutathione 2	42	197	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	glutathione 2	42	198	Undirected	2	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	glutathione 2	43	197	Undirected	1	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	glutathione 2	43	198	Undirected	2	0.5
+Bacteria; Marinimicrobia (SAR406 clade)	5'UMP	41	202	Undirected	1	-0.5
+Bacteria; Proteobacteria	homoserine betaine	44	123	Undirected	5	0.5
+Bacteria; Proteobacteria	homoserine betaine	44	124	Undirected	1	0.5
+Bacteria; Proteobacteria	homoserine betaine	44	125	Undirected	3	0.5
+Bacteria; Proteobacteria	homoserine betaine	44	126	Undirected	4	0.5
+Bacteria; Proteobacteria	homoserine betaine	44	127	Undirected	9	0.5
+Bacteroidia; Bacteroidales	cysteine 2	45	176	Undirected	1	0.5
+Bacteroidia; Bacteroidales	cysteate	45	179	Undirected	1	0.5
+Bacteroidia; Chitinophagales	glycine	46	131	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	kynurenine	47	136	Undirected	1	0.5
+Bacteroidia; Chitinophagales	histidine	47	141	Undirected	1	0.5
+Bacteroidia; Chitinophagales	aspartate	47	143	Undirected	1	0.5
+Bacteroidia; Chitinophagales	proline	46	144	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	proline	47	145	Undirected	1	0.5
+Bacteroidia; Chitinophagales	alanine	46	146	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	alanine	47	147	Undirected	1	0.5
+Bacteroidia; Chitinophagales	lysine 2	46	148	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	lysine 2	47	149	Undirected	1	0.5
+Bacteroidia; Chitinophagales	phenylalanine	47	151	Undirected	1	0.5
+Bacteroidia; Chitinophagales	citrulline	46	152	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	citrulline	47	153	Undirected	1	0.5
+Bacteroidia; Chitinophagales	ornithine 2	47	156	Undirected	1	0.5
+Bacteroidia; Chitinophagales	serine	46	157	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	serine	46	158	Undirected	2	-0.5
+Bacteroidia; Chitinophagales	serine	47	159	Undirected	1	0.5
+Bacteroidia; Chitinophagales	threonine	46	160	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	threonine	47	161	Undirected	1	0.5
+Bacteroidia; Chitinophagales	valine	46	162	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	valine	47	163	Undirected	1	0.5
+Bacteroidia; Chitinophagales	isoleucine	46	164	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	isoleucine	46	165	Undirected	2	-0.5
+Bacteroidia; Chitinophagales	isoleucine	47	166	Undirected	1	0.5
+Bacteroidia; Chitinophagales	leucine	46	167	Undirected	1	-0.5
+Bacteroidia; Chitinophagales	leucine	47	168	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	spermidine 3	48	119	Undirected	1	-0.5
+Bacteroidia; Cryomorphaceae	spermidine 3	49	120	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	homoserine betaine	49	123	Undirected	5	0.5
+Bacteroidia; Cryomorphaceae	homoserine betaine	49	124	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	homoserine betaine	49	125	Undirected	3	0.5
+Bacteroidia; Cryomorphaceae	homoserine betaine	49	126	Undirected	4	0.5
+Bacteroidia; Cryomorphaceae	homoserine betaine	49	127	Undirected	9	0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	48	170	Undirected	2	-0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	48	171	Undirected	5	-0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	48	172	Undirected	1	-0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	48	173	Undirected	3	-0.5
+Bacteroidia; Cryomorphaceae	pantothenic acid	49	174	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	GABA	49	186	Undirected	1	0.5
+Bacteroidia; Cryomorphaceae	5'UMP	48	202	Undirected	1	-0.5
+Bacteroidia; Fabibacter	tryptophan	50	139	Undirected	1	0.5
+Bacteroidia; Fabibacter	threonine	50	161	Undirected	1	0.5
+Bacteroidia; Leeuwenhoekiella	putrescine 2	51	116	Undirected	2	-0.5
+Bacteroidia; Leeuwenhoekiella	putrescine 2	51	117	Undirected	1	-0.5
+Bacteroidia; Leeuwenhoekiella	spermidine 3	51	119	Undirected	1	-0.5
+Bacteroidia; NS11-12 marine group	glutathione 2	52	197	Undirected	1	0.5
+Bacteroidia; NS11-12 marine group	glutathione 2	52	198	Undirected	2	0.5
+Bacteroidia; NS2b marine group	homoserine betaine	53	121	Undirected	1	-0.5
+Bacteroidia; NS2b marine group	homoserine betaine	53	122	Undirected	4	-0.5
+Bacteroidia; NS2b marine group	pantothenic acid	54	174	Undirected	1	0.5
+Bacteroidia; NS4 marine group	putrescine 2	55	116	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	putrescine 2	55	117	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	putrescine 2	56	116	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	putrescine 2	56	117	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	homoserine betaine	57	123	Undirected	5	0.5
+Bacteroidia; NS4 marine group	homoserine betaine	57	124	Undirected	1	0.5
+Bacteroidia; NS4 marine group	homoserine betaine	57	125	Undirected	3	0.5
+Bacteroidia; NS4 marine group	homoserine betaine	57	126	Undirected	4	0.5
+Bacteroidia; NS4 marine group	homoserine betaine	57	127	Undirected	9	0.5
+Bacteroidia; NS4 marine group	tryptophan	55	137	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	tryptophan	55	138	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	tryptophan	56	137	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	tryptophan	56	138	Undirected	2	-0.5
+Bacteroidia; NS4 marine group	histidine	55	140	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	histidine	56	140	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	ciliatine	55	182	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	ciliatine	56	182	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	malic acid	55	201	Undirected	1	-0.5
+Bacteroidia; NS4 marine group	malic acid	56	201	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	putrescine 2	58	116	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	putrescine 2	58	117	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	putrescine 2	59	116	Undirected	2	-0.5
+Bacteroidia; NS5 marine group	putrescine 2	59	117	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	homoserine betaine	58	121	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	homoserine betaine	58	122	Undirected	4	-0.5
+Bacteroidia; NS5 marine group	homoserine betaine	59	121	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	homoserine betaine	59	122	Undirected	4	-0.5
+Bacteroidia; NS5 marine group	guanosine	58	169	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	guanosine	59	169	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	glutathione 2	60	197	Undirected	1	0.5
+Bacteroidia; NS5 marine group	glutathione 2	60	198	Undirected	2	0.5
+Bacteroidia; NS5 marine group	sn-glycerol 3-phosphate	58	204	Undirected	1	-0.5
+Bacteroidia; NS5 marine group	sn-glycerol 3-phosphate	59	204	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	homoserine betaine	61	121	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	homoserine betaine	61	122	Undirected	4	-0.5
+Bacteroidia; NS9 marine group	guanosine	61	169	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	cysteine 2	61	175	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	uridine	61	177	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	glutamine	61	190	Undirected	1	-0.5
+Bacteroidia; NS9 marine group	5'UMP	61	202	Undirected	1	-0.5
+Bacteroidia; Psychroflexus	methionine	62	115	Undirected	1	-0.5
+Bacteroidia; Saprospiraceae	homoserine betaine	63	121	Undirected	1	-0.5
+Bacteroidia; Saprospiraceae	homoserine betaine	63	122	Undirected	4	-0.5
+Bacteroidia; Saprospiraceae	asparagine	63	128	Undirected	1	-0.5
+Bacteroidia; Saprospiraceae	asparagine	63	129	Undirected	2	-0.5
+Bacteroidia; Saprospiraceae	cysteine 2	63	175	Undirected	1	-0.5
+Bacteroidia; Saprospiraceae	malic acid	63	201	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	kynurenine	64	132	Undirected	3	-0.5
+Bdellovibrionia; OM27 clade	kynurenine	64	133	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	kynurenine	64	134	Undirected	2	-0.5
+Bdellovibrionia; OM27 clade	kynurenine	64	135	Undirected	5	-0.5
+Bdellovibrionia; OM27 clade	taurine	65	181	Undirected	1	0.5
+Bdellovibrionia; OM27 clade	5'AMP	64	187	Undirected	1	-0.5
+Bdellovibrionia; OM27 clade	DHPS	64	188	Undirected	1	-0.5
+Cyanobacteria; Cyanobiaceae	aspartate	66	143	Undirected	1	0.5
+Cyanobacteria; Cyanobiaceae	ornithine 2	66	156	Undirected	1	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	67	123	Undirected	5	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	67	124	Undirected	1	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	67	125	Undirected	3	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	67	126	Undirected	4	0.5
+Cyanobacteria; Prochlorococcus MIT9313	homoserine betaine	67	127	Undirected	9	0.5
+Dadabacteria; Dadabacteriales	homoserine betaine	68	123	Undirected	5	0.5
+Dadabacteria; Dadabacteriales	homoserine betaine	68	124	Undirected	1	0.5
+Dadabacteria; Dadabacteriales	homoserine betaine	68	125	Undirected	3	0.5
+Dadabacteria; Dadabacteriales	homoserine betaine	68	126	Undirected	4	0.5
+Dadabacteria; Dadabacteriales	homoserine betaine	68	127	Undirected	9	0.5
+Desulfovibrionia; Halodesulfovibrio	sarcosine	69	199	Undirected	1	-0.5
+Desulfuromonadia; Bradymonadales	pantothenic acid	70	170	Undirected	2	-0.5
+Desulfuromonadia; Bradymonadales	pantothenic acid	70	171	Undirected	5	-0.5
+Desulfuromonadia; Bradymonadales	pantothenic acid	70	172	Undirected	1	-0.5
+Desulfuromonadia; Bradymonadales	pantothenic acid	70	173	Undirected	3	-0.5
+Desulfuromonadia; Bradymonadales	DHPS	71	189	Undirected	1	0.5
+Desulfuromonadia; Bradymonadales	sarcosine	70	199	Undirected	1	-0.5
+Gammaproteobacteria; Aquabacterium	putrescine 2	72	118	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	74	123	Undirected	5	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	74	124	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	74	125	Undirected	3	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	74	126	Undirected	4	0.5
+Gammaproteobacteria; Coxiella	homoserine betaine	74	127	Undirected	9	0.5
+Gammaproteobacteria; Coxiella	ciliatine	73	182	Undirected	1	-0.5
+Gammaproteobacteria; Coxiella	sarcosine	74	200	Undirected	1	0.5
+Gammaproteobacteria; Coxiella	sn-glycerol 3-phosphate	73	204	Undirected	1	-0.5
+Gammaproteobacteria; Delftia	putrescine 2	75	118	Undirected	1	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	homoserine betaine	77	123	Undirected	5	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	homoserine betaine	77	124	Undirected	1	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	homoserine betaine	77	125	Undirected	3	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	homoserine betaine	77	126	Undirected	4	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	homoserine betaine	77	127	Undirected	9	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	uridine	77	178	Undirected	1	0.5
+Gammaproteobacteria; Ectothiorhodospiraceae	isethionate	76	193	Undirected	1	-0.5
+Gammaproteobacteria; Ga0077536	pantothenic acid	78	170	Undirected	2	-0.5
+Gammaproteobacteria; Ga0077536	pantothenic acid	78	171	Undirected	5	-0.5
+Gammaproteobacteria; Ga0077536	pantothenic acid	78	172	Undirected	1	-0.5
+Gammaproteobacteria; Ga0077536	pantothenic acid	78	173	Undirected	3	-0.5
+Gammaproteobacteria; OM43 clade	homoserine betaine	79	121	Undirected	1	-0.5
+Gammaproteobacteria; OM43 clade	homoserine betaine	79	122	Undirected	4	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	homoserine betaine	80	121	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	homoserine betaine	80	122	Undirected	4	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	homoserine betaine	81	121	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	homoserine betaine	81	122	Undirected	4	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	asparagine	80	128	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	asparagine	80	129	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	asparagine	81	128	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	asparagine	81	129	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	tryptophan	80	137	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	tryptophan	80	138	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	tryptophan	81	137	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	tryptophan	81	138	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	aspartate	80	142	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	aspartate	81	142	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	proline	80	144	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	proline	81	144	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	lysine 2	80	148	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	lysine 2	81	148	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	phenylalanine	80	150	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	phenylalanine	81	150	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	citrulline	80	152	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	citrulline	81	152	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ornithine 2	80	154	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ornithine 2	80	155	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ornithine 2	81	154	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ornithine 2	81	155	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	serine	80	157	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	serine	80	158	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	serine	81	157	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	serine	81	158	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	threonine	80	160	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	threonine	81	160	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	valine	80	162	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	valine	81	162	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	isoleucine	80	164	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	isoleucine	80	165	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	isoleucine	81	164	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	isoleucine	81	165	Undirected	2	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	leucine	80	167	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	leucine	81	167	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	taurine	80	180	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	taurine	81	180	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	80	182	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	ciliatine	81	182	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	glutamic acid	80	192	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	glutamic acid	81	192	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	arginine	80	195	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	arginine	81	195	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	5'UMP	80	202	Undirected	1	-0.5
+Gammaproteobacteria; OM60(NOR5) clade	5'UMP	81	202	Undirected	1	-0.5
+Gammaproteobacteria; Photobacterium	isethionate	82	193	Undirected	1	-0.5
+Gammaproteobacteria; Pseudomonas	putrescine 2	83	118	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	spermidine 3	83	120	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	asparagine	83	130	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	kynurenine	83	136	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	aspartate	83	143	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	cysteine 2	83	176	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	uridine	83	178	Undirected	1	0.5
+Gammaproteobacteria; Pseudomonas	taurine	83	181	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	putrescine 2	84	116	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	putrescine 2	84	117	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	putrescine 2	85	116	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	putrescine 2	85	117	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	putrescine 2	86	116	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	putrescine 2	86	117	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	87	123	Undirected	5	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	87	124	Undirected	1	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	87	125	Undirected	3	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	87	126	Undirected	4	0.5
+Gammaproteobacteria; SAR86 clade	homoserine betaine	87	127	Undirected	9	0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	84	132	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	84	133	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	84	134	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	84	135	Undirected	5	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	85	132	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	85	133	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	85	134	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	85	135	Undirected	5	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	86	132	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	86	133	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	86	134	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	kynurenine	86	135	Undirected	5	-0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	84	137	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	84	138	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	85	137	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	85	138	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	86	137	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	tryptophan	86	138	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	histidine	84	140	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	histidine	85	140	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	histidine	86	140	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	proline	84	144	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	proline	85	144	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	proline	86	144	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	lysine 2	84	148	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	lysine 2	85	148	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	lysine 2	86	148	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	phenylalanine	84	150	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	phenylalanine	85	150	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	phenylalanine	86	150	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	isoleucine	84	164	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	isoleucine	84	165	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	isoleucine	85	164	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	isoleucine	85	165	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	isoleucine	86	164	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	isoleucine	86	165	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	leucine	84	167	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	leucine	85	167	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	leucine	86	167	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	84	170	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	84	171	Undirected	5	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	84	172	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	84	173	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	85	170	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	85	171	Undirected	5	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	85	172	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	85	173	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	86	170	Undirected	2	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	86	171	Undirected	5	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	86	172	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	pantothenic acid	86	173	Undirected	3	-0.5
+Gammaproteobacteria; SAR86 clade	5'AMP	84	187	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	5'AMP	85	187	Undirected	1	-0.5
+Gammaproteobacteria; SAR86 clade	5'AMP	86	187	Undirected	1	-0.5
+Gammaproteobacteria; SAR92 clade	pantothenic acid	88	170	Undirected	2	-0.5
+Gammaproteobacteria; SAR92 clade	pantothenic acid	88	171	Undirected	5	-0.5
+Gammaproteobacteria; SAR92 clade	pantothenic acid	88	172	Undirected	1	-0.5
+Gammaproteobacteria; SAR92 clade	pantothenic acid	88	173	Undirected	3	-0.5
+Gammaproteobacteria; Stenotrophomonas	putrescine 2	89	118	Undirected	1	0.5
+Gammaproteobacteria; Vibrionaceae	homoserine betaine	90	121	Undirected	1	-0.5
+Gammaproteobacteria; Vibrionaceae	homoserine betaine	90	122	Undirected	4	-0.5
+Gammaproteobacteria; Vibrionaceae	ciliatine	90	182	Undirected	1	-0.5
+Kiritimatiellae; R76-B128	putrescine 2	91	116	Undirected	2	-0.5
+Kiritimatiellae; R76-B128	putrescine 2	91	117	Undirected	1	-0.5
+Kiritimatiellae; R76-B128	pantothenic acid	91	170	Undirected	2	-0.5
+Kiritimatiellae; R76-B128	pantothenic acid	91	171	Undirected	5	-0.5
+Kiritimatiellae; R76-B128	pantothenic acid	91	172	Undirected	1	-0.5
+Kiritimatiellae; R76-B128	pantothenic acid	91	173	Undirected	3	-0.5
+Leptospirae; Turneriella	ciliatine	92	183	Undirected	2	0.5
+Leptospirae; Turneriella	ciliatine	92	184	Undirected	1	0.5
+Myxococcia; P3OB-42	homoserine betaine	93	123	Undirected	5	0.5
+Myxococcia; P3OB-42	homoserine betaine	93	124	Undirected	1	0.5
+Myxococcia; P3OB-42	homoserine betaine	93	125	Undirected	3	0.5
+Myxococcia; P3OB-42	homoserine betaine	93	126	Undirected	4	0.5
+Myxococcia; P3OB-42	homoserine betaine	93	127	Undirected	9	0.5
+Oligoflexia; Oligoflexaceae	asparagine	94	130	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	kynurenine	94	136	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	tryptophan	94	139	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	histidine	94	141	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	aspartate	94	143	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	proline	94	145	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	alanine	94	147	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	lysine 2	94	149	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	phenylalanine	94	151	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	ornithine 2	94	156	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	serine	94	159	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	threonine	94	161	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	valine	94	163	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	isoleucine	94	166	Undirected	1	0.5
+Oligoflexia; Oligoflexaceae	leucine	94	168	Undirected	1	0.5
+Oligoflexia; Pseudobacteriovorax	pantothenic acid	95	174	Undirected	1	0.5
+Phycisphaerae; SM1A02	arginine	96	196	Undirected	1	0.5
+Planctomycetota; OM190	homoserine betaine	97	121	Undirected	1	-0.5
+Planctomycetota; OM190	homoserine betaine	97	122	Undirected	4	-0.5
+Planctomycetota; OM190	pantothenic acid	98	174	Undirected	1	0.5
+Polyangia; Nannocystaceae	DHPS	99	189	Undirected	1	0.5
+Polyangia; Nannocystaceae	glutamine	99	191	Undirected	1	0.5
+Proteobacteria; Alphaproteobacteria	5'UMP	100	202	Undirected	1	-0.5
+Proteobacteria; Gammaproteobacteria	ciliatine	101	182	Undirected	1	-0.5
+Proteobacteria; Gammaproteobacteria	ciliatine	102	183	Undirected	2	0.5
+Proteobacteria; Gammaproteobacteria	ciliatine	102	184	Undirected	1	0.5
+Proteobacteria; Gammaproteobacteria	sn-glycerol 3-phosphate	101	204	Undirected	1	-0.5
+Rhodothermia; Balneola	homoserine betaine	103	121	Undirected	1	-0.5
+Rhodothermia; Balneola	homoserine betaine	103	122	Undirected	4	-0.5
+Rhodothermia; Balneola	pantothenic acid	104	174	Undirected	1	0.5
+Rhodothermia; Balneola	sn-glycerol 3-phosphate	103	204	Undirected	1	-0.5
+Thermoplasmata; Marine Group II	pantothenic acid	105	170	Undirected	2	-0.5
+Thermoplasmata; Marine Group II	pantothenic acid	105	171	Undirected	5	-0.5
+Thermoplasmata; Marine Group II	pantothenic acid	105	172	Undirected	1	-0.5
+Thermoplasmata; Marine Group II	pantothenic acid	105	173	Undirected	3	-0.5
+Thermoplasmata; Marine Group II	uridine	106	178	Undirected	1	0.5
+Thermoplasmata; Marine Group III	homoserine betaine	107	123	Undirected	5	0.5
+Thermoplasmata; Marine Group III	homoserine betaine	107	124	Undirected	1	0.5
+Thermoplasmata; Marine Group III	homoserine betaine	107	125	Undirected	3	0.5
+Thermoplasmata; Marine Group III	homoserine betaine	107	126	Undirected	4	0.5
+Thermoplasmata; Marine Group III	homoserine betaine	107	127	Undirected	9	0.5
+Verrucomicrobiae; A714019	sarcosine	108	199	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	asparagine	109	128	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	asparagine	109	129	Undirected	2	-0.5
+Verrucomicrobiae; Coraliomargarita	kynurenine	109	132	Undirected	3	-0.5
+Verrucomicrobiae; Coraliomargarita	kynurenine	109	133	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	kynurenine	109	134	Undirected	2	-0.5
+Verrucomicrobiae; Coraliomargarita	kynurenine	109	135	Undirected	5	-0.5
+Verrucomicrobiae; Coraliomargarita	aspartate	109	142	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	proline	109	144	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	ornithine 2	109	154	Undirected	2	-0.5
+Verrucomicrobiae; Coraliomargarita	ornithine 2	109	155	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	serine	109	157	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	serine	109	158	Undirected	2	-0.5
+Verrucomicrobiae; Coraliomargarita	threonine	109	160	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	valine	109	162	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	isoleucine	109	164	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	isoleucine	109	165	Undirected	2	-0.5
+Verrucomicrobiae; Coraliomargarita	leucine	109	167	Undirected	1	-0.5
+Verrucomicrobiae; Coraliomargarita	glutamic acid	109	192	Undirected	1	-0.5
+Verrucomicrobiae; DEV007	histidine	110	140	Undirected	1	-0.5
+Verrucomicrobiae; Lentimonas	putrescine 2	111	116	Undirected	2	-0.5
+Verrucomicrobiae; Lentimonas	putrescine 2	111	117	Undirected	1	-0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	112	123	Undirected	5	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	112	124	Undirected	1	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	112	125	Undirected	3	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	112	126	Undirected	4	0.5
+Verrucomicrobiae; Lentimonas	homoserine betaine	112	127	Undirected	9	0.5
+Verrucomicrobiae; Lentimonas	pantothenic acid	111	170	Undirected	2	-0.5
+Verrucomicrobiae; Lentimonas	pantothenic acid	111	171	Undirected	5	-0.5
+Verrucomicrobiae; Lentimonas	pantothenic acid	111	172	Undirected	1	-0.5
+Verrucomicrobiae; Lentimonas	pantothenic acid	111	173	Undirected	3	-0.5
+Verrucomicrobiae; Lentimonas	ciliatine	112	183	Undirected	2	0.5
+Verrucomicrobiae; Lentimonas	ciliatine	112	184	Undirected	1	0.5
+Verrucomicrobiae; MB11C04 marine group	putrescine 2	113	116	Undirected	2	-0.5
+Verrucomicrobiae; MB11C04 marine group	putrescine 2	113	117	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	spermidine 3	113	119	Undirected	1	-0.5
+Verrucomicrobiae; MB11C04 marine group	citrulline	113	152	Undirected	1	-0.5
+Verrucomicrobiae; Pelagicoccus	kynurenine	114	132	Undirected	3	-0.5
+Verrucomicrobiae; Pelagicoccus	kynurenine	114	133	Undirected	1	-0.5
+Verrucomicrobiae; Pelagicoccus	kynurenine	114	134	Undirected	2	-0.5
+Verrucomicrobiae; Pelagicoccus	kynurenine	114	135	Undirected	5	-0.5
