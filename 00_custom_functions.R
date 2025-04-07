@@ -294,12 +294,12 @@ t_pseudolog10 <- scales::new_transform("pseudolog10",
     temp_b <- sort(unique(temp_b))
     return(temp_b)
   }
-  # log10p1_lab <- function(x) { 
-  #   temp_b <- log10p1_br(x)
-  #   temp_b <- scaleFUN1(temp_b)
-  #   # temp_b <- paste0(temp_b, "%")
-  #   return(temp_b)
-  # }
+  log10p1_lab <- function(x) {
+    temp_b <- log10p1_br(x)
+    temp_b <- scaleFUN1(temp_b)
+    # temp_b <- paste0(temp_b, "%")
+    return(temp_b)
+  }
   log10p1_lab_na <- function(x) { 
     temp_b <- log10p1_br(x)
     if(any(diff(temp_b) < 1)){ #if first or last 2 breaks on the legend are too close together for visual represntation
@@ -319,6 +319,6 @@ T_log10p1 <- function(){ scales::new_transform(name = "log10p1",
                                                d_transform = NULL, d_inverse = NULL,
                                                breaks = log10p1_br, 
                                                minor_breaks = minor_breaks_n(10),
-                                               format = log10p1_lab,
-                                               # format = log10p1_lab_na,
+                                               # format = log10p1_lab,
+                                               format = log10p1_lab_na,
                                                domain = c(0, Inf)) }

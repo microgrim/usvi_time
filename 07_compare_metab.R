@@ -526,10 +526,14 @@ for(i in seq_along(usvi_metab_median_list)){
     assign(paste0("g3_metab_", i, "_", namevar1, "_norm_relabund"), temp_g3b, envir = .GlobalEnv, inherits = TRUE)
     
   #   # if(!any(grepl(paste0(namevar1, "relconc", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_metab_g3_relconc_.*.png")))){
-    ggsave(paste0(projectpath, "/", "usvi_metab_g3_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".png"),
+    # ggsave(paste0(projectpath, "/", "usvi_metab_g3_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".png"),
+    #        temp_g3,
+    #        width = 20, height = 10, units = "in")
+    ggsave(paste0(projectpath, "/", "usvi_metab_g3_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".svg"),
            temp_g3,
            width = 20, height = 10, units = "in")
   #   # }
+    
     rm(list = apropos("temp_df.*", mode = "list"))
     rm(list = apropos("namevar.*", mode = "list"))
     rm(list = apropos("temp_breaks.*", mode = "list"))
@@ -733,11 +737,15 @@ for(i in seq_along(usvi_sig_metab_median_list)){
     assign(paste0("g4_metab_", i, "_", namevar1, "_norm_relabund"), temp_g3b, envir = .GlobalEnv, inherits = TRUE)
     
     # # # if(!any(grepl(paste0(namevar1, "relconc", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_metab_g4_sig_relconc_*.png")))){
-    ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".png"),
+    # ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".png"),
+    #        temp_g3,
+    #        scale = 1,
+    #        width = 20, height = fig_height, units = "in")
+    # # # }
+    ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".svg"),
            temp_g3,
            scale = 1,
            width = 20, height = fig_height, units = "in")
-    # # # }
     rm(list = apropos("temp_df.*", mode = "list"))
     rm(list = apropos("namevar.*", mode = "list"))
     rm(list = apropos("temp_breaks.*", mode = "list"))

@@ -499,7 +499,7 @@ if(!any(grepl("seqcount", list.files(projectpath, pattern = "usvi_.*.png")))){
 
 if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))){
   usvi_taxonomy_filtered_list <- readr::read_rds(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
-  list2env(usvi_taxonomy_filtered_list)
+  list2env(usvi_taxonomy_filtered_list, envir = .GlobalEnv)
 } else {
   #make relative abundance tables at specific taxonomic levels
   keep <- c("Phylum", "Class", "Order", "Family", "Genus")
@@ -1158,10 +1158,10 @@ taxonomy_colors.df <- dplyr::inner_join(annotation_taxa_colors %>%
   droplevels
 
 
-taxonomy_colors.df %>%
-  dplyr::select(taxonomy, color) %>%
-  tibble::deframe(.) %>%
-  pal.bands()
+# taxonomy_colors.df %>%
+#   dplyr::select(taxonomy, color) %>%
+#   tibble::deframe(.) %>%
+#   pal.bands()
 
 taxonomy_colors <- taxonomy_colors.df %>%
   dplyr::select(taxonomy, color) %>%
@@ -1175,7 +1175,7 @@ taxonomy_colors <- taxonomy_colors.df %>%
 #   dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
 #   tibble::deframe(.) %>%
 #   pal.bands
-{
+if(!exists("usvi_relabund_taxonomy_list", envir = .GlobalEnv)){
   temp_df1 <- usvi_class_filtered.df %>%
     dplyr::filter(Phylum %in% grep(paste0(keep, collapse = "|"), unique(usvi_class_filtered.df[["Phylum"]]), value = TRUE)) %>%
     dplyr::filter(!(Class %in% grep(paste0(drop, collapse = "|"), unique(usvi_class_filtered.df[["Class"]]), value = TRUE))) %>%
@@ -1245,6 +1245,7 @@ taxonomy_colors <- taxonomy_colors.df %>%
   usvi_relabund_taxonomy_list <- list(temp_df1, temp_df2, temp_df3, temp_df4) %>%
     setNames(., c("Class", "Order", "Family", "Genus"))
 }
+
 # usvi_filtered_genus.df %>%
 #   dplyr::filter(!grepl("Other", taxonomy)) %>%
 #   dplyr::filter(relabund > 0) %>%
@@ -1373,6 +1374,7 @@ taxonomy_filt_genus_colors_lookup <- data.frame(taxonomy = names(taxonomy_filt_g
   dplyr::select(label, taxonomy) %>%
   tibble::deframe(.)
 
+if(!exists("usvi_filtered_taxonomy_rank_genus_relabund.df", envir = .GlobalEnv)){
 temp_df1 <- usvi_prok_filled.taxa.df %>% 
   dplyr::select(asv_id, Domain:Species) %>%
   droplevels %>%
@@ -1407,6 +1409,7 @@ usvi_filtered_taxonomy_rank_genus_relabund.df <- ps_usvi %>%
   # dplyr::filter(asv_id %in% temp_df1[["asv_id"]]) %>%
   dplyr::right_join(temp_df1, by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
   droplevels
+}
 
 # length(unique(usvi_filtered_taxonomy_rank_genus_relabund.df$Genus))
 ## 52 unique genera
@@ -1482,244 +1485,260 @@ if(!any(grepl("usvi_barchart_", list.files(projectpath, pattern = "usvi_.*.png")
 
 # Summary taxonomy figure -------------------------------------------------
 
-
-
 #calculate mean relative abundance of the interesting taxonomic groups as filtered above
 #grouping the replicates for each timepoint and day
 #so instead of 90 samples on the x-axis, we have 8 (or 10) per site
 
-temp_idx <- (usvi_filtered_taxonomy_rank_genus_relabund.df %>%
-               dplyr::ungroup(.) %>%
-               dplyr::filter(rel_abund >= 1) %>%
-               dplyr::distinct(asv_id, taxonomy, .keep_all = FALSE) %>%
-               dplyr::select(taxonomy, asv_id) %>%
-               tibble::deframe(.))
-
-
-usvi_asv_relabund_summary.df <- metadata %>%
-  dplyr::filter(sample_type == "seawater") %>%
-  dplyr::select(sample_id) %>%
-  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
-  droplevels %>%
-  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
-  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
-  dplyr::left_join(., metadata %>%
-                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::arrange(site, sampling_day, sampling_time) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_day, sampling_time))  %>%
-  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_day, sampling_time)) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
-  dplyr::mutate(sample_order = seq_along(interaction(sampling_time, sampling_day)), .by = c("site", asv_id)) %>%
-  droplevels
-# usvi_asv_relabund_summary.df %>%
-# dplyr::group_by(site, sampling_day, sampling_time) %>%
-# dplyr::summarise(total_abund = sum(rel_abund))
-
-usvi_asv_relabund_simple_summary.df <- metadata %>%
-  dplyr::filter(sample_type == "seawater") %>%
-  dplyr::select(sample_id) %>%
-  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
-  droplevels %>%
-  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
-  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
-  dplyr::left_join(., metadata %>%
-                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::arrange(site, sampling_day, sampling_time) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
-  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::arrange(site, sampling_time) %>%
-  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
-  droplevels
-
-# usvi_asv_relabund_simple_summary.df %>%
-#   dplyr::group_by(site, sampling_time) %>%
-#   dplyr::summarise(total_abund = sum(rel_abund))
-
-#without the corresponding microbiome sample to CINAR_BC_73:
-usvi_asv_relabund_summary_wo73.df <- metadata %>%
-  dplyr::filter(sample_type == "seawater") %>%
-  dplyr::select(sample_id) %>%
-  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
-  droplevels %>%
-  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
-  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
-  dplyr::left_join(., metadata %>%
-                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::arrange(site, sampling_day, sampling_time) %>%
-  dplyr::ungroup(.) %>%
+if(any(grepl("asv_relabund_summary", list.files(projectpath, pattern = "usvi_asv_relabund_summary-.*.RData")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_asv_relabund_summary.*.RData"))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+} else {
+  
+  temp_idx <- (usvi_filtered_taxonomy_rank_genus_relabund.df %>%
+                 dplyr::ungroup(.) %>%
+                 dplyr::filter(rel_abund >= 1) %>%
+                 dplyr::distinct(asv_id, taxonomy, .keep_all = FALSE) %>%
+                 dplyr::select(taxonomy, asv_id) %>%
+                 tibble::deframe(.))
+  
+  
+  usvi_asv_relabund_summary.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::left_join(., metadata %>%
+                       dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                       droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_day, sampling_time))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_day, sampling_time)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time, sampling_day) %>%
+    dplyr::mutate(sample_order = seq_along(interaction(sampling_time, sampling_day)), .by = c("site", asv_id)) %>%
+    droplevels
+  # usvi_asv_relabund_summary.df %>%
+  # dplyr::group_by(site, sampling_day, sampling_time) %>%
+  # dplyr::summarise(total_abund = sum(rel_abund))
+  
+  usvi_asv_relabund_simple_summary.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::left_join(., metadata %>%
+                       dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                       droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time) %>%
+    dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    droplevels
+  
+  # usvi_asv_relabund_simple_summary.df %>%
+  #   dplyr::group_by(site, sampling_time) %>%
+  #   dplyr::summarise(total_abund = sum(rel_abund))
+  
+  #without the corresponding microbiome sample to CINAR_BC_73:
+  usvi_asv_relabund_summary_wo73.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::left_join(., metadata %>%
+                       dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                       droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
     dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
-  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_day, sampling_time))  %>%
-  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_day, sampling_time)) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
-  dplyr::mutate(sample_order = seq_along(interaction(sampling_time, sampling_day)), .by = c("site", asv_id)) %>%
-  droplevels
-
-usvi_asv_relabund_simple_summary_wo73.df <- metadata %>%
-  dplyr::filter(sample_type == "seawater") %>%
-  dplyr::select(sample_id) %>%
-  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
-  droplevels %>%
-  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
-  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
-  dplyr::left_join(., metadata %>%
-                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::arrange(site, sampling_day, sampling_time) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
-  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
-  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::arrange(site, sampling_time) %>%
-  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
-  droplevels
-
-#consolidate all ASVs with the same taxonomy, to that level (so it goes from 56 ASVs to 30 taxonomic levels)
-usvi_filtered_taxonomy_relabund_summary.df <- usvi_asv_relabund_summary.df %>%
-  dplyr::filter(asv_id %in% temp_idx) %>%
-  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
-  dplyr::arrange(sample_order) %>%
-  dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
-                  paste0(., ": ", sampling_day)) %>%
-  dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
-  droplevels
-# usvi_filtered_taxonomy_relabund_summary.df %>%
-#   dplyr::group_by(site, sampling_day, sampling_time) %>%
-#   dplyr::summarise(total_abund = sum(rel_abund))
-# # site        sampling_day sampling_time total_abund
-# # <chr>       <chr>        <chr>               <dbl>
-# #   1 LB_seagrass Day1         dawn                 78.1
-# # 2 LB_seagrass Day1         peak_photo           77.8
-# # 3 LB_seagrass Day2         dawn                 75.6
-# # 4 LB_seagrass Day2         peak_photo           74.5
-# # 5 LB_seagrass Day3         dawn                 78.0
-# # 6 LB_seagrass Day3         peak_photo           77.5
-
-usvi_filtered_taxonomy_relabund_summary_wo73.df <- usvi_asv_relabund_summary_wo73.df %>%
-  dplyr::filter(asv_id %in% temp_idx) %>%
-  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
-  dplyr::arrange(sample_order) %>%
-  dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
-                  paste0(., ": ", sampling_day)) %>%
-  dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
-  droplevels
-
-# usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
-#   dplyr::group_by(site, sampling_day, sampling_time) %>%
-#   dplyr::summarise(total_abund = sum(rel_abund))
-# # site        sampling_day sampling_time total_abund
-# # <chr>       <chr>        <chr>               <dbl>
-# #   1 LB_seagrass Day1         dawn                 78.1
-# # 2 LB_seagrass Day1         peak_photo           77.8
-# # 3 LB_seagrass Day2         dawn                 75.6
-# # 4 LB_seagrass Day2         peak_photo           74.5
-# # 5 LB_seagrass Day3         dawn                 78.0
-# # 6 LB_seagrass Day3         peak_photo           78.2
-
-usvi_filtered_taxonomy_relabund_simple_summary.df <- usvi_asv_relabund_simple_summary.df %>%
-  dplyr::filter(asv_id %in% temp_idx) %>%
-  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
-  dplyr::arrange(sample_order) %>%
-  dplyr::mutate(sample_label = sample_order) %>%
-  droplevels
-usvi_filtered_taxonomy_relabund_simple_summary_wo73.df <- usvi_asv_relabund_simple_summary_wo73.df %>%
-  dplyr::filter(asv_id %in% temp_idx) %>%
-  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
-  dplyr::arrange(sample_order) %>%
-  dplyr::mutate(sample_label = sample_order) %>%
-  droplevels
-
-usvi_filtered_taxonomy_relabund_simple_summary_woD1.df <- metadata %>%
-  dplyr::filter(sample_type == "seawater") %>%
-  dplyr::select(sample_id) %>%
-  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
-  droplevels %>%
-  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
-  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
-  dplyr::right_join(., metadata %>%
-                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
-                     dplyr::filter(!grepl("Day1", sampling_day)) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::arrange(site, sampling_day, sampling_time) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
-  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::arrange(site, sampling_time) %>%
-  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
-  droplevels %>%
-  dplyr::ungroup(.) %>%
-  dplyr::filter(asv_id %in% temp_idx) %>%
-  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
-  dplyr::arrange(sample_order) %>%
-  dplyr::mutate(sample_label = sample_order) %>%
-  droplevels
-
-usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df <- metadata %>%
-  dplyr::filter(sample_type == "seawater") %>%
-  dplyr::select(sample_id) %>%
-  dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
-  droplevels %>%
-  dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
-  dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
-  dplyr::right_join(., metadata %>%
-                     dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
-                     dplyr::filter(!grepl("Day1", sampling_day)) %>%
-                     droplevels, by = join_by(sample_id)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup)),
-                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
-                sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
-  droplevels %>%
-  dplyr::arrange(site, sampling_day, sampling_time) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
-  dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::arrange(site, sampling_time) %>%
-  dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
-  droplevels %>%
-  dplyr::ungroup(.) %>%
-  dplyr::filter(asv_id %in% temp_idx) %>%
-  dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
-  dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
-  dplyr::arrange(sample_order) %>%
-  dplyr::mutate(sample_label = sample_order) %>%
-  droplevels
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_day, sampling_time))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_day, sampling_time)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time, sampling_day) %>%
+    dplyr::mutate(sample_order = seq_along(interaction(sampling_time, sampling_day)), .by = c("site", asv_id)) %>%
+    droplevels
+  
+  usvi_asv_relabund_simple_summary_wo73.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::left_join(., metadata %>%
+                       dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                       droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time) %>%
+    dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    droplevels
+  
+  #consolidate all ASVs with the same taxonomy, to that level (so it goes from 56 ASVs to 30 taxonomic levels)
+  usvi_filtered_taxonomy_relabund_summary.df <- usvi_asv_relabund_summary.df %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+                    paste0(., ": ", sampling_day)) %>%
+    dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+    droplevels
+  # usvi_filtered_taxonomy_relabund_summary.df %>%
+  #   dplyr::group_by(site, sampling_day, sampling_time) %>%
+  #   dplyr::summarise(total_abund = sum(rel_abund))
+  # # site        sampling_day sampling_time total_abund
+  # # <chr>       <chr>        <chr>               <dbl>
+  # #   1 LB_seagrass Day1         dawn                 78.1
+  # # 2 LB_seagrass Day1         peak_photo           77.8
+  # # 3 LB_seagrass Day2         dawn                 75.6
+  # # 4 LB_seagrass Day2         peak_photo           74.5
+  # # 5 LB_seagrass Day3         dawn                 78.0
+  # # 6 LB_seagrass Day3         peak_photo           77.5
+  
+  usvi_filtered_taxonomy_relabund_summary_wo73.df <- usvi_asv_relabund_summary_wo73.df %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+                    paste0(., ": ", sampling_day)) %>%
+    dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+    droplevels
+  
+  # usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
+  #   dplyr::group_by(site, sampling_day, sampling_time) %>%
+  #   dplyr::summarise(total_abund = sum(rel_abund))
+  # # site        sampling_day sampling_time total_abund
+  # # <chr>       <chr>        <chr>               <dbl>
+  # #   1 LB_seagrass Day1         dawn                 78.1
+  # # 2 LB_seagrass Day1         peak_photo           77.8
+  # # 3 LB_seagrass Day2         dawn                 75.6
+  # # 4 LB_seagrass Day2         peak_photo           74.5
+  # # 5 LB_seagrass Day3         dawn                 78.0
+  # # 6 LB_seagrass Day3         peak_photo           78.2
+  
+  usvi_filtered_taxonomy_relabund_simple_summary.df <- usvi_asv_relabund_simple_summary.df %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  usvi_filtered_taxonomy_relabund_simple_summary_wo73.df <- usvi_asv_relabund_simple_summary_wo73.df %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  
+  usvi_filtered_taxonomy_relabund_simple_summary_woD1.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::right_join(., metadata %>%
+                        dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                        dplyr::filter(!grepl("Day1", sampling_day)) %>%
+                        droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time) %>%
+    dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    droplevels %>%
+    dplyr::ungroup(.) %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  
+  usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::right_join(., metadata %>%
+                        dplyr::distinct(sample_id, site, sampling_day, sampling_time) %>%
+                        dplyr::filter(!grepl("Day1", sampling_day)) %>%
+                        droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
+    droplevels %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time) %>%
+    dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    droplevels %>%
+    dplyr::ungroup(.) %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  
+  save(list = c("usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df", 
+                "usvi_filtered_taxonomy_relabund_simple_summary_woD1.df",
+                "usvi_filtered_taxonomy_relabund_simple_summary_wo73.df", 
+                "usvi_filtered_taxonomy_relabund_simple_summary.df",
+                "usvi_filtered_taxonomy_relabund_summary.df",
+                "usvi_asv_relabund_simple_summary_wo73.df",
+                "usvi_asv_relabund_simple_summary.df",
+                "usvi_asv_relabund_summary_wo73.df",
+                "usvi_asv_relabund_summary.df"),
+       file = paste0(projectpath, "/", "usvi_asv_relabund_summary-", Sys.Date(), ".RData"))
+}
 
 # g2_sum_oneperc <- print(ggplot(data = usvi_filtered_taxonomy_relabund_summary.df %>%
 #                                       droplevels, 
@@ -1777,6 +1796,22 @@ if(!any(grepl("sum_oneperc_", list.files(projectpath, pattern = "usvi_barchart_f
          gpatch3,
          width = 16, height = 10, units = "in")
   ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","sum_oneperc_days_wo73", "-", Sys.Date(), ".png"),
+         gpatch4,
+         width = 16, height = 10, units = "in")
+}
+
+#save as SVG format:
+if(!any(grepl("sum_oneperc_", list.files(projectpath, pattern = "usvi_barchart_filtered_genus.*.svg")))){
+  # ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_", "sum_oneperc", "-", Sys.Date(), ".svg"),
+  #        gpatch1,
+  #        width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_", "sum_oneperc_wo73","-", Sys.Date(), ".svg"),
+         gpatch2,
+         width = 16, height = 10, units = "in")
+  # ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_", "sum_oneperc_days","-", Sys.Date(), ".svg"),
+  #        gpatch3,
+  #        width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","sum_oneperc_days_wo73", "-", Sys.Date(), ".svg"),
          gpatch4,
          width = 16, height = 10, units = "in")
 }
