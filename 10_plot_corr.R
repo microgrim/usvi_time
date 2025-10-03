@@ -334,94 +334,101 @@ dend_metab <- spearman.test.optA.list[["dend_metab"]]
 
 #filter for only those passing FDR 1% in option A
 
-for(dataset in c("spearman.test.site.time.full.df", 
-                 "spearman.test.site.full.df", 
-                 "spearman.test.full.df",
-                 NULL)){
-  temp_full.df <- get0(dataset, inherits = TRUE)
-  namevar <- dataset %>%
-    stringr::str_remove(pattern = ".full.df")
-  
-  temp_padj_cutoff <- temp_full.df %>%
-    split(., f = .$test_type) %>%
-    map(., ~.x %>%
-          dplyr::select(p_value) %>%
-          tibble::deframe(.) %>% na.omit(.) %>%
-          unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
-          quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
-          setNames(., c("q_01", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
-  
-  temp_filtered.df <- temp_full.df %>%
-    tidyr::drop_na(p_value) %>%
-    split(., f = .$test_type) %>%
-    imap(., ~.x %>%
-           dplyr::mutate(across(c(test_type, asv_id, simpleName), ~factor(.x))) %>%
-           droplevels %>%
-           dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
-                         padj_01 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_01"] ~ p_value, .default = NA),
-                         # padj_025 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_025"] ~ p_value, .default = NA),
-                         # padj_05 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_05"] ~ p_value, .default = NA),
-                         padj_10 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_10"] ~ p_value, .default = NA)) %>%
-           tidyr::drop_na(padj_10) %>%
-           dplyr::ungroup(.) %>%
-           dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
-                                                     abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
-           # .default = estimate)) %>%
-           tidyr::drop_na(estimate) %>%
-           dplyr::mutate(sig = dplyr::case_when(
-             !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
-             !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
-             # !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
-             # !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
-             !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
-             .default = NA)) %>%
-           dplyr::mutate(sig = factor(sig)) %>%
-           dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
-           dplyr::arrange(asv_id, simpleName) %>%
-           dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
-           dplyr::ungroup(.) %>%
-           dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
-           droplevels) %>%
-    bind_rows(.)
-  if(!any(grepl("grouping", colnames(temp_filtered.df)))){
+if(any(grepl("spearman.sig.filtered.list", list.files(projectpath, pattern = "usvi_.*.rds")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_spearman.sig.filtered.list-*.rds"))
+  temp_list <- readr::read_rds(paste0(projectpath, "/", temp_file))
+  list2env(temp_list)
+  rm(temp_list)
+} else {
+  for(dataset in c("spearman.test.site.time.full.df", 
+                   "spearman.test.site.full.df", 
+                   "spearman.test.full.df",
+                   NULL)){
+    temp_full.df <- get0(dataset, inherits = TRUE)
+    namevar <- dataset %>%
+      stringr::str_remove(pattern = ".full.df")
+    
+    temp_padj_cutoff <- temp_full.df %>%
+      split(., f = .$test_type) %>%
+      map(., ~.x %>%
+            dplyr::select(p_value) %>%
+            tibble::deframe(.) %>% na.omit(.) %>%
+            unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
+            quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
+            setNames(., c("q_01", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+    
+    temp_filtered.df <- temp_full.df %>%
+      tidyr::drop_na(p_value) %>%
+      split(., f = .$test_type) %>%
+      imap(., ~.x %>%
+             dplyr::mutate(across(c(test_type, asv_id, simpleName), ~factor(.x))) %>%
+             droplevels %>%
+             dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+                           padj_01 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_01"] ~ p_value, .default = NA),
+                           # padj_025 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_025"] ~ p_value, .default = NA),
+                           # padj_05 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_05"] ~ p_value, .default = NA),
+                           padj_10 = dplyr::case_when(p_value <= temp_padj_cutoff[[.y]]["q_10"] ~ p_value, .default = NA)) %>%
+             tidyr::drop_na(padj_10) %>%
+             dplyr::ungroup(.) %>%
+             dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+                                                       abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+             # .default = estimate)) %>%
+             tidyr::drop_na(estimate) %>%
+             dplyr::mutate(sig = dplyr::case_when(
+               !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
+               !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
+               # !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
+               # !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
+               !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
+               .default = NA)) %>%
+             dplyr::mutate(sig = factor(sig)) %>%
+             dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
+             dplyr::arrange(asv_id, simpleName) %>%
+             dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+             dplyr::ungroup(.) %>%
+             dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+             droplevels) %>%
+      bind_rows(.)
+    if(!any(grepl("grouping", colnames(temp_filtered.df)))){
+      temp_filtered.df <- temp_filtered.df %>%
+        dplyr::mutate(grouping = "all.all")
+    }
     temp_filtered.df <- temp_filtered.df %>%
-      dplyr::mutate(grouping = "all.all")
-  }
-  temp_filtered.df <- temp_filtered.df %>%
-    dplyr::filter(!is.na(padj_01)) %>%
-    dplyr::filter(grepl("optA", test_type)) %>%
-    droplevels %>%
-    dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
-                                                       .default = NA)) %>%
-    dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
-    dplyr::mutate(across(c(asv_id, simpleName, test_type, sig, grouping), ~factor(.x))) %>%
-    dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
-                  sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
-    dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
-    dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
-    dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
-    droplevels
-  
-  assign(paste0(namevar, ".filtered.df"), temp_filtered.df, envir = .GlobalEnv)
-  rm(temp_full.df)
-  rm(temp_padj_cutoff)
-  rm(temp_filtered.df)
-}
-for(dataset in c("spearman.test.site.time.filtered.df", 
-                 "spearman.test.site.filtered.df", 
-                 "spearman.test.filtered.df",
-                 NULL)){
-  # if(!any(grepl("spearman.test.site.filtered.df", list.files(projectpath, pattern = "usvi_spearman.test.site.filtered.df.*.tsv")))){
-  #   readr::write_delim(spearman.test.site.filtered.df, paste0(projectpath, "/", "spearman.test.site.filtered.df-", Sys.Date(), ".tsv"),
-  #                      delim = "\t", col_names = TRUE)
-  # }
-  if(!any(grepl(dataset, list.files(projectpath, pattern = "usvi_spearman.test.*.tsv")))){
-    temp_filtered.df <- get0(dataset, inherits = TRUE)
-    readr::write_delim(temp_filtered.df, paste0(projectpath, "/", "usvi_", dataset, "-", Sys.Date(), ".tsv"),
-                       delim = "\t", col_names = TRUE)
+      dplyr::filter(!is.na(padj_01)) %>%
+      dplyr::filter(grepl("optA", test_type)) %>%
+      droplevels %>%
+      dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+                                                         .default = NA)) %>%
+      dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
+      dplyr::mutate(across(c(asv_id, simpleName, test_type, sig, grouping), ~factor(.x))) %>%
+      dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                    sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+      dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
+      dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
+      dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
+      droplevels
+    
+    assign(paste0(namevar, ".filtered.df"), temp_filtered.df, envir = .GlobalEnv)
+    rm(temp_full.df)
+    rm(temp_padj_cutoff)
     rm(temp_filtered.df)
   }
-  
+  for(dataset in c("spearman.test.site.time.filtered.df", 
+                   "spearman.test.site.filtered.df", 
+                   "spearman.test.filtered.df",
+                   NULL)){
+    # if(!any(grepl("spearman.test.site.filtered.df", list.files(projectpath, pattern = "usvi_spearman.test.site.filtered.df.*.tsv")))){
+    #   readr::write_delim(spearman.test.site.filtered.df, paste0(projectpath, "/", "spearman.test.site.filtered.df-", Sys.Date(), ".tsv"),
+    #                      delim = "\t", col_names = TRUE)
+    # }
+    if(!any(grepl(dataset, list.files(projectpath, pattern = "usvi_spearman.test.*.tsv")))){
+      temp_filtered.df <- get0(dataset, inherits = TRUE)
+      readr::write_delim(temp_filtered.df, paste0(projectpath, "/", "usvi_", dataset, "-", Sys.Date(), ".tsv"),
+                         delim = "\t", col_names = TRUE)
+      rm(temp_filtered.df)
+    }
+    
+  }
 }
 
 spearman.test.site.filtered.df %>%
@@ -436,7 +443,27 @@ spearman.test.site.time.filtered.df %>%
 
 if(any(grepl("spearman.sig.filtered.list", list.files(projectpath, pattern = "usvi_spearman.sig.filtered.list.*.rds")))){
   temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_spearman.sig.filtered.list-.*.rds"))
-  spearman.sig.filtered.list <- readr::read_rds(paste0(projectpath, "/", temp_file))
+  temp_list <- readr::read_rds(paste0(projectpath, "/", temp_file))
+  spearman.sig.filtered.list <- temp_list[grep("site", names(temp_list), value = FALSE)] %>%
+    bind_rows(., .id = NULL) %>%
+    dplyr::ungroup(.) %>%
+    # dplyr::filter(grepl("optA", test_type)) %>%
+    dplyr::select(asv_id, simpleName, grouping, estimate, padj_bh_05, padj_01, filtered_estimate, site, sampling_time) %>%
+    droplevels %>%
+    split(., f = .$grouping) %>%
+    map(., ~.x %>%
+          droplevels %>%
+          dplyr::rowwise(.) %>%
+          tidyr::drop_na(filtered_estimate) %>%
+          dplyr::filter(!is.na(padj_01) | !is.na(padj_bh_05)) %>%
+          droplevels %>%
+          dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
+          droplevels %>%
+          dplyr::arrange(asv_id) %>%
+          dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+          # dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
+          droplevels)
+  
 } else {
   spearman.sig.filtered.list <- spearman.test.site.filtered.df %>%
     bind_rows(., spearman.test.site.time.filtered.df) %>%
@@ -445,13 +472,15 @@ if(any(grepl("spearman.sig.filtered.list", list.files(projectpath, pattern = "us
     droplevels %>%
     split(., f = .$grouping) %>%
     map(., ~.x %>%
+          dplyr::rowwise(.) %>%
           tidyr::drop_na(filtered_estimate) %>%
+          dplyr::filter(!is.na(padj_01) | !is.na(padj_bh_05)) %>%
           droplevels %>%
           dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
           droplevels %>%
           dplyr::arrange(asv_id) %>%
           dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
-          dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
+          # dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
           droplevels)
   
   readr::write_rds(spearman.sig.filtered.list, paste0(projectpath, "/", "usvi_spearman.sig.filtered.list-", Sys.Date(), ".rds"), compress = "gz")

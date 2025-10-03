@@ -1,0 +1,17 @@
+baseline	model	site	first_v1	first_v2	second_v1	second_v2	contrast	null.value	estimate	conf.low	conf.high	adj.p.value	significance
+all	site.time_all	LB_seagrass	LB_seagrass	peak_photo	LB_seagrass	dawn	LB_seagrass.peak_photo-LB_seagrass.dawn	0	0.005448026040732648	-0.09597545700655437	0.10687150908801966	0.9999858335668588	NA
+all	site.time_all	Tektite	Tektite	dawn	LB_seagrass	dawn	Tektite.dawn-LB_seagrass.dawn	0	0.08291048504902424	-0.016283638220046984	0.18210460831809544	0.15358846463621711	NA
+all	site.time_all	Yawzi	Yawzi	dawn	LB_seagrass	dawn	Yawzi.dawn-LB_seagrass.dawn	0	-0.0018849803082768846	-0.09915282072803115	0.09538286011147738	0.9999999122921023	NA
+all	site.time_all	Tektite	Tektite	peak_photo	LB_seagrass	peak_photo	Tektite.peak_photo-LB_seagrass.peak_photo	0	0.06946224334476751	-0.030078108283335583	0.16900259497287062	0.3274074010043966	NA
+all	site.time_all	Yawzi	Yawzi	peak_photo	LB_seagrass	peak_photo	Yawzi.peak_photo-LB_seagrass.peak_photo	0	0.08523921106039443	-0.01618427198689258	0.18666269410768144	0.14930920966454564	NA
+all	site.time_all	Tektite	Tektite	peak_photo	Tektite	dawn	Tektite.peak_photo-Tektite.dawn	0	-0.008000215663524074	-0.10526805608327834	0.0892676247562302	0.9998831052858008	NA
+all	site.time_all	Yawzi	Yawzi	dawn	Tektite	dawn	Yawzi.dawn-Tektite.dawn	0	-0.08479546535730112	-0.18206330577705537	0.012472375062453148	0.12248166218190848	NA
+all	site.time_all	Yawzi	Yawzi	peak_photo	Tektite	peak_photo	Yawzi.peak_photo-Tektite.peak_photo	0	0.01577696771562692	-0.08149087270412735	0.11304480813538119	0.996842359720199	NA
+all	site.time_all	Yawzi	Yawzi	peak_photo	Yawzi	dawn	Yawzi.peak_photo-Yawzi.dawn	0	0.09257221740940397	-0.0046956230103503	0.18984005782915825	0.07115151422765276	*
+all	temporal_all	all	all	peak_photo	all	dawn	peak_photo-dawn	0	0.013611093246482159	-0.020884837539962064	0.04810702403292638	0.43404520541086333	NA
+all	site_all	Yawzi	Yawzi	all	LB_seagrass	all	Yawzi-LB_seagrass	0	0.03684407830143427	-0.015956549112515053	0.08964470571538359	0.22354742013332884	NA
+all	site_all	Tektite	Tektite	all	LB_seagrass	all	Tektite-LB_seagrass	0	0.08040203229440171	0.027601404880452388	0.13320265970835105	0.0014568376231134383	**
+all	site_all	Tektite	Tektite	all	Yawzi	all	Tektite-Yawzi	0	0.04355795399296744	-0.008130956758458902	0.09524686474439378	0.11541575131668647	NA
+site	time_LB_seagrass	LB_seagrass	LB_seagrass	peak_photo	LB_seagrass	dawn	LB_seagrass.peak_photo-LB_seagrass.dawn	0	0.0038874996834243197	-0.029648920923330574	0.03742392029017921	0.8118418747983351	NA
+site	time_Tektite	Tektite	Tektite	peak_photo	Tektite	dawn	Tektite.peak_photo-Tektite.dawn	0	-0.011108294089723803	-0.06949037912303682	0.04727379094358921	0.6975006515126583	NA
+site	time_Yawzi	Yawzi	Yawzi	peak_photo	Yawzi	dawn	Yawzi.peak_photo-Yawzi.dawn	0	0.062005509811428466	0.010995970369915072	0.11301504925294187	0.019360168731345495	**

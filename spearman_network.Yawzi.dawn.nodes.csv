@@ -1,130 +1,198 @@
 Label,Id,omics_type,taxonomy
 ASV_00499,1,ASV,ASV_00499: Nitrososphaeria; Candidatus Nitrosopumilus
-ASV_00329,2,ASV,ASV_00329: Thermoplasmata; Marine Group II
-ASV_00429,3,ASV,ASV_00429: Thermoplasmata; Marine Group III
-ASV_00058,4,ASV,ASV_00058: Acidimicrobia; Sva0996 marine group
-ASV_00852,5,ASV,ASV_00852: Acidimicrobia; Sva0996 marine group
-ASV_00595,6,ASV,ASV_00595: Actinobacteria; PeM15
-ASV_02152,7,ASV,ASV_02152: Bacteroidia; Bacteroidales
-ASV_00222,8,ASV,ASV_00222: Bacteroidia; Saprospiraceae
-ASV_00440,9,ASV,ASV_00440: Bacteroidia; Saprospiraceae
-ASV_00543,10,ASV,ASV_00543: Bacteroidia; Saprospiraceae
-ASV_00352,11,ASV,ASV_00352: Bacteroidia; Cyclobacteriaceae
-ASV_00069,12,ASV,ASV_00069: Bacteroidia; Cryomorphaceae
-ASV_00187,13,ASV,ASV_00187: Bacteroidia; Cryomorphaceae
-ASV_00263,14,ASV,ASV_00263: Bacteroidia; Cryomorphaceae
-ASV_00576,15,ASV,ASV_00576: Bacteroidia; Algitalea
-ASV_00464,16,ASV,ASV_00464: Bacteroidia; Leeuwenhoekiella
-ASV_00025,17,ASV,ASV_00025: Bacteroidia; NS5 marine group
-ASV_00027,18,ASV,ASV_00027: Bacteroidia; NS5 marine group
-ASV_00279,19,ASV,ASV_00279: Bacteroidia; NS5 marine group
-ASV_00347,20,ASV,ASV_00347: Bacteroidia; NS5 marine group
-ASV_00358,21,ASV,ASV_00358: Bacteroidia; Tenacibaculum
-ASV_00243,22,ASV,ASV_00243: Bacteroidia; Winogradskyella
-ASV_00140,23,ASV,ASV_00140: Bacteroidia; NS9 marine group
-ASV_00158,24,ASV,ASV_00158: Bacteroidia; NS9 marine group
-ASV_00294,25,ASV,ASV_00294: Rhodothermia; Balneola
-ASV_00806,26,ASV,ASV_00806: Bdellovibrionia; Bacteriovoracaceae
-ASV_00462,27,ASV,ASV_00462: Bdellovibrionia; OM27 clade
-ASV_00487,28,ASV,ASV_00487: Bdellovibrionia; OM27 clade
-ASV_00578,29,ASV,ASV_00578: Bdellovibrionia; OM27 clade
-ASV_00664,30,ASV,ASV_00664: Bdellovibrionia; OM27 clade
-ASV_00856,31,ASV,ASV_00856: Bdellovibrionia; OM27 clade
-ASV_01961,32,ASV,ASV_01961: Bdellovibrionia; OM27 clade
-ASV_00665,33,ASV,ASV_00665: Oligoflexia; Pseudobacteriovorax
-ASV_00615,34,ASV,ASV_00615: Oligoflexia; Oligoflexaceae
-ASV_00115,35,ASV,ASV_00115: Cyanobacteria; Synechococcus CC9902
-ASV_00654,36,ASV,ASV_00654: Bacilli; Acholeplasma
-ASV_00912,37,ASV,ASV_00912: Bacteria; Margulisbacteria
-ASV_00247,38,ASV,ASV_00247: Bacteria; Marinimicrobia (SAR406 clade)
-ASV_00327,39,ASV,ASV_00327: Bacteria; Marinimicrobia (SAR406 clade)
-ASV_00614,40,ASV,ASV_00614: Polyangia; Sandaracinaceae
-ASV_00290,41,ASV,ASV_00290: Planctomycetota; OM190
-ASV_00319,42,ASV,ASV_00319: Planctomycetota; OM190
-ASV_00313,43,ASV,ASV_00313: Planctomycetes; Pirellulaceae
-ASV_00259,44,ASV,ASV_00259: Alphaproteobacteria; Defluviicoccales
-ASV_00120,45,ASV,ASV_00120: Alphaproteobacteria; PS1 clade
-ASV_00390,46,ASV,ASV_00390: Alphaproteobacteria; PS1 clade
-ASV_00029,47,ASV,ASV_00029: Alphaproteobacteria; SAR116 clade
-ASV_00052,48,ASV,ASV_00052: Alphaproteobacteria; SAR116 clade
-ASV_00201,49,ASV,ASV_00201: Alphaproteobacteria; SAR116 clade
-ASV_00315,50,ASV,ASV_00315: Alphaproteobacteria; SAR116 clade
-ASV_00064,51,ASV,ASV_00064: Alphaproteobacteria; Stappiaceae
-ASV_00087,52,ASV,ASV_00087: Alphaproteobacteria; Stappiaceae
-ASV_00631,53,ASV,ASV_00631: Alphaproteobacteria; Limibaculum
-ASV_00039,54,ASV,ASV_00039: Alphaproteobacteria; Rhodobacteraceae
-ASV_00026,55,ASV,ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
-ASV_00172,56,ASV,ASV_00172: Alphaproteobacteria; AEGEAN-169 marine group
-ASV_00304,57,ASV,ASV_00304: Alphaproteobacteria; AEGEAN-169 marine group
-ASV_00443,58,ASV,ASV_00443: Alphaproteobacteria; S25-593
-ASV_00566,59,ASV,ASV_00566: Alphaproteobacteria; S25-593
-ASV_00067,60,ASV,ASV_00067: Alphaproteobacteria; SAR11 Clade Ia
-ASV_00083,61,ASV,ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
-ASV_00207,62,ASV,ASV_00207: Alphaproteobacteria; SAR11 Clade II
-ASV_00253,63,ASV,ASV_00253: Alphaproteobacteria; SAR11 Clade II
-ASV_00125,64,ASV,ASV_00125: Alphaproteobacteria; SAR11 Clade III
-ASV_00397,65,ASV,ASV_00397: Alphaproteobacteria; SAR11 Clade III
-ASV_00264,66,ASV,ASV_00264: Alphaproteobacteria; Erythrobacter
-ASV_00491,67,ASV,ASV_00491: Alphaproteobacteria; OM75 clade
-ASV_00146,68,ASV,ASV_00146: Gammaproteobacteria; MWH-UniP1 aquatic group
-ASV_00605,69,ASV,ASV_00605: Gammaproteobacteria; mle1-7
-ASV_00217,70,ASV,ASV_00217: Gammaproteobacteria; Coxiella
-ASV_00448,71,ASV,ASV_00448: Gammaproteobacteria; Coxiella
-ASV_00592,72,ASV,ASV_00592: Gammaproteobacteria; Coxiella
-ASV_00666,73,ASV,ASV_00666: Gammaproteobacteria; Coxiella
-ASV_00869,74,ASV,ASV_00869: Gammaproteobacteria; Coxiella
-ASV_00147,75,ASV,ASV_00147: Gammaproteobacteria; Vibrio
-ASV_01105,76,ASV,ASV_01105: Gammaproteobacteria; MBMPE27
-ASV_00452,77,ASV,ASV_00452: Gammaproteobacteria; Candidatus Endoecteinascidia
-ASV_00374,78,ASV,ASV_00374: Gammaproteobacteria; Alcanivorax
-ASV_00404,79,ASV,ASV_00404: Gammaproteobacteria; Endozoicomonas
-ASV_00096,80,ASV,ASV_00096: Gammaproteobacteria; KI89A clade
-ASV_00168,81,ASV,ASV_00168: Gammaproteobacteria; Litoricola
-ASV_01258,82,ASV,ASV_01258: Gammaproteobacteria; Marinomonas
-ASV_00123,83,ASV,ASV_00123: Gammaproteobacteria; SAR86 clade
-ASV_00126,84,ASV,ASV_00126: Gammaproteobacteria; SAR86 clade
-ASV_00206,85,ASV,ASV_00206: Gammaproteobacteria; SAR86 clade
-ASV_00235,86,ASV,ASV_00235: Gammaproteobacteria; SAR86 clade
-ASV_00353,87,ASV,ASV_00353: Gammaproteobacteria; SAR86 clade
-ASV_01161,88,ASV,ASV_01161: Gammaproteobacteria; Candidatus Tenderia
-ASV_00565,89,ASV,ASV_00565: Proteobacteria; Gammaproteobacteria
-ASV_01248,90,ASV,ASV_01248: Proteobacteria; Gammaproteobacteria
-ASV_01199,91,ASV,ASV_01199: Leptospirae; Turneriella
-ASV_00500,92,ASV,ASV_00500: Verrucomicrobiae; Coraliomargarita
-ASV_00150,93,ASV,ASV_00150: Verrucomicrobiae; MB11C04 marine group
-ASV_01018,94,ASV,ASV_01018: Verrucomicrobiae; Rubritalea
-ASV_01492,95,ASV,ASV_01492: Bacteria
-ciliatine,96,metabolite,ciliatine
-sarcosine,97,metabolite,sarcosine
-sn-glycerol 3-phosphate,98,metabolite,sn-glycerol 3-phosphate
-guanosine,99,metabolite,guanosine
-glutamine,100,metabolite,glutamine
-malic acid,101,metabolite,malic acid
-arginine,102,metabolite,arginine
-uridine,103,metabolite,uridine
-tryptophan,104,metabolite,tryptophan
-aspartate,105,metabolite,aspartate
-proline,106,metabolite,proline
-phenylalanine,107,metabolite,phenylalanine
-ornithine 2,108,metabolite,ornithine 2
-serine,109,metabolite,serine
-threonine,110,metabolite,threonine
-valine,111,metabolite,valine
-isoleucine,112,metabolite,isoleucine
-leucine,113,metabolite,leucine
-glutathione 2,114,metabolite,glutathione 2
-cysteate,115,metabolite,cysteate
-isethionate,116,metabolite,isethionate
-DHPS,117,metabolite,DHPS
-glycine,118,metabolite,glycine
-taurine,119,metabolite,taurine
-alanine,120,metabolite,alanine
-lysine 2,121,metabolite,lysine 2
-asparagine,122,metabolite,asparagine
-citrulline,123,metabolite,citrulline
-5'UMP,124,metabolite,5'UMP
-glutamic acid,125,metabolite,glutamic acid
-histidine,126,metabolite,histidine
-cysteine 2,127,metabolite,cysteine 2
-pantothenic acid,128,metabolite,pantothenic acid
-kynurenine,129,metabolite,kynurenine
+ASV_01361,2,ASV,ASV_01361: Nanoarchaeia; Woesearchaeales
+ASV_00057,3,ASV,ASV_00057: Thermoplasmata; Marine Group II
+ASV_00311,4,ASV,ASV_00311: Thermoplasmata; Marine Group II
+ASV_00329,5,ASV,ASV_00329: Thermoplasmata; Marine Group II
+ASV_00429,6,ASV,ASV_00429: Thermoplasmata; Marine Group III
+ASV_00013,7,ASV,ASV_00013: Acidimicrobia; Candidatus Actinomarina
+ASV_00058,8,ASV,ASV_00058: Acidimicrobia; Sva0996 marine group
+ASV_00852,9,ASV,ASV_00852: Acidimicrobia; Sva0996 marine group
+ASV_00595,10,ASV,ASV_00595: Actinobacteria; PeM15
+ASV_01066,11,ASV,ASV_01066: Bacteroidia; Roseimarinus
+ASV_02152,12,ASV,ASV_02152: Bacteroidia; Bacteroidales
+ASV_00222,13,ASV,ASV_00222: Bacteroidia; Saprospiraceae
+ASV_00440,14,ASV,ASV_00440: Bacteroidia; Saprospiraceae
+ASV_00543,15,ASV,ASV_00543: Bacteroidia; Saprospiraceae
+ASV_00164,16,ASV,ASV_00164: Bacteroidia; Chitinophagales
+ASV_02483,17,ASV,ASV_02483: Bacteroidia; Candidatus Amoebophilus
+ASV_00229,18,ASV,ASV_00229: Bacteroidia; Cyclobacteriaceae
+ASV_00352,19,ASV,ASV_00352: Bacteroidia; Cyclobacteriaceae
+ASV_00006,20,ASV,ASV_00006: Bacteroidia; Cryomorphaceae
+ASV_00069,21,ASV,ASV_00069: Bacteroidia; Cryomorphaceae
+ASV_00187,22,ASV,ASV_00187: Bacteroidia; Cryomorphaceae
+ASV_00263,23,ASV,ASV_00263: Bacteroidia; Cryomorphaceae
+ASV_00576,24,ASV,ASV_00576: Bacteroidia; Algitalea
+ASV_00321,25,ASV,ASV_00321: Bacteroidia; Aureicoccus
+ASV_00464,26,ASV,ASV_00464: Bacteroidia; Leeuwenhoekiella
+ASV_00014,27,ASV,ASV_00014: Bacteroidia; NS5 marine group
+ASV_00025,28,ASV,ASV_00025: Bacteroidia; NS5 marine group
+ASV_00027,29,ASV,ASV_00027: Bacteroidia; NS5 marine group
+ASV_00043,30,ASV,ASV_00043: Bacteroidia; NS5 marine group
+ASV_00107,31,ASV,ASV_00107: Bacteroidia; NS5 marine group
+ASV_00154,32,ASV,ASV_00154: Bacteroidia; NS5 marine group
+ASV_00279,33,ASV,ASV_00279: Bacteroidia; NS5 marine group
+ASV_00289,34,ASV,ASV_00289: Bacteroidia; NS5 marine group
+ASV_00347,35,ASV,ASV_00347: Bacteroidia; NS5 marine group
+ASV_00358,36,ASV,ASV_00358: Bacteroidia; Tenacibaculum
+ASV_00243,37,ASV,ASV_00243: Bacteroidia; Winogradskyella
+ASV_00009,38,ASV,ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00320,39,ASV,ASV_00320: Bacteroidia; NS7 marine group
+ASV_00140,40,ASV,ASV_00140: Bacteroidia; NS9 marine group
+ASV_00158,41,ASV,ASV_00158: Bacteroidia; NS9 marine group
+ASV_00192,42,ASV,ASV_00192: Bacteroidia; NS9 marine group
+ASV_00124,43,ASV,ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00080,44,ASV,ASV_00080: Rhodothermia; Balneola
+ASV_00294,45,ASV,ASV_00294: Rhodothermia; Balneola
+ASV_00806,46,ASV,ASV_00806: Bdellovibrionia; Bacteriovoracaceae
+ASV_00462,47,ASV,ASV_00462: Bdellovibrionia; OM27 clade
+ASV_00487,48,ASV,ASV_00487: Bdellovibrionia; OM27 clade
+ASV_00578,49,ASV,ASV_00578: Bdellovibrionia; OM27 clade
+ASV_00664,50,ASV,ASV_00664: Bdellovibrionia; OM27 clade
+ASV_00856,51,ASV,ASV_00856: Bdellovibrionia; OM27 clade
+ASV_01961,52,ASV,ASV_01961: Bdellovibrionia; OM27 clade
+ASV_00665,53,ASV,ASV_00665: Oligoflexia; Pseudobacteriovorax
+ASV_00516,54,ASV,ASV_00516: Oligoflexia; Oligoflexaceae
+ASV_00615,55,ASV,ASV_00615: Oligoflexia; Oligoflexaceae
+ASV_00346,56,ASV,ASV_00346: Dehalococcoidia; SAR202 clade
+ASV_00001,57,ASV,ASV_00001: Cyanobacteria; Synechococcus CC9902
+ASV_00115,58,ASV,ASV_00115: Cyanobacteria; Synechococcus CC9902
+ASV_00482,59,ASV,ASV_00482: Desulfuromonadia; Bradymonadales
+ASV_00654,60,ASV,ASV_00654: Bacilli; Acholeplasma
+ASV_00349,61,ASV,ASV_00349: Fusobacteria; Propionigenium
+ASV_00770,62,ASV,ASV_00770: Bacteria; Margulisbacteria
+ASV_00912,63,ASV,ASV_00912: Bacteria; Margulisbacteria
+ASV_00247,64,ASV,ASV_00247: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00327,65,ASV,ASV_00327: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00375,66,ASV,ASV_00375: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00614,67,ASV,ASV_00614: Polyangia; Sandaracinaceae
+ASV_00290,68,ASV,ASV_00290: Planctomycetota; OM190
+ASV_00319,69,ASV,ASV_00319: Planctomycetota; OM190
+ASV_00640,70,ASV,ASV_00640: Phycisphaerae; Phycisphaera
+ASV_00313,71,ASV,ASV_00313: Planctomycetes; Pirellulaceae
+ASV_00093,72,ASV,ASV_00093: Alphaproteobacteria; Defluviicoccales
+ASV_00259,73,ASV,ASV_00259: Alphaproteobacteria; Defluviicoccales
+ASV_01034,74,ASV,ASV_01034: Alphaproteobacteria; Defluviicoccales
+ASV_00103,75,ASV,ASV_00103: Alphaproteobacteria; PS1 clade
+ASV_00120,76,ASV,ASV_00120: Alphaproteobacteria; PS1 clade
+ASV_00390,77,ASV,ASV_00390: Alphaproteobacteria; PS1 clade
+ASV_00171,78,ASV,ASV_00171: Alphaproteobacteria; Candidatus Puniceispirillum
+ASV_00015,79,ASV,ASV_00015: Alphaproteobacteria; SAR116 clade
+ASV_00029,80,ASV,ASV_00029: Alphaproteobacteria; SAR116 clade
+ASV_00052,81,ASV,ASV_00052: Alphaproteobacteria; SAR116 clade
+ASV_00079,82,ASV,ASV_00079: Alphaproteobacteria; SAR116 clade
+ASV_00088,83,ASV,ASV_00088: Alphaproteobacteria; SAR116 clade
+ASV_00201,84,ASV,ASV_00201: Alphaproteobacteria; SAR116 clade
+ASV_00233,85,ASV,ASV_00233: Alphaproteobacteria; SAR116 clade
+ASV_00315,86,ASV,ASV_00315: Alphaproteobacteria; SAR116 clade
+ASV_00323,87,ASV,ASV_00323: Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium
+ASV_00064,88,ASV,ASV_00064: Alphaproteobacteria; Stappiaceae
+ASV_00087,89,ASV,ASV_00087: Alphaproteobacteria; Stappiaceae
+ASV_00232,90,ASV,ASV_00232: Alphaproteobacteria; Stappiaceae
+ASV_00059,91,ASV,ASV_00059: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00301,92,ASV,ASV_00301: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00631,93,ASV,ASV_00631: Alphaproteobacteria; Limibaculum
+ASV_00131,94,ASV,ASV_00131: Alphaproteobacteria; Thalassobius
+ASV_00039,95,ASV,ASV_00039: Alphaproteobacteria; Rhodobacteraceae
+ASV_00050,96,ASV,ASV_00050: Alphaproteobacteria; Rhodobacteraceae
+ASV_00026,97,ASV,ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00128,98,ASV,ASV_00128: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00172,99,ASV,ASV_00172: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00239,100,ASV,ASV_00239: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00304,101,ASV,ASV_00304: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00443,102,ASV,ASV_00443: Alphaproteobacteria; S25-593
+ASV_00566,103,ASV,ASV_00566: Alphaproteobacteria; S25-593
+ASV_00067,104,ASV,ASV_00067: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00102,105,ASV,ASV_00102: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00035,106,ASV,ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00083,107,ASV,ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00037,108,ASV,ASV_00037: Alphaproteobacteria; SAR11 Clade II
+ASV_00207,109,ASV,ASV_00207: Alphaproteobacteria; SAR11 Clade II
+ASV_00241,110,ASV,ASV_00241: Alphaproteobacteria; SAR11 Clade II
+ASV_00253,111,ASV,ASV_00253: Alphaproteobacteria; SAR11 Clade II
+ASV_00330,112,ASV,ASV_00330: Alphaproteobacteria; SAR11 Clade II
+ASV_00125,113,ASV,ASV_00125: Alphaproteobacteria; SAR11 Clade III
+ASV_00397,114,ASV,ASV_00397: Alphaproteobacteria; SAR11 Clade III
+ASV_00072,115,ASV,ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00264,116,ASV,ASV_00264: Alphaproteobacteria; Erythrobacter
+ASV_00491,117,ASV,ASV_00491: Alphaproteobacteria; OM75 clade
+ASV_00501,118,ASV,ASV_00501: Proteobacteria; Alphaproteobacteria
+ASV_00231,119,ASV,ASV_00231: Gammaproteobacteria; Delftia
+ASV_00146,120,ASV,ASV_00146: Gammaproteobacteria; MWH-UniP1 aquatic group
+ASV_00605,121,ASV,ASV_00605: Gammaproteobacteria; mle1-7
+ASV_00217,122,ASV,ASV_00217: Gammaproteobacteria; Coxiella
+ASV_00448,123,ASV,ASV_00448: Gammaproteobacteria; Coxiella
+ASV_00592,124,ASV,ASV_00592: Gammaproteobacteria; Coxiella
+ASV_00599,125,ASV,ASV_00599: Gammaproteobacteria; Coxiella
+ASV_00666,126,ASV,ASV_00666: Gammaproteobacteria; Coxiella
+ASV_00869,127,ASV,ASV_00869: Gammaproteobacteria; Coxiella
+ASV_01165,128,ASV,ASV_01165: Gammaproteobacteria; Coxiella
+ASV_00435,129,ASV,ASV_00435: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00147,130,ASV,ASV_00147: Gammaproteobacteria; Vibrio
+ASV_01105,131,ASV,ASV_01105: Gammaproteobacteria; MBMPE27
+ASV_00452,132,ASV,ASV_00452: Gammaproteobacteria; Candidatus Endoecteinascidia
+ASV_00374,133,ASV,ASV_00374: Gammaproteobacteria; Alcanivorax
+ASV_00404,134,ASV,ASV_00404: Gammaproteobacteria; Endozoicomonas
+ASV_00040,135,ASV,ASV_00040: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00041,136,ASV,ASV_00041: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00044,137,ASV,ASV_00044: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00308,138,ASV,ASV_00308: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00376,139,ASV,ASV_00376: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00096,140,ASV,ASV_00096: Gammaproteobacteria; KI89A clade
+ASV_00168,141,ASV,ASV_00168: Gammaproteobacteria; Litoricola
+ASV_00432,142,ASV,ASV_00432: Gammaproteobacteria; Marinobacter
+ASV_01258,143,ASV,ASV_01258: Gammaproteobacteria; Marinomonas
+ASV_00119,144,ASV,ASV_00119: Gammaproteobacteria; SAR92 clade
+ASV_00061,145,ASV,ASV_00061: Gammaproteobacteria; Pseudomonas
+ASV_00008,146,ASV,ASV_00008: Gammaproteobacteria; SAR86 clade
+ASV_00123,147,ASV,ASV_00123: Gammaproteobacteria; SAR86 clade
+ASV_00126,148,ASV,ASV_00126: Gammaproteobacteria; SAR86 clade
+ASV_00197,149,ASV,ASV_00197: Gammaproteobacteria; SAR86 clade
+ASV_00206,150,ASV,ASV_00206: Gammaproteobacteria; SAR86 clade
+ASV_00235,151,ASV,ASV_00235: Gammaproteobacteria; SAR86 clade
+ASV_00353,152,ASV,ASV_00353: Gammaproteobacteria; SAR86 clade
+ASV_00138,153,ASV,ASV_00138: Gammaproteobacteria; BD1-7 clade
+ASV_01161,154,ASV,ASV_01161: Gammaproteobacteria; Candidatus Tenderia
+ASV_00565,155,ASV,ASV_00565: Proteobacteria; Gammaproteobacteria
+ASV_01248,156,ASV,ASV_01248: Proteobacteria; Gammaproteobacteria
+ASV_00736,157,ASV,ASV_00736: Bacteria; Proteobacteria
+ASV_01199,158,ASV,ASV_01199: Leptospirae; Turneriella
+ASV_00500,159,ASV,ASV_00500: Verrucomicrobiae; Coraliomargarita
+ASV_00150,160,ASV,ASV_00150: Verrucomicrobiae; MB11C04 marine group
+ASV_00328,161,ASV,ASV_00328: Verrucomicrobiae; MB11C04 marine group
+ASV_01018,162,ASV,ASV_01018: Verrucomicrobiae; Rubritalea
+ASV_01492,163,ASV,ASV_01492: Bacteria
+ciliatine,164,metabolite,ciliatine
+glycine,165,metabolite,glycine
+glutamic acid,166,metabolite,glutamic acid
+lysine 2,167,metabolite,lysine 2
+arginine,168,metabolite,arginine
+isethionate,169,metabolite,isethionate
+sarcosine,170,metabolite,sarcosine
+sn-glycerol 3-phosphate,171,metabolite,sn-glycerol 3-phosphate
+guanosine,172,metabolite,guanosine
+glutamine,173,metabolite,glutamine
+malic acid,174,metabolite,malic acid
+DHPS,175,metabolite,DHPS
+cysteine 2,176,metabolite,cysteine 2
+uridine,177,metabolite,uridine
+alanine,178,metabolite,alanine
+aspartate,179,metabolite,aspartate
+isoleucine,180,metabolite,isoleucine
+kynurenine,181,metabolite,kynurenine
+leucine,182,metabolite,leucine
+ornithine 2,183,metabolite,ornithine 2
+phenylalanine,184,metabolite,phenylalanine
+proline,185,metabolite,proline
+serine,186,metabolite,serine
+threonine,187,metabolite,threonine
+tryptophan,188,metabolite,tryptophan
+valine,189,metabolite,valine
+glutathione 2,190,metabolite,glutathione 2
+cysteate,191,metabolite,cysteate
+asparagine,192,metabolite,asparagine
+citrulline,193,metabolite,citrulline
+5'UMP,194,metabolite,5'UMP
+pantothenic acid,195,metabolite,pantothenic acid
+histidine,196,metabolite,histidine
+taurine,197,metabolite,taurine

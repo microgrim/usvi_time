@@ -1151,11 +1151,33 @@ dist_usvi_metab.d <- vegan::vegdist(usvi_metab.tbl, method = "bray", binary = FA
 }
 
 dist_usvi_metab_log2.d <- vegan::vegdist(usvi_metab_log2.tbl, method = "bray", binary = FALSE, na.rm = TRUE)
+# 
+# temp_df <- list((vegan::betadisper(dist_usvi_metab_log2.d, 
+#                                              type = "median", #this is default
+#                                              add = TRUE,
+#                                              usvi_metab.meta$sample_type) %>%
+#   purrr::pluck("distances") %>%
+#   tibble::enframe(value = "dispersion", name = "metab_deriv_label")),
+#   
+#   (vegan::betadisper(dist_usvi_metab_log2.d, 
+#                                                type = "median", #this is default
+#                                                add = TRUE,
+#                                                usvi_metab.meta$site) %>%
+#   purrr::pluck("distances") %>%
+#     tibble::enframe(value = "dispersion", name = "metab_deriv_label")),
+#   (vegan::betadisper(dist_usvi_metab_log2.d, 
+#                      type = "median", #this is default
+#                      add = TRUE,
+#                      usvi_metab.meta$grouping) %>%
+#      purrr::pluck("distances") %>%
+#      tibble::enframe(value = "dispersion", name = "metab_deriv_label"))) %>%
+#   setNames(., c("all", "site", "site.time"))
 
 dist_usvi_metab_log2.df <- vegan::betadisper(dist_usvi_metab_log2.d, 
                                              type = "median", #this is default
                                              add = TRUE,
-                                             usvi_metab.meta$grouping) %>%
+                                             usvi_metab.meta$sample_type) %>%
+                                             # usvi_metab.meta$grouping) %>%
   purrr::pluck("distances") %>%
   tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -1233,7 +1255,6 @@ meta.seawater.list <- meta.seawater.list[rownames(usvi_metab.tbl),] %>%
         droplevels)
 
 
-
 dist_usvi_sites_metab_log2.d <- meta.seawater.list %>%
   map(., ~.x %>% 
         droplevels %>%
@@ -1250,7 +1271,8 @@ dist_usvi_sites_metab_log2.d <- meta.seawater.list %>%
 dist_usvi_sites_metab_log2.df <- map2(dist_usvi_sites_metab_log2.d, meta.seawater.list,
                                       ~vegan::betadisper(., type = "median",
                                                          add = TRUE,
-                                                         .y$grouping) %>%
+                                                         .y$site) %>%
+                                                         # .y$grouping) %>%
                                         purrr::pluck("distances") %>%
                                         tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
                                         dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -1267,17 +1289,37 @@ dist_usvi_sites_metab_log2.df <- map2(dist_usvi_sites_metab_log2.d, meta.seawate
 
 #pull out the significant differences in beta dispersion means:
 
-temp.log2.betadisp <- list(map2(dist_usvi_sites_metab_log2.d, meta.seawater.list,
-                           ~vegan::betadisper(., type = "median",
-                                              add = TRUE,
-                                              .y$grouping))) %>%
-  setNames(., c("site_log2")) %>%
-  map_depth(., 2, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
-  map_depth(., 1, bind_rows) %>%
-  c(., (list(vegan::betadisper(dist_usvi_metab_log2.d, type = "median", usvi_metab.meta$grouping)) %>%
-      setNames(., "all_log2") %>%
-      map_depth(., 1, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
-      map_depth(., 1, bind_rows)))
+temp.metab.betadisp <- list(vegan::betadisper(dist_usvi_metab_log2.d, type = "median", 
+                                          usvi_metab.meta$grouping)) %>%
+  c(., list(vegan::betadisper(dist_usvi_metab_log2.d, type = "median", 
+                           # usvi_metab.meta$site)) %>%
+                           usvi_metab.meta$sampling_time))) %>%
+  c(., list(vegan::betadisper(dist_usvi_metab_log2.d, type = "median", 
+                              usvi_metab.meta$site))) %>%
+  setNames(., c("site.time_all", "temporal_all", "site_all")) %>%
+  c(., list(map2(dist_usvi_sites_metab_log2.d, meta.seawater.list,
+                      ~vegan::betadisper(., type = "median",
+                                         add = TRUE,
+                                         .y$grouping))) %>%
+      setNames(., c("time")) %>%
+      # purrr::list_flatten(., name_spec = "{outer}_{inner}")) #when using site-specific distance matrices to calculate spatial medians
+      purrr::list_flatten(., name_spec = "{outer}_{inner}")) %>% #when using site-specific distance matrices to calculate spatial medians
+  map(., ~.x %>% TukeyHSD(.) %>% broom::tidy(.))
+
+# temp.log2.betadisp <- list(map2(dist_usvi_sites_metab_log2.d, meta.seawater.list,
+#                            ~vegan::betadisper(., type = "median",
+#                                               add = TRUE,
+#                                               # .y$site))) %>%
+#                                               .y$grouping))) %>% #when using site-specific distance matrices to calculate spatial medians
+#   setNames(., c("site_log2")) %>%
+#   map_depth(., 2, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
+#   map_depth(., 2, bind_rows) %>%
+#   c(., (list(vegan::betadisper(dist_usvi_metab_log2.d, type = "median",
+#                                # usvi_metab.meta$site)) %>%
+#                                usvi_metab.meta$grouping)) %>% #when using all samples to make distance matrix
+#       setNames(., "all_log2") %>%
+#         map_depth(., 1, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
+#         map_depth(., 1, bind_rows))) 
 
 # temp.betadisp <- list(vegan::betadisper(dist_usvi_metab.d, type = "median", usvi_metab.meta$grouping),
 #                       vegan::betadisper(dist_usvi_metab_log2.d, type = "median", usvi_metab.meta$grouping)) %>%
@@ -1301,27 +1343,45 @@ temp.log2.betadisp <- list(map2(dist_usvi_sites_metab_log2.d, meta.seawater.list
 #   map_depth(., 1, bind_rows)
 # 
 
-dist_usvi_metab.betadisp.df <- temp.log2.betadisp %>%
-  purrr::list_flatten(.) %>%
-  bind_rows(.id = "model") %>%
-  tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE) %>%
-  tidyr::separate_wider_delim(first, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
-  tidyr::separate_wider_delim(second, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
-  dplyr::mutate(site = first_site) %>%
-  dplyr::mutate(across(c(site, first_site, second_site), ~factor(.x, levels = names(site_lookup))),
-                across(c(first_time, second_time), ~factor(.x, levels = names(sampling_time_lookup)))) %>%
+dist_usvi_metab.betadisp.df <- temp.metab.betadisp %>%
+  dplyr::bind_rows(., .id = "model") %>%
+  dplyr::mutate(baseline = dplyr::case_when(grepl(paste0(names(site_lookup), collapse = "|"), model) ~ "site",
+                                            grepl("_all", model) ~ "all",
+                                            .default = NA)) %>%
+  dplyr::select(baseline, model, contrast, `null.value`, estimate, starts_with("conf"), `adj.p.value`) %>%
+  tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE, too_few = "align_start") %>%
+  tidyr::separate_wider_delim(first, names = c("v1", "v2"), names_sep = "_", delim = ".", cols_remove = TRUE, too_few = "align_start") %>%
+  dplyr::mutate(first_v2 = dplyr::case_when(is.na(first_v2) & first_v1 %in% names(site_lookup) ~ "all",
+                                            is.na(first_v2) & first_v1 %in% names(sampling_time_lookup) ~ first_v1,
+                                            .default = first_v2)) %>%
+  tidyr::separate_wider_delim(second, names = c("v1", "v2"), names_sep = "_", delim = ".", cols_remove = TRUE, too_few = "align_start") %>%
+  dplyr::mutate(second_v2 = dplyr::case_when(is.na(second_v2) & second_v1 %in% names(site_lookup) ~ "all",
+                                            is.na(second_v2) & second_v1 %in% names(sampling_time_lookup) ~ second_v1,
+                                            .default = second_v2)) %>%
+  dplyr::mutate(across(ends_with("_v1"), ~dplyr::case_when(.x %in% names(sampling_time_lookup) ~ "all",
+                                                            .default = .x))) %>%
+  # dplyr::mutate(site = first_site) %>%
+  dplyr::mutate(site = first_v1) %>%
+  dplyr::relocate(site, .after = "model") %>%
+  dplyr::mutate(across(c(site, first_v1, second_v1), ~factor(.x, levels = c("all", names(site_lookup)))),
+                across(c(first_v2, second_v2), ~factor(.x, levels = c("all", names(sampling_time_lookup))))) %>%
+  
+  # dplyr::filter(first_site == second_site) %>%
+  dplyr::filter((first_v1 == second_v1) | (first_v2 == second_v2)) %>%
   dplyr::mutate(significance = dplyr::case_when(adj.p.value < 0.05 ~ "**",
                                                 adj.p.value < 0.1 ~ "*",
-                                                # .default = "n.s.")) %>%
                                                 .default = NA)) %>%
-  dplyr::filter(first_site == second_site) %>%
   droplevels
+
+readr::write_delim(dist_usvi_metab.betadisp.df, paste0(projectpath, "/", "dist_usvi_metab.betadisp.df-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE,quote = "none")
+
 
 g3_sites_log2_disp <- P_betadisp(dataset = dist_usvi_sites_metab_log2.df, metric = "Bray-Curtis", subtitle = "Per-site dissimilarity matrices") + guides(shape = "none")
 
-g3_all_log2_disp_sig <- g3_all_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "all_log2")),
+g3_all_log2_disp_sig <- g3_all_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site.time_all")),
                          inherit.aes = FALSE, aes(label = significance, x = site, y = 0.45, group = site), size = 10,  na.rm = TRUE)
-g3_sites_log2_disp_sig <- g3_sites_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site_log2")),
+g3_sites_log2_disp_sig <- g3_sites_log2_disp +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(baseline == "site")),
                            inherit.aes = FALSE, aes(label = significance, x = site, y = 0.45, group = site), size = 10, na.rm = TRUE)
 
 g3_log2_disp <- (g3_all_log2_disp_sig + guides(fill = "none", shape = "none") + theme(axis.title.x = element_blank())) / (g3_sites_log2_disp_sig + theme(axis.title.x = element_blank(), legend.position = "bottom")) + patchwork::plot_layout(tag_level = "new") + patchwork::plot_annotation(title = "Log2(x+1) transformed metabolite concentrations", tag_levels = list(c("C", "D")))
@@ -1514,11 +1574,19 @@ if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
                                           tibble::rownames_to_column(var = "metab_deriv_label")) %>%
       setNames(., c("all")) %>%
       c(., (meta.list[rownames(usvi_metab.tbl),] %>%
+              split(., f = .$site) %>% #calculate a median specific to the site
+              map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label"))) %>%
+          setNames(., paste0(names(.), ".daily"))) %>%
+      c(., (meta.list[rownames(usvi_metab.tbl),] %>%
               split(., f = .$grouping) %>% #calculate a median specific to the site and time group
               map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
-      c(., (meta.list[rownames(usvi_metab.tbl),] %>%
-              split(., f = .$site) %>% #calculate a median specific to the site
-              map(., ~.x %>% tibble::rownames_to_column(var = "metab_deriv_label")))) %>%
+      imap(., ~.x %>%
+             dplyr::mutate(set_label = .y) %>%
+             dplyr::mutate(set_label = dplyr::case_when(set_label == grouping ~ paste0(site, ".", sampling_time),
+                                                        set_label == "all" ~ "all",
+                                                        set_label == site ~ paste0(site, ".daily"),
+                                                        .default = site)) %>%
+             dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]])))) %>%
       map(., ~.x %>%
             droplevels %>%
             dplyr::mutate(grouping = as.character(grouping)))
@@ -1536,12 +1604,26 @@ if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
                               by = join_by(metab_deriv_label)) %>%
             tibble::column_to_rownames(var = "metab_deriv_label") %>%
             as.matrix(.) %>% vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE))
-    # droplevels)
     
+    
+    # map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
+    #      ~vegan::betadisper(., type = "median",
+    #                         add = TRUE,
+    #                         .y$set_label))
+         
     map(dist_usvi_metab_grouping_log2.d,
         ~.x %>% median(., na.rm = TRUE))
     # $all
     # [1] 0.2441055
+    # 
+    # $LB_seagrass.daily
+    # [1] 0.1378801
+    # 
+    # $Tektite.daily
+    # [1] 0.2428545
+    # 
+    # $Yawzi.daily
+    # [1] 0.1882367
     # 
     # $LB_seagrass.dawn
     # [1] 0.1050437
@@ -1560,24 +1642,17 @@ if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
     # 
     # $Yawzi.peak_photo
     # [1] 0.2408675
-    # 
-    # $LB_seagrass
-    # [1] 0.1378801
-    # 
-    # $Tektite
-    # [1] 0.2428545
-    # 
-    # $Yawzi
-    # [1] 0.1882367
     
     dist_usvi_metab_grouping_log2.df <- map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
                                              ~vegan::betadisper(., type = "median",
                                                                 add = TRUE,
-                                                                .y$grouping) %>%
+                                                                .y$set_label) %>%
+                                                                # .y$grouping) %>%
                                                purrr::pluck("distances") %>%
                                                tibble::enframe(value = "dispersion", name = "metab_deriv_label") %>%
                                                droplevels) %>%
-      bind_rows(., .id = "grouping")%>%
+      bind_rows(., .id = "set_label") %>%
+      # bind_rows(., .id = "grouping") %>%
       dplyr::left_join(., (metabolomics_sample_metadata %>%
                              dplyr::filter(grepl("seawater", sample_type)) %>%
                              dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -1586,11 +1661,22 @@ if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
                        by = c("metab_deriv_label" = "metab_deriv_label")) %>%
       dplyr::mutate(site = factor(site, levels = names(site_lookup)),
                     sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-      dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site",
-                                                (grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site.time",
-                                                .default = grouping)) %>%
+      dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", set_label) & grepl("Yawzi|Tektite|LB", set_label)) ~ "site",
+                                                (grepl("dawn|peak", set_label) & grepl("Yawzi|Tektite|LB", set_label)) ~ "site.time",
+                                                .default = "all")) %>%
       dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+      dplyr::arrange(grouping, site, sampling_time) %>%
       droplevels
+    
+    temp.groupings.metab.betadisp <- map2(dist_usvi_metab_grouping_log2.d, meta.seawater.grouping.list,
+                                          ~vegan::betadisper(., type = "median",
+                                                             add = TRUE,
+                                                             .y$set_label) %>%
+                                            purrr::pluck(., "group.distances") %>%
+                                            tibble::enframe(value = "mean.distance.to.centroid", name = "grouping") %>%
+                                            droplevels) %>%
+      bind_rows(., .id = "set_label") %>%
+      dplyr::mutate(setome = "metabolome")
     
     readr::write_delim(dist_usvi_metab_grouping_log2.df, paste0(projectpath, "/", "usvi_betadisper_metab_by_grouping-", Sys.Date(), ".tsv"),
                        delim = "\t", col_names = TRUE,quote = "none")
@@ -1598,34 +1684,49 @@ if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
   }
 }
 
+#calculate the average dispersions for each site, using as baseline:
+# 1. all samples, all times
+# 2. site-specific, all times
+# 3. site- and time-specific
+if(!any(grep("set_label", colnames(dist_usvi_metab_grouping_log2.df), invert = FALSE, value = FALSE))){
+  dist_usvi_metab_grouping_log2.df <- dist_usvi_metab_grouping_log2.df %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+    dplyr::mutate(set_label = dplyr::case_when(grouping == "site.time" ~ paste0(site, ".", sampling_time),
+                                               grouping == "site" ~ paste0(site, ".daily"),
+                                               grouping == "all" ~ grouping,
+                                               .default = site)) %>%
+    dplyr::arrange(grouping, site, sampling_time) %>%
+    droplevels
+}
 
-#calculate the average dispersions for each site
 dist_usvi_metab_grouping_log2.df %>%
-  dplyr::group_by(site, grouping, sampling_time) %>%
-  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
-  dplyr::arrange(grouping, site, sampling_time)
-# # A tibble: 18 × 4
-# # Groups:   site, grouping [9]
-# site        grouping  sampling_time mean_disp
-# <chr>       <chr>     <chr>             <dbl>
-#   1 LB_seagrass all       dawn             0.303 
-# 2 LB_seagrass all       peak_photo       0.303 
-# 3 Tektite     all       dawn             0.346 
-# 4 Tektite     all       peak_photo       0.336 
-# 5 Yawzi       all       dawn             0.308 
-# 6 Yawzi       all       peak_photo       0.346 
-# 7 LB_seagrass site      dawn             0.103 
-# 8 LB_seagrass site      peak_photo       0.106 
-# 9 Tektite     site      dawn             0.254 
-# 10 Tektite     site      peak_photo       0.243 
-# 11 Yawzi       site      dawn             0.162 
-# 12 Yawzi       site      peak_photo       0.224 
-# 13 LB_seagrass site.time dawn             0.0931
-# 14 LB_seagrass site.time peak_photo       0.0941
-# 15 Tektite     site.time dawn             0.204 
-# 16 Tektite     site.time peak_photo       0.209 
-# 17 Yawzi       site.time dawn             0.103 
-# 18 Yawzi       site.time peak_photo       0.219 
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        dplyr::group_by(site, set_label) %>%
+        dplyr::summarise(median_disp = median(dispersion, na.rm = TRUE), .groups = "keep") %>%
+        dplyr::arrange(site, set_label)) %>%
+  dplyr::bind_rows(., .id = "grouping") %>%
+  dplyr::arrange(grouping, site, set_label)
+# # A tibble: 12 × 4
+# # Groups:   site, set_label [12]
+# grouping  site        set_label              median_disp
+# <chr>     <fct>       <chr>                        <dbl>
+#   1 all       LB_seagrass all                         0.347 
+# 2 all       Yawzi       all                         0.327 
+# 3 all       Tektite     all                         0.350 
+# 4 site      LB_seagrass LB_seagrass.daily           0.103 
+# 5 site      Yawzi       Yawzi.daily                 0.166 
+# 6 site      Tektite     Tektite.daily               0.240 
+# 7 site.time LB_seagrass LB_seagrass.dawn            0.0786
+# 8 site.time LB_seagrass LB_seagrass.peak_photo      0.0906
+# 9 site.time Yawzi       Yawzi.dawn                  0.0772
+# 10 site.time Yawzi       Yawzi.peak_photo            0.223 
+# 11 site.time Tektite     Tektite.dawn                0.166 
+# 12 site.time Tektite     Tektite.peak_photo          0.198 
+
+
 
 temp_g_betadisp <- print(ggplot(data = dist_usvi_metab_grouping_log2.df, 
                                 aes(x = grouping, y = dispersion, group = interaction(sampling_time, grouping)))
@@ -1671,7 +1772,7 @@ temp_df1 <- usvi_metabolomics.df %>%
   # vegan::metaMDS(., distance = list(na.rm = TRUE, "bray"), trymax = 100, autotransform = FALSE, )
   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = FALSE, tidy = TRUE, display = "sites")
 
-wascores(usvi_metab_log2.tbl, dist_usvi_metab_log2.d)
+# wascores(usvi_metab_log2.tbl, dist_usvi_metab_log2.d)
 
   # vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE, tidy = FALSE) %>%
   # purrr::pluck("points") %>% tibble::as_tibble(., rownames = "label") %>% dplyr::rename(NMDS1 = "MDS1", NMDS2 = "MDS2")
@@ -1679,7 +1780,7 @@ wascores(usvi_metab_log2.tbl, dist_usvi_metab_log2.d)
   # vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE) %>% vegan::metaMDS(., distance = "bray",trymax = 100, autotransform = TRUE, tidy = TRUE) %>% 
   # purrr::pluck("points") %>% tibble::as_tibble(., rownames = "label") %>% dplyr::rename(NMDS1 = "MDS1", NMDS2 = "MDS2") %>%
   # ggplot2::fortify(.) %>%
-  as.data.frame %>%
+  # as.data.frame %>%
   # dplyr::mutate(type = dplyr::case_when(score == "sites" ~ "sample",
   #                                       .default = "metabolite")) %>%
   # dplyr::select(-score) %>%
@@ -1730,7 +1831,7 @@ wascores(usvi_metab_log2.tbl, dist_usvi_metab_log2.d)
   # #add labels:
   # dplyr::mutate(text_label = dplyr::case_when((grepl("_73|_43|_44|_42|_70|_74|_69|_67|_71|_101|_108|_105", label) | label %in% potential_metab_outliers_idx)~ label,
   #                                             .default = NA)) %>%
-  droplevels
+  # droplevels
 temp_g <- (ggplot(data = temp_df1,
                      aes(x = NMDS1, y = NMDS2))
               + theme(text = element_text(size=14))
@@ -2039,7 +2140,7 @@ print(g4_all_log2_ell)
 #calculate dispersions of sites' dissimilarity metrics from the site-specific mean
 usvi_microb.meta <- metabolomics_sample_metadata %>%
   dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
-  dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
+  dplyr::select(sample_id, sampling_time, sampling_day, site, sample_type) %>%
   dplyr::mutate(site = factor(site, levels = names(site_lookup)),
                 sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
   dplyr::distinct(sample_id, .keep_all = TRUE) %>%
@@ -2052,7 +2153,8 @@ usvi_microb.meta <- usvi_microb.meta[rownames(usvi_asv.tbl),]
 dist_usvi_asv.d <- vegan::vegdist(usvi_asv.tbl, method = "horn", binary = FALSE, na.rm = TRUE)
 dist_usvi_asv.df <- vegan::betadisper(dist_usvi_asv.d, type = "median",
                                       add = TRUE,
-                                      usvi_microb.meta$grouping) %>%
+                                      usvi_microb.meta$sample_type) %>%
+                                      # usvi_microb.meta$grouping) %>%
   purrr::pluck("distances") %>%
   tibble::enframe(value = "dispersion", name = "sample_id") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -2073,7 +2175,8 @@ dist_usvi_asv_log2.d <- vegan::vegdist(usvi_asv_log2.tbl, method = "horn", binar
 dist_usvi_asv_log2.df <- vegan::betadisper(dist_usvi_asv_log2.d, 
                                            type = "median", #this is default
                                            add = TRUE,
-                                           usvi_microb.meta$grouping) %>%
+                                           usvi_microb.meta$sample_type) %>%
+                                           # usvi_microb.meta$grouping) %>%
   purrr::pluck("distances") %>%
   tibble::enframe(value = "dispersion", name = "sample_id") %>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -2360,9 +2463,6 @@ g4_all_log2_disp <- P_betadisp(dataset = dist_usvi_asv_log2.df, subtitle = "All 
 #do it site-specific
 
 meta.seawater <- metadata %>%
-# meta.seawater <- ps_usvi %>%
-#   phyloseq::sample_data(.) %>%
-  # tibble::as_tibble(rownames = "sample_id") %>%
   dplyr::filter(sample_id %in% rownames(usvi_asv.tbl)) %>%
   dplyr::select(sample_id, sampling_time, sampling_day, site) %>%
   dplyr::select(!c(contains("label"), contains("dna_"))) %>%
@@ -2391,7 +2491,8 @@ dist_usvi_sites_asv.d <- meta.seawater.list %>%
 dist_usvi_sites_asv.df <- map2(dist_usvi_sites_asv.d, meta.seawater.list,
                                ~vegan::betadisper(., type = "median",
                                                   add = TRUE,
-                                                  .y$grouping) %>%
+                                                  .y$site) %>%
+                                                  # .y$grouping) %>%
         purrr::pluck("distances") %>%
         tibble::enframe(value = "dispersion", name = "sample_id") %>%
         dplyr::left_join(., (metabolomics_sample_metadata %>%
@@ -2506,48 +2607,110 @@ g4_sites_disp <- P_betadisp(dataset = dist_usvi_sites_asv.df, subtitle = "Per-si
 
 
 #pull out the significant differences in beta dispersion means:
-temp.betadisp <- list(vegan::betadisper(dist_usvi_asv.d, type = "median", add = TRUE, usvi_microb.meta$grouping),
-                      vegan::betadisper(dist_usvi_asv_log2.d, type = "median",add = TRUE, usvi_microb.meta$grouping)) %>%
-  setNames(., c("all", "all_log2")) %>%
-  map(., ~.x %>%
-        # TukeyHSD(.))
-        TukeyHSD(.)) %>%
-  map(., ~.x %>%
-        broom::tidy(.))
-temp_sites.betadisp <- list(map2(dist_usvi_sites_asv.d, meta.seawater.list,
-                                 ~vegan::betadisper(., type = "median",
-                                                    add = TRUE,
-                                                    .y$grouping))) %>% setNames(.,c("site")) %>%
-                                                    # .y$grouping)),
-  #                           map2(dist_usvi_sites_asv_log2.d, meta.seawater.list,
-  #                                ~vegan::betadisper(., type = "median",
-  #                                                   add = TRUE,
-  #                                                   .y$grouping))) %>%
-  # setNames(., c("site", "site_log2")) %>%
-  map_depth(., 2, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
-  map_depth(., 1, bind_rows)
 
-dist_usvi_asv.betadisp.df <- c(temp_sites.betadisp, temp.betadisp) %>%
-  purrr::list_flatten(.) %>%
-  bind_rows(.id = "model") %>%
-  tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE) %>%
-  tidyr::separate_wider_delim(first, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
-  tidyr::separate_wider_delim(second, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
-  dplyr::mutate(site = first_site) %>%
-  dplyr::mutate(across(c(site, first_site, second_site), ~factor(.x, levels = names(site_lookup))),
-                across(c(first_time, second_time), ~factor(.x, levels = names(sampling_time_lookup)))) %>%
+
+# temp.asv.betadisp <- list(vegan::betadisper(dist_usvi_asv.d, type = "median", add = TRUE, usvi_microb.meta$grouping),
+#                       vegan::betadisper(dist_usvi_asv_log2.d, type = "median",add = TRUE, usvi_microb.meta$grouping)) %>%
+#   setNames(., c("all", "all_log2")) %>%
+#   map(., ~.x %>%
+#         # TukeyHSD(.))
+#         TukeyHSD(.)) %>%
+#   map(., ~.x %>%
+#         broom::tidy(.))
+# # temp_sites.betadisp <- list(map2(dist_usvi_sites_asv.d, meta.seawater.list,
+# #                                  ~vegan::betadisper(., type = "median",
+# #                                                     add = TRUE,
+# #                                                     .y$grouping))) %>% setNames(.,c("site")) %>%
+# #                                                     # .y$grouping)),
+# #   #                           map2(dist_usvi_sites_asv_log2.d, meta.seawater.list,
+# #   #                                ~vegan::betadisper(., type = "median",
+# #   #                                                   add = TRUE,
+# #   #                                                   .y$grouping))) %>%
+# #   # setNames(., c("site", "site_log2")) %>%
+# #   map_depth(., 2, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
+# #   map_depth(., 1, bind_rows)
+# temp_sites.betadisp <- list(map2(dist_usvi_sites_asv.d, meta.seawater.list,
+#                                ~vegan::betadisper(., type = "median",
+#                                                   add = TRUE,
+#                                                   # .y$site))) %>%
+#                                                   .y$grouping))) %>% #when using site-specific distance matrices to calculate spatial medians
+#   setNames(., c("site")) %>%
+#   map_depth(., 2, ~TukeyHSD(.x) %>% broom::tidy(.)) %>%
+#   map_depth(., 2, bind_rows)
+# 
+# 
+# dist_usvi_asv.betadisp.df <- temp.betadisp %>%
+#   map(., ~.x %>%
+#         dplyr::bind_rows(., .id = NULL) %>%
+#         dplyr::mutate(model = "grouping") %>%
+#         droplevels) %>%
+#   dplyr::bind_rows(.id = "model") %>%
+#   dplyr::bind_rows(., (temp_sites.betadisp %>%
+#                          map(., ~.x %>%
+#                                dplyr::bind_rows(., .id = NULL) %>%
+#                                dplyr::mutate(model = "grouping") %>%
+#                                droplevels) %>%
+#                          dplyr::bind_rows(.id = "model"))) %>%
+#   tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE) %>%
+#   tidyr::separate_wider_delim(first, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
+#   tidyr::separate_wider_delim(second, names = c("site", "time"), names_sep = "_", delim = ".", cols_remove = TRUE) %>%
+#   dplyr::mutate(site = first_site) %>%
+#   dplyr::mutate(across(c(site, first_site, second_site), ~factor(.x, levels = names(site_lookup))),
+#                 across(c(first_time, second_time), ~factor(.x, levels = names(sampling_time_lookup)))) %>%
+#   dplyr::mutate(significance = dplyr::case_when(adj.p.value < 0.05 ~ "**",
+#                                                 adj.p.value < 0.1 ~ "*",
+#                                                 # .default = "n.s.")) %>%
+#                                                 .default = NA)) %>%
+#   dplyr::filter(first_site == second_site) %>%
+#   droplevels
+
+temp.asv.betadisp <- list(vegan::betadisper(dist_usvi_asv.d, type = "median", add = TRUE, usvi_microb.meta$grouping)) %>%
+  c(., list(vegan::betadisper(dist_usvi_asv.d, type = "median", add = TRUE, usvi_microb.meta$sampling_time))) %>%
+  c(., list(vegan::betadisper(dist_usvi_asv.d, type = "median", add = TRUE, usvi_microb.meta$site))) %>%
+  setNames(., c("site.time_all", "temporal_all", "site_all")) %>%
+  c(., list(map2(dist_usvi_sites_asv.d, meta.seawater.list,
+                 ~vegan::betadisper(., type = "median", add = TRUE,
+                                    .y$grouping))) %>%
+      setNames(., c("time")) %>%
+      purrr::list_flatten(., name_spec = "{outer}_{inner}")) %>% #when using site-specific distance matrices to calculate spatial medians
+  map(., ~.x %>% TukeyHSD(.) %>% broom::tidy(.))
+
+dist_usvi_asv.betadisp.df <- temp.asv.betadisp %>%
+  dplyr::bind_rows(., .id = "model") %>%
+  dplyr::mutate(baseline = dplyr::case_when(grepl(paste0(names(site_lookup), collapse = "|"), model) ~ "site",
+                                            grepl("_all", model) ~ "all",
+                                            .default = NA)) %>%
+  dplyr::select(baseline, model, contrast, `null.value`, estimate, starts_with("conf"), `adj.p.value`) %>%
+  tidyr::separate_wider_delim(contrast, names = c("first", "second"), delim = "-", cols_remove = FALSE, too_few = "align_start") %>%
+  tidyr::separate_wider_delim(first, names = c("v1", "v2"), names_sep = "_", delim = ".", cols_remove = TRUE, too_few = "align_start") %>%
+  dplyr::mutate(first_v2 = dplyr::case_when(is.na(first_v2) & first_v1 %in% names(site_lookup) ~ "all",
+                                            is.na(first_v2) & first_v1 %in% names(sampling_time_lookup) ~ first_v1,
+                                            .default = first_v2)) %>%
+  tidyr::separate_wider_delim(second, names = c("v1", "v2"), names_sep = "_", delim = ".", cols_remove = TRUE, too_few = "align_start") %>%
+  dplyr::mutate(second_v2 = dplyr::case_when(is.na(second_v2) & second_v1 %in% names(site_lookup) ~ "all",
+                                             is.na(second_v2) & second_v1 %in% names(sampling_time_lookup) ~ second_v1,
+                                             .default = second_v2)) %>%
+  dplyr::mutate(across(ends_with("_v1"), ~dplyr::case_when(.x %in% names(sampling_time_lookup) ~ "all",
+                                                           .default = .x))) %>%
+  dplyr::mutate(site = first_v1) %>%
+  dplyr::relocate(site, .after = "model") %>%
+  dplyr::mutate(across(c(site, first_v1, second_v1), ~factor(.x, levels = c("all", names(site_lookup)))),
+                across(c(first_v2, second_v2), ~factor(.x, levels = c("all", names(sampling_time_lookup))))) %>%
+  
+  dplyr::filter((first_v1 == second_v1) | (first_v2 == second_v2)) %>%
   dplyr::mutate(significance = dplyr::case_when(adj.p.value < 0.05 ~ "**",
                                                 adj.p.value < 0.1 ~ "*",
-                                                # .default = "n.s.")) %>%
                                                 .default = NA)) %>%
-  dplyr::filter(first_site == second_site) %>%
   droplevels
-#none of the sites' means are significantly different from each other by time
 
-g4_all_disp_sig <- g4_all_disp +  geom_text(data = (dist_usvi_asv.betadisp.df %>% dplyr::filter(model == "all")),
+readr::write_delim(dist_usvi_asv.betadisp.df, paste0(projectpath, "/", "dist_usvi_asv.betadisp.df-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE,quote = "none")
+
+g4_all_disp_sig <- g4_all_disp +  geom_text(data = (dist_usvi_asv.betadisp.df %>% dplyr::filter(model == "site.time_all")),
                                                       inherit.aes = FALSE, aes(label = significance, x = site, y = 0.52, group = site), size = 10,  na.rm = TRUE)
-g4_sites_disp_sig <- g4_sites_disp +  geom_text(data = (dist_usvi_asv.betadisp.df %>% dplyr::filter(model == "site")),
+g4_sites_disp_sig <- g4_sites_disp +  geom_text(data = (dist_usvi_asv.betadisp.df %>% dplyr::filter(baseline == "site")),
                                                           inherit.aes = FALSE, aes(label = significance, x = site, y = 0.3, group = site), size = 10, na.rm = TRUE)
+#none of the sites' means are significantly different from each other by time
 
 
 #are outliers different when using site-specific vs all-all matrices?
@@ -2896,11 +3059,19 @@ meta.seawater.grouping.list <- list(meta.list[rownames(usvi_asv.tbl),] %>%
                                       tibble::rownames_to_column(var = "sample_id")) %>%
   setNames(., c("all")) %>%
   c(., (meta.list[rownames(usvi_asv.tbl),] %>%
+          split(., f = .$site) %>% #calculate a median specific to the site
+          map(., ~.x %>% tibble::rownames_to_column(var = "sample_id"))) %>%
+      setNames(., paste0(names(.), ".daily"))) %>%
+  c(., (meta.list[rownames(usvi_asv.tbl),] %>%
           split(., f = .$grouping) %>% #calculate a median specific to the site and time group
           map(., ~.x %>% tibble::rownames_to_column(var = "sample_id")))) %>%
-  c(., (meta.list[rownames(usvi_asv.tbl),] %>%
-          split(., f = .$site) %>% #calculate a median specific to the site
-          map(., ~.x %>% tibble::rownames_to_column(var = "sample_id")))) %>%
+  imap(., ~.x %>%
+         dplyr::mutate(set_label = .y) %>%
+         dplyr::mutate(set_label = dplyr::case_when(set_label == grouping ~ paste0(site, ".", sampling_time),
+                                                    set_label == "all" ~ "all",
+                                                    set_label == site ~ paste0(site, ".daily"),
+                                                    .default = site)) %>%
+         dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]])))) %>%
   map(., ~.x %>%
         droplevels %>%
         dplyr::mutate(grouping = as.character(grouping)))
@@ -2922,6 +3093,15 @@ map(dist_usvi_asv_grouping.d,
 # $all
 # [1] 0.1238592
 # 
+# $LB_seagrass.daily
+# [1] 0.1064909
+# 
+# $Yawzi.daily
+# [1] 0.0422085
+# 
+# $Tektite.daily
+# [1] 0.0529286
+# 
 # $LB_seagrass.dawn
 # [1] 0.08612343
 # 
@@ -2939,26 +3119,19 @@ map(dist_usvi_asv_grouping.d,
 # 
 # $Tektite.peak_photo
 # [1] 0.06462692
-# 
-# $LB_seagrass
-# [1] 0.1064909
-# 
-# $Yawzi
-# [1] 0.0422085
-# 
-# $Tektite
-# [1] 0.0529286
 
 
 
 dist_usvi_asv_grouping.df <- map2(dist_usvi_asv_grouping.d, meta.seawater.grouping.list,
                                   ~vegan::betadisper(., type = "median",
                                                      add = TRUE,
-                                                     .y$grouping) %>%
+                                                     .y$set_label) %>%
+                                                     # .y$grouping) %>%
                                     purrr::pluck("distances") %>%
                                     tibble::enframe(value = "dispersion", name = "sample_id") %>%
                                     droplevels) %>%
-  bind_rows(., .id = "grouping")%>%
+  bind_rows(., .id = "set_label")%>%
+  # bind_rows(., .id = "grouping")%>%
   dplyr::left_join(., (metabolomics_sample_metadata %>%
                          dplyr::filter(grepl("seawater", sample_type)) %>%
                          dplyr::select(sample_id, metab_deriv_label, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
@@ -2967,11 +3140,25 @@ dist_usvi_asv_grouping.df <- map2(dist_usvi_asv_grouping.d, meta.seawater.groupi
                    by = c("sample_id" = "sample_id")) %>%
   dplyr::mutate(site = factor(site, levels = names(site_lookup)),
                 sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
-  dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site",
-                                            (grepl("dawn|peak", grouping) & grepl("Yawzi|Tektite|LB", grouping)) ~ "site.time",
-                                            .default = grouping)) %>%
+  dplyr::mutate(grouping = dplyr::case_when((!grepl("dawn|peak", set_label) & grepl("Yawzi|Tektite|LB", set_label)) ~ "site",
+                                            (grepl("dawn|peak", set_label) & grepl("Yawzi|Tektite|LB", set_label)) ~ "site.time",
+                                            .default = "all")) %>%
   dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+  # dplyr::mutate(set_label = dplyr::case_when(grouping == "site.time" ~ paste0(site, ".", sampling_time),
+  #                                            grouping == "site" ~ paste0(site, ".daily"),
+  #                                            grouping == "all" ~ grouping,
+  #                                            .default = site)) %>%
   droplevels
+
+temp.groupings.asv.betadisp <- map2(dist_usvi_asv_grouping.d, meta.seawater.grouping.list,
+                                    ~vegan::betadisper(., type = "median",
+                                                       add = TRUE,
+                                                       .y$set_label) %>%
+                                      purrr::pluck("group.distances") %>%
+                                      tibble::enframe(value = "mean.distance.to.centroid", name = "grouping") %>%
+                                      droplevels) %>%
+  bind_rows(., .id = "set_label") %>%
+  dplyr::mutate(setome = "microbiome")
 
 #checking if beta dispersions are significantly different dependent on whether we use "all" samples for the centroid, or site-specific medians
 #no, no change
@@ -3014,33 +3201,44 @@ readr::write_delim(dist_usvi_asv_grouping.df, paste0(projectpath, "/", "usvi_bet
 #                         .y$grouping))
 # 
 # scores(dist_usvi_asv_betadisp.list[[1]], 1:4, display = "centroids")
+if(!any(grep("set_label", colnames(dist_usvi_asv_grouping.df), invert = FALSE, value = FALSE))){
+  dist_usvi_asv_grouping.df <- dist_usvi_asv_grouping.df %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::mutate(grouping = factor(grouping, levels = c("all", "site", "site.time"))) %>%
+    dplyr::mutate(set_label = dplyr::case_when(grouping == "site.time" ~ paste0(site, ".", sampling_time),
+                                               grouping == "site" ~ paste0(site, ".daily"),
+                                               grouping == "all" ~ grouping,
+                                               .default = site)) %>%
+    dplyr::arrange(grouping, site, sampling_time) %>%
+    droplevels
+}
 
 dist_usvi_asv_grouping.df %>%
-  dplyr::group_by(site, grouping, sampling_time) %>%
-  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE)) %>%
-  dplyr::arrange(grouping, site, sampling_time)
-# # A tibble: 18 × 4
-# # Groups:   site, grouping [9]
-# site        grouping  sampling_time mean_disp
-# <chr>       <chr>     <chr>             <dbl>
-#   1 LB_seagrass all       dawn             0.480 
-# 2 LB_seagrass all       peak_photo       0.487 
-# 3 Tektite     all       dawn             0.478 
-# 4 Tektite     all       peak_photo       0.480 
-# 5 Yawzi       all       dawn             0.479 
-# 6 Yawzi       all       peak_photo       0.475 
-# 7 LB_seagrass site      dawn             0.215 
-# 8 LB_seagrass site      peak_photo       0.233 
-# 9 Tektite     site      dawn             0.199 
-# 10 Tektite     site      peak_photo       0.203 
-# 11 Yawzi       site      dawn             0.204 
-# 12 Yawzi       site      peak_photo       0.197 
-# 13 LB_seagrass site.time dawn             0.113 
-# 14 LB_seagrass site.time peak_photo       0.195 
-# 15 Tektite     site.time dawn             0.102 
-# 16 Tektite     site.time peak_photo       0.163 
-# 17 Yawzi       site.time dawn             0.140 
-# 18 Yawzi       site.time peak_photo       0.0955  
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        dplyr::group_by(site, set_label) %>%
+        dplyr::summarise(median_disp = median(dispersion, na.rm = TRUE), .groups = "keep") %>%
+        dplyr::arrange(site, set_label)) %>%
+  dplyr::bind_rows(., .id = "grouping") %>%
+  dplyr::arrange(grouping, site, set_label)
+# # A tibble: 12 × 4
+# # Groups:   site, set_label [12]
+# grouping  site        set_label              median_disp
+# <chr>     <fct>       <chr>                        <dbl>
+#   1 all       LB_seagrass all                         0.521 
+# 2 all       Yawzi       all                         0.494 
+# 3 all       Tektite     all                         0.496 
+# 4 site      LB_seagrass LB_seagrass.daily           0.223 
+# 5 site      Yawzi       Yawzi.daily                 0.201 
+# 6 site      Tektite     Tektite.daily               0.197 
+# 7 site.time LB_seagrass LB_seagrass.dawn            0.106 
+# 8 site.time LB_seagrass LB_seagrass.peak_photo      0.179 
+# 9 site.time Yawzi       Yawzi.dawn                  0.136 
+# 10 site.time Yawzi       Yawzi.peak_photo            0.0909
+# 11 site.time Tektite     Tektite.dawn                0.0925
+# 12 site.time Tektite     Tektite.peak_photo          0.154 
+
 
 temp_g_betadisp_asv <- print(ggplot(data = dist_usvi_asv_grouping.df, 
                                 aes(x = grouping, y = dispersion, group = interaction(sampling_time, grouping)))
@@ -3073,44 +3271,109 @@ ggsave(paste0(projectpath, "/", "usvi_betadisper_microb_by_grouping-", Sys.Date(
 
 #save your results
 
-#calculate the average dispersions for each site
-dist_usvi_betadisp_grouping.df <- map(dist_usvi_metab_grouping_log2.d,
-                                      ~.x %>% median(., na.rm = TRUE)) %>%
-  tibble::as_tibble(.) %>%
-  tidyr::pivot_longer(., cols = everything(),
-                      names_to = "grouping", 
-                      values_to = "median_dist") %>%
-  dplyr::mutate(setome = "metabolome") %>%
-  dplyr::bind_rows(., (map(dist_usvi_asv_grouping.d,
-                           ~.x %>% median(., na.rm = TRUE)) %>%
-                         tibble::as_tibble(.) %>%
-                         tidyr::pivot_longer(., cols = everything(),
-                                             names_to = "grouping", 
-                                             values_to = "median_dist") %>%
-                         dplyr::mutate(setome = "microbiome"))) %>%
-  dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
-                sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
-  dplyr::mutate(sampling_time = dplyr::case_when(is.na(sampling_time) ~ "all",
-                                                 .default = sampling_time)) %>%
-  droplevels
+#calculate the statistics behind the dispersions for each site
+#first, although we can't distill the coordinates used for the spatial median in betadisper:
+#what is the statistical median and mean for each grouping?
+
+# dist_usvi_betadisp_grouping.df <- map(dist_usvi_metab_grouping_log2.d,
+#                                       ~.x %>% median(., na.rm = TRUE)) %>%
+#   tibble::as_tibble(.) %>%
+#   tidyr::pivot_longer(., cols = everything(),
+#                       names_to = "grouping", 
+#                       values_to = "median_dist") %>%
+#   dplyr::mutate(setome = "metabolome") %>%
+#   dplyr::bind_rows(., (map(dist_usvi_asv_grouping.d,
+#                            ~.x %>% median(., na.rm = TRUE)) %>%
+#                          tibble::as_tibble(.) %>%
+#                          tidyr::pivot_longer(., cols = everything(),
+#                                              names_to = "grouping", 
+#                                              values_to = "median_dist") %>%
+#                          dplyr::mutate(setome = "microbiome"))) %>%
+#   dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+#                 sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+#   dplyr::mutate(sampling_time = dplyr::case_when(is.na(sampling_time) ~ "all",
+#                                                  .default = sampling_time)) %>%
+#   droplevels
 
 #calcualte the mean beta dispersions for each site and sampling time, based on using the different medians as above
-dist_usvi_mean_betadisp_grouping.df <- dist_usvi_metab_grouping_log2.df %>%
-  dplyr::group_by(site, grouping, sampling_time) %>%
-  dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE),
-                   med_disp = median(dispersion, na.rm = TRUE)) %>%
-  dplyr::arrange(grouping, site, sampling_time) %>%
-  dplyr::mutate(setome = "metabolome") %>%
-  bind_rows(., dist_usvi_asv_grouping.df %>%
-              dplyr::group_by(site, grouping, sampling_time) %>%
-              dplyr::summarise(mean_disp = mean(dispersion, na.rm = TRUE),
-                               med_disp = median(dispersion, na.rm = TRUE)) %>%
-              dplyr::arrange(grouping, site, sampling_time) %>%
-              dplyr::mutate(setome = "microbiome"))
+# dist_usvi_medbeta_grouping.df <- list((dist_usvi_metab_grouping_log2.df %>%
+#                                          split(., f = .$grouping) %>%
+#                                          map(., ~.x %>%
+#                                                dplyr::group_by(site, set_label) %>%
+#                                                dplyr::summarise(median_disp = median(dispersion, na.rm = TRUE), .groups = "keep") %>%
+#                                                dplyr::arrange(site, set_label)) %>%
+#                                          dplyr::bind_rows(., .id = "grouping") %>%
+#                                          dplyr::arrange(grouping, site, set_label)),
+#                                       (dist_usvi_asv_grouping.df %>%
+#                                          split(., f = .$grouping) %>%
+#                                          map(., ~.x %>%
+#                                                dplyr::group_by(site, set_label) %>%
+#                                                dplyr::summarise(median_disp = median(dispersion, na.rm = TRUE), .groups = "keep") %>%
+#                                                dplyr::arrange(site, set_label)) %>%
+#                                          dplyr::bind_rows(., .id = "grouping") %>%
+#                                          dplyr::arrange(grouping, site, set_label))) %>%
+#   setNames(., c("metabolome", "microbiome")) %>%
+#   dplyr::bind_rows(., .id = "setome")
 
-readr::write_delim(dist_usvi_mean_betadisp_grouping.df, paste0(projectpath, "/", "dist_usvi_mean_betadisp_grouping.df-", Sys.Date(), ".tsv"),
+temp.groupings.betadisp <- dplyr::bind_rows(temp.groupings.metab.betadisp, temp.groupings.asv.betadisp, .id = NULL) %>%
+  tibble::as_tibble(.) %>%
+  dplyr::mutate(setome = factor(setome, levels = c("metabolome", "microbiome"))) %>%
+  dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]]))) %>%
+  dplyr::mutate(`mean.distance.to.centroid` = as.numeric(`mean.distance.to.centroid`))
+
+dist_usvi_medbeta_grouping.df <- list(dist_usvi_asv_grouping.df,
+                                       dist_usvi_metab_grouping_log2.df) %>%
+  setNames(., c("microbiome", "metabolome")) %>%
+  dplyr::bind_rows(., .id = "setome") %>%
+  dplyr::mutate(setome = factor(setome, levels = c("metabolome", "microbiome"))) %>%
+  dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]]))) %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        dplyr::group_by(setome, set_label, site) %>%
+        dplyr::summarise(med_disp = median(dispersion, na.rm = TRUE), 
+                         mean_disp = mean(dispersion, na.rm = TRUE), .groups = "keep") %>%
+        dplyr::arrange(site, set_label)) %>%
+  dplyr::bind_rows(., .id = "grouping") %>%
+  dplyr::left_join(., temp.groupings.betadisp %>%
+                     dplyr::select(setome, set_label, `mean.distance.to.centroid`), 
+                   by = join_by(setome, set_label), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::mutate(sampling_time = stringr::str_split_i(set_label, "\\.", 2)) %>%
+  dplyr::mutate(sampling_time = dplyr::case_when(is.na(sampling_time) ~ "all",
+                                                 sampling_time == "daily" ~ "all",
+                                                 .default = sampling_time)) %>%
+  dplyr::relocate(setome, grouping, set_label, site, sampling_time) %>%
+  dplyr::arrange(setome, grouping, site, set_label) 
+
+dist_usvi_betadisp_grouping.df <- list(dist_usvi_asv_grouping.df,
+                                       dist_usvi_metab_grouping_log2.df) %>%
+  setNames(., c("microbiome", "metabolome")) %>%
+  dplyr::bind_rows(., .id = "setome") %>%
+  dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]]))) %>%
+  dplyr::mutate(setome = factor(setome, levels = c("metabolome", "microbiome")))
+  
+dist_usvi_manual_betadisp_grouping.df <- dist_usvi_betadisp_grouping.df %>%
+  dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]]))) %>%
+  dplyr::group_by(setome, grouping, set_label, site, sampling_time) %>%
+  dplyr::summarise(med_disp = median(dispersion, na.rm = TRUE), 
+                   mean_disp = mean(dispersion, na.rm = TRUE), .groups = "keep") %>%
+  dplyr::arrange(setome, grouping, site, sampling_time, set_label) %>%
+  droplevels
+
+temp_df <- dist_usvi_betadisp_grouping.df %>%
+  dplyr::filter(grepl("Tektite", site)) %>%
+  droplevels %>%
+  dplyr::mutate(set_label = factor(set_label, levels = unique(.[["set_label"]]))) %>%
+  dplyr::group_by(setome, grouping, set_label, site, sampling_time) %>%
+  dplyr::summarise(med_disp = median(dispersion, na.rm = TRUE), 
+                   mean_disp = mean(dispersion, na.rm = TRUE), .groups = "keep") %>%
+  dplyr::arrange(setome, grouping, site, sampling_time, set_label) 
+
+
+readr::write_delim(dist_usvi_manual_betadisp_grouping.df, paste0(projectpath, "/", "dist_usvi_manual_betadisp_grouping.df-", Sys.Date(), ".tsv"),
                    delim = "\t", col_names = TRUE)
 readr::write_delim(dist_usvi_betadisp_grouping.df, paste0(projectpath, "/", "dist_usvi_betadisp_grouping.df-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+readr::write_delim(dist_usvi_medbeta_grouping.df, paste0(projectpath, "/", "dist_usvi_medbeta_grouping.df-", Sys.Date(), ".tsv"),
                    delim = "\t", col_names = TRUE)
 
 
@@ -3201,7 +3464,7 @@ temp_betadisp1 <-  (ggplot(data = temp_df2 %>%
                         + geom_point(aes(x = site, y = dispersion, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
                                      position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
                                      alpha = 1.0, size = 3)
-                   +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(model == "site_log2") %>% dplyr::mutate(setome = "metabolome")),
+                   +  geom_text(data = (dist_usvi_metab.betadisp.df %>% dplyr::filter(baseline == "site") %>% dplyr::mutate(setome = "metabolome")),
                                 inherit.aes = FALSE, aes(label = significance, x = site, y = 0.45, group = site), size = 10, na.rm = TRUE)
                    + scale_discrete_manual(aesthetics = c("shape"), values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA), drop = TRUE)
                    + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),drop = TRUE)
@@ -3236,6 +3499,8 @@ temp_betadisp2 <-  (ggplot(data = temp_df2 %>%
                     + geom_point(aes(x = site, y = dispersion, fill = site, group = interaction(site, sampling_time), shape = sampling_time), 
                                  position = position_jitterdodge(dodge.width = 0.75, seed = 48105, jitter.width = 0.2),
                                  alpha = 1.0, size = 3)
+                    +  geom_text(data = (dist_usvi_asv.betadisp.df %>% dplyr::filter(baseline == "site") %>% dplyr::mutate(setome = "microbiome")),
+                                 inherit.aes = FALSE, aes(label = significance, x = site, y = 0.3, group = site), size = 10, na.rm = TRUE)
                     + scale_discrete_manual(aesthetics = c("shape"), values = c(22, 21, 23), labels = c(sampling_time_lookup, "NA"), breaks = c(names(sampling_time_lookup), NA), drop = TRUE)
                     + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),drop = TRUE)
                     + scale_y_continuous(expand = expansion(mult = c(0.1,0.1)), name = "Distance from centroid")

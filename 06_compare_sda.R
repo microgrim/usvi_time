@@ -1281,6 +1281,151 @@ usvi_sda_asvs_filtered_silva.df <- usvi_sda_asvs.taxonomy %>%
   tibble::rowid_to_column(var = "rankorder") %>%
   droplevels
 
+#we have triplicates for each sampling time and sampling day
+#so for each day.time, if an ASV has relabunds = c(0, 0, 0.02) 
+#(i.e. if 2/3 samples have 0 counts for that ASV), then median = 0 and always the mean > median
+# but if only one sample in each triple has 0 counts for that ASV, then median > 0 
+#in the isntances that 2/3 samples in each triple has 0 for an ASV, can we replace that median with 1/10 of the observed relative abundance in the third sample?
+
+temp_df <- shared_sda_asvs_idx_filtered_list[[8]] %>%
+  dplyr::filter(grepl("ASV_00575", asv_id)) %>%
+  dplyr::select(asv_id, contrast, hold, variable, sampling_time, site, sample_id, relabund, pair, hold2, group_label) %>%
+  droplevels %>%
+  dplyr::left_join(., metabolomics_sample_metadata %>%
+                     dplyr::distinct(sample_id, sampling_day) %>%
+                     droplevels, by = join_by(sample_id)) %>%
+  dplyr::filter(!grepl("Day1", sampling_day)) %>%
+  # dplyr::filter(grepl("peak", sampling_time)) %>%
+  dplyr::arrange(sampling_day, sampling_time) %>%
+  dplyr::group_by(asv_id, sampling_day, sampling_time) %>%
+  dplyr::mutate( .keep = "all", 
+                 median = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE),
+                                           .default = max(relabund, na.rm = TRUE)/10), #we have triplicates for each sampling time and sampling day) %>%
+                 mean = mean(relabund, na.rm = TRUE)) %>%
+  dplyr::distinct(asv_id, sampling_day, sampling_time, .keep_all = TRUE) %>%
+  dplyr::group_by(asv_id, sampling_day) %>%
+  dplyr::mutate(mean_norm = `mean`/sum(`mean`, na.rm = TRUE),
+                median_norm = `median`/sum(`median`, na.rm = TRUE),
+                .keep = "all") %>%
+  # dplyr::group_by(asv_id, sampling_day) %>%
+  # dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
+  # # dplyr::rowwise(.) %>%
+  # dplyr::mutate(norm_relabund = dplyr::case_when((sum_relabund > 0 & relabund > 0 ) ~ (relabund/sum_relabund),
+  #                                               (sum_relabund == 0 | is.na(sum_relabund)) ~ NA,
+  #                                               (sum_relabund > 0 & is.na(relabund)) ~ (min(relabund, na.rm = TRUE)/sum_relabund),
+  #                                                .default = 0)) %>%
+  #                                               # .default = relabund/10)) %>%
+  #                                               # .default = (min(relabund, na.rm = TRUE)/10))) %>%
+  # # .default = NA)) %>%
+  dplyr::select(-c(contrast, starts_with("hold"), sample_id, variable, pair, group_label)) %>%
+  droplevels
+
+temp_df3 <- temp_df %>%
+  # dplyr::filter(grepl("Day5", sampling_day)) %>%
+  dplyr::group_by(asv_id, sampling_day, sampling_time) %>%
+  dplyr::mutate( .keep = "all", 
+                 median = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE),
+                                           .default = max(relabund, na.rm = TRUE)/10), #we have triplicates for each sampling time and sampling day) %>%
+                 mean = mean(relabund, na.rm = TRUE)) %>%
+  dplyr::distinct(asv_id, sampling_day, sampling_time, .keep_all = TRUE) %>%
+  dplyr::group_by(asv_id, sampling_day) %>%
+  dplyr::mutate(mean_norm = `mean`/sum(`mean`, na.rm = TRUE),
+                median_norm = `median`/sum(`median`, na.rm = TRUE),
+                .keep = "all") %>%
+  # dplyr::summarise( .groups = "keep", 
+  dplyr::mutate( .keep = "all", 
+                 # norm_relabund = norm_relabund, relabund = relabund,
+                   median = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE),
+                                             .default = max(relabund, na.rm = TRUE)/10), #we have triplicates for each sampling time and sampling day) %>%
+                 mean = mean(relabund, na.rm = TRUE)) %>%
+  dplyr::distinct(asv_id, sampling_day, sampling_time, .keep_all = TRUE) %>%
+  # dplyr::summarise( .groups = "keep", 
+  # dplyr::group_by(asv_id, sampling_time) %>%
+  # dplyr::mutate(mean_norm_v2 = mean(norm_relabund)) %>%
+  dplyr::group_by(asv_id, sampling_day) %>%
+  dplyr::mutate(mean_norm = `mean`/sum(`mean`, na.rm = TRUE),
+                median_norm = `median`/sum(`median`, na.rm = TRUE),
+                .keep = "all") %>%
+  # dplyr::mutate( .keep = "all",
+  #                mean_norm = mean(sum(norm_relabund, na.rm = TRUE), na.rm = TRUE),
+  #                # mean_norm_v2 = mean(norm_relabund, na.rm = TRUE),
+  #                # mean_norm_v2 = sum(norm_relabund, na.rm = TRUE),
+  #                # median_norm_v2 = `median`/sum(`median`, na.rm = TRUE),
+  #                mean_norm_v2 = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ mean(sum(na.omit(norm_relabund))),
+  #                                                .default = NA),
+  #                # median_norm_v2 = median(norm_relabund, na.rm = TRUE),
+  #                  median_norm_v2 = dplyr::case_when(
+  #                    median(relabund, na.rm = TRUE) == 0 ~ max(norm_relabund, na.rm=TRUE)/10,
+  #                    median(relabund, na.rm = TRUE) > 0 ~ median(sum(norm_relabund, na.rm = TRUE), na.rm = TRUE),
+  #                                                    .default = NA),
+  #                  median_norm = median(sum(norm_relabund, na.rm = TRUE), na.rm = TRUE)) %>%
+  # dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
+  #                median = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE) > 0,
+  #                                          .default = max(relabund, na.rm = TRUE)/10), #we have triplicates for each sampling time and sampling day
+  #                .groups = "keep") %>%
+  # dplyr::select(asv_id,  sampling_day, sampling_time, starts_with("mean"), starts_with("median")) %>% dplyr::distinct(.) %>%
+  droplevels
+  
+temp_df1 <- shared_sda_asvs_idx_filtered_list[8] %>%
+  map(., ~.x %>%
+        dplyr::select(asv_id, contrast, hold, variable, sampling_time, site, sample_id, relabund, pair, hold2, group_label) %>%
+        droplevels %>%
+        dplyr::left_join(., metabolomics_sample_metadata %>%
+                           dplyr::distinct(sample_id, sampling_day) %>%
+                           droplevels, by = join_by(sample_id)) %>%
+        dplyr::filter(!grepl("Day1", sampling_day)) %>%
+        droplevels %>%
+        # ###
+        # dplyr::mutate(relabund = dplyr::case_when(relabund == 0 ~ NA, .default = relabund)) %>% #do we replace all 0.0 in relabund with NA?
+        # ###
+        dplyr::group_by(asv_id, sampling_day) %>%
+        dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
+        # dplyr::rowwise(.) %>%
+        dplyr::mutate(norm_relabund = dplyr::case_when((sum_relabund > 0 & relabund > 0 ) ~ (relabund/sum_relabund),
+                                                       (sum_relabund == 0 | is.na(sum_relabund)) ~ NA,
+                                                       (sum_relabund > 0 & is.na(relabund)) ~ (min(relabund, na.rm = TRUE)/sum_relabund),
+                                                       .default = 0)) %>%
+        # .default = NA)) %>%
+        dplyr::group_by(asv_id, sampling_day, sampling_time) %>%
+        # dplyr::summarise( .groups = "keep", 
+        dplyr::mutate( .keep = "all", 
+                       median = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE),
+                                                 .default = max(relabund, na.rm = TRUE)/10), #we have triplicates for each sampling time and sampling day) %>%
+                       mean = mean(relabund, na.rm = TRUE)) %>%
+        dplyr::distinct(asv_id, sampling_day, sampling_time, .keep_all = TRUE) %>%
+        dplyr::group_by(asv_id, sampling_day) %>%
+        dplyr::mutate(mean_norm = `mean`/sum(`mean`, na.rm = TRUE),
+                      median_norm = `median`/sum(`median`, na.rm = TRUE),
+                      .keep = "all") %>%
+        # dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time) %>%
+        # dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
+        # dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
+        #                  mean_norm = mean(sum(norm_relabund, na.rm = TRUE)),
+        #                  # median = median(relabund, na.rm = TRUE),
+        #                  median = dplyr::case_when(median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE),
+        #                                            .default = max(relabund, na.rm = TRUE)/10), #we have triplicates for each sampling time and sampling day
+        #                  median_norm = median(sum(norm_relabund, na.rm = TRUE)),
+        #                  sd = sd(relabund, na.rm = TRUE),
+        #                  .groups = "keep") %>%
+        dplyr::mutate(median_label = signif(median, digits = 2),
+                      median_norm_label = signif(median_norm, digits = 2)) %>%
+        dplyr::rowwise(.) %>%
+        ###
+        dplyr::mutate(across(c(median_label, median_norm_label), ~dplyr::case_when(.x > 0 ~ .x,
+                                                                                   # dplyr::mutate(across(c(median_label, median_norm_label, median, median_norm, mean, mean_norm), ~dplyr::case_when(.x > 0 ~ .x,  #let's just use the na.value option in scale_fill_gradientn
+                                                                                   .default = NA))) %>%
+        ###
+        dplyr::left_join(., usvi_sda_asvs_filtered_silva.df %>%
+                           dplyr::select(asv_id, rankorder) %>%
+                           droplevels, by = join_by(asv_id)) %>%
+        dplyr::mutate(sampling_time = factor(sampling_time, levels = names(sampling_time_lookup)),
+                      sampling_day = factor(sampling_day, levels = names(sampling_day_lookup))) %>%
+        dplyr::mutate(sampling_time = recode(sampling_time, !!!sampling_time_lookup)) %>%
+        dplyr::arrange(rankorder, sampling_time, sampling_day) %>%
+        dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
+        droplevels)
+temp_df1 <- temp_df1 %>%
+  dplyr::bind_rows(., .id = NULL)
 
 usvi_sda_asvs_day_time_median_list <- shared_sda_asvs_idx_filtered_list %>%
   map(., ~.x %>%
@@ -1291,26 +1436,37 @@ usvi_sda_asvs_day_time_median_list <- shared_sda_asvs_idx_filtered_list %>%
                            droplevels, by = join_by(sample_id)) %>%
         dplyr::filter(!grepl("Day1", sampling_day)) %>%
         droplevels %>%
-        # dplyr::group_by(asv_id, contrast, hold, variable, sampling_time, sampling_day, site, sample_id, pair, hold2, group_label) %>%
-        # tidyr::expand(relabund) %>%
+        #beginning here, we edited to accurately calculate mean and median when we have 2/3 samples in each triplicate recording 0:
+        dplyr::group_by(asv_id, sampling_day, sampling_time) %>%
+        dplyr::mutate(median = dplyr::case_when(median(relabund, na.rm = TRUE) == 0 ~ (max(relabund, na.rm = TRUE)/10),
+                                                median(relabund, na.rm = TRUE) > 0 ~ median(relabund, na.rm = TRUE),
+                                                 .default = NA), #we have triplicates for each sampling time and sampling day) %>%
+                       mean = mean(relabund, na.rm = TRUE),
+                      .keep = "all") %>%
+        dplyr::distinct(asv_id, sampling_day, sampling_time, .keep_all = TRUE) %>%
         dplyr::group_by(asv_id, sampling_day) %>%
-        dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
-        dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
-                                                       .default = 0)) %>%
-        dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
-        dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
-                         mean_norm = mean(sum(norm_relabund, na.rm = TRUE)),
-                         median = median(relabund, na.rm = TRUE),
-                         median_norm = median(sum(norm_relabund, na.rm = TRUE)),
-                         sd = sd(relabund, na.rm = TRUE),
-                         .groups = "keep") %>%
+        dplyr::mutate(mean_norm = `mean`/sum(`mean`, na.rm = TRUE),
+                      median_norm = `median`/sum(`median`, na.rm = TRUE),
+                      .keep = "all") %>%
+        # dplyr::group_by(asv_id, sampling_day) %>%
+        # dplyr::mutate(sum_relabund = sum(relabund, na.rm = TRUE)) %>%
+        # dplyr::mutate(norm_relabund = dplyr::case_when(sum_relabund > 0 ~ (relabund/sum_relabund),
+        #                                                .default = 0)) %>%
+        # dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
+        # dplyr::summarise(mean = mean(relabund, na.rm = TRUE),
+        #                  mean_norm = mean(sum(norm_relabund, na.rm = TRUE)),
+        #                  median = median(relabund, na.rm = TRUE),
+        #                  median_norm = median(sum(norm_relabund, na.rm = TRUE)),
+        #                  sd = sd(relabund, na.rm = TRUE),
+        #                  .groups = "keep") %>%
         # dplyr::group_by(asv_id, contrast, hold, variable, sampling_day, sampling_time, site, pair, hold2, group_label) %>%
         # dplyr::group_by(asv_id, contrast, sampling_day, sampling_time, site, group_label) %>%
         # tidyr::expand(median, median_norm, mean, mean_norm, sd) %>%
         dplyr::mutate(median_label = signif(median, digits = 2),
                       median_norm_label = signif(median_norm, digits = 2)) %>%
         dplyr::mutate(across(c(median_label, median_norm_label), ~dplyr::case_when(.x > 0 ~ .x,
-                                                      .default = NA))) %>%
+        # dplyr::mutate(across(c(median_label, median_norm_label, median, median_norm, mean, mean_norm), ~dplyr::case_when(.x > 0 ~ .x,  #let's just use the na.value option in scale_fill_gradientn
+                                                                                   .default = NA))) %>%
         dplyr::left_join(., usvi_sda_asvs_filtered_silva.df %>%
                            dplyr::select(asv_id, rankorder) %>%
                            droplevels, by = join_by(asv_id)) %>%
@@ -1320,7 +1476,6 @@ usvi_sda_asvs_day_time_median_list <- shared_sda_asvs_idx_filtered_list %>%
         dplyr::arrange(rankorder, sampling_time, sampling_day) %>%
         dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
         droplevels)
-
 
 # # temp_df1 <- shared_sda_asvs_idx_filtered_list[[8]] %>%
 # #   dplyr::select(asv_id, contrast, hold, variable, sampling_time, site, sample_id, relabund, pair, hold2, group_label) %>%
@@ -1624,11 +1779,12 @@ usvi_sda_asvs_day_time_median_list <- shared_sda_asvs_idx_filtered_list %>%
 rm(list = apropos("g3_sda_.*", mode = "list"))
 # for(i in c(1)){
 for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
-  
+# { i <- 8
   namevar1 <- names(usvi_sda_asvs_day_time_median_list[i]) %>%
     gsub("LB_seagrass", "Lameshur Bay", .) %>%
     gsub("peak_photo", "afternoon", .)
   temp_df1 <- usvi_sda_asvs_day_time_median_list[[i]] %>%
+    dplyr::mutate(across(c(mean, mean_norm, "median", "median_norm"), ~dplyr::case_when(.x == 0 ~ NA, .default = .x))) %>% #let's just use the na.value option in scale_fill_gradientn
     droplevels
   if(nrow(temp_df1) > 0){
   namevar2 <- paste0(unique(temp_df1$hold2), "_", unique(temp_df1$hold))
@@ -1648,6 +1804,23 @@ for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
     dplyr::mutate(relabeled = paste0(pair, ".", sampling_day)) %>%
     dplyr::select(label, relabeled) %>%
     tibble::deframe(.)
+  temp_df2 <- temp_df1 %>%
+    dplyr::mutate(median_norm = dplyr::case_when(median == 0 ~ NA, .default = median_norm)) %>% #let's just use the na.value option in scale_fill_gradientn
+    droplevels
+  
+  temp_breaks2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% 
+    quantile(., probs = seq(0, 1, 0.1), names = FALSE, na.rm = TRUE) %>% round(., digits = 1) %>% unique(.)
+  temp_breaks2 <- c(temp_breaks2, 0, 1)%>% unique(.) %>% sort(.)
+  # temp_pal2 <- colorRampPalette(pals::gnuplot(n = 10)[-1])(length(temp_breaks2))
+  temp_pal2 <- colorRampPalette(pals::gnuplot(100))(100)
+  temp_nbreaks2 <- (temp_breaks2)/2 %>% unique(.) %>% sort(.)
+  label_y2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::distinct(pair, sampling_day) %>%
+    dplyr::mutate(label = paste0(sampling_day, ".", pair)) %>%
+    dplyr::mutate(pair = recode(pair, !!!c(site_lookup, sampling_time_lookup))) %>%
+    droplevels %>%
+    dplyr::mutate(relabeled = paste0(sampling_day, ".", pair)) %>%
+    dplyr::select(label, relabeled) %>%
+    tibble::deframe(.)
   
  temp_g3a <- (
    ggplot(data = temp_df1 %>%
@@ -1656,11 +1829,13 @@ for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
    + geom_tile(aes(fill = median), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
    # + geom_text(aes(label = median_label), size = rel(2))
    +  scale_fill_gradientn(aesthetics = "fill",
+                           na.value = "grey",
+                           # na.value = "white",
                            colours = temp_pal1,
                            transform = T_log10p1(),
                            limits = range(log10p1_br(temp_breaks1)),
-                           labels = log10p1_lab(temp_breaks1), breaks = log10p1_br(temp_breaks1),
-                           na.value = "white")
+                           labels = log10p1_lab(temp_breaks1), 
+                           breaks = log10p1_br(temp_breaks1))
    + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon")
    + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y)
    + theme(panel.spacing = unit(1, "lines"),
@@ -1682,18 +1857,8 @@ for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
    + ggtitle(paste0("SDA ASVs in ", namevar1, " relative abundance"))
  )
   
-  temp_df2 <- temp_df1 %>%
-    dplyr::group_by(asv_id, group_label) %>%
-    dplyr::mutate(median = median/sum(median, na.rm = TRUE)) %>%
-    dplyr::mutate(median = tidyr::replace_na(median, 0))
-  
-  temp_breaks2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% 
-    quantile(., probs = seq(0, 1, 0.1), names = FALSE, na.rm = TRUE) %>% round(., digits = 1) %>% unique(.)
-  temp_breaks2 <- c(temp_breaks2, 0, 1)%>% unique(.) %>% sort(.)
-  # temp_pal2 <- colorRampPalette(pals::gnuplot(n = 10)[-1])(length(temp_breaks2))
-  temp_pal2 <- colorRampPalette(pals::gnuplot(100))(100)
-  temp_nbreaks2 <- (temp_breaks2)/2 %>% unique(.) %>% sort(.)
-  
+ temp_g3d <- temp_g3a + aes(x = asv_id, y = interaction(sampling_day, pair), group = interaction(group_label), fill = median) + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+ 
   temp_g3b <- (
     ggplot(data = temp_df2 %>%
              droplevels, aes(x = asv_id, y = interaction(pair, sampling_day), group = interaction(group_label)))
@@ -1701,11 +1866,12 @@ for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
     + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
     # + geom_text(aes(label = median_norm_label), size = rel(2))
     +  scale_fill_gradientn(aesthetics = "fill",
+                            na.value = "black",
+                            # na.value = "grey20",
                             colours = temp_pal2, 
                             breaks = temp_breaks2,
                             values = temp_breaks2,
-                            limits = range(temp_breaks2),
-                            na.value = NA)
+                            limits = range(temp_breaks2))
     + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon", position = "bottom")
     + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y)
     + theme(panel.spacing = unit(1, "lines"),
@@ -1726,56 +1892,58 @@ for(i in seq_along(usvi_sda_asvs_day_time_median_list)){
     + coord_flip()
     + ggtitle(paste0("SDA ASVs in ", namevar1, " normalized abundance density"))
   )
-  label_y2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::distinct(pair, sampling_day) %>%
-    dplyr::mutate(label = paste0(sampling_day, ".", pair)) %>%
-    dplyr::mutate(pair = recode(pair, !!!c(site_lookup, sampling_time_lookup))) %>%
-    droplevels %>%
-    dplyr::mutate(relabeled = paste0(sampling_day, ".", pair)) %>%
-    dplyr::select(label, relabeled) %>%
-    tibble::deframe(.)
-  temp_g3c <- (
-    ggplot(data = temp_df2 %>%
-             droplevels, aes(x = asv_id, y = interaction(sampling_day, pair), group = interaction(group_label)))
-    + theme_bw() 
-    + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
-    # + geom_text(aes(label = median_norm_label), size = rel(2))
-    +  scale_fill_gradientn(aesthetics = "fill",
-                            colours = temp_pal2, 
-                            breaks = temp_breaks2,
-                            values = temp_breaks2,
-                            limits = range(temp_breaks2),
-                            na.value = NA)
-    + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon", position = "bottom")
-    + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
-    + theme(panel.spacing = unit(1, "lines"),
-            panel.background = element_blank(),
-            axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
-            axis.text.y = element_text(vjust = 0.5, hjust = 1),
-            panel.grid.major = element_blank(),
-            panel.grid.minor.y = element_blank(),
-            panel.grid.minor.x = element_blank(),
-            panel.ontop = FALSE,
-            strip.text.y = element_blank())
-    + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
-                                   # + guides(fill = guide_colorbar(nbin = 10, show.limits = TRUE, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
-                                   title = "Normalized \nabundance \ndensity", direction = "vertical",
-                                   theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
-                                   override.aes = list(stroke = 1, color = "black")),
-             color = "none")
-    + coord_flip()
-  )
+  
+  temp_g3c <- temp_g3b + aes(x = asv_id, y = interaction(sampling_day, pair), group = interaction(group_label), fill = median_norm) + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+  
+  {
+    
+  # temp_g3c <- (
+  #   ggplot(data = temp_df2 %>%
+  #            droplevels, aes(x = asv_id, y = interaction(sampling_day, pair), group = interaction(group_label)))
+  #   + theme_bw() 
+  #   + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+  #   # + geom_text(aes(label = median_norm_label), size = rel(2))
+  #   +  scale_fill_gradientn(aesthetics = "fill",
+  #                           colours = temp_pal2, 
+  #                           breaks = temp_breaks2,
+  #                           values = temp_breaks2,
+  #                           limits = range(temp_breaks2),
+  #                           na.value = NA)
+  #   + scale_x_discrete(labels = usvi_genera_relabel, expand = c(0,0), name = "Taxon", position = "bottom")
+  #   + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+  #   + theme(panel.spacing = unit(1, "lines"),
+  #           panel.background = element_blank(),
+  #           axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+  #           axis.text.y = element_text(vjust = 0.5, hjust = 1),
+  #           panel.grid.major = element_blank(),
+  #           panel.grid.minor.y = element_blank(),
+  #           panel.grid.minor.x = element_blank(),
+  #           panel.ontop = FALSE,
+  #           strip.text.y = element_blank())
+  #   + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+  #                                  # + guides(fill = guide_colorbar(nbin = 10, show.limits = TRUE, display = "rectangles", draw.ulim = TRUE, draw.llim = TRUE,
+  #                                  title = "Normalized \nabundance \ndensity", direction = "vertical",
+  #                                  theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+  #                                  override.aes = list(stroke = 1, color = "black")),
+  #            color = "none")
+  #   + coord_flip()
+  # )
+  }
+  
   temp_g3b <- (temp_g3b + (temp_g3c + theme(axis.text.y.left = element_blank()))) + patchwork::plot_layout(guides = "collect")
   temp_g3 <- (temp_g3a ) + (temp_g3b)
   assign(paste0("g3_sda_", i, "_", namevar2), temp_g3, envir = .GlobalEnv, inherits = TRUE)
   assign(paste0("g3_sda_", i, "_", namevar2, "_med_relabund"), temp_g3a, envir = .GlobalEnv, inherits = TRUE)
   assign(paste0("g3_sda_", i, "_", namevar2, "_norm_relabund"), temp_g3b, envir = .GlobalEnv, inherits = TRUE)
   
-  # if(!any(grepl(paste0(namevar2, "relabund", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_sda_asvs_g3_sda_.*.png")))){
-    # ggsave(paste0(projectpath, "/", "usvi_sda_asvs_g3_sda_", i, "_", namevar2 , "-", Sys.Date(), ".png"),
-  ggsave(paste0(projectpath, "/", "usvi_sda_asvs_g3_sda_", i, "_", namevar2 , "-", Sys.Date(), ".svg"),
+  if(!any(grepl(paste0(namevar2, "relabund", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_sda_asvs_g3_sda_.*.png")))){
+    ggsave(paste0(projectpath, "/", "usvi_sda_asvs_g3_sda_", i, "_", namevar2 , "-", Sys.Date(), ".png"),
            temp_g3,
            width = 20, height = 10, units = "in")
-  # }
+    ggsave(paste0(projectpath, "/", "usvi_sda_asvs_g3_sda_", i, "_", namevar2 , "-", Sys.Date(), ".svg"),
+           temp_g3,
+           width = 20, height = 10, units = "in")
+  }
   rm(list = apropos("temp_df.*", mode = "list"))
   rm(list = apropos("namevar.*", mode = "list"))
   rm(list = apropos("temp_breaks.*", mode = "list"))

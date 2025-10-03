@@ -81,7 +81,7 @@ library(patchwork)
 library(viridisLite)
 library(pals)
 library(scales)
-library(PERMANOVA)
+# library(PERMANOVA)
 
 
 
@@ -346,262 +346,350 @@ if(file.exists(paste0(projectpath, "/", "usvi_metabolomics_dfs_list", ".rds"))){
 
 
 
-#llight:
-
-#it looks like at MIS, we used HOBOs deployed at multiple depths to 23m below surface to measure light
-#Hobos record in Lux or Lumens, which is not easily translated to PAR
-#to get the full light field, we also used multiple light profilers: Hyperspectral, LiCor, C-OPs
-#the CONVERSION of the reported Hobo light in Lux, to uE was as follows:
-
-#at 23m depth, only blue-green PAR was available as determined by the Blackbird hyperspectral profiler. 
-#in July 2016, Blackbird measured ~75uE of available light almost entirely in Blue-Green wavelengths
-#HOBOs measured light at 23m depth on those same days as ~996 lux
-#so the light-profile/depth specific conversion was:
-#Lux/54/0.245142572 = available PAR at 23m depth
-#in this case, 996/54/.245142572 = 75 uE
-
-#in MIS the attenuation coefficients averaged -0.132840405 (range: -0.161106824, -0.101399784)
-#calculate depths and assign sampling_time windows before subsetting for dawn and peak_photo
-# metabolomics_sample_metadata %>%
-#   dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
-#   dplyr::group_by(site, day, sampling_time) %>%
-#   dplyr::summarise(depth = mean(depth))
-
-if(!exists("usvi_hobo_light_temp_filtered.df", envir = .GlobalEnv)){
-  if(file.exists(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv.gz"))){
-    usvi_hobo_light_temp <- readr::read_delim(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv.gz"))
-    
-    interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 11:00:00", tz = "America/Virgin")) 
-    interval_vector_peak <- list(interval,
-                                 lubridate::int_shift(interval, days(1)),
-                                 lubridate::int_shift(interval, days(2)),
-                                 lubridate::int_shift(interval, days(3)),
-                                 lubridate::int_shift(interval, days(4)),
-                                 lubridate::int_shift(interval, days(5)))
-    
-    interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 04:00:00", tz = "America/Virgin")) 
-    interval_vector_dawn <- list(interval,
-                                 lubridate::int_shift(interval, days(1)),
-                                 lubridate::int_shift(interval, days(2)),
-                                 lubridate::int_shift(interval, days(3)),
-                                 lubridate::int_shift(interval, days(4)),
-                                 lubridate::int_shift(interval, days(5)))
-    
-    usvi_hobo_light_temp_filtered.df <- usvi_hobo_light_temp %>%
-      dplyr::mutate(date_ast = lubridate::force_tz(date_ast, tzone = "America/Virgin")) %>%
-      dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
-      dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
-      dplyr::rowwise(.) %>%
-      dplyr::mutate(sampling_time = dplyr::case_when(date_ast %within% interval_vector_peak ~ "peak_photo",
-                                                     date_ast %within% interval_vector_dawn ~ "dawn",
-                                                     .default = NA)) %>%
-      dplyr::mutate(sampling_time = factor(sampling_time)) %>%
-      dplyr::left_join(., metabolomics_sample_metadata %>%
-                         dplyr::rowwise(.) %>%
-                         dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
-                         dplyr::group_by(site, day, sampling_time) %>%
-                         dplyr::summarise(depth = mean(depth)), by = join_by(site, day, sampling_time)) %>%
-      dplyr::group_by(site, day) %>%
-      tidyr::fill(depth, .direction = "downup") %>%
-      dplyr::mutate(PAR = (lux/54)) %>%
-      dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
-      tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
-                          # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
-                          names_to = "parameter",
-                          values_to = "value") %>%
-      dplyr::group_by(site) %>%
-      dplyr::slice_head(prop = 0.9) %>%
-      dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
-      droplevels
-    
-    readr::write_delim(usvi_hobo_light_temp_filtered.df, paste0(projectpath, "/", "usvi_hobo_light_temp_filtered.df", ".tsv.gz"),
-                       delim = "\t", col_names = TRUE, num_threads = nthreads)
-  }
-}
-
-
-
-usvi_light_temp_metadata.df <- bind_rows(
-  (usvi_hobo_light_temp_filtered.df %>%
-     dplyr::group_by(site, day, sampling_time, parameter) %>%
-     dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, sampling_time,parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
-     droplevels)) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::left_join(., metabolomics_sample_metadata %>%
-                     dplyr::rowwise(.) %>%
-                     dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
-                     dplyr::group_by(site, day, sampling_time, sampling_day) %>%
-                     dplyr::summarise(depth = mean(depth)), by = join_by(site, day, sampling_time)) %>%
-  dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
-  droplevels %>%
-  dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
-  dplyr::mutate(replicate = rep(c(rep(1:3, 4),
-                                  rep(1:3, 4),
-                                  rep(1:3, 4)), 10)) %>%
-  tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
-                     names_from = "parameter",
-                     values_from = "max") %>%
-  # dplyr::rowwise(.) %>%
-  # dplyr::mutate(PAR2 = (lux/54)) %>%
-  # dplyr::mutate(PAR2 = PAR2/exp(-0.13*(depth - 23))) %>%
-  # dplyr::ungroup(.) %>%
-  dplyr::select(-replicate) %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
-  dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
-                                  sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
-                                  sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
-  dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
-  droplevels
-
-
-#if you did not calculate PAR for each specific depth and sampling_time window at each site and time, subset for the dawn and peak photo windows:
-{
-  # usvi_hobo_light_temp_expanded.df <- usvi_hobo_light_temp %>%
-  #   dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
-  #   dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
-  #   dplyr::left_join(., metabolomics_sample_metadata %>%
-  #                      dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
-  #                      dplyr::group_by(site, day) %>%
-  #                      dplyr::summarise(depth = mean(depth))) %>%
-  #   dplyr::group_by(site, day) %>%
-  #   tidyr::fill(depth, .direction = "downup") %>%
-  #   dplyr::mutate(PAR = (lux/54)) %>%
-  #   dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
-  #   tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
-  #                       # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
-  #                       names_to = "parameter",
-  #                       values_to = "value") %>%
-  #   dplyr::group_by(site) %>%
-  #   dplyr::slice_head(prop = 0.9) %>%
-  #   droplevels
-  # 
-  # # temp_df <- bind_rows(
-  # usvi_light_temp_metadata.df <- bind_rows(
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 05:00:00"), ymd_hms("2021-01-22 08:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
-  #      dplyr::mutate(sampling_day = "Day1") %>%
-  #      dplyr::mutate(sampling_time = "dawn") %>%
-  #      droplevels), 
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 11:00:00"), ymd_hms("2021-01-22 14:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day1") %>%
-  #      dplyr::mutate(sampling_time = "peak_photo") %>%
-  #      droplevels),
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 05:00:00"), ymd_hms("2021-01-23 08:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day2") %>%
-  #      dplyr::mutate(sampling_time = "dawn") %>%
-  #      droplevels), 
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 11:00:00"), ymd_hms("2021-01-23 14:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day2") %>%
-  #      dplyr::mutate(sampling_time = "peak_photo") %>%
-  #      droplevels),
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 05:00:00"), ymd_hms("2021-01-24 08:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day3") %>%
-  #      dplyr::mutate(sampling_time = "dawn") %>%
-  #      droplevels), 
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 11:00:00"), ymd_hms("2021-01-24 14:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day3") %>%
-  #      dplyr::mutate(sampling_time = "peak_photo") %>%
-  #      droplevels),
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 05:00:00"), ymd_hms("2021-01-25 08:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day4") %>%
-  #      dplyr::mutate(sampling_time = "dawn") %>%
-  #      droplevels), 
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 11:00:00"), ymd_hms("2021-01-25 14:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day4") %>%
-  #      dplyr::mutate(sampling_time = "peak_photo") %>%
-  #      droplevels),
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 05:00:00"), ymd_hms("2021-01-26 08:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day5") %>%
-  #      dplyr::mutate(sampling_time = "dawn") %>%
-  #      droplevels), 
-  #   (usvi_hobo_light_temp_expanded.df %>%
-  #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 11:00:00"), ymd_hms("2021-01-26 14:00:00"))) %>%
-  #      dplyr::group_by(site, day, parameter) %>%
-  #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
-  #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
-  #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
-  #      dplyr::mutate(sampling_day = "Day5") %>%
-  #      dplyr::mutate(sampling_time = "peak_photo") %>%
-  #      droplevels)
-  # ) %>%
-  #   dplyr::left_join(., metabolomics_sample_metadata %>%
-  #                      dplyr::group_by(site, sampling_day, sampling_time) %>%
-  #                      dplyr::summarise(depth = mean(depth)),
-  #                    by = join_by(site, sampling_day, sampling_time)) %>%
-  #   dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
-  #   dplyr::mutate(replicate = rep(c(rep(1:3, 4),
-  #                                   rep(1:3, 4),
-  #                                   rep(1:3, 4)), 10)) %>%
-  #   tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
-  #                      names_from = "parameter",
-  #                      values_from = "max") %>%
-  #   dplyr::rowwise(.) %>%
-  #   dplyr::mutate(PAR = (lux/54)) %>%
-  #   dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
-  #   dplyr::ungroup(.) %>%
-  #   dplyr::select(-replicate) %>%
-  #   dplyr::arrange(site, sampling_time, sampling_day) %>%
-  #   dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
-  #                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
-  #                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
-  #   dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
-  #   droplevels
-}
+# #llight:
 # 
+# #it looks like at MIS, we used HOBOs deployed at multiple depths to 23m below surface to measure light
+# #Hobos record in Lux or Lumens, which is not easily translated to PAR
+# #to get the full light field, we also used multiple light profilers: Hyperspectral, LiCor, C-OPs
+# #the CONVERSION of the reported Hobo light in Lux, to uE was as follows:
+# 
+# #at 23m depth, only blue-green PAR was available as determined by the Blackbird hyperspectral profiler. 
+# #in July 2016, Blackbird measured ~75uE of available light almost entirely in Blue-Green wavelengths
+# #HOBOs measured light at 23m depth on those same days as ~996 lux
+# #so the light-profile/depth specific conversion was:
+# #Lux/54/0.245142572 = available PAR at 23m depth
+# #in this case, 996/54/.245142572 = 75 uE
+# 
+# #in MIS the attenuation coefficients averaged -0.132840405 (range: -0.161106824, -0.101399784)
+# #calculate depths and assign sampling_time windows before subsetting for dawn and peak_photo
+# # metabolomics_sample_metadata %>%
+# #   dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+# #   dplyr::group_by(site, day, sampling_time) %>%
+# #   dplyr::summarise(depth = mean(depth))
+# 
+# if(!exists("usvi_hobo_light_temp_filtered.df", envir = .GlobalEnv)){
+#   if(file.exists(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv.gz"))){
+#     usvi_hobo_light_temp <- readr::read_delim(paste0(projectpath, "/", "usvi_hobo_light_temp", ".tsv.gz"))
+#     
+#     interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 11:00:00", tz = "America/Virgin")) 
+#     interval_vector_peak <- list(interval,
+#                                  lubridate::int_shift(interval, days(1)),
+#                                  lubridate::int_shift(interval, days(2)),
+#                                  lubridate::int_shift(interval, days(3)),
+#                                  lubridate::int_shift(interval, days(4)),
+#                                  lubridate::int_shift(interval, days(5)))
+#     
+#     interval <- lubridate::as.interval(duration(hours = 4), ymd_hms("2021-01-21 04:00:00", tz = "America/Virgin")) 
+#     interval_vector_dawn <- list(interval,
+#                                  lubridate::int_shift(interval, days(1)),
+#                                  lubridate::int_shift(interval, days(2)),
+#                                  lubridate::int_shift(interval, days(3)),
+#                                  lubridate::int_shift(interval, days(4)),
+#                                  lubridate::int_shift(interval, days(5)))
+#     
+#     usvi_hobo_light_temp_filtered.df <- usvi_hobo_light_temp %>%
+#       dplyr::mutate(date_ast = lubridate::force_tz(date_ast, tzone = "America/Virgin")) %>%
+#       dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
+#       dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
+#       dplyr::rowwise(.) %>%
+#       dplyr::mutate(sampling_time = dplyr::case_when(date_ast %within% interval_vector_peak ~ "peak_photo",
+#                                                      date_ast %within% interval_vector_dawn ~ "dawn",
+#                                                      .default = NA)) %>%
+#       dplyr::mutate(sampling_time = factor(sampling_time)) %>%
+#       dplyr::left_join(., metabolomics_sample_metadata %>%
+#                          dplyr::rowwise(.) %>%
+#                          dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+#                          dplyr::group_by(site, day, sampling_time) %>%
+#                          dplyr::summarise(depth = mean(depth)), by = join_by(site, day, sampling_time)) %>%
+#       dplyr::group_by(site, day) %>%
+#       tidyr::fill(depth, .direction = "downup") %>%
+#       dplyr::mutate(PAR = (lux/54)) %>%
+#       dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
+#       tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
+#                           # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
+#                           names_to = "parameter",
+#                           values_to = "value") %>%
+#       dplyr::group_by(site) %>%
+#       dplyr::slice_head(prop = 0.9) %>%
+#       dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+#       droplevels
+#     
+#     readr::write_delim(usvi_hobo_light_temp_filtered.df, paste0(projectpath, "/", "usvi_hobo_light_temp_filtered.df", ".tsv.gz"),
+#                        delim = "\t", col_names = TRUE, num_threads = nthreads)
+#   }
+# }
+# 
+# 
+# 
+# usvi_light_temp_metadata.df <- bind_rows(
+#   (usvi_hobo_light_temp_filtered.df %>%
+#      dplyr::group_by(site, day, sampling_time, parameter) %>%
+#      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, sampling_time,parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
+#      droplevels)) %>%
+#   tidyr::drop_na(.) %>%
+#   dplyr::left_join(., metabolomics_sample_metadata %>%
+#                      dplyr::rowwise(.) %>%
+#                      dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+#                      dplyr::group_by(site, day, sampling_time, sampling_day) %>%
+#                      dplyr::summarise(depth = mean(depth)), by = join_by(site, day, sampling_time)) %>%
+#   dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+#   droplevels %>%
+#   dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
+#   dplyr::mutate(replicate = rep(c(rep(1:3, 4),
+#                                   rep(1:3, 4),
+#                                   rep(1:3, 4)), 10)) %>%
+#   tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
+#                      names_from = "parameter",
+#                      values_from = "max") %>%
+#   # dplyr::rowwise(.) %>%
+#   # dplyr::mutate(PAR2 = (lux/54)) %>%
+#   # dplyr::mutate(PAR2 = PAR2/exp(-0.13*(depth - 23))) %>%
+#   # dplyr::ungroup(.) %>%
+#   dplyr::select(-replicate) %>%
+#   dplyr::arrange(site, sampling_time, sampling_day) %>%
+#   dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+#                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+#                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
+#   dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
+#   droplevels
+# 
+# 
+# #if you did not calculate PAR for each specific depth and sampling_time window at each site and time, subset for the dawn and peak photo windows:
+# {
+#   # usvi_hobo_light_temp_expanded.df <- usvi_hobo_light_temp %>%
+#   #   dplyr::filter(grepl(paste0(c("2021-01-22", "2021-01-23", "2021-01-24", "2021-01-25", "2021-01-26"), collapse = "|"), day)) %>%
+#   #   dplyr::select(site, date_ast, day, time, temp, lux, lumens) %>%
+#   #   dplyr::left_join(., metabolomics_sample_metadata %>%
+#   #                      dplyr::mutate(day = lubridate::ymd(sampling_date)) %>%
+#   #                      dplyr::group_by(site, day) %>%
+#   #                      dplyr::summarise(depth = mean(depth))) %>%
+#   #   dplyr::group_by(site, day) %>%
+#   #   tidyr::fill(depth, .direction = "downup") %>%
+#   #   dplyr::mutate(PAR = (lux/54)) %>%
+#   #   dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
+#   #   tidyr::pivot_longer(., cols = c("temp", "lumens", "lux", "PAR"),
+#   #                       # tidyr::pivot_longer(., cols = c("temp", "lumens", "lux"),
+#   #                       names_to = "parameter",
+#   #                       values_to = "value") %>%
+#   #   dplyr::group_by(site) %>%
+#   #   dplyr::slice_head(prop = 0.9) %>%
+#   #   droplevels
+#   # 
+#   # # temp_df <- bind_rows(
+#   # usvi_light_temp_metadata.df <- bind_rows(
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 05:00:00"), ymd_hms("2021-01-22 08:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>% dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>% #do you want to randomly pick the top 3 in each?
+#   #      dplyr::mutate(sampling_day = "Day1") %>%
+#   #      dplyr::mutate(sampling_time = "dawn") %>%
+#   #      droplevels), 
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-22 11:00:00"), ymd_hms("2021-01-22 14:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day1") %>%
+#   #      dplyr::mutate(sampling_time = "peak_photo") %>%
+#   #      droplevels),
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 05:00:00"), ymd_hms("2021-01-23 08:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day2") %>%
+#   #      dplyr::mutate(sampling_time = "dawn") %>%
+#   #      droplevels), 
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-23 11:00:00"), ymd_hms("2021-01-23 14:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day2") %>%
+#   #      dplyr::mutate(sampling_time = "peak_photo") %>%
+#   #      droplevels),
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 05:00:00"), ymd_hms("2021-01-24 08:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day3") %>%
+#   #      dplyr::mutate(sampling_time = "dawn") %>%
+#   #      droplevels), 
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-24 11:00:00"), ymd_hms("2021-01-24 14:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day3") %>%
+#   #      dplyr::mutate(sampling_time = "peak_photo") %>%
+#   #      droplevels),
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 05:00:00"), ymd_hms("2021-01-25 08:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day4") %>%
+#   #      dplyr::mutate(sampling_time = "dawn") %>%
+#   #      droplevels), 
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-25 11:00:00"), ymd_hms("2021-01-25 14:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day4") %>%
+#   #      dplyr::mutate(sampling_time = "peak_photo") %>%
+#   #      droplevels),
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 05:00:00"), ymd_hms("2021-01-26 08:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day5") %>%
+#   #      dplyr::mutate(sampling_time = "dawn") %>%
+#   #      droplevels), 
+#   #   (usvi_hobo_light_temp_expanded.df %>%
+#   #      dplyr::filter(date_ast %within% interval(ymd_hms("2021-01-26 11:00:00"), ymd_hms("2021-01-26 14:00:00"))) %>%
+#   #      dplyr::group_by(site, day, parameter) %>%
+#   #      # dplyr::summarise(max = max(value, na.rm = TRUE)) %>%
+#   #      dplyr::reframe(max = pmax.int(value, na.rm = TRUE)) %>%
+#   #      dplyr::slice_max(n = 3, by = c(site, day, parameter), order_by = max, with_ties = FALSE) %>%
+#   #      dplyr::mutate(sampling_day = "Day5") %>%
+#   #      dplyr::mutate(sampling_time = "peak_photo") %>%
+#   #      droplevels)
+#   # ) %>%
+#   #   dplyr::left_join(., metabolomics_sample_metadata %>%
+#   #                      dplyr::group_by(site, sampling_day, sampling_time) %>%
+#   #                      dplyr::summarise(depth = mean(depth)),
+#   #                    by = join_by(site, sampling_day, sampling_time)) %>%
+#   #   dplyr::arrange(site, sampling_day, sampling_time, parameter) %>%
+#   #   dplyr::mutate(replicate = rep(c(rep(1:3, 4),
+#   #                                   rep(1:3, 4),
+#   #                                   rep(1:3, 4)), 10)) %>%
+#   #   tidyr::pivot_wider(., id_cols = c("site", "sampling_day", "sampling_time", "replicate", "depth"),
+#   #                      names_from = "parameter",
+#   #                      values_from = "max") %>%
+#   #   dplyr::rowwise(.) %>%
+#   #   dplyr::mutate(PAR = (lux/54)) %>%
+#   #   dplyr::mutate(PAR = PAR/exp(-0.13*(depth - 23))) %>%
+#   #   dplyr::ungroup(.) %>%
+#   #   dplyr::select(-replicate) %>%
+#   #   dplyr::arrange(site, sampling_time, sampling_day) %>%
+#   #   dplyr::mutate(replicate = rep(c(sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+#   #                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3),
+#   #                                   sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3), sample(3, 3)), 2)) %>%
+#   #   dplyr::arrange(site, sampling_day, sampling_time, replicate) %>%
+#   #   droplevels
+# }
+# # 
+# # 
+# # g1_par <- print(
+# #   ggplot(data = usvi_hobo_light_temp_filtered.df %>%
+# #            dplyr::filter(grepl("PAR", parameter)),
+# #          aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
+# #   + geom_point(shape = 19, size = 1)
+# #   + geom_line(show.legend = FALSE)
+# #   + theme_bw()
+# #   + facet_grid(site~., labeller = labeller(site = site_lookup),
+# #                scales = "fixed")
+# #   + scale_y_continuous(name = expression(paste("PAR (\U00B5 mol photons", ~m^-2 ~s^-1, ")")))
+# #   + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+# #                           drop = TRUE)
+# #   + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+# #                           drop = TRUE)
+# #   + theme(axis.text.x = element_text(angle = 90),
+# #           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+# #           panel.grid = element_blank(),
+# #           axis.title.x = element_blank(),
+# #           legend.position = "none",
+# #           legend.key = element_blank(),
+# #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+# #           legend.text = element_text(size = 12, colour = "grey30"))
+# # )
+# # g1_temp <- print(
+# #   ggplot(data = usvi_hobo_light_temp_filtered.df %>%
+# #            dplyr::filter(grepl("temp", parameter)),
+# #          aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
+# #   + geom_point(shape = 19, size = 1)
+# #   + geom_line(show.legend = FALSE)
+# #   + theme_bw()
+# #   + facet_grid(site~., labeller = labeller(site = site_lookup),
+# #                scales = "fixed")
+# #   + scale_y_continuous(name = expression(paste("Temperature (˚C)")))
+# #   + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+# #                           drop = TRUE)
+# #   + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
+# #                           drop = TRUE)
+# #   + theme(axis.text.x = element_text(angle = 90),
+# #           panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
+# #           panel.grid = element_blank(),
+# #           axis.title.x = element_blank(),
+# #           legend.position = "none",
+# #           legend.key = element_blank(),
+# #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
+# #           legend.text = element_text(size = 12, colour = "grey30"))
+# # )
+# # 
+# # gpatch <- g1_par + g1_temp + patchwork::plot_annotation(title = "Physicochemical parameters", subtitle ="Measured in USVI sites via HOBO loggers", tag_levels = "A")
+# # gpatch
+# # ggsave(paste0(projectpath, "/", "usvi_light_temp-", Sys.Date(), ".png"),
+# #        gpatch,
+# #        width = 10, height = 8, units = "in")
+# 
+# 
+# #look at specifically 5-7am and 12-2pm
+# 
+# interval <- lubridate::as.interval(duration(hours = 1), ymd_hms("2021-01-21 13:00:00", tz = "America/Virgin")) 
+# interval_vector_peak <- list(interval,
+#                              lubridate::int_shift(interval, days(1)),
+#                              lubridate::int_shift(interval, days(2)),
+#                              lubridate::int_shift(interval, days(3)),
+#                              lubridate::int_shift(interval, days(4)),
+#                              lubridate::int_shift(interval, days(5)))
+# 
+# interval <- lubridate::as.interval(duration(hours = 1), ymd_hms("2021-01-21 06:00:00", tz = "America/Virgin")) 
+# interval_vector_dawn <- list(interval,
+#                              lubridate::int_shift(interval, days(1)),
+#                              lubridate::int_shift(interval, days(2)),
+#                              lubridate::int_shift(interval, days(3)),
+#                              lubridate::int_shift(interval, days(4)),
+#                              lubridate::int_shift(interval, days(5)))
+# 
+# 
+# usvi_hobo_light_temp_sampling.df <- usvi_hobo_light_temp_filtered.df %>%
+#   dplyr::filter(grepl("temp|PAR", parameter)) %>%
+#   tidyr::drop_na(sampling_time) %>%
+#   dplyr::mutate(sampled_sw = dplyr::case_when(date_ast %within% interval_vector_peak ~ 1,
+#                                                  date_ast %within% interval_vector_dawn ~ 1,
+#                                                  .default = NA)) %>%
+#   dplyr::mutate(sampled_sw = sampled_sw*min(value,na.rm = TRUE), .by = parameter) %>%
+#   droplevels
 # 
 # g1_par <- print(
 #   ggplot(data = usvi_hobo_light_temp_filtered.df %>%
 #            dplyr::filter(grepl("PAR", parameter)),
-#          aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
-#   + geom_point(shape = 19, size = 1)
-#   + geom_line(show.legend = FALSE)
+#          aes(x = date_ast, y = value, group = interaction(site, parameter), color = "grey"))
+#   + geom_smooth(show.legend = FALSE, method = "loess", span = 0.1)
+#   + geom_point(data = usvi_hobo_light_temp_sampling.df %>%
+#                  dplyr::filter(grepl("PAR", parameter)),
+#                aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)), shape = 19, size = 1)
+#   + geom_crossbar(data = usvi_hobo_light_temp_sampling.df %>%
+#                      dplyr::filter(grepl("PAR", parameter)) %>%
+#                      tidyr::drop_na(sampled_sw),
+#                    aes(xmin= date_ast, xmax = date_ast, y = sampled_sw, group = interaction(day, site, parameter, sampling_time)), color = "black", linewidth = 1, alpha = 1) 
 #   + theme_bw()
 #   + facet_grid(site~., labeller = labeller(site = site_lookup),
-#                scales = "fixed")
-#   + scale_y_continuous(name = expression(paste("PAR (\U00B5 mol photons", ~m^-2 ~s^-1, ")")))
+#                scales = "free_y")
+#   + scale_y_continuous(name = expression(paste("PAR (\U00B5 mol photons", ~m^-2 ~s^-1, ") at sampling depth")))
 #   + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
 #                           drop = TRUE)
 #   + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
@@ -616,7 +704,7 @@ usvi_light_temp_metadata.df <- bind_rows(
 #           legend.text = element_text(size = 12, colour = "grey30"))
 # )
 # g1_temp <- print(
-#   ggplot(data = usvi_hobo_light_temp_filtered.df %>%
+#   ggplot(data = usvi_hobo_light_temp_sampling.df %>%
 #            dplyr::filter(grepl("temp", parameter)),
 #          aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
 #   + geom_point(shape = 19, size = 1)
@@ -638,94 +726,6 @@ usvi_light_temp_metadata.df <- bind_rows(
 #           legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
 #           legend.text = element_text(size = 12, colour = "grey30"))
 # )
-# 
-# gpatch <- g1_par + g1_temp + patchwork::plot_annotation(title = "Physicochemical parameters", subtitle ="Measured in USVI sites via HOBO loggers", tag_levels = "A")
-# gpatch
-# ggsave(paste0(projectpath, "/", "usvi_light_temp-", Sys.Date(), ".png"),
-#        gpatch,
-#        width = 10, height = 8, units = "in")
-
-
-#look at specifically 5-7am and 12-2pm
-
-interval <- lubridate::as.interval(duration(hours = 1), ymd_hms("2021-01-21 13:00:00", tz = "America/Virgin")) 
-interval_vector_peak <- list(interval,
-                             lubridate::int_shift(interval, days(1)),
-                             lubridate::int_shift(interval, days(2)),
-                             lubridate::int_shift(interval, days(3)),
-                             lubridate::int_shift(interval, days(4)),
-                             lubridate::int_shift(interval, days(5)))
-
-interval <- lubridate::as.interval(duration(hours = 1), ymd_hms("2021-01-21 06:00:00", tz = "America/Virgin")) 
-interval_vector_dawn <- list(interval,
-                             lubridate::int_shift(interval, days(1)),
-                             lubridate::int_shift(interval, days(2)),
-                             lubridate::int_shift(interval, days(3)),
-                             lubridate::int_shift(interval, days(4)),
-                             lubridate::int_shift(interval, days(5)))
-
-
-usvi_hobo_light_temp_sampling.df <- usvi_hobo_light_temp_filtered.df %>%
-  dplyr::filter(grepl("temp|PAR", parameter)) %>%
-  tidyr::drop_na(sampling_time) %>%
-  dplyr::mutate(sampled_sw = dplyr::case_when(date_ast %within% interval_vector_peak ~ 1,
-                                                 date_ast %within% interval_vector_dawn ~ 1,
-                                                 .default = NA)) %>%
-  dplyr::mutate(sampled_sw = sampled_sw*min(value,na.rm = TRUE), .by = parameter) %>%
-  droplevels
-
-g1_par <- print(
-  ggplot(data = usvi_hobo_light_temp_filtered.df %>%
-           dplyr::filter(grepl("PAR", parameter)),
-         aes(x = date_ast, y = value, group = interaction(site, parameter), color = "grey"))
-  + geom_smooth(show.legend = FALSE, method = "loess", span = 0.1)
-  + geom_point(data = usvi_hobo_light_temp_sampling.df %>%
-                 dplyr::filter(grepl("PAR", parameter)),
-               aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)), shape = 19, size = 1)
-  + geom_crossbar(data = usvi_hobo_light_temp_sampling.df %>%
-                     dplyr::filter(grepl("PAR", parameter)) %>%
-                     tidyr::drop_na(sampled_sw),
-                   aes(xmin= date_ast, xmax = date_ast, y = sampled_sw, group = interaction(day, site, parameter, sampling_time)), color = "black", linewidth = 1, alpha = 1) 
-  + theme_bw()
-  + facet_grid(site~., labeller = labeller(site = site_lookup),
-               scales = "free_y")
-  + scale_y_continuous(name = expression(paste("PAR (\U00B5 mol photons", ~m^-2 ~s^-1, ") at sampling depth")))
-  + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + theme(axis.text.x = element_text(angle = 90),
-          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-          panel.grid = element_blank(),
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          legend.key = element_blank(),
-          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-          legend.text = element_text(size = 12, colour = "grey30"))
-)
-g1_temp <- print(
-  ggplot(data = usvi_hobo_light_temp_sampling.df %>%
-           dplyr::filter(grepl("temp", parameter)),
-         aes(x = date_ast, y = value, fill = site, color = site, group = interaction(site, parameter)))
-  + geom_point(shape = 19, size = 1)
-  + geom_line(show.legend = FALSE)
-  + theme_bw()
-  + facet_grid(site~., labeller = labeller(site = site_lookup),
-               scales = "fixed")
-  + scale_y_continuous(name = expression(paste("Temperature (˚C)")))
-  + scale_discrete_manual(aesthetics = c("color"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + scale_discrete_manual(aesthetics = c("fill"), values = site_colors, labels = site_lookup, breaks = names(site_lookup),
-                          drop = TRUE)
-  + theme(axis.text.x = element_text(angle = 90),
-          panel.background = element_blank(), panel.border = element_rect(fill = "NA", colour = "grey30"),
-          panel.grid = element_blank(),
-          axis.title.x = element_blank(),
-          legend.position = "none",
-          legend.key = element_blank(),
-          legend.title = element_text(size = 12, face = "bold", colour = "grey30"),
-          legend.text = element_text(size = 12, colour = "grey30"))
-)
 
 
 # Prepare data for permanova ----------------------------------------------
@@ -780,7 +780,7 @@ usvi_selected_metadata <- metabolomics_sample_metadata %>%
   dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
   dplyr::left_join(., metadata %>%
                      dplyr::select(sample_id, replicate)) %>%
-  dplyr::left_join(., usvi_light_temp_metadata.df, by = join_by(site, sampling_day, sampling_time, replicate)) %>%
+  # dplyr::left_join(., usvi_light_temp_metadata.df, by = join_by(site, sampling_day, sampling_time, replicate)) %>%
   # tidyr::drop_na(.) %>% #removed sample Metab_306 due to lack of FCM measurements
   droplevels
 
@@ -822,9 +822,10 @@ meta.microb <- usvi_selected_metadata %>%
 meta.metab <- metabolomics_sample_metadata %>%
   # dplyr::select(intersect(colnames(metabolomics_sample_metadata), keep)) %>%
   dplyr::left_join(., usvi_selected_metadata %>%
-                     dplyr::select(sample_id, site, site_type, grouping, replicate, PAR, lumens, lux, temp), multiple = "all", relationship = "many-to-many") %>%
+                     # dplyr::select(sample_id, site, site_type, grouping, replicate, PAR, lumens, lux, temp), multiple = "all", relationship = "many-to-many") %>%
+                     dplyr::select(sample_id, site, site_type, grouping, replicate), multiple = "all", relationship = "many-to-many") %>%
   dplyr::arrange(site, sampling_time, sampling_day) %>%
-  tidyr::fill(PAR, lumens, lux, temp, .direction = "down") %>%
+  # tidyr::fill(PAR, lumens, lux, temp, .direction = "down") %>%
   dplyr::ungroup(.) %>%
   dplyr::filter(metab_deriv_label %in% colnames(usvi_metabolomics.tbl)) %>%
   dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = colnames(usvi_metabolomics.tbl))) %>%
@@ -841,13 +842,14 @@ meta.metab <- metabolomics_sample_metadata %>%
                 grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
   tibble::column_to_rownames(var = "metab_deriv_label") %>%
   droplevels
+
 dist_usvi_metab.d <- usvi_metabolomics.tbl %>%
   dplyr::select(rownames(meta.metab)) %>%
   apply(., 2, function(x) log2(x + 1)) %>%
   t() %>%
   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE)
-dist_usvi_metab.mat <- as.matrix(dist_usvi_metab.d)
 
+dist_usvi_metab.mat <- as.matrix(dist_usvi_metab.d)
 
 dist_usvi_asv.d <- usvi_sw_asv.tbl %>% 
   dplyr::select(rownames(meta.microb)) %>%
@@ -857,13 +859,13 @@ dist_usvi_asv.d <- usvi_sw_asv.tbl %>%
 dist_usvi_asv.mat <- as.matrix(dist_usvi_asv.d)
 
 
-dist_usvi_asv_log2.d <- usvi_sw_asv.tbl %>%
-  dplyr::select(rownames(meta.microb)) %>%
-  t() %>%
-  apply(., 2, function(x) log2(x + 1)) %>%
-  vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE)
-
-dist_usvi_asv_log2.mat <- as.matrix(dist_usvi_asv_log2.d)
+# dist_usvi_asv_log2.d <- usvi_sw_asv.tbl %>%
+#   dplyr::select(rownames(meta.microb)) %>%
+#   t() %>%
+#   apply(., 2, function(x) log2(x + 1)) %>%
+#   vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE)
+# 
+# dist_usvi_asv_log2.mat <- as.matrix(dist_usvi_asv_log2.d)
 
 
 
@@ -2010,7 +2012,7 @@ t.test(dist_usvi_metab.df %>%
 # 0.1429851 0.2026710 
 
 
-#Summarizing intra-site distances via pariwise t-tests:
+#Summarizing inter-site distances via pariwise t-tests:
 
 length_v <- unique(dist_usvi_metab.df[["site"]]) %>% as.character(.)
 # length_v <- c("LB_seagrass", "Tektite", "Yawzi")
@@ -2604,6 +2606,90 @@ dist_usvi_day.df %>%
 # 6 metab Day3            0.246    0.605            0.407
 # 7 metab Day4            0.242    0.605            0.401
 # 8 metab Day5            0.247    0.605            0.408
+
+
+#Kruskal-Wallis testing for sampling day
+
+#all 3 sites, all 4 days:
+# #this version collates metab and asv...
+# dist_usvi_day.df %>%
+#   kruskal.test(dissimilarity ~ sampling_day, .)
+# # Kruskal-Wallis rank sum test
+# # 
+# # data:  dissimilarity by sampling_day
+# # Kruskal-Wallis chi-squared = 10.292, df = 3, p-value = 0.01624
+
+# kw_day.df <- by(dist_usvi_day.df, dist_usvi_day.df$type, function(z) kruskal.test(dissimilarity ~ sampling_day, data = z))
+# names(kw_day.df)
+kw_day.df <- dist_usvi_day.df %>%
+  dplyr::group_by(type) %>%
+  dplyr::summarise(fit = list(kruskal.test(dissimilarity ~ sampling_day) %>% broom::tidy(.))) %>% 
+  tidyr::unnest_wider(fit)
+
+kw_day.df
+# # A tibble: 2 × 5
+# type  statistic  p.value parameter method                      
+# <chr>     <dbl>    <dbl>     <int> <chr>                       
+#   1 asv     18.0    0.000439         3 Kruskal-Wallis rank sum test
+# 2 metab    0.0745 0.995            3 Kruskal-Wallis rank sum test
+
+length_v <- unique(dist_usvi_day.df[["sampling_day"]])
+kwtest_res <- combn(length_v, 2) %>%
+  t() %>%
+  as.data.frame() %>%
+  setNames(., c("pair1", "pair2")) %>%
+  dplyr::mutate(p.value = NA)
+for(i in seq_len(nrow(ttest_res))){
+  var1 <- ttest_res[i, 1]
+  var2 <- ttest_res[i, 2]
+  temp_i_a <- dist_usvi_metab.df %>%
+    dplyr::filter(if_any(everything(), ~grepl(var1, .x))) %>%
+    dplyr::select(dissimilarity) %>%
+    tibble::deframe(.) %>% sample(., resample_depth, replace = FALSE)
+  temp_i_b <- dist_usvi_metab.df %>%
+    dplyr::filter(if_any(everything(), ~grepl(var2, .x))) %>%
+    dplyr::select(dissimilarity) %>%
+    tibble::deframe(.) %>% sample(., resample_depth, replace = FALSE)
+  ttest_res[i, "p.value"] <- t.test(temp_i_a, temp_i_b, conf.level = 0.95)$p.value
+}
+
+
+
+#day 2 vs day 3
+#Tektite vs Yawzi:
+dist_usvi_day.df %>%
+  dplyr::filter(grepl("Day2|Day3", sampling_day)) %>%
+  dplyr::group_by(type) %>%
+  kruskal.test(dissimilarity ~ sampling_day, .)
+# Kruskal-Wallis chi-squared = 2.5994, df = 1, p-value = 0.1069
+
+#day 2 vs day 4
+dist_usvi_day.df %>%
+  dplyr::filter(grepl("Day2|Day4", sampling_day)) %>%
+  kruskal.test(dissimilarity ~ sampling_day, .)
+# Kruskal-Wallis chi-squared = 8.5875, df = 1, p-value = 0.003385
+
+#day 2 vs day 5
+dist_usvi_day.df %>%
+  dplyr::filter(grepl("Day2|Day5", sampling_day)) %>%
+  kruskal.test(dissimilarity ~ sampling_day, .)
+
+#day 3 vs day 4
+dist_usvi_day.df %>%
+  dplyr::filter(grepl("Day3|Day4", sampling_day)) %>%
+  kruskal.test(dissimilarity ~ sampling_day, .)
+
+#day 3 vs day 5
+dist_usvi_day.df %>%
+  dplyr::filter(grepl("Day3|Day5", sampling_day)) %>%
+  kruskal.test(dissimilarity ~ sampling_day, .)
+
+#day 4 vs day 5
+dist_usvi_day.df %>%
+  dplyr::filter(grepl("Day4|Day5", sampling_day)) %>%
+  kruskal.test(dissimilarity ~ sampling_day, .)
+
+
 
 
 #repeat for day and site:

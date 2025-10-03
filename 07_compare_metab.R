@@ -558,7 +558,7 @@ usvi_sig_metab_figh <- map(usvi_sda_metabs, ~.x %>% length(.))
 
 rm(list = apropos("g4_metab_.*", mode = "list"))
 for(i in seq_along(usvi_sig_metab_median_list)){
-  # {i <- 1
+  # {i <- 3
   namevar1 <- names(usvi_sig_metab_median_list[i])
   namevar2 <- namevar1 %>%
     gsub("LB_seagrass", "Lameshur Bay", .) %>%
@@ -566,15 +566,32 @@ for(i in seq_along(usvi_sig_metab_median_list)){
   temp_df1 <- usvi_sig_metab_median_list[[namevar1]] %>%
     droplevels
   fig_height <- round(usvi_sig_metab_figh[[namevar1]]/2 + 2)
-  if(nrow(temp_df1) > 0){
+  
+  if(nrow(temp_df1) > 0){ #if this dataframe exists and has entries:
     temp_breaks1 <- temp_df1 %>% dplyr::ungroup(.) %>% dplyr::select(median) %>% tibble::deframe(.)
-    
     temp_pal1 <- colorRampPalette(viridisLite::viridis(100))(100)
-    # temp_pal1 <- colorRampPalette(pals::cubicyf(100))(100)
     label_y <- temp_df1 %>% dplyr::ungroup(.) %>% 
       dplyr::distinct(sampling_time, sampling_day) %>%
       dplyr::mutate(label = sampling_day,
                     relabeled = paste0(sampling_time, ".", sampling_day)) %>%
+      dplyr::select(label, relabeled) %>%
+      tibble::deframe(.)
+    
+    temp_df2 <- temp_df1 %>%
+      # dplyr::mutate(median_norm = tidyr::replace_na(median_norm, 0)) %>% #this converts any entry for a metabolite where it wasn't measured in that sample, to 0 
+      ## but instead, let's just use the na.value option in scale_fill_gradientn
+      droplevels
+    
+    temp_breaks2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% 
+      quantile(., probs = seq(0, 1, 0.1), names = FALSE, na.rm = TRUE) %>% round(., digits = 1) %>% unique(.)
+    temp_breaks2 <- c(temp_breaks2, 0, 1)%>% unique(.) %>% sort(.)
+    temp_pal2 <- colorRampPalette(pals::gnuplot(100))(100)
+    temp_nbreaks2 <- (temp_breaks2)/2 %>% unique(.) %>% sort(.)
+    
+    label_y2 <- temp_df2 %>% dplyr::ungroup(.) %>% 
+      dplyr::distinct(sampling_time, sampling_day) %>%
+      dplyr::mutate(label = sampling_day,
+                    relabeled = paste0(sampling_day, ".", sampling_time)) %>%
       dplyr::select(label, relabeled) %>%
       tibble::deframe(.)
     
@@ -612,15 +629,45 @@ for(i in seq_along(usvi_sig_metab_median_list)){
       + ggtitle(paste0("Concentration of significant metabolites in ", namevar2))
     )
     
-    temp_df2 <- temp_df1 %>%
-      dplyr::mutate(median_norm = tidyr::replace_na(median_norm, 0)) %>%
-      droplevels
+    temp_g3d <- temp_g3a + (aes(x = metabolite, y = interaction(sampling_day, sampling_time), group = interaction(group_label), fill = median)) + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
     
-    temp_breaks2 <- temp_df2 %>% dplyr::ungroup(.) %>% dplyr::select(median_norm) %>% tibble::deframe(.) %>% 
-      quantile(., probs = seq(0, 1, 0.1), names = FALSE, na.rm = TRUE) %>% round(., digits = 1) %>% unique(.)
-    temp_breaks2 <- c(temp_breaks2, 0, 1)%>% unique(.) %>% sort(.)
-    temp_pal2 <- colorRampPalette(pals::gnuplot(100))(100)
-    temp_nbreaks2 <- (temp_breaks2)/2 %>% unique(.) %>% sort(.)
+    { 
+    # temp_g3d <- (
+    #   ggplot(data = temp_df1 %>%
+    #            droplevels, aes(x = metabolite, y = interaction(sampling_day, sampling_time), group = interaction(group_label)))
+    #   + theme_bw() 
+    #   + geom_tile(aes(fill = median), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+    #   +  scale_fill_gradientn(aesthetics = "fill",
+    #                           # na.value = "white",
+    #                           na.value = "grey",
+    #                           colours = temp_pal1,
+    #                           transform = T_log10p1(),
+    #                           limits = range(log10p1_br(temp_breaks1)),
+    #                           labels = log10p1_lab_na(temp_breaks1),
+    #                           breaks = log10p1_br(temp_breaks1))
+    #   + scale_x_discrete(name = "Metabolite", 
+    #                      # labels = usvi_genera_relabel, 
+    #                      expand = c(0,0))
+    #   + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+    #   + theme(panel.spacing = unit(1, "lines"),
+    #           panel.background = element_blank(),
+    #           axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+    #           axis.text.y = element_text(vjust = 0.5, hjust = 1),
+    #           panel.grid.major = element_blank(),
+    #           panel.grid.minor.y = element_blank(),
+    #           panel.grid.minor.x = element_blank(),
+    #           panel.ontop = FALSE,
+    #           strip.text.y = element_blank())
+    #   + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE,  draw.llim = TRUE,
+    #                                  title = paste0("Median \nconcentration \n", "(\U00B5M)"), direction = "vertical",
+    #                                  theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5),
+    #                                                legend.text.position = "right"),
+    #                                  override.aes = list(stroke = 1, color = "black")),
+    #            color = "none")
+    #   + coord_flip()
+    # )
+    }
+    
     
     temp_g3b <- (
       ggplot(data = temp_df2 %>%
@@ -628,8 +675,8 @@ for(i in seq_along(usvi_sig_metab_median_list)){
       + theme_bw() 
       + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
       +  scale_fill_gradientn(aesthetics = "fill",
-                              # na.value = "black",
-                              na.value = "grey20",
+                              na.value = "black",
+                              # na.value = "grey20",
                               limits = range(temp_breaks2),
                               # limits = c(NA, NA),
                               colours = temp_pal2, 
@@ -656,79 +703,46 @@ for(i in seq_along(usvi_sig_metab_median_list)){
       + coord_flip()
       + ggtitle(paste0("Normalized concentration of significant metabolites in ", namevar2))
     )
-    label_y2 <- temp_df2 %>% dplyr::ungroup(.) %>% 
-      dplyr::distinct(sampling_time, sampling_day) %>%
-      dplyr::mutate(label = sampling_day,
-                    relabeled = paste0(sampling_day, ".", sampling_time)) %>%
-      dplyr::select(label, relabeled) %>%
-      tibble::deframe(.)
-    temp_g3c <- (
-      ggplot(data = temp_df2 %>%
-               droplevels, aes(x = metabolite, y = interaction(sampling_day, sampling_time), group = interaction(group_label)))
-      + theme_bw() 
-      + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
-      +  scale_fill_gradientn(aesthetics = "fill",
-                              # na.value = "black",
-                              na.value = "grey20",
-                              limits = range(temp_breaks2),
-                              # limits = c(NA, NA),
-                              colours = temp_pal2, 
-                              breaks = temp_breaks2,
-                              values = temp_breaks2)
-      + scale_x_discrete(name = "Metabolite", 
-                         # labels = usvi_genera_relabel, 
-                         expand = c(0,0), position = "bottom")
-      + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
-      + theme(panel.spacing = unit(1, "lines"),
-              panel.background = element_blank(),
-              axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
-              axis.text.y = element_text(vjust = 0.5, hjust = 1),
-              panel.grid.major = element_blank(),
-              panel.grid.minor.y = element_blank(),
-              panel.grid.minor.x = element_blank(),
-              panel.ontop = FALSE,
-              strip.text.y = element_blank())
-      + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
-                                     title = "Daily \nnormalized \nconcentration", direction = "vertical",
-                                     theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
-                                     override.aes = list(stroke = 1, color = "black")),
-               color = "none")
-      + coord_flip()
-    )
-    temp_g3d <- (
-      ggplot(data = temp_df1 %>%
-               droplevels, aes(x = metabolite, y = interaction(sampling_day, sampling_time), group = interaction(group_label)))
-      + theme_bw() 
-      + geom_tile(aes(fill = median), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
-      +  scale_fill_gradientn(aesthetics = "fill",
-                              # na.value = "white",
-                              na.value = "grey",
-                              colours = temp_pal1,
-                              transform = T_log10p1(),
-                              limits = range(log10p1_br(temp_breaks1)),
-                              labels = log10p1_lab_na(temp_breaks1),
-                              breaks = log10p1_br(temp_breaks1))
-      + scale_x_discrete(name = "Metabolite", 
-                         # labels = usvi_genera_relabel, 
-                         expand = c(0,0))
-      + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
-      + theme(panel.spacing = unit(1, "lines"),
-              panel.background = element_blank(),
-              axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
-              axis.text.y = element_text(vjust = 0.5, hjust = 1),
-              panel.grid.major = element_blank(),
-              panel.grid.minor.y = element_blank(),
-              panel.grid.minor.x = element_blank(),
-              panel.ontop = FALSE,
-              strip.text.y = element_blank())
-      + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE,  draw.llim = TRUE,
-                                     title = paste0("Median \nconcentration \n", "(\U00B5M)"), direction = "vertical",
-                                     theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5),
-                                                   legend.text.position = "right"),
-                                     override.aes = list(stroke = 1, color = "black")),
-               color = "none")
-      + coord_flip()
-    )
+
+    temp_g3c <- temp_g3b + (aes(x = metabolite, y = interaction(sampling_day, sampling_time), group = interaction(group_label), fill = median_norm)) + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+    
+    {
+      # temp_g3c <- (
+      #   ggplot(data = temp_df2 %>%
+      #            droplevels, aes(x = metabolite, y = interaction(sampling_day, sampling_time), group = interaction(group_label)))
+      #   + theme_bw() 
+      #   + geom_tile(aes(fill = median_norm), stat = "identity", color = "black", alpha = 1.0, show.legend = TRUE)
+      #   +  scale_fill_gradientn(aesthetics = "fill",
+      #                           na.value = "black",
+      #                           # na.value = "grey20",
+      #                           limits = range(temp_breaks2),
+      #                           # limits = c(NA, NA),
+      #                           colours = temp_pal2, 
+      #                           breaks = temp_breaks2,
+      #                           values = temp_breaks2)
+      #   + scale_x_discrete(name = "Metabolite", 
+      #                      # labels = usvi_genera_relabel, 
+      #                      expand = c(0,0), position = "bottom")
+      #   + scale_y_discrete(name = "Sampling time", expand = c(0,0), labels = label_y2)
+      #   + theme(panel.spacing = unit(1, "lines"),
+      #           panel.background = element_blank(),
+      #           axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1),
+      #           axis.text.y = element_text(vjust = 0.5, hjust = 1),
+      #           panel.grid.major = element_blank(),
+      #           panel.grid.minor.y = element_blank(),
+      #           panel.grid.minor.x = element_blank(),
+      #           panel.ontop = FALSE,
+      #           strip.text.y = element_blank())
+      #   + guides(fill = guide_colorbar(ncol = 1, draw.ulim = TRUE, draw.llim = TRUE,
+      #                                  title = "Daily \nnormalized \nconcentration", direction = "vertical",
+      #                                  theme = theme(legend.ticks = element_line(color = "black", linewidth = 0.5)),
+      #                                  override.aes = list(stroke = 1, color = "black")),
+      #            color = "none")
+      #   + coord_flip()
+      # )
+      }
+
+    
     temp_g3b <- (temp_g3b + (temp_g3c + theme(axis.text.y.left = element_blank()))) + patchwork::plot_layout(guides = "collect")
     temp_g3a <- (temp_g3a + (temp_g3d + theme(axis.text.y.left = element_blank()))) + patchwork::plot_layout(guides = "collect")
     temp_g3 <- (temp_g3a ) | (temp_g3b)
@@ -736,16 +750,17 @@ for(i in seq_along(usvi_sig_metab_median_list)){
     assign(paste0("g4_metab_", i, "_", namevar1, "_med_relabund"), temp_g3a, envir = .GlobalEnv, inherits = TRUE)
     assign(paste0("g4_metab_", i, "_", namevar1, "_norm_relabund"), temp_g3b, envir = .GlobalEnv, inherits = TRUE)
     
-    # # # if(!any(grepl(paste0(namevar1, "relconc", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_metab_g4_sig_relconc_*.png")))){
-    # ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".png"),
-    #        temp_g3,
-    #        scale = 1,
-    #        width = 20, height = fig_height, units = "in")
-    # # # }
-    ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".svg"),
+    if(!any(grepl(paste0(namevar1, "relconc", Sys.Date(), collapse = "&"), list.files(projectpath, pattern = "usvi_metab_g4_sig_relconc_.*.png")))){
+    ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".png"),
            temp_g3,
            scale = 1,
            width = 20, height = fig_height, units = "in")
+      ggsave(paste0(projectpath, "/", "usvi_metab_g4_sig_relconc_", i, "_", namevar1 , "-", Sys.Date(), ".svg"),
+             temp_g3,
+             scale = 1,
+             width = 20, height = fig_height, units = "in")
+    }
+    
     rm(list = apropos("temp_df.*", mode = "list"))
     rm(list = apropos("namevar.*", mode = "list"))
     rm(list = apropos("temp_breaks.*", mode = "list"))
@@ -755,3 +770,5 @@ for(i in seq_along(usvi_sig_metab_median_list)){
   }
     # rm(fig_height)
 }
+
+

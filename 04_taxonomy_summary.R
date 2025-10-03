@@ -398,7 +398,7 @@ temp_list <- usvi_seq_summary.df %>%
 # # 
 # # data:  temp_list
 # # Kruskal-Wallis chi-squared = 4.8814, df = 5, p-value = 0.4305
-
+if(!file.exists(paste0(projectpath, "/", "usvi_seq_summary.tsv", ".gz"))){
 
 usvi_seq_summary.tsv <- usvi_seq_summary.df %>%
   dplyr::arrange(site, sampling_day, sampling_time, sample_order) %>%
@@ -407,8 +407,6 @@ usvi_seq_summary.tsv <- usvi_seq_summary.df %>%
   # dplyr::mutate(sampling_time = dplyr::case_when(grepl("peak", sampling_time) ~ "afternoon", .default = sampling_time)) %>%
   dplyr::mutate(site = recode(site, !!!site_lookup)) %>%
   droplevels
-
-if(!file.exists(paste0(projectpath, "/", "usvi_seq_summary.tsv", ".gz"))){
   
   readr::write_delim(usvi_seq_summary.tsv, paste0(projectpath, "/", "usvi_seq_summary.tsv", ".gz"),
                      delim = "\t", col_names = TRUE)

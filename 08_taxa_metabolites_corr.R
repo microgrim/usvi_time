@@ -2328,10 +2328,6 @@ spearman.test.full.df <- list(spearman.test.optA.list, spearman.test.optB.list) 
   dplyr::mutate(padj_bh = p.adjust(p_value, "BH")) %>%
   droplevels
 
-if(!any(grepl("spearman_full", list.files(projectpath, pattern = "usvi_.*.RData")))){
-  save(spearman.test.site.time.full.df, spearman.test.site.full.df, spearman.test.full.df,
-       file = paste0(projectpath, "/", "usvi_spearman_full-", Sys.Date(), ".RData"))
-}
 
 
 # print(ggplot(data = spearman.test.full.df %>%
@@ -2556,6 +2552,9 @@ gpatch3
 ggsave(paste0(projectpath, "/", "spearman_p_all_vs_granular-", Sys.Date(), ".png"),
        gpatch3,
        width = 16, height = 8, units = "in")
+
+
+# SAR11-specific detour ---------------------------------------------------
 
 
 #pull out SAR11-specific correlations
@@ -2851,13 +2850,19 @@ dend_metab <- list(spearman.test.optA.list[["dend_metab"]],
                                   spearman.test.optB.list[["dend_metab"]]) %>%
   setNames(., c("optA", "optB"))
 
+
+#1. All samples used in correlation analyses:
+
 # padj_cutoff <- list(spearman.test.optA.list[["padj_cutoff"]],
 #      spearman.test.optB.list[["padj_cutoff"]]) %>%
 #   setNames(., c("optA", "optB")) %>%
 #   map(., ~.x %>% setNames(., c("q_05", "q_10")))
 
 #if you want to recalculate the p-value threshold for other FDRs
+
 padj_cutoff <- spearman.test.full.df %>%
+  # dplyr::filter(abs(estimate) < 1) %>%
+  # dplyr::rowwise(.) %>%
   split(., f = .$test_type) %>%
   map(., ~.x %>%
         dplyr::select(p_value) %>%
@@ -2865,6 +2870,20 @@ padj_cutoff <- spearman.test.full.df %>%
         unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
         quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
         setNames(., c("q_01", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+
+if(exists("padj_cutoff_list")){
+  if(all(!grepl("spearman.test.full.df", names(padj_cutoff_list)))){
+    padj_cutoff_list <- padj_cutoff_list %>%
+      append(., (list(padj_cutoff) %>%
+                   setNames(., c("spearman.test.full.df"))))
+  } else {
+    NULL
+  }
+} else {
+  padj_cutoff_list <- list(padj_cutoff) %>%
+    setNames(., c("spearman.test.full.df"))
+}
+
 # padj_cutoff
 # # $optA
 # # q_01        q_025         q_05         q_10 
@@ -2877,73 +2896,101 @@ padj_cutoff <- spearman.test.full.df %>%
 #the p-value threshold for a 2.5% FDR is approximately 1/10 of the 5% FDR
 #the p-value for a 1% FDR is approximately 1/400 of the 5% FDR
 
-spearman.test.df <- spearman.test.full.df %>%
-  tidyr::drop_na(p_value) %>%
-  split(., f = .$test_type) %>%
-  imap(., ~.x %>%
-         dplyr::mutate(across(c(test_type, asv_id, simpleName), ~factor(.x))) %>%
-        droplevels %>%
-         dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
-                       padj_01 = dplyr::case_when(p_value <= padj_cutoff[[.y]]["q_01"] ~ p_value, .default = NA),
-                       padj_025 = dplyr::case_when(p_value <= padj_cutoff[[.y]]["q_025"] ~ p_value, .default = NA),
-                       padj_05 = dplyr::case_when(p_value <= padj_cutoff[[.y]]["q_05"] ~ p_value, .default = NA),
-                       padj_10 = dplyr::case_when(p_value <= padj_cutoff[[.y]]["q_10"] ~ p_value, .default = NA)) %>%
-         tidyr::drop_na(padj_10) %>%
-         dplyr::ungroup(.) %>%
-         dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
-                                                   abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
-                                                   # .default = estimate)) %>%
-         tidyr::drop_na(estimate) %>%
-         dplyr::mutate(sig = dplyr::case_when(
-           !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
-           !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
-           !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
-           !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
-                                              !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
-                                              .default = NA)) %>%
-         dplyr::mutate(sig = factor(sig)) %>%
-         dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab[[.y]]))) %>%
-         dplyr::arrange(asv_id, simpleName) %>%
-         dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
-         dplyr::ungroup(.) %>%
-         dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
-         droplevels) %>%
-  bind_rows(.)
-# spearman.test.df %>%
-#   dplyr::slice_min(padj_bh_05, by = "test_type")
+#after discussion, we will stick to optA results only.
+if(purrr::pluck_depth(padj_cutoff) > 2){
+  cli::cli_alert_warning("Make sure your padj_cutoff list is appropriate for this step.")
+} else {
+  spearman.test.df <- spearman.test.full.df %>%
+    tidyr::drop_na(p_value) %>%
+    dplyr::filter(grepl("optA", test_type)) %>% #after discussion, we will stick to optA results only
+    split(., f = .$test_type) %>%
+    imap(., ~.x %>%
+           dplyr::mutate(across(c(test_type, asv_id, simpleName), ~factor(.x))) %>%
+           droplevels %>%
+           dplyr::rowwise(.) %>%
+           # dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+                         # padj_10 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_10"] ~ p_value, .default = NA),
+                         # padj_05 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_05"] ~ p_value, .default = NA),
+                         # padj_025 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_025"] ~ p_value, .default = NA),
+                         # padj_01 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_01"] ~ p_value, .default = NA)) %>%
+           dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+                         padj_01 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_01"] ~ p_value, .default = NA),
+                         padj_025 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_025"] ~ p_value, .default = NA),
+                         padj_05 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_05"] ~ p_value, .default = NA),
+                         padj_10 = dplyr::case_when(p_value <= padj_cutoff[["optA"]]["q_10"] ~ p_value, .default = NA)) %>%
+           tidyr::drop_na(padj_10) %>%
+           dplyr::ungroup(.) %>%
+           dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+                                                     abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+           tidyr::drop_na(estimate) %>%
+           dplyr::rowwise(.) %>%
+           dplyr::mutate(sig = dplyr::case_when(
+             !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
+             !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
+             !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
+             !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
+             !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
+             .default = NA)) %>%
+           dplyr::mutate(sig = factor(sig)) %>%
+           dplyr::arrange(asv_id, simpleName) %>%
+           dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+           dplyr::ungroup(.) %>%
+           dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+           droplevels) %>%
+    bind_rows(.)
+  # spearman.test.df %>% dplyr::filter(sig %in% c("vsig", "sig_q01")) %>% dplyr::filter(abs(estimate) < 1) %>% dplyr::filter(abs(estimate) >= 0.5) %>% nrow(.)
+  # spearman.test.df %>% dplyr::filter(sig %in% c("sig_q01")) %>% dplyr::filter(abs(estimate) < 1) %>% dplyr::filter(abs(estimate) >= 0.5) %>% nrow(.)
+  #if you have optA and optB in spearman.test.site.df
+  {
+    # spearman.test.filtered.df <- spearman.test.df %>%
+    #   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
+    #   dplyr::filter(consistent > 1) %>%
+    #   dplyr::ungroup(.) %>%
+    #   dplyr::select(test_type, asv_id, simpleName, estimate) %>%
+    #   tidyr::pivot_wider(., id_cols = NULL,
+    #                      names_from = "test_type",
+    #                      values_from = "estimate") %>%
+    #   dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
+    #                                               .default = NA)) %>%
+    #   tidyr::drop_na(.) %>%
+    #   dplyr::mutate(test_type = "optA_optB") %>%
+    #   dplyr::ungroup(.) %>%
+    #   dplyr::distinct(asv_id, simpleName, test_type) %>%
+    #   dplyr::left_join(., spearman.test.df %>%
+    #                      dplyr::ungroup(.) %>%
+    #                      dplyr::filter(abs(estimate) < 1) %>%
+    #                      dplyr::arrange(abs(estimate)) %>%
+    #                      dplyr::select(asv_id, simpleName, estimate, sig),
+    #                      dplyr::distinct(asv_id, simpleName, .keep_all = TRUE),
+    #                    by = join_by(asv_id, simpleName), relationship = "one-to-many", multiple = "first") %>%
+    #   bind_rows(., (spearman.test.df %>%
+    #                   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
+    #                   dplyr::filter(consistent == 1) %>%
+    #                   dplyr::ungroup(.) %>%
+    #                   dplyr::distinct(test_type, asv_id, simpleName, estimate, sig))) %>%
+    #   dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+    #                                                      .default = NA)) %>%
+    #   dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
+    #   dplyr::mutate(across(c(asv_id, simpleName, test_type, sig), ~factor(.x))) %>%
+    #   droplevels  
+    }
+  
+  
+  spearman.test.filtered.df <- spearman.test.df %>%
+    dplyr::filter(grepl("optA", test_type)) %>% #after discussion, keep results from optA
+    dplyr::ungroup(.) %>%
+    dplyr::rowwise(.) %>%
+    dplyr::filter(abs(estimate) < 1) %>%
+    dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+                                                       .default = NA)) %>%
+    tidyr::drop_na(filtered_estimate) %>%
+    # dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
+    dplyr::mutate(across(c(asv_id, simpleName, test_type, sig), ~factor(.x))) %>%
+    droplevels
+}
 
-spearman.test.filtered.df <- spearman.test.df %>%
-  dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
-  dplyr::filter(consistent > 1) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::select(test_type, asv_id, simpleName, estimate) %>%
-  tidyr::pivot_wider(., id_cols = NULL,
-                     names_from = "test_type",
-                     values_from = "estimate") %>%
-  dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
-                                              .default = NA)) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::mutate(test_type = "optA_optB") %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(asv_id, simpleName, test_type) %>%
-  dplyr::left_join(., spearman.test.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(abs(estimate) < 1) %>%
-                     dplyr::arrange(abs(estimate)) %>%
-                     dplyr::select(asv_id, simpleName, estimate, sig),
-                     dplyr::distinct(asv_id, simpleName, .keep_all = TRUE),
-                   by = join_by(asv_id, simpleName), relationship = "one-to-many", multiple = "first") %>%
-  bind_rows(., (spearman.test.df %>%
-                  dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName")) %>%
-                  dplyr::filter(consistent == 1) %>%
-                  dplyr::ungroup(.) %>%
-                  dplyr::distinct(test_type, asv_id, simpleName, estimate, sig))) %>%
-  dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
-                                                     .default = NA)) %>%
-  dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "sig")) %>%
-  dplyr::mutate(across(c(asv_id, simpleName, test_type, sig), ~factor(.x))) %>%
-  droplevels
 
+#2. Site-specific samples used in correlation analyses:
 #site-specific
 
 # padj_cutoff <- list(spearman.test.site.optA.list,
@@ -2951,90 +2998,332 @@ spearman.test.filtered.df <- spearman.test.df %>%
 #   setNames(., c("optA", "optB")) %>%
 #   map_depth(., 2, ~.x %>% purrr::pluck("padj_cutoff") )
 
-#if you want to recalculate the p-value threshold for other FDRs
+#if you want to recalculate the p-value threshold for other FDRs:
+
 padj_cutoff <- spearman.test.site.full.df %>%
+  dplyr::rowwise(.) %>%
   split(., f = .$test_type) %>%
   map(., ~.x %>%
+        droplevels %>%
         split(., f = .$grouping) %>%
         map(., ~.x %>%
+              droplevels %>%
               dplyr::select(p_value) %>%
               tibble::deframe(.) %>% na.omit(.) %>%
               unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
               quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
               setNames(., c("q_01", "q_025", "q_05", "q_10")))) #get the possible p-adj cutoffs for different q-values
 
-spearman.test.site.df <- spearman.test.site.full.df %>%
-  tidyr::drop_na(p_value) %>%
-  split(., f = .$test_type)
+if(exists("padj_cutoff_list")){
+  if(all(!grepl("spearman.test.site.full.df", names(padj_cutoff_list)))){
+    padj_cutoff_list <- padj_cutoff_list %>%
+      append(., (list(padj_cutoff) %>%
+                   setNames(., c("spearman.test.site.full.df"))))
+  } else {
+    NULL
+  }
+} else {
+  padj_cutoff_list <- list(padj_cutoff) %>%
+    setNames(., c("spearman.test.site.full.df"))
+}
+if(exists("spearman.test.site.filtered.df")){
+  temp_df <- padj_cutoff %>%
+    map(., ~.x %>%
+          dplyr::bind_rows(., .id = "grouping")) %>%
+    dplyr::bind_rows(., .id = "test_type") %>%
+    # dplyr::left_join(., spearman.test.site.df %>%
+    dplyr::left_join(., spearman.test.site.filtered.df %>%
+                       dplyr::summarise(padj_01 = max(padj_01, na.rm = TRUE), .by = c("grouping", "test_type")),
+                     by = join_by(test_type, grouping)) %>%
+    tidyr::drop_na(padj_01) %>%
+    droplevels
+  if(!any(temp_df[["q_01"]] > temp_df[["padj_01"]])){
+    cli::cli_alert_warning("Please reprocess the filtering step for correlation results.")
+  }
+  rm(temp_df)
+} else {
+  cli::cli_alert_warning("Please reprocess the filtering step for correlation results.")
+  
+  if(purrr::pluck_depth(padj_cutoff) < 2){
+    cli::cli_alert_warning("Make sure your padj_cutoff list is appropriate for this step.")
+  } else {
+    spearman.test.site.df <- spearman.test.site.full.df %>%
+      tidyr::drop_na(p_value) %>%
+      dplyr::filter(grepl("optA", test_type)) %>% #after discussion, keep results from optA
+      split(., f = .$grouping) %>%
+      map(., ~.x %>%
+            droplevels)
+    spearman.test.site.df <- spearman.test.site.df %>%
+      imap(., ~.x %>%
+             dplyr::mutate(across(c(test_type, asv_id, simpleName, grouping), ~factor(.x))) %>%
+             droplevels %>%
+             dplyr::rowwise(.) %>%
+             dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+                           padj_01 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_01"] ~ p_value, .default = NA),
+                           padj_025 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_025"] ~ p_value, .default = NA),
+                           padj_05 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_05"] ~ p_value, .default = NA),
+                           padj_10 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_10"] ~ p_value, .default = NA)) %>%
+             tidyr::drop_na(padj_10) %>%
+             dplyr::ungroup(.) %>%
+             dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+                                                       abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+             tidyr::drop_na(estimate) %>%
+             dplyr::rowwise(.) %>%
+             dplyr::mutate(sig = dplyr::case_when(
+               !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
+               !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
+               !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
+               !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
+               !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
+               .default = NA)) %>%
+             dplyr::mutate(sig = factor(sig)) %>%
+             dplyr::arrange(asv_id, simpleName) %>%
+             dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+             dplyr::ungroup(.) %>%
+             dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
+             dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                           sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+             droplevels) %>%
+      # setNames(., names(spearman.test.site.df)) %>%
+      bind_rows(.)
+    # spearman.test.site.df %>% dplyr::filter(sig %in% c("vsig", "sig_q01")) %>% dplyr::filter(abs(estimate) < 1) %>% dplyr::filter(abs(estimate) >= 0.5) %>% nrow(.)
+    #if you have optA and optB in spearman.test.site.df
+    {
+      # spearman.test.site.df <- names(spearman.test.site.df) %>%
+      #   # spearman.test.site.df <- c("optA", "optB") %>%
+      #   imap(., ~spearman.test.site.df[[.x]] %>%
+      #          dplyr::mutate(across(c(test_type, asv_id, simpleName, grouping), ~factor(.x))) %>%
+      #          droplevels %>%
+      #          dplyr::rowwise(.) %>%
+      #          dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+      #                        padj_01 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_01"] ~ p_value, .default = NA),
+      #                        padj_025 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_025"] ~ p_value, .default = NA),
+      #                        padj_05 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_05"] ~ p_value, .default = NA),
+      #                        padj_10 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_10"] ~ p_value, .default = NA)) %>%
+      #          tidyr::drop_na(padj_10) %>%
+      #          dplyr::ungroup(.) %>%
+      #          dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+      #                                                    abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+      #          tidyr::drop_na(estimate) %>%
+      #          dplyr::rowwise(.) %>%
+      #          dplyr::mutate(sig = dplyr::case_when(
+      #            !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
+      #            !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
+      #            !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
+      #            !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
+      #            !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
+      #            .default = NA)) %>%
+      #          dplyr::mutate(sig = factor(sig)) %>%
+      #          dplyr::arrange(asv_id, simpleName) %>%
+      #          dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+      #          dplyr::ungroup(.) %>%
+      #          dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
+      #          dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+      #                        sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+      #          droplevels) %>%
+      #   setNames(., names(spearman.test.site.df)) %>%
+      #   # setNames(., c("optA", "optB") ) %>%
+      #   bind_rows(.)
+      # spearman.test.site.filtered.df <- spearman.test.site.df %>%
+      #   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName", "grouping")) %>%
+      #   dplyr::filter(consistent > 1) %>%
+      #   dplyr::ungroup(.) %>%
+      #   dplyr::select(test_type, asv_id, simpleName, estimate, grouping) %>%
+      #   tidyr::pivot_wider(., id_cols = NULL,
+      #                      names_from = "test_type",
+      #                      values_from = "estimate") %>%
+      #   dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
+      #                                               .default = NA)) %>%
+      #   tidyr::drop_na(.) %>%
+      #   dplyr::mutate(test_type = "optA_optB") %>%
+      #   dplyr::ungroup(.) %>%
+      #   dplyr::distinct(asv_id, simpleName, test_type, grouping) %>%
+      #   dplyr::left_join(., spearman.test.site.df %>%
+      #                      dplyr::ungroup(.) %>%
+      #                      dplyr::filter(abs(estimate) < 1) %>%
+      #                      dplyr::arrange(abs(estimate)) %>%
+      #                      dplyr::select(asv_id, simpleName, estimate, grouping, sig),
+      #                    dplyr::distinct(asv_id, simpleName, .keep_all = TRUE),
+      #                    by = join_by(asv_id, simpleName, grouping), relationship = "one-to-many", multiple = "first") %>%
+      #   bind_rows(., (spearman.test.site.df %>%
+      #                   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName" ,"grouping")) %>%
+      #                   dplyr::filter(consistent == 1) %>%
+      #                   dplyr::ungroup(.) %>%
+      #                   dplyr::distinct(test_type, asv_id, simpleName, grouping, estimate, sig))) %>%
+      #   dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+      #                                                      .default = NA)) %>%
+      #   dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "grouping", "sig")) %>%
+      #     dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+      #                   sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+      #   dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
+      #   dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
+      #   dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
+      #   droplevels
+      # 
+      # spearman.test.site.filtered.df %>%
+      #   # dplyr::filter(grepl("optA", test_type)) %>%
+      #   tidyr::drop_na(filtered_estimate) %>%
+      #   dplyr::filter(test_type != "optB") %>%
+      #   droplevels %>%
+      #   dplyr::group_by(site, sig) %>%
+      #   dplyr::summarise(num_results = length(filtered_estimate))
+      
+      }
+    
+    
+    spearman.test.site.filtered.df <- spearman.test.site.df %>%
+      dplyr::filter(grepl("optA", test_type)) %>% #after discussion, keep results from optA
+      dplyr::ungroup(.) %>%
+      dplyr::filter(abs(estimate) < 1) %>%
+      dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+                                                         .default = NA)) %>%
+      tidyr::drop_na(filtered_estimate) %>%
+      dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                    sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+      dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
+      dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
+      dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
+      droplevels
+  }
+  
+}
 
-spearman.test.site.df <- c("optA", "optB") %>%
-  imap(., ~spearman.test.site.df[[.x]] %>%
-         dplyr::mutate(across(c(test_type, asv_id, simpleName, grouping), ~factor(.x))) %>%
-         droplevels %>%
-         dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
-                       padj_01 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_01"] ~ p_value, .default = NA),
-                       padj_025 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_025"] ~ p_value, .default = NA),
-                       padj_05 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_05"] ~ p_value, .default = NA),
-                       padj_10 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_10"] ~ p_value, .default = NA)) %>%
-         tidyr::drop_na(padj_10) %>%
-         dplyr::ungroup(.) %>%
-         dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
-                                                   abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
-         tidyr::drop_na(estimate) %>%
-         dplyr::mutate(sig = dplyr::case_when(
-           !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
-           !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
-           !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
-           !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
-           !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
-                                              .default = NA)) %>%
-         dplyr::mutate(sig = factor(sig)) %>%
-         dplyr::arrange(asv_id, simpleName) %>%
-         dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
-         dplyr::ungroup(.) %>%
-         dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
-           dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
-                         sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
-         droplevels) %>%
-  setNames(., c("optA", "optB") ) %>%
-  bind_rows(.)
 
-spearman.test.site.filtered.df <- spearman.test.site.df %>%
-  dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName", "grouping")) %>%
-  dplyr::filter(consistent > 1) %>%
+spearman.test.site.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::filter(abs(estimate) < 1) %>%
+  droplevels %>%
+    dplyr::group_by(site) %>%
+    dplyr::summarise(num_results = length(sig))
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(padj_01))
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  # dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# site        num_results
+# <fct>             <int>
+#   1 LB_seagrass         980
+# 2 Yawzi               373
+# 3 Tektite             442
+
+#sig corrs: 980 Lameshur, 442 Tektite, 373 Yawzi
+spearman_site_summary.df <- spearman.test.site.filtered.df %>%
   dplyr::ungroup(.) %>%
-  dplyr::select(test_type, asv_id, simpleName, estimate, grouping) %>%
-  tidyr::pivot_wider(., id_cols = NULL,
-                     names_from = "test_type",
-                     values_from = "estimate") %>%
-  dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
-                                              .default = NA)) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::mutate(test_type = "optA_optB") %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(asv_id, simpleName, test_type, grouping) %>%
-  dplyr::left_join(., spearman.test.site.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(abs(estimate) < 1) %>%
-                     dplyr::arrange(abs(estimate)) %>%
-                     dplyr::select(asv_id, simpleName, estimate, grouping, sig),
-                   dplyr::distinct(asv_id, simpleName, .keep_all = TRUE),
-                   by = join_by(asv_id, simpleName, grouping), relationship = "one-to-many", multiple = "first") %>%
-  bind_rows(., (spearman.test.site.df %>%
-                  dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName" ,"grouping")) %>%
-                  dplyr::filter(consistent == 1) %>%
-                  dplyr::ungroup(.) %>%
-                  dplyr::distinct(test_type, asv_id, simpleName, grouping, estimate, sig))) %>%
-  dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
-                                                     .default = NA)) %>%
-  dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "grouping", "sig")) %>%
-    dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
-                  sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
-  dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
-  dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
-  dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
-  droplevels
+  dplyr::distinct(asv_id, test_type, simpleName, site, sig, .keep_all = TRUE) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::filter(sig %in% c("sig_q01", "vsig")) %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  split(., f = .$site) %>%
+  map(., ~.x %>%
+        dplyr::ungroup(.) %>%
+        # droplevels %>%
+        # dplyr::distinct(asv_id, simpleName, .keep_all = FALSE) %>%
+        # dplyr::summarise(num_asvs = length(unique(.[["asv_id"]])),
+        #                num_metabs = length(unique(.[["simpleName"]]))) %>%
+        droplevels)
+        # droplevels) %>% bind_rows(., .id = "site") %>% droplevels
+# split(., f = .$asv_id) %>%
+# map(., ~.x %>%
+# dplyr::ungroup(.) %>%
+# droplevels %>%
+# dplyr::distinct(simpleName) %>% 
+# dplyr::reframe(num_corrs = length(unique(.[["simpleName"]]))))
+# dplyr::reframe(num_corrs = length(unique(.[["simpleName"]])))) %>% bind_rows(., .id = "asv_id")
 
+spearman.test.site.filtered.df %>%
+  dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+  dplyr::ungroup(.) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::ungroup(.) %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+  dplyr::distinct(asv_id, simpleName) %>%
+  dplyr::reframe(num_asvs = length(unique(.[["asv_id"]])),
+                 num_metabs = length(unique(.[["simpleName"]])))) %>%
+  dplyr::bind_rows(., .id = "grouping") %>%
+  dplyr::bind_rows(., (spearman.test.site.filtered.df %>%
+                         dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+                         dplyr::ungroup(.) %>%
+                         tidyr::drop_na(filtered_estimate) %>%
+                         dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+                         dplyr::filter(grepl("optA", test_type)) %>%
+                         dplyr::ungroup(.) %>%
+                         dplyr::distinct(asv_id, simpleName) %>%
+                         dplyr::reframe(num_asvs = length(unique(.[["asv_id"]])),
+                                        num_metabs = length(unique(.[["simpleName"]]))) %>%
+                         dplyr::mutate(grouping = "total")))
+
+# # A tibble: 4 × 3
+# grouping    num_asvs num_metabs
+# <chr>          <int>      <int>
+#   1 LB_seagrass      324         42
+# 2 Tektite          229         41
+# 3 Yawzi            190         39
+# 4 total            517         42
+
+spearman_site_summary.df %>% dplyr::filter(num_corrs >= 10) %>% nrow(.)
+
+# #we have this rds object saved: "usvi_spearman.sig.filtered.list-2025-04-07.rds"
+# #it has 1239 significant correlations between ASVs and metabolites in Lameshur,
+# #304 in Tektite, and 217 in Yawzi
+# # temp_df <- dplyr::anti_join(`usvi_spearman.sig.filtered.list-2025-04-07`[["Tektite"]], spearman.test.site.filtered.df) %>%
+# #   dplyr::bind_rows(., dplyr::anti_join(`usvi_spearman.sig.filtered.list-2025-04-07`[["Yawzi"]], spearman.test.site.filtered.df))
+# #99 rows of data, which contains
+# #43 entries for Yawzi, and
+# #56 entries for Tektite
+# # temp_df %>%
+# #   tidyr::drop_na(padj_01) %>%
+# #   dplyr::summarise(across(contains("padj_01"), list(min = min, max = max)), .by = c(grouping, site))
+# # # A tibble: 2 × 4
+# # grouping site    padj_01_min padj_01_max
+# # <fct>    <fct>         <dbl>       <dbl>
+# #   1 Tektite  Tektite      0.0105      0.0147
+# # 2 Yawzi    Yawzi        0.0109      0.0144
+# temp_df <- dplyr::anti_join(spearman.test.site.filtered.df, `usvi_spearman.sig.filtered.list-2025-04-07`[["Tektite"]]) %>%
+#   dplyr::bind_rows(., dplyr::anti_join(spearman.test.site.filtered.df, `usvi_spearman.sig.filtered.list-2025-04-07`[["Yawzi"]]))
+# #5435 rows of data:
+# 
+# temp_df %>%
+#   tidyr::drop_na(padj_01) %>%
+#   dplyr::summarise(across(contains("padj_01"), list(min = min, max = max)), .by = c(grouping, site))
+# 
+# # # A tibble: 3 × 4
+# # grouping    site         padj_01_min padj_01_max
+# # <fct>       <fct>              <dbl>       <dbl>
+# #   1 LB_seagrass LB_seagrass 0.0000000198      0.0104
+# # 2 Tektite     Tektite     0.0000314         0.0190
+# # 3 Yawzi       Yawzi       0.0000556         0.0194
+# 
+# 
+# #these minimum padj values are greater than the cutoff calculated in invididual sites:
+# padj_cutoff[["optA"]][["LB_seagrass"]][["q_01"]]
+# # 0.01036783
+# padj_cutoff[["optA"]][["Yawzi"]][["q_01"]]
+# #Yawzi: q_01 = 0.01941558
+# #Tektite: q_01 = 0.01908171
+# #it appears that I might have used the error cutoffs for Lameshur Bay, in Yawzi and Tektite correlations
+# 
+
+  
+
+
+
+#3. Site- and time-specific samples used in correlation analyses:
 #also site x time specific:
 # padj_cutoff <- list(spearman.test.site.time.optA.list,
 #                     spearman.test.site.time.optB.list) %>%
@@ -3051,372 +3340,506 @@ padj_cutoff <- spearman.test.site.time.full.df %>%
               quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
               setNames(., c("q_01", "q_025", "q_05", "q_10")))) #get the possible p-adj cutoffs for different q-values
 
-spearman.test.site.time.df <- spearman.test.site.time.full.df %>%
-  tidyr::drop_na(p_value) %>%
-  split(., f = .$test_type)
+if(exists("padj_cutoff_list")){
+  if(all(!grepl("spearman.test.site.time.full.df", names(padj_cutoff_list)))){
+    padj_cutoff_list <- padj_cutoff_list %>%
+      append(., (list(padj_cutoff) %>%
+                   setNames(., c("spearman.test.site.time.full.df"))))
+  } else {
+    NULL
+  }
+} else {
+  padj_cutoff_list <- list(padj_cutoff) %>%
+    setNames(., c("spearman.test.site.time.full.df"))
+}
 
-spearman.test.site.time.df <- c("optA", "optB") %>%
-  imap(., ~spearman.test.site.time.df[[.x]] %>%
-         dplyr::mutate(across(c(test_type, asv_id, simpleName, grouping), ~factor(.x))) %>%
-         droplevels %>%
-         dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
-                       padj_01 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_01"] ~ p_value, .default = NA),
-                       padj_025 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_025"] ~ p_value, .default = NA),
-                       padj_05 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_05"] ~ p_value, .default = NA),
-                       padj_10 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_10"] ~ p_value, .default = NA)) %>%
-         tidyr::drop_na(padj_10) %>%
-         dplyr::ungroup(.) %>%
-         dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
-                                                   abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
-         tidyr::drop_na(estimate) %>%
-         dplyr::mutate(sig = dplyr::case_when(
-           !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
-           !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
-           !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
-           !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
-           !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
-                                              .default = NA)) %>%
-         dplyr::mutate(sig = factor(sig)) %>%
-         dplyr::arrange(asv_id, simpleName) %>%
-         dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
-         dplyr::ungroup(.) %>%
-         dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
-           dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
-                         sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
-         droplevels) %>%
-  setNames(., c("optA", "optB") ) %>%
-  bind_rows(.)
+if(exists("spearman.test.site.time.filtered.df")){
+  temp_df <- padj_cutoff %>%
+    map(., ~.x %>%
+          dplyr::bind_rows(., .id = "grouping")) %>%
+    dplyr::bind_rows(., .id = "test_type") %>%
+    # dplyr::left_join(., spearman.test.site.time.df %>%
+    dplyr::left_join(., spearman.test.site.time.filtered.df %>%
+                       dplyr::summarise(padj_01 = max(padj_01, na.rm = TRUE), .by = c("grouping", "test_type")),
+                     by = join_by(test_type, grouping)) %>%
+    tidyr::drop_na(padj_01) %>%
+    droplevels
+  if(!any(temp_df[["q_01"]] > temp_df[["padj_01"]])){
+    cli::cli_alert_warning("Please reprocess the filtering step for correlation results.")
+  }
+  rm(temp_df)
+} else {
+  cli::cli_alert_info("Processing the filtering step for correlation results...")
+  
+  if(purrr::pluck_depth(padj_cutoff) < 2){
+    cli::cli_alert_warning("Make sure your padj_cutoff list is appropriate for this step.")
+  } else {
+    spearman.test.site.time.df <- spearman.test.site.time.full.df %>%
+      tidyr::drop_na(p_value) %>%
+      dplyr::filter(grepl("optA", test_type)) %>% #after discussion, keep results from optA
+      split(., f = .$grouping) %>%
+      map(., ~.x %>%
+            droplevels)
+    spearman.test.site.time.df <- spearman.test.site.time.df %>%
+      imap(., ~.x %>%
+             dplyr::mutate(across(c(test_type, asv_id, simpleName, grouping), ~factor(.x))) %>%
+             droplevels %>%
+             dplyr::rowwise(.) %>%
+             dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+                           padj_01 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_01"] ~ p_value, .default = NA),
+                           padj_025 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_025"] ~ p_value, .default = NA),
+                           padj_05 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_05"] ~ p_value, .default = NA),
+                           padj_10 = dplyr::case_when(p_value <= padj_cutoff[["optA"]][[.y]]["q_10"] ~ p_value, .default = NA)) %>%
+             tidyr::drop_na(padj_10) %>%
+             dplyr::ungroup(.) %>%
+             dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+                                                       abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+             tidyr::drop_na(estimate) %>%
+             dplyr::rowwise(.) %>%
+             dplyr::mutate(sig = dplyr::case_when(
+               !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
+               !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
+               !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
+               !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
+               !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
+               .default = NA)) %>%
+             dplyr::mutate(sig = factor(sig)) %>%
+             dplyr::arrange(asv_id, simpleName) %>%
+             dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+             dplyr::ungroup(.) %>%
+             dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
+             dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                           sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+             droplevels) %>%
+      # setNames(., names(spearman.test.site.df)) %>%
+      bind_rows(.)
+    
+    
+    spearman.test.site.time.filtered.df <- spearman.test.site.time.df %>%
+      dplyr::filter(grepl("optA", test_type)) %>% #after discussion, keep results from optA
+      dplyr::ungroup(.) %>%
+      dplyr::filter(abs(estimate) < 1) %>%
+      dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+                                                         .default = NA)) %>%
+      tidyr::drop_na(filtered_estimate) %>%
+      dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+                    sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+      dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
+      dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
+      dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
+      droplevels
+    
+  }
+  
+  #if you have optA and optB test types still:
+  {
+    # spearman.test.site.time.df <- names(spearman.test.site.time.df) %>%
+    #   # spearman.test.site.time.df <- c("optA", "optB") %>%
+    #   imap(., ~spearman.test.site.time.df[[.x]] %>%
+    #          dplyr::mutate(across(c(test_type, asv_id, simpleName, grouping), ~factor(.x))) %>%
+    #          droplevels %>%
+    #          dplyr::mutate(padj_bh_05 = dplyr::case_when(padj_bh <= 0.05 ~ padj_bh, .default = NA),
+    #                        padj_01 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_01"] ~ p_value, .default = NA),
+    #                        padj_025 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_025"] ~ p_value, .default = NA),
+    #                        padj_05 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_05"] ~ p_value, .default = NA),
+    #                        padj_10 = dplyr::case_when(p_value <= padj_cutoff[[.x]][[.y]]["q_10"] ~ p_value, .default = NA)) %>%
+    #          tidyr::drop_na(padj_10) %>%
+    #          dplyr::ungroup(.) %>%
+    #          dplyr::mutate(estimate = dplyr::case_when(abs(estimate) == 1 ~ NA, 
+    #                                                    abs(round(1/estimate, digits = 3)) > 1 ~ estimate, .default = NA)) %>%
+    #          tidyr::drop_na(estimate) %>%
+    #          dplyr::mutate(sig = dplyr::case_when(
+    #            !is.na(padj_bh_05) ~ "vsig", #meaning that the adjusted p-value is below 0.05
+    #            !is.na(padj_01) ~ "sig_q01", #meaning that q-tested p-value are below their respective thresholds
+    #            !is.na(padj_025) ~ "sig_q025", #meaning that q-tested p-value are below their respective thresholds
+    #            !is.na(padj_05) ~ "sig_q05", #meaning that the q-tested p-value is below the 5% FDR
+    #            !is.na(padj_10) ~ "maybe", #meaning that the q-tested p-value is below the 10% FDR
+    #            .default = NA)) %>%
+    #          dplyr::mutate(sig = factor(sig)) %>%
+    #          dplyr::arrange(asv_id, simpleName) %>%
+    #          dplyr::filter(if_any(contains("padj"), ~!is.na(.x))) %>%
+    #          dplyr::ungroup(.) %>%
+    #          dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
+    #          dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+    #                        sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+    #          droplevels) %>%
+    #   setNames(., names(spearman.test.site.time.df)) %>%
+    #   # setNames(., c("optA", "optB") ) %>%
+    #   bind_rows(.)
+    # spearman.test.site.time.filtered.df <- spearman.test.site.time.df %>%
+    #   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName", "grouping")) %>%
+    #   dplyr::filter(consistent > 1) %>%
+    #   dplyr::ungroup(.) %>%
+    #   dplyr::select(test_type, asv_id, simpleName, estimate, grouping) %>%
+    #   tidyr::pivot_wider(., id_cols = NULL,
+    #                      names_from = "test_type",
+    #                      values_from = "estimate") %>%
+    #   dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
+    #                                               .default = NA)) %>%
+    #   tidyr::drop_na(.) %>%
+    #   dplyr::mutate(test_type = "optA_optB") %>%
+    #   dplyr::ungroup(.) %>%
+    #   dplyr::distinct(asv_id, simpleName, test_type, grouping) %>%
+    #   dplyr::left_join(., spearman.test.site.time.df %>%
+    #                      dplyr::ungroup(.) %>%
+    #                      dplyr::filter(abs(estimate) < 1) %>%
+    #                      dplyr::arrange(abs(estimate)) %>%
+    #                      dplyr::select(asv_id, simpleName, estimate, grouping, sig),
+    #                    dplyr::distinct(asv_id, simpleName, .keep_all = TRUE),
+    #                    by = join_by(asv_id, simpleName, grouping), relationship = "one-to-many", multiple = "first") %>%
+    #   bind_rows(., (spearman.test.site.time.df %>%
+    #                   dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName" ,"grouping")) %>%
+    #                   dplyr::filter(consistent == 1) %>%
+    #                   dplyr::ungroup(.) %>%
+    #                   dplyr::distinct(test_type, asv_id, simpleName, grouping, estimate, sig))) %>%
+    #   dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
+    #                                                      .default = NA)) %>%
+    #   dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "grouping", "sig")) %>%
+    #   dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
+    #                 sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
+    #   dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
+    #   dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
+    #   dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
+    #   droplevels
+  }
+}
 
-spearman.test.site.time.filtered.df <- spearman.test.site.time.df %>%
-  dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName", "grouping")) %>%
-  dplyr::filter(consistent > 1) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::select(test_type, asv_id, simpleName, estimate, grouping) %>%
-  tidyr::pivot_wider(., id_cols = NULL,
-                     names_from = "test_type",
-                     values_from = "estimate") %>%
-  dplyr::mutate(consistent = dplyr::case_when((optA * optB) > 0 ~ 1,
-                                              .default = NA)) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::mutate(test_type = "optA_optB") %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(asv_id, simpleName, test_type, grouping) %>%
-  dplyr::left_join(., spearman.test.site.time.df %>%
-                     dplyr::ungroup(.) %>%
-                     dplyr::filter(abs(estimate) < 1) %>%
-                     dplyr::arrange(abs(estimate)) %>%
-                     dplyr::select(asv_id, simpleName, estimate, grouping, sig),
-                   dplyr::distinct(asv_id, simpleName, .keep_all = TRUE),
-                   by = join_by(asv_id, simpleName, grouping), relationship = "one-to-many", multiple = "first") %>%
-  bind_rows(., (spearman.test.site.time.df %>%
-                  dplyr::mutate(consistent = length(test_type), .by = c("asv_id", "simpleName" ,"grouping")) %>%
-                  dplyr::filter(consistent == 1) %>%
-                  dplyr::ungroup(.) %>%
-                  dplyr::distinct(test_type, asv_id, simpleName, grouping, estimate, sig))) %>%
-  dplyr::mutate(filtered_estimate = dplyr::case_when(abs(estimate) >= 0.5 ~ estimate,
-                                                     .default = NA)) %>%
-  dplyr::slice_max(abs(estimate), by = c("asv_id", "simpleName", "grouping", "sig")) %>%
-    dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
-                  sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
-  dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
-  dplyr::mutate(site = factor(site, levels = c(names(site_lookup), "all"))) %>%
-  dplyr::mutate(sampling_time = factor(sampling_time, levels = c(names(sampling_time_lookup), "all"))) %>%
-  droplevels
+if(!any(grepl("spearman_full", list.files(projectpath, pattern = "usvi_.*.RData")))){
+  save(spearman.test.site.time.full.df, spearman.test.site.full.df, spearman.test.full.df,
+       padj_cutoff_list,
+       file = paste0(projectpath, "/", "usvi_spearman_full-", Sys.Date(), ".RData"))
+}
+
+
+if(!any(grepl("spearman.sig.filtered.list", list.files(projectpath, pattern = "usvi_.*.rds")))){
+  spearman.test.filtered.lists <- list(spearman.test.site.time.filtered.df,
+                    spearman.test.site.filtered.df,
+                    spearman.test.filtered.df,
+                    padj_cutoff_list) %>%
+    setNames(., c("spearman.test.site.time.filtered.df",
+                  "spearman.test.site.filtered.df",
+                  "spearman.test.filtered.df",
+                  "padj_cutoff_list"))
+  readr::write_rds(spearman.test.filtered.lists, 
+                   paste0(projectpath, "/", "usvi_spearman.sig.filtered.list-", Sys.Date(), ".rds"), 
+                   compress = "gz")
+  
+  for(df in c("spearman.test.site.time.filtered.df",
+              "spearman.test.site.filtered.df",
+              "spearman.test.filtered.df")){
+    temp_df <- get0(df, mode = "any")
+    readr::write_delim(temp_df, paste0(projectpath, "/", "usvi_", df, "-", Sys.Date(), ".tsv"),
+                       col_names = TRUE, delim = "\t")  
+  }
+  
+  # save(spearman.test.site.time.strong.filtered.list,
+  #      spearman.test.site.strong.filtered.list,
+  #      spearman.test.strong.filtered.list,
+  #      file = paste0(projectpath, "/", "usvi_spearman.sig.filtered.list-", Sys.Date(), ".RData"))
+}
+
 
 # output list of SDA/sig ASVs ---------------------------------------------
 
-
-#write out the list of ASVs that were significant, to make a tree:
-#SDA ASVs:
-temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_sda_asvs_compare_summary-.*.tsv"))
-usvi_sda_asvs_compare_summary.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
-                                                      delim = "\t", col_names = TRUE, na = "", show_col_types = FALSE)
-rm(temp_file)
-
-
-# usvi_sig_seqs_idx <- spearman.test.filtered.df %>%  
-usvi_sig_seqs_idx <- bind_rows(spearman.test.filtered.df, spearman.test.site.filtered.df) %>%
-  bind_rows(., spearman.test.site.time.filtered.df) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(asv_id, .keep_all = FALSE) %>%
-  droplevels %>%
-  dplyr::bind_rows(., usvi_sda_asvs_compare_summary.df %>%
-                     dplyr::filter(test_type == "all") %>%
-                     droplevels %>%
-                     dplyr::distinct(asv_id, .keep_all = FALSE)) %>%
-  dplyr::distinct(asv_id) %>%
-  droplevels
-
-#2 additional ASVs found to be sig correlated site x time, that weren't in the SDA analyses, all Spearman, and site-specific Spearman
-# setdiff(unique(spearman.test.site.time.filtered.df[["asv_id"]]), usvi_sig_seqs_idx)
-# setdiff(unique(spearman.test.site.time.filtered.df[["asv_id"]]), unique(usvi_sda_asvs_compare_summary.df[["asv_id"]]))
-
-usvi_sig_seqs_key.list <- usvi_prok_asvs.taxa %>%
-  dplyr::select(-sequence) %>%
-  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
-  dplyr::mutate(taxonomy = dplyr::case_when(
-    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
-    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
-    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
-    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
-    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
-    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
-  dplyr::relocate(contains("_id"), taxonomy) %>%
-  dplyr::select(-c(final_taxonomy)) %>%
-  droplevels %>%
-  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
-  dplyr::filter(asv_id %in% usvi_sig_seqs_idx[["asv_id"]]) %>%
-  dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
-  droplevels %>%
-  # tidyr::nest(., .by = c("taxonomy", Domain:Genus), .key = "asvs") %>%
-  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
-  dplyr::left_join(., usvi_prok_asvs.taxa, by = join_by(asv_id)) %>%
-  droplevels %>%
-  dplyr::select(asv_id, sequence) %>%
-  dplyr::arrange(asv_id) %>%
-  dplyr::mutate(abundance = 1) %>%
-  droplevels
-
-
-
-library(dada2)
-library(ape)
-library(stats)
-library(ggdendro)
-dada2::uniquesToFasta(usvi_sig_seqs_key.list, paste0(projectpath, "/", "usvi_prok_sig_asvs.fna"), ids = usvi_sig_seqs_key.list[["asv_id"]], mode = "w")
-
-#import the results from Silva
-keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
-
-usvi_sig_seqs_key.taxonomy <- usvi_prok_asvs.taxa %>%
-  dplyr::select(-sequence) %>%
-  dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
-  dplyr::mutate(taxonomy = dplyr::case_when(
-    (is.na(Phylum)) ~ paste(Domain), #Domain;specific
-    (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
-    (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
-    (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
-    (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
-    (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
-  dplyr::relocate(contains("_id"), taxonomy) %>%
-  dplyr::select(-c(final_taxonomy)) %>%
-  droplevels %>%
-  dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
-  dplyr::filter(asv_id %in% usvi_sig_seqs_idx[["asv_id"]]) %>%
-  dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
-  dplyr::distinct(asv_id, taxonomy, .keep_all = TRUE) %>%
-  droplevels
-
-
-#option 1: use Silva tree to propagate taxonomy and relative arrangement of ASVs by taxonomy
-#look at the Silva tax tree and search for matching taxonomy:
-silva_ssu_tax.df <- readr::read_delim("~/projects/silva/tax_slv_ssu_138.2.txt", delim = "\t", col_names = FALSE, show_col_types = FALSE) %>%
-  setNames(., c("taxonomy", "id", "tax_level", "X4", "version")) %>%
-  dplyr::select(-X4) %>%
-  tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
-  droplevels
-
-# usvi_sig_seqs_filtered_silva.df <- usvi_sig_seqs_key.taxonomy %>%
-#   dplyr::left_join(., silva_ssu_tax.df %>%
-#                      dplyr::select(-c(taxonomy)) %>%
-#                      droplevels, by = join_by(!!!keep_tax), relationship = "many-to-many", multiple = "all")
-# 
-usvi_sig_seqs_filtered_silva.df <- usvi_sig_seqs_key.taxonomy %>%
-  dplyr::select(Domain:Genus) %>%
-  dplyr::distinct(.) %>%
-  dplyr::left_join(., silva_ssu_tax.df %>%
-                     dplyr::select(id, tax_level, Domain:Genus) %>%
-                     dplyr::distinct(.) %>%
-                     droplevels, by = join_by(Domain, Phylum, Class, Order, Family, Genus), relationship = "many-to-many", multiple = "all") %>%
-  tidyr::drop_na(.) %>%
-  dplyr::distinct(id, .keep_all = TRUE)
-
-silva_newick <- ape::read.tree("~/projects/silva/tax_slv_ssu_138.2.tre")
-# phyloseq::plot_tree(silva_newick, method = "sampledodge",
-#                     min.abundance = 5,
-#                     ladderize = TRUE)
-
-
-# usvi_sig_seqs_filtered_silva_idx <- usvi_sig_seqs_filtered_silva.df %>%
-#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy %>%
-#                      dplyr::distinct(taxonomy, .keep_all = TRUE), relationship = "many-to-many", multiple = "all") %>%
-#   dplyr::select(asv_id, taxonomy, id) %>%
-#   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
-#   dplyr::select(asv_id, id) %>%
-#   tibble::deframe(.)
-#   # droplevels
-# 
-# silva_usvi_idx <- intersect(usvi_sig_seqs_filtered_silva_idx, silva_newick[["tip.label"]])
-
-# silva_newick_pruned <- ape::keep.tip(silva_newick, silva_usvi_idx)
-# phyloseq::plot_tree(silva_newick_pruned, method = "sampledodge",
-#                     min.abundance = 5,
-#                     ladderize = TRUE)
-# # usvi_sig_seqs_filtered_silva_idx %>%
-# #   tibble::enframe(name = "asv_id", value = "tip.label") %>%
-# #   dplyr::mutate(`tip.label` = as.character(`tip.label`)) %>%
-# #   dplyr::right_join(., tibble::tibble(`tip.label` = silva_usvi_idx))
-# # usvi_sig_seqs_filtered_silva_idx[match(usvi_sig_seqs_filtered_silva_idx, silva_usvi_idx)]
-# 
-# head(labels(silva_newick_pruned))
-# silva_usvi_renamed_idx <- usvi_sig_seqs_filtered_silva_idx[usvi_sig_seqs_filtered_silva_idx %in% silva_usvi_idx]
-# silva_usvi_renamed_idx <- names(silva_usvi_renamed_idx)
-# usvi_asvs_silva_newick_pruned <- silva_newick_pruned
-# labels(usvi_asvs_silva_newick_pruned) <- silva_usvi_renamed_idx
-# # phyloseq::plot_tree(usvi_asvs_silva_newick_pruned, method = "sampledodge",
-# #                     min.abundance = 5,
-#                     # ladderize = TRUE)
-# head(labels(usvi_asvs_silva_newick_pruned))
-# 
-# silva_newick_relabled_pruned <- silva_newick_pruned
-# labels(silva_newick_relabled_pruned)
-# silva_renamed_idx <- usvi_sig_seqs_filtered_silva.df %>%
-#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy %>%
-#                       dplyr::distinct(taxonomy, .keep_all = TRUE), relationship = "many-to-many", multiple = "all") %>%
-#   dplyr::select(asv_id, taxonomy, id) %>%
-#   dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>%
-#   # dplyr::select(asv_id, id) %>%
-#   dplyr::select(taxonomy, id) %>%
-#   tibble::deframe(.)
-# silva_renamed_idx <- silva_renamed_idx[silva_renamed_idx %in% labels(silva_newick_relabled_pruned)]
-# silva_renamed_idx <- names(silva_renamed_idx)
-# labels(silva_newick_relabled_pruned) <- silva_renamed_idx
-# head(labels(silva_newick_relabled_pruned))
-# # phyloseq::plot_tree(usvi_asvs_silva_newick_pruned, method = "sampledodge",
-# #                     min.abundance = 5,
-# #                     ladderize = TRUE)
-
-# usvi_sig_seqs_phylogeny.df <- usvi_sig_seqs_filtered_silva.df %>%
-#   dplyr::mutate(id = factor(id, levels = labels(silva_newick))) %>%
-#   dplyr::arrange(id) %>%
-#     droplevels %>%
-#   dplyr::right_join(., usvi_sig_seqs_key.taxonomy, relationship = "many-to-many", multiple = "all") %>%
-#   dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus, id) %>%
-#   tidyr::drop_na(Domain) %>%
-#   dplyr::mutate(across(c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "tax_level", "asv_id", "taxonomy"), ~factor(.x))) %>%
-#   dplyr::mutate(arrangement = seq_len(nrow(.))) %>%
-#   droplevels
-
-#option 2:
-#made a tree with SINA (Arb web service) for 467 ASVs that, during analyses up to 1/30/2025, were found SDA
-#look at an ARB-generated tree
-
-usvi_arb.tree <- ape::read.tree("~/projects/apprill/usvi_temporal/arb-silva.de_2025-01-29_id1375389/arb-silva.de_2025-01-29_id1375389.tree")
-
-# phyloseq::plot_tree(usvi_arb.tree, method = "sampledodge",
-#                     min.abundance = 5,
-#                     ladderize = TRUE)
-# labels(usvi_arb.tree)
-# length(grep("ASV_", labels(usvi_arb.tree)))
-# usvi_arb.tree[["tip.labels"]]
-# plot(usvi_arb.tree)
-
-usvi_arb.taxonomy <- readr::read_delim("~/projects/apprill/usvi_temporal/arb-silva.de_2025-01-29_id1375389/arb-silva.de_align_resultlist_1375389.csv",
-                                       delim = ";", col_names = TRUE, show_col_types = FALSE) %>%
-  dplyr::select(sequence_identifier, identity, starts_with("lca_tax")) %>%
-  tidyr::drop_na(.) %>%
-  dplyr::mutate(across(starts_with("lca_tax"), ~dplyr::case_when(grepl("^Unclassified", .x) ~ NA,
-                                                                 .default = .x))) %>%
-  dplyr::mutate(across(starts_with("lca_tax"), ~stringr::str_remove_all(.x, '"'))) %>%
-  dplyr::mutate(across(starts_with("lca_tax"), ~stringr::str_remove_all(.x, ';$')))
-
-#does the ARB taxonomy match our assignments?
-usvi_sig_seqs_arb.taxonomy <-  usvi_arb.taxonomy %>%
-  dplyr::rename(asv_id = "sequence_identifier") %>%
-  dplyr::select(asv_id, lca_tax_slv) %>%
-  tidyr::separate_wider_delim(lca_tax_slv, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = TRUE) %>%
-  droplevels %>%
-  tidyr::pivot_longer(., cols = !c("asv_id"),
-                      names_to = "level",
-                      values_to = "arb") %>%
-  dplyr::mutate(arb = gsub("ii", "i", arb)) %>%
-  dplyr::left_join(., usvi_sig_seqs_key.taxonomy %>%
-                     tidyr::pivot_longer(., cols = !c("asv_id"),
-                                         names_to = "level",
-                                         values_to = "dada2"),
-                   by = join_by(asv_id, level)) %>%
-  dplyr::group_by(asv_id, level) %>%
-  dplyr::mutate(matched = dplyr::case_when((arb == dada2) ~ 1,
-                                           # .default = NA)) %>% dplyr::group_by(asv_id) %>% tidyr::drop_na(.)
-                                           .default = NA))
-# usvi_sig_seqs_arb.taxonomy %>%
-#   dplyr::group_by(asv_id) %>%
-#   dplyr::summarise(num_matched = sum(matched, na.rm = TRUE)) %>%
-#   dplyr::arrange(num_matched)
-
-usvi_arb_asvs_idx <- grep("ASV_", usvi_arb.tree[["tip.label"]])
-usvi_arb_pruned.tree <- ape::keep.tip(usvi_arb.tree, usvi_arb_asvs_idx)
-head(usvi_arb_pruned.tree[["tip.label"]])
-
-length(usvi_arb_pruned.tree[["tip.label"]])
-usvi_arb_renamed_idx <- data.frame(asv_id = usvi_arb_pruned.tree[["tip.label"]]) %>%
-  dplyr::left_join(., usvi_prok_asvs.taxa %>%
-                     dplyr::select(-sequence) %>%
-                     dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
-                     dplyr::mutate(taxonomy = dplyr::case_when(
-                       (is.na(Phylum)) ~ paste(Domain), #Domain;specific
-                       (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
-                       (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
-                       (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
-                       (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
-                       (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
-                     dplyr::relocate(contains("_id"), taxonomy) %>%
-                     dplyr::select(-c(final_taxonomy)) %>%
-                     droplevels %>%
-                     dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
-                     dplyr::select(asv_id, taxonomy), 
-                   by= join_by(asv_id)) %>%
-  dplyr::mutate(taxonomy = across(starts_with("taxonomy")) %>% purrr::reduce(coalesce)) %>%
-  dplyr::select(-ends_with(c(".x", ".y"))) %>%
-  dplyr::filter(asv_id %in% usvi_arb_pruned.tree[["tip.label"]]) %>%
-  dplyr::select(asv_id, taxonomy) %>%
-  dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>%
-  dplyr::select(taxonomy, asv_id) %>%
-  dplyr::mutate(asv_id = factor(asv_id, levels = usvi_arb_pruned.tree[["tip.label"]])) %>%
-  dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.[["taxonomy"]]))) %>%
-  # droplevels %>% dplyr::arrange(asv_id)
-  dplyr::arrange(asv_id) %>% tibble::deframe(.)
-
-usvi_arb_renamed_idx <- usvi_arb_renamed_idx[usvi_arb_renamed_idx %in% usvi_arb_pruned.tree[["tip.label"]]]
-head(names(usvi_arb_renamed_idx))
-length(names(usvi_arb_renamed_idx))
-usvi_arb_renamed_idx <- names(usvi_arb_renamed_idx)
-
-usvi_arb_pruned.tree[["tip.label"]] <- usvi_arb_renamed_idx
-
-# phyloseq::plot_tree(usvi_arb_pruned.tree, method = "sampledodge",
-#                     label.tips = "taxa_names",
-#                     ladderize = TRUE)
-
-usvi_arb_order_idx <- data.frame(tax_label = usvi_arb_pruned.tree[["tip.label"]]) %>%
-  dplyr::mutate(asv_id = stringr::str_split_i(tax_label, ": ", 1)) %>%
-  dplyr::mutate(arb_rangement = seq_len(nrow(.))) %>%
-  droplevels
-
-
-#consolidate the ARB and Silva arrangements for the significant ASVs
-usvi_sig_seqs_phylogeny.df <- usvi_sig_seqs_filtered_silva.df %>%
-  dplyr::mutate(id = factor(id, levels = silva_newick[["tip.label"]])) %>%
-  dplyr::arrange(id) %>%
-  droplevels %>%
-  dplyr::right_join(., (usvi_sig_seqs_key.taxonomy %>%
-                          dplyr::full_join(., data.frame(asv_id = grep("ASV_", usvi_arb.tree[["tip.label"]], value = TRUE)), by = join_by(asv_id))),
-                    relationship = "many-to-many", multiple = "all") %>%
+if(file.exists(paste0(projectpath, "/", "usvi_sig_seqs_phylogeny.df", ".tsv"))){
+  usvi_sig_seqs_phylogeny.df <- readr::read_delim(paste0(projectpath, "/", "usvi_sig_seqs_phylogeny.df", ".tsv"), 
+                                                  show_col_types = FALSE,
+                                                  delim = "\t", col_names = TRUE)
+  
+} else {
+  #write out the list of ASVs that were significant, to make a tree:
+  #SDA ASVs:
+  temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_sda_asvs_compare_summary-.*.tsv"))
+  usvi_sda_asvs_compare_summary.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+                                                        delim = "\t", col_names = TRUE, na = "", show_col_types = FALSE)
+  rm(temp_file)
+  
+  
+  # usvi_sig_seqs_idx <- spearman.test.filtered.df %>%  
+  usvi_sig_seqs_idx <- bind_rows(spearman.test.filtered.df, spearman.test.site.filtered.df) %>%
+    bind_rows(., spearman.test.site.time.filtered.df) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::distinct(asv_id, .keep_all = FALSE) %>%
+    droplevels %>%
+    dplyr::bind_rows(., usvi_sda_asvs_compare_summary.df %>%
+                       dplyr::filter(test_type == "all") %>%
+                       droplevels %>%
+                       dplyr::distinct(asv_id, .keep_all = FALSE)) %>%
+    dplyr::distinct(asv_id) %>%
+    droplevels
+  
+  #2 additional ASVs found to be sig correlated site x time, that weren't in the SDA analyses, all Spearman, and site-specific Spearman
+  # setdiff(unique(spearman.test.site.time.filtered.df[["asv_id"]]), usvi_sig_seqs_idx)
+  # setdiff(unique(spearman.test.site.time.filtered.df[["asv_id"]]), unique(usvi_sda_asvs_compare_summary.df[["asv_id"]]))
+  
+  usvi_sig_seqs_key.list <- usvi_prok_asvs.taxa %>%
+    dplyr::select(-sequence) %>%
+    dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+    dplyr::mutate(taxonomy = dplyr::case_when(
+      (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+      (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+      (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+      (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+      (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+      (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+    dplyr::relocate(contains("_id"), taxonomy) %>%
+    dplyr::select(-c(final_taxonomy)) %>%
+    droplevels %>%
+    dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+    dplyr::filter(asv_id %in% usvi_sig_seqs_idx[["asv_id"]]) %>%
+    dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
+    droplevels %>%
+    # tidyr::nest(., .by = c("taxonomy", Domain:Genus), .key = "asvs") %>%
+    dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
+    dplyr::left_join(., usvi_prok_asvs.taxa, by = join_by(asv_id)) %>%
+    droplevels %>%
+    dplyr::select(asv_id, sequence) %>%
+    dplyr::arrange(asv_id) %>%
+    dplyr::mutate(abundance = 1) %>%
+    droplevels
+  
+  
+  
+  library(dada2)
+  library(ape)
+  library(stats)
+  library(ggdendro)
+  dada2::uniquesToFasta(usvi_sig_seqs_key.list, paste0(projectpath, "/", "usvi_prok_sig_asvs.fna"), ids = usvi_sig_seqs_key.list[["asv_id"]], mode = "w")
+  
+  #import the results from Silva
+  keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
+  
+  usvi_sig_seqs_key.taxonomy <- usvi_prok_asvs.taxa %>%
+    dplyr::select(-sequence) %>%
+    dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+    dplyr::mutate(taxonomy = dplyr::case_when(
+      (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+      (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+      (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+      (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+      (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+      (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+    dplyr::relocate(contains("_id"), taxonomy) %>%
+    dplyr::select(-c(final_taxonomy)) %>%
+    droplevels %>%
+    dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+    dplyr::filter(asv_id %in% usvi_sig_seqs_idx[["asv_id"]]) %>%
+    dplyr::select(asv_id, taxonomy, Domain:Genus) %>%
+    dplyr::distinct(asv_id, taxonomy, .keep_all = TRUE) %>%
+    droplevels
+  
+  
+  #option 1: use Silva tree to propagate taxonomy and relative arrangement of ASVs by taxonomy
+  #look at the Silva tax tree and search for matching taxonomy:
+  silva_ssu_tax.df <- readr::read_delim("~/projects/silva/tax_slv_ssu_138.2.txt", delim = "\t", col_names = FALSE, show_col_types = FALSE) %>%
+    setNames(., c("taxonomy", "id", "tax_level", "X4", "version")) %>%
+    dplyr::select(-X4) %>%
+    tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+    droplevels
+  
+  # usvi_sig_seqs_filtered_silva.df <- usvi_sig_seqs_key.taxonomy %>%
+  #   dplyr::left_join(., silva_ssu_tax.df %>%
+  #                      dplyr::select(-c(taxonomy)) %>%
+  #                      droplevels, by = join_by(!!!keep_tax), relationship = "many-to-many", multiple = "all")
+  # 
+  usvi_sig_seqs_filtered_silva.df <- usvi_sig_seqs_key.taxonomy %>%
+    dplyr::select(Domain:Genus) %>%
+    dplyr::distinct(.) %>%
+    dplyr::left_join(., silva_ssu_tax.df %>%
+                       dplyr::select(id, tax_level, Domain:Genus) %>%
+                       dplyr::distinct(.) %>%
+                       droplevels, by = join_by(Domain, Phylum, Class, Order, Family, Genus), relationship = "many-to-many", multiple = "all") %>%
+    tidyr::drop_na(.) %>%
+    dplyr::distinct(id, .keep_all = TRUE)
+  
+  silva_newick <- ape::read.tree("~/projects/silva/tax_slv_ssu_138.2.tre")
+  # phyloseq::plot_tree(silva_newick, method = "sampledodge",
+  #                     min.abundance = 5,
+  #                     ladderize = TRUE)
+  
+  
+  # usvi_sig_seqs_filtered_silva_idx <- usvi_sig_seqs_filtered_silva.df %>%
+  #   dplyr::right_join(., usvi_sig_seqs_key.taxonomy %>%
+  #                      dplyr::distinct(taxonomy, .keep_all = TRUE), relationship = "many-to-many", multiple = "all") %>%
+  #   dplyr::select(asv_id, taxonomy, id) %>%
+  #   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+  #   dplyr::select(asv_id, id) %>%
+  #   tibble::deframe(.)
+  #   # droplevels
+  # 
+  # silva_usvi_idx <- intersect(usvi_sig_seqs_filtered_silva_idx, silva_newick[["tip.label"]])
+  
+  # silva_newick_pruned <- ape::keep.tip(silva_newick, silva_usvi_idx)
+  # phyloseq::plot_tree(silva_newick_pruned, method = "sampledodge",
+  #                     min.abundance = 5,
+  #                     ladderize = TRUE)
+  # # usvi_sig_seqs_filtered_silva_idx %>%
+  # #   tibble::enframe(name = "asv_id", value = "tip.label") %>%
+  # #   dplyr::mutate(`tip.label` = as.character(`tip.label`)) %>%
+  # #   dplyr::right_join(., tibble::tibble(`tip.label` = silva_usvi_idx))
+  # # usvi_sig_seqs_filtered_silva_idx[match(usvi_sig_seqs_filtered_silva_idx, silva_usvi_idx)]
+  # 
+  # head(labels(silva_newick_pruned))
+  # silva_usvi_renamed_idx <- usvi_sig_seqs_filtered_silva_idx[usvi_sig_seqs_filtered_silva_idx %in% silva_usvi_idx]
+  # silva_usvi_renamed_idx <- names(silva_usvi_renamed_idx)
+  # usvi_asvs_silva_newick_pruned <- silva_newick_pruned
+  # labels(usvi_asvs_silva_newick_pruned) <- silva_usvi_renamed_idx
+  # # phyloseq::plot_tree(usvi_asvs_silva_newick_pruned, method = "sampledodge",
+  # #                     min.abundance = 5,
+  #                     # ladderize = TRUE)
+  # head(labels(usvi_asvs_silva_newick_pruned))
+  # 
+  # silva_newick_relabled_pruned <- silva_newick_pruned
+  # labels(silva_newick_relabled_pruned)
+  # silva_renamed_idx <- usvi_sig_seqs_filtered_silva.df %>%
+  #   dplyr::right_join(., usvi_sig_seqs_key.taxonomy %>%
+  #                       dplyr::distinct(taxonomy, .keep_all = TRUE), relationship = "many-to-many", multiple = "all") %>%
+  #   dplyr::select(asv_id, taxonomy, id) %>%
+  #   dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>%
+  #   # dplyr::select(asv_id, id) %>%
+  #   dplyr::select(taxonomy, id) %>%
+  #   tibble::deframe(.)
+  # silva_renamed_idx <- silva_renamed_idx[silva_renamed_idx %in% labels(silva_newick_relabled_pruned)]
+  # silva_renamed_idx <- names(silva_renamed_idx)
+  # labels(silva_newick_relabled_pruned) <- silva_renamed_idx
+  # head(labels(silva_newick_relabled_pruned))
+  # # phyloseq::plot_tree(usvi_asvs_silva_newick_pruned, method = "sampledodge",
+  # #                     min.abundance = 5,
+  # #                     ladderize = TRUE)
+  
+  # usvi_sig_seqs_phylogeny.df <- usvi_sig_seqs_filtered_silva.df %>%
+  #   dplyr::mutate(id = factor(id, levels = labels(silva_newick))) %>%
+  #   dplyr::arrange(id) %>%
+  #     droplevels %>%
   #   dplyr::right_join(., usvi_sig_seqs_key.taxonomy, relationship = "many-to-many", multiple = "all") %>%
-  dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus, id) %>%
-  tidyr::drop_na(Domain) %>%
-  dplyr::mutate(across(c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "tax_level", "asv_id", "taxonomy"), ~factor(.x))) %>%
-  dplyr::mutate(arrangement = seq_len(nrow(.))) %>%
-  dplyr::left_join(., usvi_arb_order_idx %>%
-                     dplyr::select(asv_id, arb_rangement),
-                   by = join_by(asv_id)) %>%
-  dplyr::mutate(prop_arb_rangement = arb_rangement) %>%
-  dplyr::arrange(arrangement, taxonomy) %>%
-  dplyr::group_by(taxonomy) %>% tidyr::fill(prop_arb_rangement, .direction = "downup") %>%
-  dplyr::ungroup(.) %>% tidyr::fill(prop_arb_rangement, .direction = "updown") %>%
-  droplevels
-
-readr::write_delim(usvi_sig_seqs_phylogeny.df, paste0(projectpath, "/", "usvi_sig_seqs_phylogeny.df", ".tsv"), delim = "\t", col_names = TRUE)
+  #   dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus, id) %>%
+  #   tidyr::drop_na(Domain) %>%
+  #   dplyr::mutate(across(c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "tax_level", "asv_id", "taxonomy"), ~factor(.x))) %>%
+  #   dplyr::mutate(arrangement = seq_len(nrow(.))) %>%
+  #   droplevels
+  
+  #option 2:
+  #made a tree with SINA (Arb web service) for 467 ASVs that, during analyses up to 1/30/2025, were found SDA
+  #look at an ARB-generated tree
+  
+  usvi_arb.tree <- ape::read.tree("~/projects/apprill/usvi_temporal/arb-silva.de_2025-01-29_id1375389/arb-silva.de_2025-01-29_id1375389.tree")
+  
+  # phyloseq::plot_tree(usvi_arb.tree, method = "sampledodge",
+  #                     min.abundance = 5,
+  #                     ladderize = TRUE)
+  # labels(usvi_arb.tree)
+  # length(grep("ASV_", labels(usvi_arb.tree)))
+  # usvi_arb.tree[["tip.labels"]]
+  # plot(usvi_arb.tree)
+  
+  usvi_arb.taxonomy <- readr::read_delim("~/projects/apprill/usvi_temporal/arb-silva.de_2025-01-29_id1375389/arb-silva.de_align_resultlist_1375389.csv",
+                                         delim = ";", col_names = TRUE, show_col_types = FALSE) %>%
+    dplyr::select(sequence_identifier, identity, starts_with("lca_tax")) %>%
+    tidyr::drop_na(.) %>%
+    dplyr::mutate(across(starts_with("lca_tax"), ~dplyr::case_when(grepl("^Unclassified", .x) ~ NA,
+                                                                   .default = .x))) %>%
+    dplyr::mutate(across(starts_with("lca_tax"), ~stringr::str_remove_all(.x, '"'))) %>%
+    dplyr::mutate(across(starts_with("lca_tax"), ~stringr::str_remove_all(.x, ';$')))
+  
+  #does the ARB taxonomy match our assignments?
+  usvi_sig_seqs_arb.taxonomy <-  usvi_arb.taxonomy %>%
+    dplyr::rename(asv_id = "sequence_identifier") %>%
+    dplyr::select(asv_id, lca_tax_slv) %>%
+    tidyr::separate_wider_delim(lca_tax_slv, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = TRUE) %>%
+    droplevels %>%
+    tidyr::pivot_longer(., cols = !c("asv_id"),
+                        names_to = "level",
+                        values_to = "arb") %>%
+    dplyr::mutate(arb = gsub("ii", "i", arb)) %>%
+    dplyr::left_join(., usvi_sig_seqs_key.taxonomy %>%
+                       tidyr::pivot_longer(., cols = !c("asv_id"),
+                                           names_to = "level",
+                                           values_to = "dada2"),
+                     by = join_by(asv_id, level)) %>%
+    dplyr::group_by(asv_id, level) %>%
+    dplyr::mutate(matched = dplyr::case_when((arb == dada2) ~ 1,
+                                             # .default = NA)) %>% dplyr::group_by(asv_id) %>% tidyr::drop_na(.)
+                                             .default = NA))
+  # usvi_sig_seqs_arb.taxonomy %>%
+  #   dplyr::group_by(asv_id) %>%
+  #   dplyr::summarise(num_matched = sum(matched, na.rm = TRUE)) %>%
+  #   dplyr::arrange(num_matched)
+  
+  usvi_arb_asvs_idx <- grep("ASV_", usvi_arb.tree[["tip.label"]])
+  usvi_arb_pruned.tree <- ape::keep.tip(usvi_arb.tree, usvi_arb_asvs_idx)
+  head(usvi_arb_pruned.tree[["tip.label"]])
+  
+  length(usvi_arb_pruned.tree[["tip.label"]])
+  usvi_arb_renamed_idx <- data.frame(asv_id = usvi_arb_pruned.tree[["tip.label"]]) %>%
+    dplyr::left_join(., usvi_prok_asvs.taxa %>%
+                       dplyr::select(-sequence) %>%
+                       dplyr::mutate(final_taxonomy = across(c(Genus:Domain)) %>% purrr::reduce(coalesce)) %>%
+                       dplyr::mutate(taxonomy = dplyr::case_when(
+                         (is.na(Phylum)) ~ paste(Domain), #Domain;specific
+                         (is.na(Class)) ~ paste(Domain, final_taxonomy, sep = ";"), #Domain;specific
+                         (stringr::str_length(Class) < 5 | grepl("(^[0-9])", Class) | is.na(Order)) ~ paste(Phylum, final_taxonomy, sep = ";"),
+                         (grepl("SAR11 clade", Order)) ~ paste0(Class, ";", "SAR11 ", final_taxonomy), #Class;specific
+                         (!is.na(Order) & !(Order == Class)) ~ paste(Class, final_taxonomy, sep = ";"), #Class;specific
+                         (!is.na(Order)) ~ paste(Order, final_taxonomy, sep = ";"))) %>% #Order;specific
+                       dplyr::relocate(contains("_id"), taxonomy) %>%
+                       dplyr::select(-c(final_taxonomy)) %>%
+                       droplevels %>%
+                       dplyr::mutate(taxonomy = gsub(";", "; ", taxonomy)) %>%
+                       dplyr::select(asv_id, taxonomy), 
+                     by= join_by(asv_id)) %>%
+    dplyr::mutate(taxonomy = across(starts_with("taxonomy")) %>% purrr::reduce(coalesce)) %>%
+    dplyr::select(-ends_with(c(".x", ".y"))) %>%
+    dplyr::filter(asv_id %in% usvi_arb_pruned.tree[["tip.label"]]) %>%
+    dplyr::select(asv_id, taxonomy) %>%
+    dplyr::mutate(taxonomy = paste0(asv_id, ": ", taxonomy)) %>%
+    dplyr::select(taxonomy, asv_id) %>%
+    dplyr::mutate(asv_id = factor(asv_id, levels = usvi_arb_pruned.tree[["tip.label"]])) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.[["taxonomy"]]))) %>%
+    # droplevels %>% dplyr::arrange(asv_id)
+    dplyr::arrange(asv_id) %>% tibble::deframe(.)
+  
+  usvi_arb_renamed_idx <- usvi_arb_renamed_idx[usvi_arb_renamed_idx %in% usvi_arb_pruned.tree[["tip.label"]]]
+  head(names(usvi_arb_renamed_idx))
+  length(names(usvi_arb_renamed_idx))
+  usvi_arb_renamed_idx <- names(usvi_arb_renamed_idx)
+  
+  usvi_arb_pruned.tree[["tip.label"]] <- usvi_arb_renamed_idx
+  
+  # phyloseq::plot_tree(usvi_arb_pruned.tree, method = "sampledodge",
+  #                     label.tips = "taxa_names",
+  #                     ladderize = TRUE)
+  
+  usvi_arb_order_idx <- data.frame(tax_label = usvi_arb_pruned.tree[["tip.label"]]) %>%
+    dplyr::mutate(asv_id = stringr::str_split_i(tax_label, ": ", 1)) %>%
+    dplyr::mutate(arb_rangement = seq_len(nrow(.))) %>%
+    droplevels
+  
+  
+  #consolidate the ARB and Silva arrangements for the significant ASVs
+  usvi_sig_seqs_phylogeny.df <- usvi_sig_seqs_filtered_silva.df %>%
+    dplyr::mutate(id = factor(id, levels = silva_newick[["tip.label"]])) %>%
+    dplyr::arrange(id) %>%
+    droplevels %>%
+    dplyr::right_join(., (usvi_sig_seqs_key.taxonomy %>%
+                            dplyr::full_join(., data.frame(asv_id = grep("ASV_", usvi_arb.tree[["tip.label"]], value = TRUE)), by = join_by(asv_id))),
+                      relationship = "many-to-many", multiple = "all") %>%
+    #   dplyr::right_join(., usvi_sig_seqs_key.taxonomy, relationship = "many-to-many", multiple = "all") %>%
+    dplyr::arrange(Domain, Phylum, Class, Order, Family, Genus, id) %>%
+    tidyr::drop_na(Domain) %>%
+    dplyr::mutate(across(c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "tax_level", "asv_id", "taxonomy"), ~factor(.x))) %>%
+    dplyr::mutate(arrangement = seq_len(nrow(.))) %>%
+    dplyr::left_join(., usvi_arb_order_idx %>%
+                       dplyr::select(asv_id, arb_rangement),
+                     by = join_by(asv_id)) %>%
+    dplyr::mutate(prop_arb_rangement = arb_rangement) %>%
+    dplyr::arrange(arrangement, taxonomy) %>%
+    dplyr::group_by(taxonomy) %>% tidyr::fill(prop_arb_rangement, .direction = "downup") %>%
+    dplyr::ungroup(.) %>% tidyr::fill(prop_arb_rangement, .direction = "updown") %>%
+    droplevels
+  
+  readr::write_delim(usvi_sig_seqs_phylogeny.df, paste0(projectpath, "/", "usvi_sig_seqs_phylogeny.df", ".tsv"), delim = "\t", col_names = TRUE)
+  
+}
 
 
 
@@ -4123,12 +4546,14 @@ spearman.site.sig.filtered.list <- spearman.test.site.filtered.df %>%
   map(., ~.x %>%
         tidyr::drop_na(estimate) %>%
         droplevels %>%
-        dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
+        # dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
         droplevels %>%
         dplyr::arrange(asv_id) %>%
         dplyr::mutate(asv_id = factor(asv_id, levels = unique(.[["asv_id"]]))) %>%
-        dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
+        # dplyr::mutate(simpleName = factor(simpleName, levels = labels(dend_metab))) %>%
         droplevels)
+
+
 
 rm(list = apropos(paste0("^g7_asvs_", ".*_.*_results$"), mode = "list"))
 
