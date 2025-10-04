@@ -712,7 +712,7 @@ for(i in seq_len(length(spearman.sig.filtered.list))){
                                               .default = taxonomy))
   
   temp_spearman_network.edges <- temp_spearman.tbl %>%
-    dplyr::select(from, to, estimate) %>% 
+    dplyr::select(from, to, estimate, padj_01) %>% 
     dplyr::inner_join(temp_spearman_network.nodes, by = join_by("from" == "Label")) %>%
     dplyr::rename(Source = "Id") %>%
     dplyr::inner_join(temp_spearman_network.nodes, by = join_by("to" == "Label")) %>%
@@ -720,7 +720,7 @@ for(i in seq_len(length(spearman.sig.filtered.list))){
     dplyr::select(-contains("omics_type")) %>%
     dplyr::mutate(Type = "Undirected") %>%
     dplyr::mutate(Weight = abs(estimate)) %>%
-    dplyr::distinct(Source, Target, Type, Weight, estimate) %>%
+    dplyr::distinct(Source, Target, Type, Weight, estimate, padj_01) %>%
     droplevels
   
   readr::write_delim(temp_spearman_network.nodes, paste0(projectpath, "/", "spearman_network.", namevar, ".nodes", ".csv"),
