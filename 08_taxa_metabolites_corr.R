@@ -3824,6 +3824,8 @@ gvenn2
 
 
 corr_fdr01_site_strong_asv_df <- corr_fdr01_site_sig %>%
+  dplyr::ungroup(.) %>%
+  dplyr::rowwise(.) %>%
   dplyr::filter(abs(filtered_estimate) >= 0.9) %>%
   droplevels
         # This counts how many ASVs are uniquely observed per site that had a very strong >0.9 significant correlation.
@@ -3831,7 +3833,15 @@ corr_fdr01_site_strong_asv_df <- corr_fdr01_site_sig %>%
         # Because in Yawzi, ASV_00292 had very strong and significant correlations with 2 metabolites: 5'AMP and 3'AMP
         # whereas in the other locations, the very strong correlations with a metabolite occurred for an ASV only one time
         #count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
-        
+corr_fdr01_site_strong_asv_df %>%
+  count(grouping, name = "num_occs")
+#how many unique ASVs have 1 or more very strong correlations to metabolites?
+corr_fdr01_site_strong_asv_df %>%
+  dplyr::distinct(asv_id) %>%
+  tibble::deframe(.)
+# [1] ASV_00050 ASV_00147 ASV_00089 ASV_00018 ASV_00069 ASV_00084 ASV_00124 ASV_00024 ASV_00107 ASV_00240 ASV_00344 ASV_01047
+# [13] ASV_00292 ASV_00390 ASV_00043 ASV_00054 ASV_00009 ASV_00376
+# 18 Levels: ASV_00009 ASV_00018 ASV_00024 ASV_00043 ASV_00050 ASV_00054 ASV_00069 ASV_00084 ASV_00089 ASV_00107 ... ASV_01047
 
 corr_fdr01_site_sig_asv_venn_list <- corr_fdr01_site_sig %>%
   split(., f = .$grouping) %>%
@@ -3843,18 +3853,24 @@ corr_fdr01_site_sig_asv_venn_list <- corr_fdr01_site_sig %>%
         dplyr::select(asv_id) %>%
         tibble::deframe(.)
   )
+
 corr_fdr01_site_sig_strong_venn_list <- corr_fdr01_site_sig %>%
+  dplyr::filter(asv_id %in% corr_fdr01_site_strong_asv_df[["asv_id"]]) %>%
+  dplyr::mutate(corrlink = paste0(asv_id, ":", simpleName)) %>%
+  dplyr::mutate(corrlink = factor(corrlink)) %>%
   split(., f = .$grouping) %>%
   map(., ~.x %>%
         droplevels %>%
-        dplyr::filter(asv_id %in% corr_fdr01_site_strong_asv_df[["asv_id"]]) %>%
+        dplyr::filter(abs(filtered_estimate) >= 0.9) %>%
         # count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
         # arrange(desc(num_correlations))%>%
         # filter(num_correlations >= 10)%>%
         droplevels %>%
-        dplyr::distinct(asv_id) %>%
+        # dplyr::distinct(asv_id) %>%
+        dplyr::distinct(corrlink) %>%
         tibble::deframe(.)
   )
+
 
 temp_g1 <- ggVennDiagram::ggVennDiagram(corr_fdr01_site_sig_asv_venn_list, 
                                        set_size = NA,
