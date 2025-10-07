@@ -3207,6 +3207,17 @@ spearman.test.site.filtered.df %>%
 
 spearman.test.site.filtered.df %>%
   dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  droplevels %>%
+  split(., f = .$sig) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::group_by(site) %>%
+        dplyr::summarise(num_results = length(filtered_estimate)))
+
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
   # dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
   tidyr::drop_na(padj_01) %>%
   droplevels %>%
@@ -3275,8 +3286,50 @@ spearman.test.site.filtered.df %>%
 # 2 Tektite          229         41
 # 3 Yawzi            190         39
 # 4 total            517         42
+  
+spearman_site_filtered_obs.tbl <- spearman.test.site.filtered.df %>%
+    dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+    dplyr::ungroup(.) %>%
+    tidyr::drop_na(filtered_estimate) %>%
+    dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+    dplyr::filter(grepl("optA", test_type)) %>%
+    dplyr::ungroup(.) %>%
+  split(., f = .$asv_id) %>%
+  map(., ~.x %>%
+        dplyr::ungroup(.) %>%
+        droplevels %>%
+        dplyr::distinct(simpleName) %>%
+        dplyr::reframe(num_corrs = length(unique(.[["simpleName"]])))) %>% bind_rows(., .id = "variable") %>%
+  dplyr::filter(num_corrs > 0) %>%
+  dplyr::mutate(type = "asv_id") %>%
+  dplyr::bind_rows(., spearman.test.site.filtered.df %>%
+                     dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+                     dplyr::ungroup(.) %>%
+                     tidyr::drop_na(filtered_estimate) %>%
+                     dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+                     dplyr::filter(grepl("optA", test_type)) %>%
+                     dplyr::ungroup(.) %>%
+                     split(., f = .$simpleName) %>%
+                     map(., ~.x %>%
+                           dplyr::ungroup(.) %>%
+                           droplevels %>%
+                           dplyr::distinct(asv_id) %>%
+                           # dplyr::reframe(num_corrs = length(unique(.[["simpleName"]]))))
+                           dplyr::reframe(num_corrs = length(unique(.[["asv_id"]])))) %>% bind_rows(., .id = "variable") %>%
+                     dplyr::filter(num_corrs > 0) %>%
+                     dplyr::mutate(type = "simpleName"))
 
-spearman_site_summary.df %>% dplyr::filter(num_corrs >= 10) %>% nrow(.)
+
+
+spearman_site_filtered_obs.tbl %>%
+  dplyr::filter(type == "asv_id") %>%
+  dplyr::filter(num_corrs >= 10)
+
+if(length(list.files(projectpath, "spearman_site_filtered_obs.tbl")) < 1){
+# if(!file.exists(paste0(projectpath, "/", "spearman_site_filtered_obs.tbl", ".tsv"))){
+  readr::write_delim(spearman_site_filtered_obs.tbl, paste0(projectpath, "/", "spearman_site_filtered_obs.tbl-", Sys.Date(), ".tsv"),
+                     delim = "\t", col_names = TRUE)
+}
 
 # #we have this rds object saved: "usvi_spearman.sig.filtered.list-2025-04-07.rds"
 # #it has 1239 significant correlations between ASVs and metabolites in Lameshur,
@@ -3537,6 +3590,370 @@ if(!any(grepl("spearman.sig.filtered.list", list.files(projectpath, pattern = "u
   #      spearman.test.strong.filtered.list,
   #      file = paste0(projectpath, "/", "usvi_spearman.sig.filtered.list-", Sys.Date(), ".RData"))
 }
+
+
+# sanity check: the SDA ASVs/metabs ---------------------------------------
+
+#Load in excel sheet with correlation results - Sheet 2 = Site based results
+corr <- readxl::read_excel(paste0(projectpath,"/", "spearman.test.site.results-20250925.xlsx"),
+                   sheet = 2)
+
+#Filter only relationships that were considered significant
+#Anything that had an adjusted p-value < 0.05 is considered "vsig".
+#Anything with unadjusted p-value < the p-value threshold at 1% FDR was also considered significant
+
+corr_fdr01_site_sig <- corr%>%
+  dplyr::mutate(across(c(asv_id, simpleName, grouping, sig), ~factor(.x))) %>%
+  filter(sig %in% c("sig_q01","vsig"))
+
+#Calculate the total number of unique mtab - asv correlation pairs
+corr_fdr01_site_sig %>%
+  distinct(simpleName, asv_id) %>%
+  summarise(num_unique_correlations = n())
+
+#Calculate the total number of unique correlations by site
+corr_fdr01_site_sig %>%
+  distinct(simpleName, asv_id,grouping) %>%  # Keep only unique metabolite-ASV pairs
+  count(grouping, name = "num_unique_correlations") %>%  # Count unique ASVs per metabolite
+  arrange(desc(num_unique_correlations))  # Sort in descending order
+
+#Plot the total number of unique correlations by site
+corr_fdr01_site_sig%>%
+  ggplot(aes(x=grouping,fill=site))+
+  geom_bar(color="black")+
+  scale_fill_manual(values = site_colors, labels = site_lookup, breaks = names(site_lookup))+
+  theme_bw()
+
+# Count the number of unique asv_id and mtabs in correlations
+corr_fdr01_site_sig %>%
+  group_by(site) %>%
+  summarise(
+    num_asv = n_distinct(asv_id),
+    num_mtabs = n_distinct(simpleName)
+  ) %>%
+  bind_rows(
+    tibble(
+      site = "Total",
+      num_asv = n_distinct(corr_fdr01_site_sig$asv_id),
+      num_mtabs = n_distinct(corr_fdr01_site_sig$simpleName, na.rm = TRUE)
+    )
+  )
+
+# Count the number of times each metabolite is correlated with an ASV
+corr_fdr01_site_sig %>%
+  count(simpleName,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+  arrange(desc(num_correlations))%>%
+  view()
+
+# Count the number of times each metabolite is correlated with an ASV
+corr_fdr01_site_sig %>%
+  count(asv_id, name = "num_correlations") %>%   # Count occurrences
+  arrange(desc(num_correlations))%>% 
+  distinct()%>%
+  head(10)
+
+###sharon's edit:
+
+#ubiquitous ASVs: the unique group of ASVs with 10 or more correlations with metabolites
+#if we see that ASV-metabolite correlation in multiple sites:
+corr_fdr01_site_sig %>%
+  distinct(simpleName, asv_id) %>% #this deduplicates observations of significant ASV-metab correlations across multiple sites
+  count(asv_id, name = "num_correlations") %>%   # Count occurrences
+  arrange(desc(num_correlations))%>% 
+  distinct()%>%
+  dplyr::filter(num_correlations >= 10) %>%
+  nrow(.)
+# [1] 21
+
+corr_fdr01_site_sig %>%
+  count(asv_id, name = "num_correlations") %>%   # Count occurrences
+  arrange(desc(num_correlations))%>% 
+  distinct()%>%
+  dplyr::filter(num_correlations >= 10) %>%
+  nrow(.)
+# [1] 24
+
+#there are 3 ASVs that are correlated with 10 or more metabolites, in 2 or more sites:
+corr_fdr01_site_freq_sig_df <- dplyr::full_join((corr_fdr01_site_sig %>%
+                    distinct(simpleName, asv_id) %>% #this deduplicates observations of significant ASV-metab correlations across multiple sites
+                    count(asv_id, name = "num_unique_correlations") %>%   # Count occurrences
+                    arrange(desc(num_unique_correlations))),
+                  (corr_fdr01_site_sig %>%
+                    count(asv_id, name = "num_correlations") %>%   # Count occurrences
+                    arrange(desc(num_correlations)))) %>%
+  dplyr::filter(num_correlations >= 10) %>%
+  droplevels
+corr_fdr01_site_freq_sig_df %>%
+  dplyr::filter(num_unique_correlations < 10 ) %>%
+  droplevels %>%
+  dplyr::distinct(asv_id) %>%
+  tibble::deframe(.)
+# [1] ASV_00024 ASV_00026 ASV_00028
+
+corr_fdr01_site_sig %>%
+  distinct(simpleName, asv_id) %>% #this deduplicates observations of significant ASV-metab correlations across multiple sites
+  count(simpleName,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+  arrange(desc(num_correlations))%>%
+  head()
+# # A tibble: 6 × 2
+# simpleName         num_correlations
+# <chr>                         <int>
+#   1 pantothenic acid                216
+# 2 ciliatine                       141
+# 3 cysteate                        100
+# 4 homoserine betaine               96
+# 5 kynurenine                       81
+# 6 GABA                             80
+
+
+
+###
+
+# Count the number of times each asv is correlated with a metabolite
+corr_fdr01_site_sig %>%
+  count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+  arrange(desc(num_correlations))%>%
+  filter(num_correlations >= 10)%>%
+  count()
+
+###sharon's edit:
+
+#This is our overall count of significant and strong (abs(rho) >= 0.5) ASV-Metabolite correlations:
+corr_fdr01_site_sig_unique_venn_list <- corr_fdr01_site_sig %>%
+  dplyr::mutate(corrlink = paste0(asv_id, ":", simpleName)) %>%
+  dplyr::mutate(corrlink = factor(corrlink)) %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::distinct(corrlink) %>%
+        tibble::deframe(.))
+
+
+#now to count how many UNIQUE ASV-metab associations there are across all sites
+#first, see how many metabolite-ASV correlations are observed in 2 or more sites ("cosmopolitan")
+corr_fdr01_site_sig_unique_df <- corr_fdr01_site_sig %>%
+  dplyr::mutate(corrlink = paste0(asv_id, ":", simpleName)) %>%
+  dplyr::mutate(corrlink = factor(corrlink)) %>%
+  split(., f = .$corrlink) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::summarise(num_sites = length(unique(.[["grouping"]]))) %>%
+        droplevels
+  ) %>%
+  bind_rows(., .id = "corrlink") %>%
+  dplyr::arrange(desc(num_sites))
+#if the num_sites > 1, then the metabolite-ASV was significantly correlated in 2 or more sites
+
+#so which ASVs are observed with multiple correlations to metabolites?
+corr_fdr01_site_sig_freq_unique_df <- corr_fdr01_site_sig %>%
+  dplyr::mutate(corrlink = paste0(asv_id, ":", simpleName)) %>%
+  dplyr::mutate(corrlink = factor(corrlink)) %>%
+  dplyr::filter(asv_id %in% corr_fdr01_site_freq_sig_df[["asv_id"]]) %>%
+  # dplyr::left_join(., corr_fdr01_site_freq_sig_df, by = join_by(asv_id), multiple = "all", relationship = "many-to-many") %>% 
+  dplyr::distinct(corrlink, asv_id, simpleName, grouping, .keep_all = TRUE) %>%
+  droplevels 
+
+#list the cosmopolitan 
+corr_fdr01_site_sig_freq_unique_df %>%
+  count(corrlink,name = "num_occ") %>%
+  dplyr::arrange(desc(num_occ)) %>%
+  dplyr::filter(num_occ > 1)
+# # A tibble: 16 × 2
+# corrlink                          num_occ
+# <fct>                               <int>
+#   1 ASV_00026:pantothenic acid              3
+# 2 ASV_00018:aspartate                     2
+# 3 ASV_00018:glutamic acid                 2
+# 4 ASV_00018:glycine                       2
+# 5 ASV_00018:lysine 2                      2
+# 6 ASV_00018:ornithine 2                   2
+# 7 ASV_00018:threonine                     2
+# 8 ASV_00018:valine                        2
+# 9 ASV_00024:pantothenic acid              2
+# 10 ASV_00028:sn-glycerol 3-phosphate       2
+# 11 ASV_00054:sn-glycerol 3-phosphate       2
+# 12 ASV_00109:cysteate                      2
+# 13 ASV_00134:lysine 2                      2
+# 14 ASV_00218:isethionate                   2
+# 15 ASV_00360:alanine                       2
+# 16 ASV_00360:threonine                     2
+
+
+
+#so filter for only those ubiquitous ASVs (10+ correlations) correlations:
+corr_fdr01_site_sig_freq_unique_venn_list <- corr_fdr01_site_sig_freq_unique_df %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::distinct(corrlink, grouping) %>%
+        dplyr::select(corrlink) %>%
+        tibble::deframe(.))
+
+
+
+temp_g3 <- ggVennDiagram::ggVennDiagram(corr_fdr01_site_sig_unique_venn_list, 
+                                        set_size = NA,
+                                        label = "count",
+                                        label_color = "white",
+                                        label_geom = "label") +
+  scale_fill_viridis(discrete = FALSE, option = "turbo",
+                     # limits = c(0, max(myBreaks)),
+                     guide = "none",
+                     name = "ASV count") +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  ggtitle("Total") +
+  theme_void()
+
+temp_g4 <- ggVennDiagram::ggVennDiagram(corr_fdr01_site_sig_freq_unique_venn_list, 
+                                        set_size = NA,
+                                        label = "count",
+                                        label_color = "white",
+                                        label_geom = "label") +
+  scale_fill_viridis(discrete = FALSE, option = "turbo",
+                     # limits = c(0, max(myBreaks)),
+                     guide = "none",
+                     name = "ASV count") +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  ggtitle("Occurences of correlations between \nmetabolites and ASVs with multiple \n(10+) correlations") +
+  theme_void()
+
+
+gvenn2 <- temp_g3 + temp_g4 + patchwork::plot_layout(guides = "collect") + 
+  patchwork::plot_annotation(title = "How many ASVs are strongly (>0.5) correlated with metabolites in each site?", tag_levels = "A")
+gvenn2
+
+
+corr_fdr01_site_strong_asv_df <- corr_fdr01_site_sig %>%
+  dplyr::filter(abs(filtered_estimate) >= 0.9) %>%
+  droplevels
+        # This counts how many ASVs are uniquely observed per site that had a very strong >0.9 significant correlation.
+        # This does not count how MANY very strong significant correlations there are between ASVs and metabolites
+        # Because in Yawzi, ASV_00292 had very strong and significant correlations with 2 metabolites: 5'AMP and 3'AMP
+        # whereas in the other locations, the very strong correlations with a metabolite occurred for an ASV only one time
+        #count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+        
+
+corr_fdr01_site_sig_asv_venn_list <- corr_fdr01_site_sig %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+        arrange(desc(num_correlations))%>%
+        droplevels %>%
+        dplyr::select(asv_id) %>%
+        tibble::deframe(.)
+  )
+corr_fdr01_site_sig_strong_venn_list <- corr_fdr01_site_sig %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::filter(asv_id %in% corr_fdr01_site_strong_asv_df[["asv_id"]]) %>%
+        # count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+        # arrange(desc(num_correlations))%>%
+        # filter(num_correlations >= 10)%>%
+        droplevels %>%
+        dplyr::distinct(asv_id) %>%
+        tibble::deframe(.)
+  )
+
+temp_g1 <- ggVennDiagram::ggVennDiagram(corr_fdr01_site_sig_asv_venn_list, 
+                                       set_size = NA,
+                                       label = "count",
+                                       label_color = "white",
+                                       label_geom = "label") +
+  scale_fill_viridis(discrete = FALSE, option = "turbo",
+                     # limits = c(0, max(myBreaks)),
+                     guide = "none",
+                     name = "ASV count") +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  ggtitle("Number of ASVs with significant correlations to metabolites") +
+  theme_void()
+
+temp_g2 <- ggVennDiagram::ggVennDiagram(corr_fdr01_site_sig_strong_venn_list,
+                             set_size = NA,
+                             label = "count",
+                             label_color = "white",
+                             label_geom = "label") +
+  scale_fill_viridis(discrete = FALSE, option = "turbo",
+                     # limits = c(0, max(myBreaks)),
+                     guide = "none",
+                     name = "ASV count") +
+  scale_x_continuous(expand = expansion(mult = 0.2)) +
+  ggtitle("ASVs with very strong correlations to metabolites") +
+  theme_void()
+
+gvenn1 <- temp_g1 + temp_g2 + patchwork::plot_layout(guides = "collect") + 
+  patchwork::plot_annotation(title = "How many ASVs are significantly correlated with metabolites in each site?", tag_levels = "A")
+gvenn1
+
+
+
+
+
+
+###
+
+
+temp <- corr_fdr01_site_sig %>%
+  count(asv_id,name = "num_correlations") %>%  # Count occurrences of each metabolite-ASV pair
+  arrange(desc(num_correlations))%>%
+  filter(num_correlations >= 10)%>%
+  select(asv_id)%>%
+  deframe()
+
+forPlotting_wTaxa%>%
+  filter(asv_id %in% temp)%>%
+  select(asv_id,c("Domain":"sequence"))%>%
+  distinct()%>%
+  view()
+
+# Count the number of strong correlations by site and total
+corr_fdr01_site_sig %>%
+  filter(abs(filtered_estimate) >= 0.9) %>%
+  distinct(site, simpleName, asv_id) %>%  # ensure uniqueness before summarizing
+  group_by(site) %>%
+  summarise(num_unique_correlations = n()) %>%
+  bind_rows(
+    tibble(
+      site = "Total",
+      num_unique_correlations = nrow(
+        corr_fdr01_site_sig %>%
+          filter(abs(filtered_estimate) >= 0.9) %>%
+          distinct(simpleName, asv_id))))
+
+#Metabolites with strong correlations
+corr_fdr01_site_sig%>%
+  filter(abs(filtered_estimate) >= 0.9)%>%
+  select(simpleName)%>%
+  unique()
+
+#ASVs with strong correlations
+corr_fdr01_site_sig%>%
+  filter(abs(filtered_estimate) >= 0.9)%>%
+  select(asv_id)%>%
+  unique()
+##Sharon's note:
+# This counts how many ASVs are uniquely observed per site that had a very strong >0.9 significant correlation.
+# This does not count how MANY very strong significant correlations there are between ASVs and metabolites
+# Because in Yawzi, ASV_00292 had very strong and significant correlations with 2 metabolites: 5'AMP and 3'AMP
+# whereas in the other locations, the very strong correlations with a metabolite occurred for an ASV only one time
+# Instead, try this to see the overall total of very strong, significant correlations:
+corr_fdr01_site_sig%>%
+  filter(abs(filtered_estimate) >= 0.9)%>%
+  dplyr::mutate(corrlink = paste0(asv_id, ":", simpleName)) %>%
+  select(corrlink)%>%
+  unique()
+
+
+
+# Histogram of correlation strengths 
+corr_fdr01_site_sig%>%
+  mutate(direction = if_else(filtered_estimate > 0, "Positive Correlation (rho > 0.5)","Negative correlation (rho < 0.5)"))%>%
+  ggplot(aes(x=filtered_estimate,fill=site))+
+  geom_histogram(color="black")+
+  facet_wrap(~direction,scales="free")+
+  scale_fill_manual(values = site_colors)+
+  theme_bw()
 
 
 # output list of SDA/sig ASVs ---------------------------------------------
@@ -3890,7 +4307,7 @@ spearman.test.rho.dist.df <- bind_rows(spearman.test.filtered.df, spearman.test.
   dplyr::mutate(across(c(asv_id, simpleName, test_type, grouping, sig, site, sampling_time), ~factor(.x))) %>%
   dplyr::distinct(asv_id, simpleName, grouping, site, sampling_time, sig, test_type, .keep_all = TRUE) %>%
   dplyr::select(asv_id, simpleName, grouping, site, sampling_time, estimate, sig, test_type) %>%
-  dplyr::mutate(sig = factor(sig, levels = names(padj_cutoff_labels))) %>%
+  # dplyr::mutate(sig = factor(sig, levels = names(padj_cutoff_labels))) %>%
   dplyr::group_by(asv_id, simpleName,  grouping,site, sampling_time, sig, test_type) %>%
   # dplyr::distinct(estimate, .keep_all = TRUE) %>%
   droplevels
@@ -3920,7 +4337,8 @@ spearman.test.rho.dist.summary.df <- spearman.test.rho.dist.df %>%
   dplyr::mutate(site = recode_factor(site, !!!site_lookup),
                 sampling_time = recode_factor(sampling_time, !!!sampling_time_lookup)) %>%
   droplevels
-
+spearman.test.rho.dist.summary.df %>%
+  dplyr::filter(grepl("all", sampling_time))
 print(spearman.test.rho.dist.summary.df, n = 50)
 # # A tibble: 50 × 5
 # grouping               site                  sampling_time sig      num_obs
@@ -4545,6 +4963,9 @@ spearman.site.sig.filtered.list <- spearman.test.site.filtered.df %>%
   split(., f = .$grouping) %>%
   map(., ~.x %>%
         tidyr::drop_na(estimate) %>%
+        dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+        dplyr::filter(grepl("optA", test_type)) %>%
+        dplyr::filter(abs(filtered_estimate) >= 0.9) %>%
         droplevels %>%
         # dplyr::mutate(asv_id = factor(asv_id, levels = unique(usvi_sig_seqs_phylogeny.df[["asv_id"]]))) %>%
         droplevels %>%
