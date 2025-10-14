@@ -22,14 +22,14 @@ model_dispersion_lookup <- data.frame(v1 = c("manual_dispersion",
 
 
 group_labels_lookup <- c("Tektite_d" = "Tektite dawn",
-                         "Tektite_p" = "Tektite afternoon",
+                         "Tektite_p" = "Tektite mid-day",
                          "Yawzi_d" = "Yawzi dawn",
-                         "Yawzi_p" = "Yawzi afternoon",
+                         "Yawzi_p" = "Yawzi mid-day",
                          "LB_seagrass_d" = "Lameshur Bay seagrass dawn",
-                         "LB_seagrass_p" = "Lameshur Bay seagrass afternoon",
-                         "Tektite" = "Tektite",
-                         "Yawzi" = "Yawzi",
-                         "LB_seagrass" = "Lameshur Bay seagrass")
+                         "LB_seagrass_p" = "Lameshur Bay seagrass mid-day",
+                         "Tektite" = "Tektite Reef",
+                         "Yawzi" = "Yawzi Reef",
+                         "LB_seagrass" = "Seagrass")
 
 group_labels_colors <- viridisLite::turbo(length(group_labels_lookup)) %>%
   setNames(., names(group_labels_lookup))
@@ -37,7 +37,7 @@ group_labels_colors <- viridisLite::turbo(length(group_labels_lookup)) %>%
 variable_labels_lookup <- c("Tektite - LB_seagrass" = "Tektite and Lameshur Bay seagrass",
                          "Yawzi - LB_seagrass" = "Yawzi and Lameshur Bay seagrass",
                          "Yawzi - Tektite" = "Yawzi and Tektite Reefs",
-                         "peak_photo - dawn" = "afternoon and dawn")
+                         "peak_photo - dawn" = "mid-day and dawn")
 
 variable_labels_colors <- viridisLite::turbo(length(variable_labels_lookup)) %>%
   setNames(., names(variable_labels_lookup))
@@ -51,26 +51,26 @@ contrast_labels_lookup <- data.frame(v1 = c("LB_seagrass (peak_photo - dawn)",
                                             "peak_photo (Yawzi - LB_seagrass)",
                                             "peak_photo (Tektite - LB_seagrass)",
                                             "peak_photo (Yawzi - Tektite)"),
-                                     label = c("Lameshur Bay (afternoon - dawn)", 
-                                               "Yawzi (afternoon - dawn)", 
-                                               "Tektite (afternoon - dawn)", 
+                                     label = c("Lameshur Bay (mid-day - dawn)", 
+                                               "Yawzi (mid-day - dawn)", 
+                                               "Tektite (mid-day - dawn)", 
                                                "dawn (Yawzi - Lameshur Bay)",
                                                "dawn (Tektite - Lameshur Bay)",
                                                "dawn (Yawzi - Tektite)",
-                                               "afternoon (Yawzi - Lameshur Bay)",
-                                               "afternoon (Tektite - Lameshur Bay)",
-                                               "afternoon (Yawzi - Tektite)")) %>%
+                                               "mid-day (Yawzi - Lameshur Bay)",
+                                               "mid-day (Tektite - Lameshur Bay)",
+                                               "mid-day (Yawzi - Tektite)")) %>%
   tibble::deframe(.)
 
 site_lookup <- data.frame(site = c("LB_seagrass", "Yawzi", "Tektite",  "control_extraction", "control_pcr", "control_seq"),
-                          label = c("Lameshur Bay seagrass", "Yawzi Reef", "Tektite Reef", 
+                          label = c("Seagrass", "Yawzi Reef", "Tektite Reef", 
                                     "Control (DNA Extraction)", "Control (PCR)", "Control (Sequencing)")) %>%
   tibble::deframe(.)
 site_colors <- pals::kelly(22)[6:(5+length(site_lookup))] %>%
   # site_colors <- viridisLite::cividis(n = length(site_lookup), direction = 1) %>%
   setNames(., names(site_lookup))
 sampling_time_lookup <- data.frame(sampling_time = c("dawn", "peak_photo"),
-                                   label = c("Dawn", "Afternoon")) %>%
+                                   label = c("Dawn", "Mid-day")) %>%
   tibble::deframe(.)
 sampling_time_colors <- pals::ocean.haline(n = length(sampling_time_lookup)) %>%
   setNames(., names(sampling_time_lookup))

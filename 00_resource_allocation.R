@@ -11,6 +11,9 @@ if (!require("furrr", quietly = TRUE)){
   install.packages("furrr")
   install.packages("future")
 }
+if (!require("svglite", quietly = TRUE)){
+  install.packages("svglite")
+}
 library(BiocManager)
 library(BiocParallel)
 library(data.table)

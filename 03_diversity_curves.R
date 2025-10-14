@@ -76,6 +76,10 @@ if(file.exists(paste0(getwd(), "/", "00_resource_allocation.R"))){
 }
 
 # Load additional packages ------------------------------------------------
+if(!requireNamespace("ggvegan", quietly = TRUE)){
+  install.packages("remotes")
+  remotes::install_github("gavinsimpson/ggvegan")
+}
 
 library(tidyverse)
 library(phyloseq)
