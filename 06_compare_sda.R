@@ -942,6 +942,51 @@ usvi_sda_asvs_shared_relabund.df <- shared_sda_asvs_idx_filtered_list %>%
   droplevels
 
 
+#make the table look like this:
+# ASV	Site A	Site B	Adj. p-value (fdr)	Number of significant sites	Sampling time	Rank A	Rank B	Elevated in
+
+usvi_sda_asvs_shared_relabund.tbl <- usvi_sda_asvs_shared_relabund.df %>%
+  dplyr::filter(grepl("^dawn|^peak", contrast)) %>%
+  droplevels %>%
+  split(., f = .$contrast) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::mutate(mean_pm_sd = paste(scaleFUN2(mean_relabund), scaleFUN2(sd_relabund), sep = " \U00B1 ")) %>%
+        dplyr::mutate(sites = stringr::str_remove_all(contrast, paste0(names(sampling_time_lookup), collapse = "|"))) %>%
+        dplyr::mutate(sites = stringr::str_remove_all(sites, "[[:punct:]]")) %>%
+        dplyr::mutate(sites = stringr::str_trim(sites, "both")) %>%
+        tidyr::separate_wider_delim(cols = "sites", delim = "  ", names = c("Site B", "Site A"), too_few = "align_start", cols_remove = FALSE) %>%
+        tidyr::pivot_wider(., id_cols = c("asv_id", "contrast", "sampling_time", "Site A", "Site B"),
+                           names_from = "site", values_from = "mean_pm_sd"
+                           ) %>%
+        droplevels) %>%
+  dplyr::bind_rows(.) %>%
+  dplyr::arrange(asv_id) %>%
+  dplyr::bind_rows(., (usvi_sda_asvs_shared_relabund.df %>%
+                         dplyr::filter(grepl("\\(dawn|\\(peak", contrast)) %>%
+                         droplevels %>%
+                         split(., f = .$contrast) %>%
+                         map(., ~.x %>%
+                               droplevels %>%
+                               dplyr::mutate(mean_pm_sd = paste(scaleFUN2(mean_relabund), scaleFUN2(sd_relabund), sep = " \U00B1 ")) %>%
+                               dplyr::mutate(times = stringr::str_remove_all(contrast, paste0(names(site_lookup), collapse = "|"))) %>%
+                               dplyr::mutate(times = stringr::str_remove_all(times, "[[:punct:]]")) %>%
+                               dplyr::mutate(times = stringr::str_trim(times, "both")) %>%
+                               tidyr::separate_wider_delim(cols = "times", delim = "  ", names = c("Time B", "Time A"), too_few = "align_start", cols_remove = FALSE) %>%
+                               tidyr::pivot_wider(., id_cols = c("asv_id", "contrast", "site", "Time A", "Time B"),
+                                                  names_from = "sampling_time", values_from = "mean_pm_sd"
+                               ) %>%
+                               droplevels) %>%
+                         dplyr::bind_rows(.) %>%
+                         dplyr::arrange(asv_id))) %>%
+    dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy"), by = join_by(asv_id)) %>%
+  droplevels
+
+if(!any(grepl("usvi_sda_asvs_shared_relabund.tbl", list.files(projectpath, pattern = "usvi_.*.tsv")))){
+  readr::write_delim(usvi_sda_asvs_shared_relabund.tbl, paste0(projectpath, "/", "usvi_sda_asvs_shared_relabund.tbl-", Sys.Date(), ".tsv"),
+                     delim = "\t", col_names = TRUE, na = "")
+}
+
 usvi_sda_asvs_shared_summary.df <- usvi_sda_asvs_shared_summary.df %>%
   dplyr::left_join(., (usvi_sda_asvs_shared_relabund.df %>%
                          dplyr::group_by(contrast) %>%

@@ -1,0 +1,91 @@
+sample_id	site	sampling_day	sampling_time	sample_order	total_seqs
+Metab_182	Lameshur Bay seagrass	Day1	Dawn	1	112319
+Metab_191	Lameshur Bay seagrass	Day1	Dawn	2	82737
+Metab_194	Lameshur Bay seagrass	Day1	Dawn	3	97897
+Metab_181	Lameshur Bay seagrass	Day1	Peak photosynthesis	1	97059
+Metab_193	Lameshur Bay seagrass	Day1	Peak photosynthesis	2	98670
+Metab_199	Lameshur Bay seagrass	Day1	Peak photosynthesis	3	18535
+Metab_219	Lameshur Bay seagrass	Day2	Dawn	4	84955
+Metab_237	Lameshur Bay seagrass	Day2	Dawn	5	18346
+Metab_240	Lameshur Bay seagrass	Day2	Dawn	6	58108
+Metab_183	Lameshur Bay seagrass	Day2	Peak photosynthesis	4	100600
+Metab_189	Lameshur Bay seagrass	Day2	Peak photosynthesis	5	111503
+Metab_233	Lameshur Bay seagrass	Day2	Peak photosynthesis	6	93111
+Metab_272	Lameshur Bay seagrass	Day3	Dawn	7	105467
+Metab_281	Lameshur Bay seagrass	Day3	Dawn	8	79925
+Metab_287	Lameshur Bay seagrass	Day3	Dawn	9	82889
+Metab_280	Lameshur Bay seagrass	Day3	Peak photosynthesis	7	96759
+Metab_286	Lameshur Bay seagrass	Day3	Peak photosynthesis	8	73773
+Metab_289	Lameshur Bay seagrass	Day3	Peak photosynthesis	9	78554
+Metab_328	Lameshur Bay seagrass	Day4	Dawn	10	89797
+Metab_334	Lameshur Bay seagrass	Day4	Dawn	11	83825
+Metab_337	Lameshur Bay seagrass	Day4	Dawn	12	91791
+Metab_273	Lameshur Bay seagrass	Day4	Peak photosynthesis	10	96102
+Metab_279	Lameshur Bay seagrass	Day4	Peak photosynthesis	11	83652
+Metab_282	Lameshur Bay seagrass	Day4	Peak photosynthesis	12	85441
+Metab_309	Lameshur Bay seagrass	Day5	Dawn	13	81920
+Metab_318	Lameshur Bay seagrass	Day5	Dawn	14	70281
+Metab_324	Lameshur Bay seagrass	Day5	Dawn	15	85640
+Metab_326	Lameshur Bay seagrass	Day5	Peak photosynthesis	13	88797
+Metab_329	Lameshur Bay seagrass	Day5	Peak photosynthesis	14	78673
+Metab_332	Lameshur Bay seagrass	Day5	Peak photosynthesis	15	75246
+Metab_229	Tektite Reef	Day1	Dawn	1	74210
+Metab_232	Tektite Reef	Day1	Dawn	2	84974
+Metab_235	Tektite Reef	Day1	Dawn	3	116784
+Metab_180	Tektite Reef	Day1	Peak photosynthesis	1	108797
+Metab_184	Tektite Reef	Day1	Peak photosynthesis	2	80810
+Metab_196	Tektite Reef	Day1	Peak photosynthesis	3	88275
+Metab_231	Tektite Reef	Day2	Dawn	4	13942
+Metab_234	Tektite Reef	Day2	Dawn	5	91906
+Metab_241	Tektite Reef	Day2	Dawn	6	91129
+Metab_224	Tektite Reef	Day2	Peak photosynthesis	4	33973
+Metab_227	Tektite Reef	Day2	Peak photosynthesis	5	80703
+Metab_236	Tektite Reef	Day2	Peak photosynthesis	6	87375
+Metab_275	Tektite Reef	Day3	Dawn	7	83613
+Metab_278	Tektite Reef	Day3	Dawn	8	75410
+Metab_290	Tektite Reef	Day3	Dawn	9	82150
+Metab_266	Tektite Reef	Day3	Peak photosynthesis	7	96555
+Metab_277	Tektite Reef	Day3	Peak photosynthesis	8	98884
+Metab_283	Tektite Reef	Day3	Peak photosynthesis	9	93335
+Metab_316	Tektite Reef	Day4	Dawn	10	95840
+Metab_319	Tektite Reef	Day4	Dawn	11	67461
+Metab_322	Tektite Reef	Day4	Dawn	12	103654
+Metab_261	Tektite Reef	Day4	Peak photosynthesis	10	90108
+Metab_264	Tektite Reef	Day4	Peak photosynthesis	11	76400
+Metab_270	Tektite Reef	Day4	Peak photosynthesis	12	101266
+Metab_312	Tektite Reef	Day5	Dawn	13	81691
+Metab_315	Tektite Reef	Day5	Dawn	14	95124
+Metab_321	Tektite Reef	Day5	Dawn	15	101598
+Metab_311	Tektite Reef	Day5	Peak photosynthesis	13	111975
+Metab_314	Tektite Reef	Day5	Peak photosynthesis	14	95396
+Metab_320	Tektite Reef	Day5	Peak photosynthesis	15	102606
+Metab_185	Yawzi Reef	Day1	Dawn	1	118596
+Metab_188	Yawzi Reef	Day1	Dawn	2	83051
+Metab_238	Yawzi Reef	Day1	Dawn	3	87521
+Metab_179	Yawzi Reef	Day1	Peak photosynthesis	1	98809
+Metab_187	Yawzi Reef	Day1	Peak photosynthesis	2	64343
+Metab_190	Yawzi Reef	Day1	Peak photosynthesis	3	108858
+Metab_222	Yawzi Reef	Day2	Dawn	4	103175
+Metab_225	Yawzi Reef	Day2	Dawn	5	101742
+Metab_228	Yawzi Reef	Day2	Dawn	6	76140
+Metab_186	Yawzi Reef	Day2	Peak photosynthesis	4	91193
+Metab_230	Yawzi Reef	Day2	Peak photosynthesis	5	84984
+Metab_239	Yawzi Reef	Day2	Peak photosynthesis	6	98698
+Metab_284	Yawzi Reef	Day3	Dawn	7	97022
+Metab_292	Yawzi Reef	Day3	Dawn	8	87134
+Metab_295	Yawzi Reef	Day3	Dawn	9	88196
+Metab_269	Yawzi Reef	Day3	Peak photosynthesis	7	114556
+Metab_271	Yawzi Reef	Day3	Peak photosynthesis	8	94969
+Metab_274	Yawzi Reef	Day3	Peak photosynthesis	9	98130
+Metab_313	Yawzi Reef	Day4	Dawn	10	95428
+Metab_325	Yawzi Reef	Day4	Dawn	11	76304
+Metab_331	Yawzi Reef	Day4	Dawn	12	85483
+Metab_267	Yawzi Reef	Day4	Peak photosynthesis	10	76054
+Metab_276	Yawzi Reef	Day4	Peak photosynthesis	11	87938
+Metab_285	Yawzi Reef	Day4	Peak photosynthesis	12	86160
+Metab_303	Yawzi Reef	Day5	Dawn	13	75361
+Metab_306	Yawzi Reef	Day5	Dawn	14	99489
+Metab_327	Yawzi Reef	Day5	Dawn	15	86571
+Metab_308	Yawzi Reef	Day5	Peak photosynthesis	13	96057
+Metab_317	Yawzi Reef	Day5	Peak photosynthesis	14	95454
+Metab_323	Yawzi Reef	Day5	Peak photosynthesis	15	96182

@@ -398,7 +398,7 @@ temp_list <- usvi_seq_summary.df %>%
 # # 
 # # data:  temp_list
 # # Kruskal-Wallis chi-squared = 4.8814, df = 5, p-value = 0.4305
-if(!file.exists(paste0(projectpath, "/", "usvi_seq_summary.tsv", ".gz"))){
+if(!length(list.files(path = projectpath, pattern = "usvi_seq_summary.tsv")) > 0){
 
 usvi_seq_summary.tsv <- usvi_seq_summary.df %>%
   dplyr::arrange(site, sampling_day, sampling_time, sample_order) %>%
@@ -412,6 +412,27 @@ usvi_seq_summary.tsv <- usvi_seq_summary.df %>%
                      delim = "\t", col_names = TRUE)
   
 }
+
+usvi_seq_control_summary.df <- usvi_prok_phyloseq %>%
+  phyloseq::subset_samples(., grepl("pcr_control|control_extraction", sample_type)) %>%
+  phyloseq::otu_table(.) %>%
+  as.data.frame %>%
+  dplyr::slice(which(rowSums(.) > 0)) %>%
+  tibble::rownames_to_column(var = "asv_id") %>%
+  tidyr::pivot_longer(., cols = -c("asv_id"),
+                      names_to = "sample_id",
+                      values_to = "abundance") %>%
+  dplyr::group_by(sample_id) %>%
+  dplyr::summarise(total_seqs = sum(abundance, na.rm = TRUE)) %>%
+  dplyr::left_join(., (metadata %>%
+                         dplyr::select(sample_id, sample_type, sampling_time, sampling_day, site, contains("sample_order"))),
+                   by = join_by(sample_id)) %>%
+  dplyr::mutate(across(contains("sampl"), ~factor(.x))) %>%
+  dplyr::mutate(sampling_time = factor(sampling_time, levels = names(sampling_time_lookup)),
+                # sample_type = factor(sample_type, levels = temporal_lookup[["sample_type"]]),
+                # sampling_date = factor(sampling_date, levels = temporal_lookup[["sampling_date"]]),
+                sampling_day = factor(sampling_day, levels = names(sampling_day_lookup))) %>%
+  droplevels
 
 
 #note that the following samples were sequenced in a separate run:

@@ -879,66 +879,66 @@ dist_usvi_asv.mat <- as.matrix(dist_usvi_asv.d)
 
 #what it used to be with Day1 samples:
 {
-  meta.microb_full <- metabolomics_sample_metadata %>%
-    dplyr::select(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
-    # dplyr::filter(!grepl("Day1", sampling_day)) %>%
-    dplyr::mutate(across(c(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site), ~factor(.x))) %>%
-    dplyr::distinct(sample_id, .keep_all = TRUE) %>%
-    dplyr::mutate(site_type = dplyr::case_when(grepl("LB", site) ~ "seagrass",
-                                               grepl("Yawzi|Tektite", site) ~ "reef",
-                                               .default = NA)) %>%
-    # dplyr::mutate(sample_id = factor(sample_id, levels = colnames(usvi_sw_asv_full.tbl))) %>%
-    dplyr::arrange(sample_id) %>%
-    tidyr::drop_na(.) %>%
-    dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
-    dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
-    dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
-    dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
-                  grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
-                  grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
-    dplyr::mutate(rownames = sample_id) %>%
-    tibble::column_to_rownames(var = "rownames") %>%
-    droplevels
-  
-  usvi_sw_asv_full.tbl <- usvi_prok_asvs.df %>%
-    dplyr::filter(sample_ID %in% meta.microb_full[["sample_id"]]) %>%
-    droplevels %>%
-    tidyr::pivot_wider(., id_cols = "asv_id",
-                       names_from = "sample_ID",
-                       values_from = "counts",
-                       values_fill = 0) %>%
-    droplevels %>%
-    tibble::column_to_rownames(var = "asv_id") %>%
-    apply(., 2, relabund) %>%
-    as.data.frame(.) %>%
-    dplyr::slice(which(rowSums(.) > 0)) %>%
-    as.data.frame(.) %>%
-    # dplyr::select(colnames(usvi_sw_genus.tbl)) %>%
-    droplevels
-  
-  dist_usvi_asv_full.mh.d <- usvi_sw_asv_full.tbl %>%
-    dplyr::select(rownames(meta.microb_full)) %>%
-    t() %>%
-    vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE)
-  
-  temp_permanova_asv_est_var.df <- with(meta.microb_full, vegan::adonis2(data = meta.microb_full, method = "horn", permutations = 9999,
-                                                                         # strata = site,
-                                                                         formula = dist_usvi_asv_full.mh.d ~ sampling_time*sampling_day*site,
-                                                                         parallel = nthreads, by = "terms"))
-  temp_permanova_asv_est_var.df <- temp_permanova_asv_est_var.df %>%
-    tibble::rownames_to_column(var = "term") %>%
-    dplyr::mutate(term = as.character(term)) %>%
-    dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
-                                        .default = NA))
-  temp_permanova_asv_est_var.df <- temp_permanova_asv_est_var.df %>%
-    dplyr::mutate(temp_permanova_asv_est_var.df %>%
-                    dplyr::filter(!grepl("Total", term)) %>%
-                    dplyr::summarise(TotalEMS = sum(MS))) %>%
-    dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
-                                            .default = NA)) %>%
-    dplyr::select(-TotalEMS) %>%
-    dplyr::mutate(sq_root = MS^(1/2)) %>%
-    dplyr::mutate(perc_variation = sq_root/(sum(sq_root, na.rm = TRUE))*100)
+  # meta.microb_full <- metabolomics_sample_metadata %>%
+  #   dplyr::select(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site) %>%
+  #   # dplyr::filter(!grepl("Day1", sampling_day)) %>%
+  #   dplyr::mutate(across(c(metab_deriv_label, sample_id, sample_type, sampling_date, sampling_time, sampling_day, site), ~factor(.x))) %>%
+  #   dplyr::distinct(sample_id, .keep_all = TRUE) %>%
+  #   dplyr::mutate(site_type = dplyr::case_when(grepl("LB", site) ~ "seagrass",
+  #                                              grepl("Yawzi|Tektite", site) ~ "reef",
+  #                                              .default = NA)) %>%
+  #   # dplyr::mutate(sample_id = factor(sample_id, levels = colnames(usvi_sw_asv_full.tbl))) %>%
+  #   dplyr::arrange(sample_id) %>%
+  #   tidyr::drop_na(.) %>%
+  #   dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
+  #   dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
+  #   dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
+  #   dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
+  #                 grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
+  #                 grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
+  #   dplyr::mutate(rownames = sample_id) %>%
+  #   tibble::column_to_rownames(var = "rownames") %>%
+  #   droplevels
+  # 
+  # usvi_sw_asv_full.tbl <- usvi_prok_asvs.df %>%
+  #   dplyr::filter(sample_ID %in% meta.microb_full[["sample_id"]]) %>%
+  #   droplevels %>%
+  #   tidyr::pivot_wider(., id_cols = "asv_id",
+  #                      names_from = "sample_ID",
+  #                      values_from = "counts",
+  #                      values_fill = 0) %>%
+  #   droplevels %>%
+  #   tibble::column_to_rownames(var = "asv_id") %>%
+  #   apply(., 2, relabund) %>%
+  #   as.data.frame(.) %>%
+  #   dplyr::slice(which(rowSums(.) > 0)) %>%
+  #   as.data.frame(.) %>%
+  #   # dplyr::select(colnames(usvi_sw_genus.tbl)) %>%
+  #   droplevels
+  # 
+  # dist_usvi_asv_full.mh.d <- usvi_sw_asv_full.tbl %>%
+  #   dplyr::select(rownames(meta.microb_full)) %>%
+  #   t() %>%
+  #   vegan::vegdist(., method = "horn", binary = FALSE, na.rm = TRUE)
+  # 
+  # temp_permanova_asv_est_var.df <- with(meta.microb_full, vegan::adonis2(data = meta.microb_full, method = "horn", permutations = 9999,
+  #                                                                        # strata = site,
+  #                                                                        formula = dist_usvi_asv_full.mh.d ~ sampling_time*sampling_day*site,
+  #                                                                        parallel = nthreads, by = "terms"))
+  # temp_permanova_asv_est_var.df <- temp_permanova_asv_est_var.df %>%
+  #   tibble::rownames_to_column(var = "term") %>%
+  #   dplyr::mutate(term = as.character(term)) %>%
+  #   dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
+  #                                       .default = NA))
+  # temp_permanova_asv_est_var.df <- temp_permanova_asv_est_var.df %>%
+  #   dplyr::mutate(temp_permanova_asv_est_var.df %>%
+  #                   dplyr::filter(!grepl("Total", term)) %>%
+  #                   dplyr::summarise(TotalEMS = sum(MS))) %>%
+  #   dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
+  #                                           .default = NA)) %>%
+  #   dplyr::select(-TotalEMS) %>%
+  #   dplyr::mutate(sq_root = MS^(1/2)) %>%
+  #   dplyr::mutate(perc_variation = sq_root/(sum(sq_root, na.rm = TRUE))*100)
 }
 
 # #SS(total) for microbiomes: 1.239223
@@ -1350,81 +1350,81 @@ dist_usvi_asv.df %>%
 
 #interlude: KW testing metabolites
 {
-temp_list <- meta.metab %>% #metadata file where rownames are "CINAR_BC_*"
-  split(., f = .$grouping) %>% #grouping looks like: "Yawzi.dawn"
-  map(., ~.x %>%
-        tibble::rownames_to_column(var = "metab_deriv_label") %>%
-        dplyr::select(metab_deriv_label) %>%
-        tibble::deframe(.)) %>%
-  map(., ~usvi_metabolomics.tbl %>% #this is a wide dataframe where rownames are the metabolite names, and columsn are sample names "CINAR_BC_*"
-        apply(., 2, function(x) log2(x + 1)) %>%
-        as.data.frame(.) %>%
-        dplyr::select(all_of(.x)) %>%
-        tibble::rownames_to_column(var = "metabolite") %>%
-        tidyr::pivot_longer(., cols = !c("metabolite"),
-                            names_to = "metab_deriv_label",
-                            values_to = "concentration")) %>%
-  bind_rows(., .id = "grouping") %>%
-  dplyr::left_join(., meta.metab %>%
-                     tibble::rownames_to_column(var = "metab_deriv_label") %>%
-                     dplyr::select(metab_deriv_label, site)) %>%
-    tidyr::drop_na(.)
-temp_kw_res <- temp_list %>%
-  split(., f = .$metabolite) %>%
-  map(., ~.x %>%
-        split(., f = .$site) %>%
-        map(., ~.x %>%
-                    dplyr::select(grouping, concentration) %>%
-                    tidyr::drop_na(.) %>%
-              droplevels) %>%
-        map_if(., ~(length(unique(.x[["grouping"]])) > 1), ~.x %>% kruskal.test(concentration ~ grouping, .), .else = NULL)) %>%
-  map_depth(., 2, ~.x %>%
-              purrr::pluck("p.value")) %>%
-  bind_rows(., .id = "metabolite") %>%
-  tidyr::pivot_longer(., cols = !"metabolite",
-                      names_to = "site.dawn_vs_afternoon",
-                      values_to = "p.value") %>%
-  tidyr::drop_na(.)
-  
-
+# temp_list <- meta.metab %>% #metadata file where rownames are "CINAR_BC_*"
+#   split(., f = .$grouping) %>% #grouping looks like: "Yawzi.dawn"
+#   map(., ~.x %>%
+#         tibble::rownames_to_column(var = "metab_deriv_label") %>%
+#         dplyr::select(metab_deriv_label) %>%
+#         tibble::deframe(.)) %>%
+#   map(., ~usvi_metabolomics.tbl %>% #this is a wide dataframe where rownames are the metabolite names, and columsn are sample names "CINAR_BC_*"
+#         apply(., 2, function(x) log2(x + 1)) %>%
+#         as.data.frame(.) %>%
+#         dplyr::select(all_of(.x)) %>%
+#         tibble::rownames_to_column(var = "metabolite") %>%
+#         tidyr::pivot_longer(., cols = !c("metabolite"),
+#                             names_to = "metab_deriv_label",
+#                             values_to = "concentration")) %>%
+#   bind_rows(., .id = "grouping") %>%
+#   dplyr::left_join(., meta.metab %>%
+#                      tibble::rownames_to_column(var = "metab_deriv_label") %>%
+#                      dplyr::select(metab_deriv_label, site)) %>%
+#     tidyr::drop_na(.)
 # temp_kw_res <- temp_list %>%
 #   split(., f = .$metabolite) %>%
 #   map(., ~.x %>%
 #         split(., f = .$site) %>%
-#         map(., ~.x %>% 
-#               kruskal.test(concentration ~ grouping, .))) %>%
+#         map(., ~.x %>%
+#                     dplyr::select(grouping, concentration) %>%
+#                     tidyr::drop_na(.) %>%
+#               droplevels) %>%
+#         map_if(., ~(length(unique(.x[["grouping"]])) > 1), ~.x %>% kruskal.test(concentration ~ grouping, .), .else = NULL)) %>%
 #   map_depth(., 2, ~.x %>%
 #               purrr::pluck("p.value")) %>%
 #   bind_rows(., .id = "metabolite") %>%
 #   tidyr::pivot_longer(., cols = !"metabolite",
 #                       names_to = "site.dawn_vs_afternoon",
-#                       values_to = "p.value")
-
-
-q_cutoff <- p.adjust(temp_kw_res[["p.value"]], method = "fdr") %>%
-  na.omit(.) %>%
-  ashr::qval.from.lfdr(.) %>%
-  quantile(., probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE,type = 7) #get the possible p-adj cutoffs for different q-values
-temp_kw_res <- temp_kw_res %>%
-  dplyr::mutate(filtered_p.value = dplyr::case_when(p.value > 0.05 ~ NA,
-                                               .default = p.value)) %>%
-  dplyr::mutate(padj_10 = dplyr::case_when(p.value <= q_cutoff[2] ~ p.value,
-                                           .default = NA)) %>%
-  dplyr::mutate(padj_05 = dplyr::case_when(p.value <= q_cutoff[1] ~ p.value,
-                                           .default = NA))
-length(na.omit(temp_kw_res[["filtered_p.value"]])) #26
-length(na.omit(temp_kw_res[["padj_10"]])) #20
-length(na.omit(temp_kw_res[["padj_05"]])) #15
-
-  
-# temp_list <- usvi_metabolomics.tbl %>%
-#   dplyr::select(rownames(meta.metab)) %>%
-#   tibble::rownames_to_column(var = "metabolite") %>%
-#   split(., f = .$metabolite) %>%
-#   map(., ~.x %>%
-#         tibble::column_to_rownames(var = "metabolite"))
-
-kruskal.test(temp_list)
+#                       values_to = "p.value") %>%
+#   tidyr::drop_na(.)
+#   
+# 
+# # temp_kw_res <- temp_list %>%
+# #   split(., f = .$metabolite) %>%
+# #   map(., ~.x %>%
+# #         split(., f = .$site) %>%
+# #         map(., ~.x %>% 
+# #               kruskal.test(concentration ~ grouping, .))) %>%
+# #   map_depth(., 2, ~.x %>%
+# #               purrr::pluck("p.value")) %>%
+# #   bind_rows(., .id = "metabolite") %>%
+# #   tidyr::pivot_longer(., cols = !"metabolite",
+# #                       names_to = "site.dawn_vs_afternoon",
+# #                       values_to = "p.value")
+# 
+# 
+# q_cutoff <- p.adjust(temp_kw_res[["p.value"]], method = "fdr") %>%
+#   na.omit(.) %>%
+#   ashr::qval.from.lfdr(.) %>%
+#   quantile(., probs = seq(0.05, 0.1, 0.05), na.rm = TRUE, names = FALSE,type = 7) #get the possible p-adj cutoffs for different q-values
+# temp_kw_res <- temp_kw_res %>%
+#   dplyr::mutate(filtered_p.value = dplyr::case_when(p.value > 0.05 ~ NA,
+#                                                .default = p.value)) %>%
+#   dplyr::mutate(padj_10 = dplyr::case_when(p.value <= q_cutoff[2] ~ p.value,
+#                                            .default = NA)) %>%
+#   dplyr::mutate(padj_05 = dplyr::case_when(p.value <= q_cutoff[1] ~ p.value,
+#                                            .default = NA))
+# length(na.omit(temp_kw_res[["filtered_p.value"]])) #26
+# length(na.omit(temp_kw_res[["padj_10"]])) #20
+# length(na.omit(temp_kw_res[["padj_05"]])) #15
+# 
+#   
+# # temp_list <- usvi_metabolomics.tbl %>%
+# #   dplyr::select(rownames(meta.metab)) %>%
+# #   tibble::rownames_to_column(var = "metabolite") %>%
+# #   split(., f = .$metabolite) %>%
+# #   map(., ~.x %>%
+# #         tibble::column_to_rownames(var = "metabolite"))
+# 
+# kruskal.test(temp_list)
 }
 
 #approach 2: pairwise t-tests
@@ -2904,103 +2904,103 @@ save(dist_usvi_metab_site_day.boot, dist_usvi_metab_site_day.boot.summary.df, di
 # adonis2 per site --------------------------------------------------------
 
 
-#let's subset for individual sites, to constrain the site differences
-
-site.meta.metab <- metabolomics_sample_metadata %>%
-  # dplyr::select(intersect(colnames(metabolomics_sample_metadata), keep)) %>%
-  dplyr::left_join(., usvi_selected_metadata %>%
-                     dplyr::select(sample_id, site, site_type, grouping, replicate, PAR, lumens, lux, temp), multiple = "all", relationship = "many-to-many") %>%
-  dplyr::arrange(site, sampling_time, sampling_day) %>%
-  tidyr::fill(PAR, lumens, lux, temp, .direction = "down") %>%
-  dplyr::ungroup(.) %>%
-  dplyr::filter(metab_deriv_label %in% colnames(usvi_metabolomics.tbl)) %>%
-  dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = colnames(usvi_metabolomics.tbl))) %>%
-  dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
-  dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
-  dplyr::select(sample_id, colnames(meta.microb)) %>%
-  dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = colnames(usvi_metabolomics.tbl))) %>%
-  droplevels %>%
-  dplyr::arrange(metab_deriv_label) %>%
-  # tidyr::drop_na(.) %>%
-  dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
-  dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
-                grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
-                grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
-  dplyr::filter(grepl("Tektite", site)) %>%
-  tibble::column_to_rownames(var = "metab_deriv_label") %>%
-  droplevels
-dist_usvi_site_metab.d <- usvi_metabolomics.tbl %>%
-  dplyr::select(rownames(site.meta.metab)) %>%
-  apply(., 2, function(x) log2(x + 1)) %>%
-  t() %>%
-  vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE)
-
-with(site.meta.metab, vegan::adonis2(data = site.meta.metab, method = "bray", permutations = 9999,
-                                # strata = site,
-                                formula = dist_usvi_site_metab.d ~ sampling_time*sampling_day,
-                                parallel = nthreads, by = "terms"))
-#for LB seagrass:
-# vegan::adonis2(formula = dist_usvi_site_metab.d ~ sampling_time * sampling_day, data = site.meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
-# Df SumOfSqs      R2      F Pr(>F)    
-# sampling_time               1 0.056188 0.19869 7.2475 0.0002 ***
-#   sampling_day                3 0.069641 0.24626 2.9942 0.0037 ** 
-#   sampling_time:sampling_day  3 0.040670 0.14381 1.7486 0.0814 .  
-# Residual                   15 0.116292 0.41123                  
-# Total                      22 0.282791 1.00000                  
-# ---
-#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-#for yawzi:
-# vegan::adonis2(formula = dist_usvi_site_metab.d ~ sampling_time * sampling_day, data = site.meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
-# Df SumOfSqs      R2      F Pr(>F)   
-# sampling_time               1  0.07629 0.09961 3.6698 0.0445 * 
-#   sampling_day                3  0.25303 0.33037 4.0571 0.0062 **
-#   sampling_time:sampling_day  3  0.08317 0.10859 1.3335 0.2589   
-# Residual                   17  0.35341 0.46144                 
-# Total                      24  0.76590 1.00000                 
-# ---
-
-#for Tektite:
-# vegan::adonis2(formula = dist_usvi_site_metab.d ~ sampling_time * sampling_day, data = site.meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
-# Df SumOfSqs      R2      F Pr(>F)
-# sampling_time               1  0.06751 0.06951 1.5951 0.1969
-# sampling_day                3  0.09062 0.09331 0.7137 0.6296
-# sampling_time:sampling_day  3  0.09353 0.09630 0.7366 0.6175
-# Residual                   17  0.71951 0.74087              
-# Total                      24  0.97117 1.00000      
-
-
-#calculating estimates of variation in the models:
-#start with Tektite, since it is so variable.
-
-temp_res <- with(site.meta.metab, vegan::adonis2(data = site.meta.metab, method = "bray", permutations = 9999,
-                                     # strata = site,
-                                     formula = dist_usvi_site_metab.d ~ sampling_time*sampling_day,
-                                     parallel = nthreads, by = "terms"))
-
-permanova_tektite_metab_estimate_variation.df <- temp_res %>%
-  tibble::rownames_to_column(var = "term") %>%
-  dplyr::mutate(term = as.character(term)) %>%
-  dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
-                                      .default = NA))
-
-permanova_tektite_metab_estimate_variation.df <- permanova_tektite_metab_estimate_variation.df %>%
-  dplyr::mutate(permanova_tektite_metab_estimate_variation.df %>%
-                  dplyr::filter(!grepl("Total", term)) %>%
-                  dplyr::summarise(TotalEMS = sum(MS))) %>%
-  dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
-                                          .default = NA)) %>%
-  dplyr::mutate(sq_root = MS^(1/2))
-
-
-permanova_tektite_metab_estimate_variation.df %>% 
-  dplyr::summarise(sum(sq_root, na.rm = TRUE))
-#term   V_term
-#sampling_time    39.42973
-#sampling_day   17.64227
-#sampling_time:sampling_day   18.20849
-#Residual   24.71950
-#Total
+# #let's subset for individual sites, to constrain the site differences
+# 
+# site.meta.metab <- metabolomics_sample_metadata %>%
+#   # dplyr::select(intersect(colnames(metabolomics_sample_metadata), keep)) %>%
+#   dplyr::left_join(., usvi_selected_metadata %>%
+#                      dplyr::select(sample_id, site, site_type, grouping, replicate, PAR, lumens, lux, temp), multiple = "all", relationship = "many-to-many") %>%
+#   dplyr::arrange(site, sampling_time, sampling_day) %>%
+#   tidyr::fill(PAR, lumens, lux, temp, .direction = "down") %>%
+#   dplyr::ungroup(.) %>%
+#   dplyr::filter(metab_deriv_label %in% colnames(usvi_metabolomics.tbl)) %>%
+#   dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = colnames(usvi_metabolomics.tbl))) %>%
+#   dplyr::distinct(metab_deriv_label, .keep_all = TRUE) %>%
+#   dplyr::mutate(grouping2 = paste0(grouping, ".", sampling_day)) %>%
+#   dplyr::select(sample_id, colnames(meta.microb)) %>%
+#   dplyr::mutate(metab_deriv_label = factor(metab_deriv_label, levels = colnames(usvi_metabolomics.tbl))) %>%
+#   droplevels %>%
+#   dplyr::arrange(metab_deriv_label) %>%
+#   # tidyr::drop_na(.) %>%
+#   dplyr::mutate(across(c(sample_id, sample_type, site, sampling_time, sampling_day, metab_deriv_label, site_type, grouping, grouping2), ~factor(.x))) %>%
+#   dplyr::mutate(site = fct_relevel(site, "LB_seagrass"),
+#                 grouping = fct_relevel(grouping, "LB_seagrass.dawn"),
+#                 grouping2 = fct_relevel(grouping2, "LB_seagrass.dawn.Day2")) %>%
+#   dplyr::filter(grepl("Tektite", site)) %>%
+#   tibble::column_to_rownames(var = "metab_deriv_label") %>%
+#   droplevels
+# dist_usvi_site_metab.d <- usvi_metabolomics.tbl %>%
+#   dplyr::select(rownames(site.meta.metab)) %>%
+#   apply(., 2, function(x) log2(x + 1)) %>%
+#   t() %>%
+#   vegan::vegdist(., method = "bray", binary = FALSE, na.rm = TRUE)
+# 
+# with(site.meta.metab, vegan::adonis2(data = site.meta.metab, method = "bray", permutations = 9999,
+#                                 # strata = site,
+#                                 formula = dist_usvi_site_metab.d ~ sampling_time*sampling_day,
+#                                 parallel = nthreads, by = "terms"))
+# #for LB seagrass:
+# # vegan::adonis2(formula = dist_usvi_site_metab.d ~ sampling_time * sampling_day, data = site.meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
+# # Df SumOfSqs      R2      F Pr(>F)    
+# # sampling_time               1 0.056188 0.19869 7.2475 0.0002 ***
+# #   sampling_day                3 0.069641 0.24626 2.9942 0.0037 ** 
+# #   sampling_time:sampling_day  3 0.040670 0.14381 1.7486 0.0814 .  
+# # Residual                   15 0.116292 0.41123                  
+# # Total                      22 0.282791 1.00000                  
+# # ---
+# #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# #for yawzi:
+# # vegan::adonis2(formula = dist_usvi_site_metab.d ~ sampling_time * sampling_day, data = site.meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
+# # Df SumOfSqs      R2      F Pr(>F)   
+# # sampling_time               1  0.07629 0.09961 3.6698 0.0445 * 
+# #   sampling_day                3  0.25303 0.33037 4.0571 0.0062 **
+# #   sampling_time:sampling_day  3  0.08317 0.10859 1.3335 0.2589   
+# # Residual                   17  0.35341 0.46144                 
+# # Total                      24  0.76590 1.00000                 
+# # ---
+# 
+# #for Tektite:
+# # vegan::adonis2(formula = dist_usvi_site_metab.d ~ sampling_time * sampling_day, data = site.meta.metab, permutations = 9999, method = "bray", by = "terms", parallel = nthreads)
+# # Df SumOfSqs      R2      F Pr(>F)
+# # sampling_time               1  0.06751 0.06951 1.5951 0.1969
+# # sampling_day                3  0.09062 0.09331 0.7137 0.6296
+# # sampling_time:sampling_day  3  0.09353 0.09630 0.7366 0.6175
+# # Residual                   17  0.71951 0.74087              
+# # Total                      24  0.97117 1.00000      
+# 
+# 
+# #calculating estimates of variation in the models:
+# #start with Tektite, since it is so variable.
+# 
+# temp_res <- with(site.meta.metab, vegan::adonis2(data = site.meta.metab, method = "bray", permutations = 9999,
+#                                      # strata = site,
+#                                      formula = dist_usvi_site_metab.d ~ sampling_time*sampling_day,
+#                                      parallel = nthreads, by = "terms"))
+# 
+# permanova_tektite_metab_estimate_variation.df <- temp_res %>%
+#   tibble::rownames_to_column(var = "term") %>%
+#   dplyr::mutate(term = as.character(term)) %>%
+#   dplyr::mutate(MS = dplyr::case_when(!grepl("Total", term) ~ SumOfSqs/Df,
+#                                       .default = NA))
+# 
+# permanova_tektite_metab_estimate_variation.df <- permanova_tektite_metab_estimate_variation.df %>%
+#   dplyr::mutate(permanova_tektite_metab_estimate_variation.df %>%
+#                   dplyr::filter(!grepl("Total", term)) %>%
+#                   dplyr::summarise(TotalEMS = sum(MS))) %>%
+#   dplyr::mutate(V_term = dplyr::case_when(!grepl("Total", term) ~ 100*MS/TotalEMS,
+#                                           .default = NA)) %>%
+#   dplyr::mutate(sq_root = MS^(1/2))
+# 
+# 
+# permanova_tektite_metab_estimate_variation.df %>% 
+#   dplyr::summarise(sum(sq_root, na.rm = TRUE))
+# #term   V_term
+# #sampling_time    39.42973
+# #sampling_day   17.64227
+# #sampling_time:sampling_day   18.20849
+# #Residual   24.71950
+# #Total
 
 
 
@@ -3018,6 +3018,57 @@ permanova_tektite_metab_estimate_variation.df %>%
 ## also, lm on the distance matrix generates a "mlm" object which can't be subjected to drop1()
 # model <- lm(dist_usvi_metab.mat ~ sampling_time*sampling_day*site - 1, data = meta.metab,
 #             contrasts=list(sampling_time="contr.sum", sampling_day="contr.sum", site="contr.sum"))
+
+#this is how we did PERMANOVA via adonis2:
+# with(meta.metab, vegan::adonis2(data = meta.metab, method = "bray", permutations = 9999,
+#                                 # strata = site,
+#                                 formula = dist_usvi_metab.d ~ sampling_time*sampling_day*site,
+#                                 parallel = nthreads, by = "terms"))
+#we built a df for use in PERMANOVA via:
+# dist_usvi_metab.df <- meta.metab %>%
+#   split(., f = .$site) %>%
+#   map(., ~.x %>%
+#         tibble::rownames_to_column(var = "metab_deriv_label") %>%
+#         dplyr::select(metab_deriv_label) %>%
+#         tibble::deframe(.)) %>%
+#   map(., ~dist_usvi_metab.mat[.x, .x])  %>%
+#   map(., ~.x[lower.tri(.x, diag = FALSE)]) %>%
+#   map(., ~.x %>% tibble::enframe(., name = NULL, value = "dissimilarity")) %>%
+#   bind_rows(., .id = "site") %>%
+#   dplyr::group_by(site)
+
+temp_dist2.df <- meta.metab %>%
+  tibble::rownames_to_column(var = "metab_deriv_label") %>%
+  # dplyr::select(metab_deriv_label, site, sampling_time, sampling_day) %>%
+  dplyr::select(metab_deriv_label) %>%
+  simplify %>%
+  as.character %>%
+      rev() %>% 
+      combn(., 2) %>%
+      t() %>%
+      as.data.frame() %>%
+      setNames(., c("pair1", "pair2")) %>%
+      tidyr::unite(contrast, sep = " - ", remove = FALSE) %>%
+      droplevels %>%
+  dplyr::distinct(contrast, .keep_all = TRUE) %>%
+  dplyr::filter(!(pair1 == pair2))
+
+temp_dist3.df <- temp_dist2.df %>%
+  dplyr::mutate(distance = NA)
+# for(k in 1:10){
+for(k in 1:nrow(temp_dist3.df)){
+  temp_dist3.df[k, "distance"] <- dist_usvi_metab.mat[temp_dist2.df$pair1[k], temp_dist2.df$pair2[k]]
+}
+temp_dist3.df <- temp_dist3.df %>%
+  dplyr::left_join(., meta.metab %>%
+                   dplyr::select(site, sampling_time, sampling_day) %>%
+                   tibble::rownames_to_column(var = "metab_deriv_label"),
+                 by = join_by("pair1" == "metab_deriv_label")) %>%
+  dplyr::left_join(., meta.metab %>%
+                     dplyr::select(site, sampling_time, sampling_day) %>%
+                     tibble::rownames_to_column(var = "metab_deriv_label"),
+                   by = join_by("pair2" == "metab_deriv_label"), suffix = c(".pair1", ".pair2"))
+
 
 
 temp_dist.df <- vegan::betadisper(dist_usvi_metab.d, type = "median",

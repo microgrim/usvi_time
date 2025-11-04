@@ -1,0 +1,20 @@
+grouping	simpleName	asv_id	taxonomy
+LB_seagrass	histidine	ASV_00084	ASV_00084: Bacteroidia; Marinoscillum
+LB_seagrass	histidine	ASV_00089	ASV_00089: Bacteroidia; Cryomorphaceae
+Tektite	methionine	ASV_01047	ASV_01047: Bacteroidia; Psychroflexus
+Yawzi	guanosine	ASV_00009	ASV_00009: Bacteroidia; Flavobacteriaceae
+Yawzi	5'AMP	ASV_00018	ASV_00018: Verrucomicrobiae; Coraliomargarita
+Yawzi	guanosine	ASV_00024	ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+Yawzi	guanosine	ASV_00043	ASV_00043: Bacteroidia; NS5 marine group
+Yawzi	5'AMP	ASV_00050	ASV_00050: Alphaproteobacteria; Rhodobacteraceae
+Yawzi	5'AMP	ASV_00054	ASV_00054: Gammaproteobacteria; Alteromonas
+Yawzi	guanosine	ASV_00069	ASV_00069: Bacteroidia; Cryomorphaceae
+Yawzi	5'AMP	ASV_00107	ASV_00107: Bacteroidia; NS5 marine group
+Yawzi	guanosine	ASV_00124	ASV_00124: Bacteroidia; NS11-12 marine group
+Yawzi	GABA	ASV_00147	ASV_00147: Gammaproteobacteria; Vibrio
+Yawzi	5'AMP	ASV_00240	ASV_00240: Bdellovibrionia; OM27 clade
+Yawzi	3'AMP	ASV_00292	ASV_00292: Thermoplasmata; Marine Group II
+Yawzi	5'AMP	ASV_00292	ASV_00292: Thermoplasmata; Marine Group II
+Yawzi	5'AMP	ASV_00344	ASV_00344: Alphaproteobacteria; SAR11 Clade II
+Yawzi	3'AMP	ASV_00376	ASV_00376: Gammaproteobacteria; OM60(NOR5) clade
+Yawzi	GABA	ASV_00390	ASV_00390: Alphaproteobacteria; PS1 clade

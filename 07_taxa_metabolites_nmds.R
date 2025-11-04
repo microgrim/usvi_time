@@ -702,16 +702,16 @@ usvi_metab_summary.df <- usvi_metabolomics_long.df %>%
   dplyr::mutate(across(c(sample_id, metabolite, sampling_time, sampling_day, site, metab_deriv_label), ~factor(.x))) %>%
   droplevels
 
-usvi_metab_outlier_summary.df <- usvi_metab_summary.df %>%
-  dplyr::left_join(., (usvi_metab_summary.df %>%
-                         dplyr::group_by(site, metabolite) %>%
-                         dplyr::summarise(site_median = median(concentration, na.rm = TRUE))), by = join_by(site, metabolite)) %>%
-  dplyr::mutate(rescaled_conc = dplyr::case_when((concentration != 0) ~ log2(concentration/site_median), .default = NA), .by = c(site, metabolite)) %>%
-  dplyr::arrange(desc(site_median)) %>%
-  dplyr::mutate(metabolite = factor(metabolite, levels = unique(.[["metabolite"]]))) %>%
-  droplevels
-
-
+# usvi_metab_outlier_summary.df <- usvi_metab_summary.df %>%
+#   dplyr::left_join(., (usvi_metab_summary.df %>%
+#                          dplyr::group_by(site, metabolite) %>%
+#                          dplyr::summarise(site_median = median(concentration, na.rm = TRUE))), by = join_by(site, metabolite)) %>%
+#   dplyr::mutate(rescaled_conc = dplyr::case_when((concentration != 0) ~ log2(concentration/site_median), .default = NA), .by = c(site, metabolite)) %>%
+#   dplyr::arrange(desc(site_median)) %>%
+#   dplyr::mutate(metabolite = factor(metabolite, levels = unique(.[["metabolite"]]))) %>%
+#   droplevels
+# 
+# 
 # usvi_metab_sus_summary.df <- usvi_metabolomics_long.df %>%
 #   dplyr::select(metabolites, adaptedDervLabel, concentration, LOD, LOQ) %>%
 #   dplyr::rename(metabolite = "metabolites", metab_deriv_label = "adaptedDervLabel") %>%
@@ -1040,6 +1040,8 @@ usvi_selected_metadata <- metabolomics_sample_metadata %>%
   dplyr::mutate(site_type = dplyr::case_when(grepl("LB", site) ~ "seagrass",
                                              grepl("Yawzi|Tektite", site) ~ "reef",
                                              .default = NA)) %>%
+  dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+  droplevels %>%
   dplyr::mutate(rownames = sample_id) %>% tibble::column_to_rownames(var = "rownames") %>%
   dplyr::mutate(grouping = interaction(site, sampling_time)) %>%
   dplyr::left_join(., metadata %>%
@@ -1087,6 +1089,9 @@ if(any(grepl("metab_all", list.files(projectpath, pattern = "usvi_nmds_.*.tsv"))
   nmds_metab_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                                delim = "\t", col_names = TRUE,
                                                show_col_types = FALSE)
+  nmds_metab_log2.df <- nmds_metab_log2.df %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   rm(temp_file)
 } else {
 
@@ -1171,6 +1176,9 @@ if(any(grepl("metab_all", list.files(projectpath, pattern = "usvi_betadisper_.*.
   dist_usvi_metab_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                                delim = "\t", col_names = TRUE,
                                                show_col_types = FALSE)
+  dist_usvi_metab_log2.df <- dist_usvi_metab_log2.df %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   rm(temp_file)
 } else {
   
@@ -1237,6 +1245,9 @@ if(any(grepl("metab_sites", list.files(projectpath, pattern = "usvi_nmds_.*.tsv"
   nmds_metab_sites_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                           delim = "\t", col_names = TRUE,
                                           show_col_types = FALSE)
+  nmds_metab_sites_log2.df <- nmds_metab_sites_log2.df %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   rm(temp_file)
 } else {
   nmds_metab_sites_log2.df <- metabolomics_sample_metadata %>%
@@ -1278,6 +1289,9 @@ if(any(grepl("usvi_metab", list.files(projectpath, pattern = "betadisp.df*.tsv")
   dist_usvi_metab.betadisp.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                                    delim = "\t", col_names = TRUE,
                                                    show_col_types = FALSE)
+  dist_usvi_metab.betadisp.df <- dist_usvi_metab.betadisp.df %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   rm(temp_file)
 } else {
   
@@ -1510,6 +1524,9 @@ if(!any(grepl("log2_bc_betadisp_nmds", list.files(projectpath, pattern = "usvi_m
   ggsave(paste0(projectpath, "/", "usvi_metabolomics_log2_bc_betadisp_nmds-", Sys.Date(), ".png"),
          g3_log2_disp_nmds,
          width = 18, height = 12, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_metabolomics_log2_bc_betadisp_nmds-", Sys.Date(), ".svg"),
+         g3_log2_disp_nmds,
+         width = 18, height = 12, units = "in")
 }
 
 
@@ -1605,7 +1622,9 @@ if(!exists("dist_usvi_metab_grouping_log2.df", envir = .GlobalEnv)){
     temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_betadisper_metab_by_grouping-.*.tsv"))
     dist_usvi_metab_grouping_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                                           delim = "\t", col_names = TRUE,
-                                                          show_col_types = FALSE)
+                                                          show_col_types = FALSE) %>%
+      dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+      droplevels
     rm(temp_file)
   } else {
     meta.list <- metabolomics_sample_metadata %>%
@@ -1995,19 +2014,27 @@ if(any(grepl("nmds_asv", list.files(projectpath, pattern = "usvi_.*.tsv")))){
   temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_nmds_asv-.*.tsv"))
   nmds_asv.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                    delim = "\t", col_names = TRUE,
-                                   show_col_types = FALSE)
+                                   show_col_types = FALSE) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_nmds_asv_log2-.*.tsv"))
   nmds_asv_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                         delim = "\t", col_names = TRUE,
-                                        show_col_types = FALSE)
+                                        show_col_types = FALSE) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_nmds_asv_sites-.*.tsv"))
   nmds_asv_sites.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                         delim = "\t", col_names = TRUE,
-                                        show_col_types = FALSE)
+                                        show_col_types = FALSE) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   temp_file <- data.table::last(list.files(projectpath, pattern = "usvi_nmds_asv_sites_log2-.*.tsv"))
   nmds_asv_sites_log2.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
                                         delim = "\t", col_names = TRUE,
-                                        show_col_types = FALSE)
+                                        show_col_types = FALSE) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   rm(temp_file)
   
 } else {
@@ -2402,11 +2429,27 @@ print(g4_all_log2_ell)
   # )
 }
 
-if(any(grepl("asv.betadisp", list.files(projectpath, pattern = "dist_usvi_.*.tsv")))){
-  temp_file <- data.table::last(list.files(projectpath, pattern = "dist_usvi_asv.betadisp.*.tsv"))
-  dist_usvi_asv.betadisp.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
-                                   delim = "\t", col_names = TRUE,
-                                   show_col_types = FALSE)
+# if(any(grepl("asv.betadisp", list.files(projectpath, pattern = "dist_usvi_.*.tsv")))){
+#   temp_file <- data.table::last(list.files(projectpath, pattern = "dist_usvi_asv.betadisp.*.tsv"))
+#   dist_usvi_asv.betadisp.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+#                                    delim = "\t", col_names = TRUE,
+#                                    show_col_types = FALSE) %>%
+#     dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+#     droplevels
+#   rm(temp_file)
+if(any(grepl("asv.df", list.files(projectpath, pattern = "dist_usvi_.*.tsv")))){
+  temp_file <- data.table::last(list.files(projectpath, pattern = "dist_usvi_asv.df.*.tsv"))
+  dist_usvi_asv.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+                                                 delim = "\t", col_names = TRUE,
+                                                 show_col_types = FALSE) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
+  temp_file <- data.table::last(list.files(projectpath, pattern = "dist_usvi_sites_asv.df.*.tsv"))
+  dist_usvi_sites_asv.df <- readr::read_delim(paste0(projectpath, "/", temp_file),
+                                        delim = "\t", col_names = TRUE,
+                                        show_col_types = FALSE) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup))) %>%
+    droplevels
   rm(temp_file)
   
 } else {
@@ -2658,7 +2701,7 @@ if(any(grepl("asv.betadisp", list.files(projectpath, pattern = "dist_usvi_.*.tsv
                      delim = "\t", col_names = TRUE,quote = "none")
 }
 g4_all_disp <- P_betadisp(dataset = dist_usvi_asv.df, subtitle = "All vs all dissimilarity matrix",  metric = "Morisita-Horn") + guides(shape = "none") + theme(legend.position = "bottom")
-g4_all_log2_disp <- P_betadisp(dataset = dist_usvi_asv_log2.df, subtitle = "All vs all dissimilarity matrix", metric = "Morisita-Horn") + guides(shape = "none") + theme(legend.position = "bottom")
+# g4_all_log2_disp <- P_betadisp(dataset = dist_usvi_asv_log2.df, subtitle = "All vs all dissimilarity matrix", metric = "Morisita-Horn") + guides(shape = "none") + theme(legend.position = "bottom")
 
 
 #previous way, one by one:
@@ -2968,6 +3011,9 @@ g4_disp_nmds
 
 if(!any(grepl("mh_betadisp_nmds", list.files(projectpath, pattern = "usvi_asv.*.png")))){
   ggsave(paste0(projectpath, "/", "usvi_asv_mh_betadisp_nmds-", Sys.Date(), ".png"),
+         g4_disp_nmds,
+         width = 18, height = 12, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_asv_mh_betadisp_nmds-", Sys.Date(), ".svg"),
          g4_disp_nmds,
          width = 18, height = 12, units = "in")
 }

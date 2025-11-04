@@ -957,6 +957,13 @@ if(execchunk) {
 
 # Spearman rank correlation coefficient calculations ----------------------
 
+if(any(grepl("spearman_full", list.files(projectpath, pattern = "usvi_.*.RData")))){
+  temp_file <- data.table::last(grep("spearman_full", list.files(projectpath, pattern = "usvi_.*.RData"), value = TRUE))
+  load(paste0(projectpath, "/", temp_file))
+  rm(temp_file)
+}
+
+
 
 #option B:
 if(file.exists(paste0(projectpath, "/", "spearman.test.optB.list", ".rds"))){
@@ -2651,11 +2658,20 @@ gpatch2 <- temp_g8 + temp_g9 + patchwork::plot_annotation(title = "Adjusted p-va
                                                 subtitle = "Only those ASV-metabolite correlations consistently p < 0.10 are shown",
                                                 tag_levels = "A")
 gpatch2
-ggsave(paste0(projectpath, "/", "spearman_sig_p_all_vs_granular-", Sys.Date(), ".png"),
-       gpatch2,
-       width = 16, height = 8, units = "in")
+# ggsave(paste0(projectpath, "/", "spearman_sig_p_all_vs_granular-", Sys.Date(), ".png"),
+#        gpatch2,
+#        width = 16, height = 8, units = "in")
 
 # Filter the spearman correlations ----------------------------------------
+
+
+if(any(grepl("spearman.sig.filtered.list", list.files(projectpath, pattern = "usvi_.*.rds")))){
+  temp_file <- data.table::last(grep("spearman.sig.filtered.list", list.files(projectpath, pattern = "usvi_.*.rds"), value = TRUE))
+  spearman.test.filtered.lists <- readr::read_rds(paste0(projectpath, "/", temp_file))
+  list2env(spearman.test.filtered.lists, envir = .GlobalEnv)
+  rm(temp_file)
+}
+
 
 #old method that used only BH-adjusted p-values to filter for significant correlations:
 {
@@ -3287,92 +3303,7 @@ spearman.test.site.filtered.df %>%
 # 3 Yawzi            190         39
 # 4 total            517         42
   
-spearman_site_filtered_obs.tbl <- spearman.test.site.filtered.df %>%
-    dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
-    dplyr::ungroup(.) %>%
-    tidyr::drop_na(filtered_estimate) %>%
-    dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
-    dplyr::filter(grepl("optA", test_type)) %>%
-    dplyr::ungroup(.) %>%
-  split(., f = .$asv_id) %>%
-  map(., ~.x %>%
-        dplyr::ungroup(.) %>%
-        droplevels %>%
-        dplyr::distinct(simpleName) %>%
-        dplyr::reframe(num_corrs = length(unique(.[["simpleName"]])))) %>% bind_rows(., .id = "variable") %>%
-  dplyr::filter(num_corrs > 0) %>%
-  dplyr::mutate(type = "asv_id") %>%
-  dplyr::bind_rows(., spearman.test.site.filtered.df %>%
-                     dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
-                     dplyr::ungroup(.) %>%
-                     tidyr::drop_na(filtered_estimate) %>%
-                     dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
-                     dplyr::filter(grepl("optA", test_type)) %>%
-                     dplyr::ungroup(.) %>%
-                     split(., f = .$simpleName) %>%
-                     map(., ~.x %>%
-                           dplyr::ungroup(.) %>%
-                           droplevels %>%
-                           dplyr::distinct(asv_id) %>%
-                           # dplyr::reframe(num_corrs = length(unique(.[["simpleName"]]))))
-                           dplyr::reframe(num_corrs = length(unique(.[["asv_id"]])))) %>% bind_rows(., .id = "variable") %>%
-                     dplyr::filter(num_corrs > 0) %>%
-                     dplyr::mutate(type = "simpleName"))
 
-
-
-spearman_site_filtered_obs.tbl %>%
-  dplyr::filter(type == "asv_id") %>%
-  dplyr::filter(num_corrs >= 10)
-
-if(length(list.files(projectpath, "spearman_site_filtered_obs.tbl")) < 1){
-# if(!file.exists(paste0(projectpath, "/", "spearman_site_filtered_obs.tbl", ".tsv"))){
-  readr::write_delim(spearman_site_filtered_obs.tbl, paste0(projectpath, "/", "spearman_site_filtered_obs.tbl-", Sys.Date(), ".tsv"),
-                     delim = "\t", col_names = TRUE)
-}
-
-# #we have this rds object saved: "usvi_spearman.sig.filtered.list-2025-04-07.rds"
-# #it has 1239 significant correlations between ASVs and metabolites in Lameshur,
-# #304 in Tektite, and 217 in Yawzi
-# # temp_df <- dplyr::anti_join(`usvi_spearman.sig.filtered.list-2025-04-07`[["Tektite"]], spearman.test.site.filtered.df) %>%
-# #   dplyr::bind_rows(., dplyr::anti_join(`usvi_spearman.sig.filtered.list-2025-04-07`[["Yawzi"]], spearman.test.site.filtered.df))
-# #99 rows of data, which contains
-# #43 entries for Yawzi, and
-# #56 entries for Tektite
-# # temp_df %>%
-# #   tidyr::drop_na(padj_01) %>%
-# #   dplyr::summarise(across(contains("padj_01"), list(min = min, max = max)), .by = c(grouping, site))
-# # # A tibble: 2 × 4
-# # grouping site    padj_01_min padj_01_max
-# # <fct>    <fct>         <dbl>       <dbl>
-# #   1 Tektite  Tektite      0.0105      0.0147
-# # 2 Yawzi    Yawzi        0.0109      0.0144
-# temp_df <- dplyr::anti_join(spearman.test.site.filtered.df, `usvi_spearman.sig.filtered.list-2025-04-07`[["Tektite"]]) %>%
-#   dplyr::bind_rows(., dplyr::anti_join(spearman.test.site.filtered.df, `usvi_spearman.sig.filtered.list-2025-04-07`[["Yawzi"]]))
-# #5435 rows of data:
-# 
-# temp_df %>%
-#   tidyr::drop_na(padj_01) %>%
-#   dplyr::summarise(across(contains("padj_01"), list(min = min, max = max)), .by = c(grouping, site))
-# 
-# # # A tibble: 3 × 4
-# # grouping    site         padj_01_min padj_01_max
-# # <fct>       <fct>              <dbl>       <dbl>
-# #   1 LB_seagrass LB_seagrass 0.0000000198      0.0104
-# # 2 Tektite     Tektite     0.0000314         0.0190
-# # 3 Yawzi       Yawzi       0.0000556         0.0194
-# 
-# 
-# #these minimum padj values are greater than the cutoff calculated in invididual sites:
-# padj_cutoff[["optA"]][["LB_seagrass"]][["q_01"]]
-# # 0.01036783
-# padj_cutoff[["optA"]][["Yawzi"]][["q_01"]]
-# #Yawzi: q_01 = 0.01941558
-# #Tektite: q_01 = 0.01908171
-# #it appears that I might have used the error cutoffs for Lameshur Bay, in Yawzi and Tektite correlations
-# 
-
-  
 
 
 
@@ -3971,6 +3902,8 @@ corr_fdr01_site_sig%>%
   scale_fill_manual(values = site_colors)+
   theme_bw()
 
+
+  
 
 # output list of SDA/sig ASVs ---------------------------------------------
 
@@ -4892,6 +4825,209 @@ if(!any(grepl("spearman_df", list.files(projectpath, pattern = "usvi_.*.RData"))
        spearman.site.time.sig.metab.list, spearman.site.sig.metab.list, spearman.sig.metab.list, spearman.sig.strong.metab.list, 
        file = paste0(projectpath, "/", "usvi_spearman_df-", Sys.Date(), ".RData"))
 }
+
+
+# Make tables summarizing correlations ------------------------------------
+
+spearman_site_filtered_obs.tbl <- spearman.test.site.filtered.df %>%
+  dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+  dplyr::ungroup(.) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::ungroup(.) %>%
+  split(., f = .$asv_id) %>%
+  map(., ~.x %>%
+        dplyr::ungroup(.) %>%
+        droplevels %>%
+        dplyr::distinct(simpleName) %>%
+        dplyr::reframe(num_unique_corrs = length(unique(.[["simpleName"]])))) %>% bind_rows(., .id = "variable") %>%
+  dplyr::filter(num_unique_corrs > 0) %>%
+  dplyr::mutate(type = "asv_id") %>%
+  dplyr::bind_rows(., spearman.test.site.filtered.df %>%
+                     dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+                     dplyr::ungroup(.) %>%
+                     tidyr::drop_na(filtered_estimate) %>%
+                     dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+                     dplyr::filter(grepl("optA", test_type)) %>%
+                     dplyr::ungroup(.) %>%
+                     split(., f = .$simpleName) %>%
+                     map(., ~.x %>%
+                           dplyr::ungroup(.) %>%
+                           droplevels %>%
+                           dplyr::distinct(asv_id) %>%
+                           # dplyr::reframe(num_corrs = length(unique(.[["simpleName"]]))))
+                           dplyr::reframe(num_unique_corrs = length(unique(.[["asv_id"]])))) %>% bind_rows(., .id = "variable") %>%
+                     dplyr::filter(num_unique_corrs > 0) %>%
+                     dplyr::mutate(type = "simpleName")) %>%
+  dplyr::group_by(type) %>%
+  dplyr::arrange(desc(num_unique_corrs), .by_group = TRUE) %>%
+  droplevels
+
+spearman_site_filtered_obs.tbl <- spearman_site_filtered_obs.tbl %>%
+  dplyr::left_join(., (spearman.test.site.filtered.df %>%
+                         # spearman_site_filtered_obs.tbl <- (spearman.test.site.filtered.df %>%
+                         dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+                         dplyr::ungroup(.) %>%
+                         tidyr::drop_na(filtered_estimate) %>%
+                         dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+                         dplyr::filter(grepl("optA", test_type)) %>%
+                         dplyr::ungroup(.) %>%
+                         split(., f = .$grouping) %>%
+                         map(., ~.x %>%
+                               split(., f = .$asv_id) %>%
+                               map(., ~.x %>%
+                                     dplyr::ungroup(.) %>%
+                                     droplevels %>%
+                                     dplyr::distinct(simpleName) %>%
+                                     dplyr::reframe(num_corrs = length(unique(.[["simpleName"]])))) %>% bind_rows(., .id = "variable") %>%
+                               dplyr::filter(num_corrs > 0) %>%
+                               dplyr::mutate(type = "asv_id") %>%
+                               droplevels) %>%
+                         dplyr::bind_rows(., .id = "grouping") %>%
+                         tidyr::pivot_wider(., names_from = "grouping",
+                                            values_fill = 0,
+                                            values_from = "num_corrs") %>%
+                         droplevels %>%
+                         dplyr::bind_rows(., spearman.test.site.filtered.df %>%
+                                            dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+                                            dplyr::ungroup(.) %>%
+                                            tidyr::drop_na(filtered_estimate) %>%
+                                            dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+                                            dplyr::filter(grepl("optA", test_type)) %>%
+                                            dplyr::ungroup(.) %>%
+                                            split(., f = .$grouping) %>%
+                                            map(., ~.x %>%
+                                                  split(., f = .$simpleName) %>%
+                                                  map(., ~.x %>%
+                                                        dplyr::ungroup(.) %>%
+                                                        droplevels %>%
+                                                        dplyr::distinct(asv_id) %>%
+                                                        dplyr::reframe(num_corrs = length(unique(.[["asv_id"]])))) %>% bind_rows(., .id = "variable") %>%
+                                                  dplyr::filter(num_corrs > 0) %>%
+                                                  dplyr::mutate(type = "simpleName") %>%
+                                                  droplevels) %>%
+                                            dplyr::bind_rows(., .id = "grouping") %>%
+                                            tidyr::pivot_wider(., names_from = "grouping",
+                                                               values_fill = 0,
+                                                               values_from = "num_corrs") %>%
+                                            droplevels)),
+                   by = join_by(type, variable), relationship = "many-to-many", multiple = "all") %>%
+  dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy") %>%
+                     dplyr::mutate(asv_id = factor(asv_id)), by = join_by("variable" == "asv_id"), relationship = "many-to-many", multiple = "all") %>%
+  droplevels
+
+spearman_site_filtered_obs.tbl %>%
+  dplyr::filter(type == "asv_id") %>%
+  dplyr::filter(num_unique_corrs >= 10)
+
+if(length(list.files(projectpath, "spearman_site_filtered_obs.tbl")) < 1){
+  # if(!file.exists(paste0(projectpath, "/", "spearman_site_filtered_obs.tbl", ".tsv"))){
+  readr::write_delim(spearman_site_filtered_obs.tbl, paste0(projectpath, "/", "spearman_site_filtered_obs.tbl-", Sys.Date(), ".tsv"),
+                     delim = "\t", col_names = TRUE)
+}
+
+spearman_site_filtered_obs_asvs.tbl <- spearman_site_filtered_obs.tbl %>%
+  dplyr::filter(type == "asv_id") %>%
+  dplyr::filter(num_unique_corrs >= 10) %>%
+  dplyr::arrange(desc(num_unique_corrs)) %>%
+  dplyr::rename(asv_id = `variable`) %>%
+  dplyr::select(num_unique_corrs, asv_id, taxonomy) %>%
+  droplevels
+if(length(list.files(projectpath, "spearman_site_filtered_obs_asvs.tbl")) < 1){
+  # if(!file.exists(paste0(projectpath, "/", "spearman_site_filtered_obs.tbl", ".tsv"))){
+  readr::write_delim(spearman_site_filtered_obs_asvs.tbl, paste0(projectpath, "/", "spearman_site_filtered_obs_asvs.tbl-", Sys.Date(), ".tsv"),
+                     delim = "\t", col_names = TRUE)
+}
+
+
+spearman_site_vstrong_corrs.tbl <- spearman.test.site.filtered.df %>%
+  dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+  dplyr::ungroup(.) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  droplevels %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::filter(abs(filtered_estimate) >= 0.9) %>%
+        dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy"), by = join_by(asv_id)) %>%
+        dplyr::select(grouping, simpleName, asv_id, taxonomy) %>%
+        droplevels)  %>%
+  dplyr::bind_rows(., .id = NULL)
+if(length(list.files(projectpath, "spearman_site_vstrong_corrs.tbl")) < 1){
+  # if(!file.exists(paste0(projectpath, "/", "spearman_site_filtered_obs.tbl", ".tsv"))){
+  readr::write_delim(spearman_site_vstrong_corrs.tbl, paste0(projectpath, "/", "spearman_site_vstrong_corrs.tbl-", Sys.Date(), ".tsv"),
+                     delim = "\t", col_names = TRUE)
+}
+spearman.test.site.filtered.df %>%
+  dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+  dplyr::ungroup(.) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  # dplyr::filter(abs(filtered_estimate) >= 0.9) %>%
+  droplevels %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        split(., f = .$asv_id) %>%
+        map(., ~.x %>%
+              dplyr::ungroup(.) %>%
+              droplevels %>%
+              dplyr::distinct(simpleName) %>%
+              dplyr::reframe(num_corrs = length(unique(.[["simpleName"]]))) %>%
+              droplevels) %>% 
+        bind_rows(., .id = "asv_id") %>%
+        dplyr::arrange(desc(num_corrs)) %>%
+        dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy"), by = join_by(asv_id)) %>%
+        droplevels)
+
+spearman.test.site.topcorr.df <- spearman.test.site.filtered.df %>%
+  dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+  dplyr::ungroup(.) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  droplevels %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        split(., f = .$simpleName) %>%
+        map(., ~.x %>%
+              dplyr::ungroup(.) %>%
+              droplevels %>%
+              dplyr::distinct(asv_id) %>%
+              dplyr::reframe(num_corrs = length(unique(.[["asv_id"]]))) %>%
+              droplevels) %>% 
+        bind_rows(., .id = "simpleName") %>%
+        dplyr::arrange(desc(num_corrs)) %>%
+        droplevels) %>%
+  map(., ~.x %>%
+        # dplyr::filter(num_corrs >= 10) %>%
+        # dplyr::slice_max(num_corrs, n=10, with_ties = FALSE) %>%
+        dplyr::slice_max(num_corrs, prop = 0.25, with_ties = FALSE) %>% #gets 10, 10, and 9 top metabolites per site
+        # droplevels)
+        dplyr::select(simpleName) %>% droplevels) %>%
+  dplyr::bind_rows(., .id = "grouping") %>%
+  dplyr::distinct(simpleName) %>%
+  droplevels %>%
+  dplyr::inner_join(., spearman.test.site.filtered.df %>%
+                      dplyr::distinct(asv_id, test_type, simpleName, sig, grouping, .keep_all = TRUE) %>%
+                      dplyr::ungroup(.) %>%
+                      tidyr::drop_na(filtered_estimate) %>%
+                      dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+                      dplyr::filter(grepl("optA", test_type)) %>%
+                      dplyr::filter(abs(filtered_estimate) >= 0.5) %>%
+                      dplyr::select(asv_id, simpleName, grouping, sig, filtered_estimate) %>%
+                      droplevels,
+                    by = join_by(simpleName), relationship = "many-to-many", multiple = "all")
+
+spearman.test.site.topcorr.tbl <- spearman.test.site.topcorr.df %>%
+  dplyr::select(simpleName, asv_id, grouping, filtered_estimate) %>%
+  tidyr::pivot_wider(., names_from = "simpleName",
+                     values_from = "filtered_estimate")
 
 # Plot the heatmaps of correlations ---------------------------------------
 # 

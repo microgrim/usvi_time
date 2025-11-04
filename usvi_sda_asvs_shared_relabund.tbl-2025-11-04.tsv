@@ -1,0 +1,541 @@
+asv_id	contrast	sampling_time	Site A	Site B	LB_seagrass	Tektite	Yawzi	site	Time A	Time B	dawn	peak_photo	taxonomy
+ASV_00002	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.29 ± 0.93	7.18 ± 1.45							ASV_00002: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00002	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.29 ± 0.93		6.29 ± 1.34						ASV_00002: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00002	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	3.30 ± 2.62	7.33 ± 1.22							ASV_00002: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00002	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	3.30 ± 2.62		7.42 ± 0.72						ASV_00002: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00003	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	7.15 ± 3.57	1.01 ± 0.39							ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00003	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	7.15 ± 3.57		2.25 ± 0.42						ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00003	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		1.01 ± 0.39	2.25 ± 0.42						ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00003	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	7.65 ± 1.92	0.87 ± 0.39							ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00003	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	7.65 ± 1.92		1.47 ± 0.46						ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00003	peak_photo (Yawzi - Tektite)	peak_photo	Tektite	Yawzi		0.87 ± 0.39	1.47 ± 0.46						ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00004	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	4.80 ± 0.78	2.52 ± 0.56							ASV_00004: Bacteroidia; NS4 marine group
+ASV_00004	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	4.80 ± 0.78		3.28 ± 0.56						ASV_00004: Bacteroidia; NS4 marine group
+ASV_00004	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		2.52 ± 0.56	3.28 ± 0.56						ASV_00004: Bacteroidia; NS4 marine group
+ASV_00004	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	3.87 ± 1.22	2.49 ± 0.75							ASV_00004: Bacteroidia; NS4 marine group
+ASV_00004	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	3.87 ± 1.22		2.69 ± 0.54						ASV_00004: Bacteroidia; NS4 marine group
+ASV_00005	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.70 ± 0.45	3.98 ± 0.73							ASV_00005: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00005	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.70 ± 0.45		3.37 ± 0.68						ASV_00005: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00005	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.77 ± 1.09	4.13 ± 0.72							ASV_00005: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00005	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.77 ± 1.09		3.99 ± 0.43						ASV_00005: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00006	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	4.97 ± 2.06	1.02 ± 0.29							ASV_00006: Bacteroidia; Cryomorphaceae
+ASV_00006	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	4.97 ± 2.06		1.83 ± 0.51						ASV_00006: Bacteroidia; Cryomorphaceae
+ASV_00006	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		1.02 ± 0.29	1.83 ± 0.51						ASV_00006: Bacteroidia; Cryomorphaceae
+ASV_00006	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	4.98 ± 1.23	0.84 ± 0.36							ASV_00006: Bacteroidia; Cryomorphaceae
+ASV_00006	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	4.98 ± 1.23		1.30 ± 0.48						ASV_00006: Bacteroidia; Cryomorphaceae
+ASV_00007	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.27 ± 0.22	3.75 ± 1.74							ASV_00007: Cyanobacteria; Prochlorococcus MIT9313
+ASV_00007	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.27 ± 0.22		2.20 ± 0.75						ASV_00007: Cyanobacteria; Prochlorococcus MIT9313
+ASV_00007	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		3.75 ± 1.74	2.20 ± 0.75						ASV_00007: Cyanobacteria; Prochlorococcus MIT9313
+ASV_00007	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.66 ± 0.72	3.29 ± 2.01							ASV_00007: Cyanobacteria; Prochlorococcus MIT9313
+ASV_00007	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.66 ± 0.72		2.41 ± 1.11						ASV_00007: Cyanobacteria; Prochlorococcus MIT9313
+ASV_00008	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.95 ± 0.40	2.46 ± 0.71							ASV_00008: Gammaproteobacteria; SAR86 clade
+ASV_00008	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.95 ± 0.40		2.19 ± 0.68						ASV_00008: Gammaproteobacteria; SAR86 clade
+ASV_00008	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.49 ± 1.00	2.72 ± 0.49							ASV_00008: Gammaproteobacteria; SAR86 clade
+ASV_00008	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.49 ± 1.00		2.63 ± 0.84						ASV_00008: Gammaproteobacteria; SAR86 clade
+ASV_00009	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	4.03 ± 1.01	0.90 ± 0.21							ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00009	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	4.03 ± 1.01		1.38 ± 0.35						ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00009	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.90 ± 0.21	1.38 ± 0.35						ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00009	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	3.30 ± 0.97	0.72 ± 0.19							ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00009	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	3.30 ± 0.97		1.03 ± 0.24						ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00009	peak_photo (Yawzi - Tektite)	peak_photo	Tektite	Yawzi		0.72 ± 0.19	1.03 ± 0.24						ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00010	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.46 ± 0.21	2.40 ± 0.54							ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00010	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.46 ± 0.21		1.85 ± 0.36						ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00010	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		2.40 ± 0.54	1.85 ± 0.36						ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00010	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.92 ± 0.54	2.66 ± 0.66							ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00010	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.92 ± 0.54		2.41 ± 0.34						ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00011	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.79 ± 0.33	2.04 ± 0.48							ASV_00011: Gammaproteobacteria; SAR86 clade
+ASV_00011	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.79 ± 0.33		1.83 ± 0.53						ASV_00011: Gammaproteobacteria; SAR86 clade
+ASV_00011	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.23 ± 0.80	2.25 ± 0.55							ASV_00011: Gammaproteobacteria; SAR86 clade
+ASV_00011	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.23 ± 0.80		2.14 ± 0.54						ASV_00011: Gammaproteobacteria; SAR86 clade
+ASV_00012	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.54 ± 0.21	2.14 ± 0.60							ASV_00012: Alphaproteobacteria; SAR11 Clade II
+ASV_00012	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.54 ± 0.21		1.67 ± 0.37						ASV_00012: Alphaproteobacteria; SAR11 Clade II
+ASV_00012	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.08 ± 0.46	2.33 ± 0.50							ASV_00012: Alphaproteobacteria; SAR11 Clade II
+ASV_00012	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.08 ± 0.46		1.99 ± 0.27						ASV_00012: Alphaproteobacteria; SAR11 Clade II
+ASV_00013	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.81 ± 0.30	1.84 ± 0.42							ASV_00013: Acidimicrobia; Candidatus Actinomarina
+ASV_00013	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.81 ± 0.30		1.94 ± 0.23						ASV_00013: Acidimicrobia; Candidatus Actinomarina
+ASV_00013	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.09 ± 0.46	1.89 ± 0.48							ASV_00013: Acidimicrobia; Candidatus Actinomarina
+ASV_00013	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.09 ± 0.46		1.88 ± 0.36						ASV_00013: Acidimicrobia; Candidatus Actinomarina
+ASV_00014	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.25 ± 0.57	1.64 ± 0.34							ASV_00014: Bacteroidia; NS5 marine group
+ASV_00014	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.12 ± 0.30	1.74 ± 0.48							ASV_00014: Bacteroidia; NS5 marine group
+ASV_00016	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.61 ± 0.28	1.60 ± 0.49							ASV_00016: Acidimicrobia; Candidatus Actinomarina
+ASV_00016	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.61 ± 0.28		1.47 ± 0.19						ASV_00016: Acidimicrobia; Candidatus Actinomarina
+ASV_00016	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.81 ± 0.32	1.79 ± 0.44							ASV_00016: Acidimicrobia; Candidatus Actinomarina
+ASV_00016	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.81 ± 0.32		1.66 ± 0.31						ASV_00016: Acidimicrobia; Candidatus Actinomarina
+ASV_00017	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.45 ± 0.29	1.60 ± 0.51							ASV_00017: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00017	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.45 ± 0.29		1.53 ± 0.27						ASV_00017: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00017	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.99 ± 0.73	1.55 ± 0.22							ASV_00017: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00017	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.99 ± 0.73		1.68 ± 0.25						ASV_00017: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00018	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.50 ± 0.32	1.40 ± 0.41							ASV_00018: Verrucomicrobiae; Coraliomargarita
+ASV_00018	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.50 ± 0.32		1.29 ± 0.35						ASV_00018: Verrucomicrobiae; Coraliomargarita
+ASV_00018	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.67 ± 0.35	1.45 ± 0.17							ASV_00018: Verrucomicrobiae; Coraliomargarita
+ASV_00018	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.67 ± 0.35		1.34 ± 0.33						ASV_00018: Verrucomicrobiae; Coraliomargarita
+ASV_00019	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.33 ± 0.68	0.87 ± 0.22							ASV_00019: Bacteroidia; NS2b marine group
+ASV_00019	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.33 ± 0.68		1.01 ± 0.22						ASV_00019: Bacteroidia; NS2b marine group
+ASV_00020	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.42 ± 0.13	1.17 ± 0.21							ASV_00020: Gammaproteobacteria; SAR86 clade
+ASV_00020	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.42 ± 0.13		1.05 ± 0.28						ASV_00020: Gammaproteobacteria; SAR86 clade
+ASV_00020	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.70 ± 0.41	1.33 ± 0.26							ASV_00020: Gammaproteobacteria; SAR86 clade
+ASV_00020	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.70 ± 0.41		1.30 ± 0.23						ASV_00020: Gammaproteobacteria; SAR86 clade
+ASV_00021	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.51 ± 0.23	0.99 ± 0.20							ASV_00021: Alphaproteobacteria; Rhodobacteraceae
+ASV_00021	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.51 ± 0.23		1.13 ± 0.16						ASV_00021: Alphaproteobacteria; Rhodobacteraceae
+ASV_00022	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.23 ± 0.67	0.56 ± 0.30							ASV_00022: Cyanobacteria; Synechococcus CC9902
+ASV_00022	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.23 ± 0.67		0.72 ± 0.28						ASV_00022: Cyanobacteria; Synechococcus CC9902
+ASV_00022	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.51 ± 0.66	0.71 ± 0.23							ASV_00022: Cyanobacteria; Synechococcus CC9902
+ASV_00022	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.51 ± 0.66		0.91 ± 0.26						ASV_00022: Cyanobacteria; Synechococcus CC9902
+ASV_00023	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.24 ± 0.12	1.30 ± 0.32							ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00023	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.24 ± 0.12		0.98 ± 0.19						ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00023	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		1.30 ± 0.32	0.98 ± 0.19						ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00023	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.52 ± 0.30	1.41 ± 0.40							ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00023	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.52 ± 0.30		1.23 ± 0.12						ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00024	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.84 ± 0.84	0.28 ± 0.15							ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+ASV_00024	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.84 ± 0.84		0.70 ± 0.11						ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+ASV_00024	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.28 ± 0.15	0.70 ± 0.11						ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+ASV_00024	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	2.03 ± 0.57	0.27 ± 0.16							ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+ASV_00024	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	2.03 ± 0.57		0.45 ± 0.12						ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+ASV_00025	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.49 ± 0.44	0.63 ± 0.19							ASV_00025: Bacteroidia; NS5 marine group
+ASV_00025	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.49 ± 0.44		0.79 ± 0.21						ASV_00025: Bacteroidia; NS5 marine group
+ASV_00025	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.21 ± 0.50	0.56 ± 0.20							ASV_00025: Bacteroidia; NS5 marine group
+ASV_00025	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.21 ± 0.50		0.63 ± 0.14						ASV_00025: Bacteroidia; NS5 marine group
+ASV_00026	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.12 ± 0.12	1.07 ± 0.31							ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00026	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.12 ± 0.12		0.78 ± 0.23						ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00026	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.31 ± 0.31	1.39 ± 0.49							ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00026	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.31 ± 0.31		1.10 ± 0.24						ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00027	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.08 ± 0.33	0.57 ± 0.21							ASV_00027: Bacteroidia; NS5 marine group
+ASV_00027	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.08 ± 0.33		0.74 ± 0.12						ASV_00027: Bacteroidia; NS5 marine group
+ASV_00027	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.02 ± 0.41	0.51 ± 0.20							ASV_00027: Bacteroidia; NS5 marine group
+ASV_00027	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.02 ± 0.41		0.55 ± 0.11						ASV_00027: Bacteroidia; NS5 marine group
+ASV_00029	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.22 ± 0.11	0.81 ± 0.15							ASV_00029: Alphaproteobacteria; SAR116 clade
+ASV_00029	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.22 ± 0.11		0.73 ± 0.18						ASV_00029: Alphaproteobacteria; SAR116 clade
+ASV_00029	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.39 ± 0.28	0.97 ± 0.17							ASV_00029: Alphaproteobacteria; SAR116 clade
+ASV_00029	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.39 ± 0.28		0.88 ± 0.17						ASV_00029: Alphaproteobacteria; SAR116 clade
+ASV_00030	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.72 ± 0.39	0.42 ± 0.19							ASV_00030: Cyanobacteria; Synechococcus CC9902
+ASV_00030	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.93 ± 0.33	0.56 ± 0.17							ASV_00030: Cyanobacteria; Synechococcus CC9902
+ASV_00030	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.93 ± 0.33		0.70 ± 0.15						ASV_00030: Cyanobacteria; Synechococcus CC9902
+ASV_00031	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.18 ± 0.07	0.77 ± 0.20							ASV_00031: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00031	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.18 ± 0.07		0.71 ± 0.14						ASV_00031: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00031	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.35 ± 0.22	0.82 ± 0.17							ASV_00031: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00031	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.35 ± 0.22		0.84 ± 0.14						ASV_00031: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00032	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.19 ± 0.39	0.32 ± 0.12							ASV_00032: Bacteroidia; NS5 marine group
+ASV_00032	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.19 ± 0.39		0.50 ± 0.11						ASV_00032: Bacteroidia; NS5 marine group
+ASV_00032	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.32 ± 0.12	0.50 ± 0.11						ASV_00032: Bacteroidia; NS5 marine group
+ASV_00032	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	1.05 ± 0.31	0.28 ± 0.11							ASV_00032: Bacteroidia; NS5 marine group
+ASV_00032	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	1.05 ± 0.31		0.35 ± 0.08						ASV_00032: Bacteroidia; NS5 marine group
+ASV_00034	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.77 ± 0.26	0.52 ± 0.17							ASV_00034: Cyanobacteria; Synechococcus CC9902
+ASV_00034	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.68 ± 0.22	0.47 ± 0.16							ASV_00034: Cyanobacteria; Synechococcus CC9902
+ASV_00035	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.07 ± 0.08	0.78 ± 0.34							ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00035	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.07 ± 0.08		0.55 ± 0.14						ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00035	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.78 ± 0.34	0.55 ± 0.14						ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00035	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.20 ± 0.20	0.96 ± 0.37							ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00035	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.20 ± 0.20		0.80 ± 0.13						ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00036	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.80 ± 0.21	0.39 ± 0.18							ASV_00036: Bacteroidia; NS9 marine group
+ASV_00036	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.80 ± 0.21		0.46 ± 0.07						ASV_00036: Bacteroidia; NS9 marine group
+ASV_00036	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.84 ± 0.24	0.34 ± 0.10							ASV_00036: Bacteroidia; NS9 marine group
+ASV_00036	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.84 ± 0.24		0.38 ± 0.07						ASV_00036: Bacteroidia; NS9 marine group
+ASV_00037	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.18 ± 0.13	0.61 ± 0.23							ASV_00037: Alphaproteobacteria; SAR11 Clade II
+ASV_00037	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.18 ± 0.13		0.55 ± 0.12						ASV_00037: Alphaproteobacteria; SAR11 Clade II
+ASV_00037	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.34 ± 0.18	0.75 ± 0.19							ASV_00037: Alphaproteobacteria; SAR11 Clade II
+ASV_00037	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.34 ± 0.18		0.64 ± 0.09						ASV_00037: Alphaproteobacteria; SAR11 Clade II
+ASV_00038	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.18 ± 0.36	0.19 ± 0.06							ASV_00038: Bacteroidia; Formosa
+ASV_00038	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.18 ± 0.36		0.34 ± 0.09						ASV_00038: Bacteroidia; Formosa
+ASV_00038	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.19 ± 0.06	0.34 ± 0.09						ASV_00038: Bacteroidia; Formosa
+ASV_00038	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.89 ± 0.43	0.20 ± 0.11							ASV_00038: Bacteroidia; Formosa
+ASV_00038	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.89 ± 0.43		0.23 ± 0.07						ASV_00038: Bacteroidia; Formosa
+ASV_00039	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.25 ± 0.11	0.54 ± 0.14							ASV_00039: Alphaproteobacteria; Rhodobacteraceae
+ASV_00039	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.25 ± 0.11		0.58 ± 0.09						ASV_00039: Alphaproteobacteria; Rhodobacteraceae
+ASV_00039	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.36 ± 0.24		0.58 ± 0.06						ASV_00039: Alphaproteobacteria; Rhodobacteraceae
+ASV_00040	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.61 ± 0.13	0.41 ± 0.07							ASV_00040: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00040	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.61 ± 0.13		0.50 ± 0.09						ASV_00040: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00040	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.41 ± 0.07	0.50 ± 0.09						ASV_00040: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00043	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.82 ± 0.23	0.30 ± 0.07							ASV_00043: Bacteroidia; NS5 marine group
+ASV_00043	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.82 ± 0.23		0.42 ± 0.08						ASV_00043: Bacteroidia; NS5 marine group
+ASV_00043	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.30 ± 0.07	0.42 ± 0.08						ASV_00043: Bacteroidia; NS5 marine group
+ASV_00043	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.62 ± 0.13	0.24 ± 0.10							ASV_00043: Bacteroidia; NS5 marine group
+ASV_00043	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.62 ± 0.13		0.33 ± 0.07						ASV_00043: Bacteroidia; NS5 marine group
+ASV_00045	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.04 ± 0.43	0.17 ± 0.05							ASV_00045: Bacteroidia; NS7 marine group
+ASV_00045	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.04 ± 0.43		0.28 ± 0.06						ASV_00045: Bacteroidia; NS7 marine group
+ASV_00045	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.17 ± 0.05	0.28 ± 0.06						ASV_00045: Bacteroidia; NS7 marine group
+ASV_00045	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.71 ± 0.35	0.15 ± 0.06							ASV_00045: Bacteroidia; NS7 marine group
+ASV_00045	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.71 ± 0.35		0.18 ± 0.03						ASV_00045: Bacteroidia; NS7 marine group
+ASV_00046	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.08 ± 0.07	0.53 ± 0.16							ASV_00046: Gammaproteobacteria; SAR86 clade
+ASV_00046	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.08 ± 0.07		0.39 ± 0.14						ASV_00046: Gammaproteobacteria; SAR86 clade
+ASV_00046	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.16 ± 0.16	0.63 ± 0.18							ASV_00046: Gammaproteobacteria; SAR86 clade
+ASV_00046	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.16 ± 0.16		0.56 ± 0.16						ASV_00046: Gammaproteobacteria; SAR86 clade
+ASV_00047	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	1.02 ± 0.52	0.15 ± 0.11							ASV_00047: Bacteroidia; NS4 marine group
+ASV_00047	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.02 ± 0.52		0.21 ± 0.05						ASV_00047: Bacteroidia; NS4 marine group
+ASV_00047	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.73 ± 0.41	0.15 ± 0.07							ASV_00047: Bacteroidia; NS4 marine group
+ASV_00047	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.73 ± 0.41		0.16 ± 0.03						ASV_00047: Bacteroidia; NS4 marine group
+ASV_00048	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.65 ± 0.26	0.18 ± 0.08							ASV_00048: Bacteroidia; NS5 marine group
+ASV_00048	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.65 ± 0.26		0.30 ± 0.06						ASV_00048: Bacteroidia; NS5 marine group
+ASV_00048	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.18 ± 0.08	0.30 ± 0.06						ASV_00048: Bacteroidia; NS5 marine group
+ASV_00048	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.63 ± 0.30	0.16 ± 0.09							ASV_00048: Bacteroidia; NS5 marine group
+ASV_00048	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.63 ± 0.30		0.21 ± 0.06						ASV_00048: Bacteroidia; NS5 marine group
+ASV_00049	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.09 ± 0.05	0.49 ± 0.14							ASV_00049: Gammaproteobacteria; SAR86 clade
+ASV_00049	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.09 ± 0.05		0.36 ± 0.10						ASV_00049: Gammaproteobacteria; SAR86 clade
+ASV_00049	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.17 ± 0.12	0.60 ± 0.14							ASV_00049: Gammaproteobacteria; SAR86 clade
+ASV_00049	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.17 ± 0.12		0.51 ± 0.12						ASV_00049: Gammaproteobacteria; SAR86 clade
+ASV_00058	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.53 ± 0.24	0.17 ± 0.07							ASV_00058: Acidimicrobia; Sva0996 marine group
+ASV_00058	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.53 ± 0.24		0.26 ± 0.09						ASV_00058: Acidimicrobia; Sva0996 marine group
+ASV_00058	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.36 ± 0.21	0.19 ± 0.08							ASV_00058: Acidimicrobia; Sva0996 marine group
+ASV_00058	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.36 ± 0.21		0.19 ± 0.07						ASV_00058: Acidimicrobia; Sva0996 marine group
+ASV_00050	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.13 ± 0.06	0.46 ± 0.10							ASV_00050: Alphaproteobacteria; Rhodobacteraceae
+ASV_00050	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.13 ± 0.06		0.41 ± 0.05						ASV_00050: Alphaproteobacteria; Rhodobacteraceae
+ASV_00050	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.20 ± 0.08	0.50 ± 0.09							ASV_00050: Alphaproteobacteria; Rhodobacteraceae
+ASV_00050	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.20 ± 0.08		0.47 ± 0.08						ASV_00050: Alphaproteobacteria; Rhodobacteraceae
+ASV_00055	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.06 ± 0.05	0.37 ± 0.12							ASV_00055: Gammaproteobacteria; SAR86 clade
+ASV_00055	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.06 ± 0.05		0.31 ± 0.09						ASV_00055: Gammaproteobacteria; SAR86 clade
+ASV_00055	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.11 ± 0.13	0.50 ± 0.15							ASV_00055: Gammaproteobacteria; SAR86 clade
+ASV_00055	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.11 ± 0.13		0.43 ± 0.13						ASV_00055: Gammaproteobacteria; SAR86 clade
+ASV_00057	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.13 ± 0.15	0.37 ± 0.12							ASV_00057: Thermoplasmata; Marine Group II
+ASV_00059	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.32 ± 0.10	0.17 ± 0.06							ASV_00059: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00059	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.32 ± 0.10		0.24 ± 0.04						ASV_00059: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00059	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.17 ± 0.06	0.24 ± 0.04						ASV_00059: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00059	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.35 ± 0.10	0.17 ± 0.06							ASV_00059: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00059	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.35 ± 0.10		0.19 ± 0.04						ASV_00059: Alphaproteobacteria; Ascidiaceihabitans
+ASV_00063	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.11 ± 0.05	0.33 ± 0.10							ASV_00063: Gammaproteobacteria; SAR86 clade
+ASV_00063	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.11 ± 0.05		0.29 ± 0.08						ASV_00063: Gammaproteobacteria; SAR86 clade
+ASV_00063	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.16 ± 0.13	0.33 ± 0.07							ASV_00063: Gammaproteobacteria; SAR86 clade
+ASV_00063	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.16 ± 0.13		0.31 ± 0.09						ASV_00063: Gammaproteobacteria; SAR86 clade
+ASV_00064	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.38 ± 0.09	0.21 ± 0.10							ASV_00064: Alphaproteobacteria; Stappiaceae
+ASV_00064	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.38 ± 0.09		0.23 ± 0.06						ASV_00064: Alphaproteobacteria; Stappiaceae
+ASV_00066	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.33 ± 0.26	0.12 ± 0.07							ASV_00066: Cyanobacteria; Cyanobium PCC-6307
+ASV_00066	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.33 ± 0.26		0.15 ± 0.09						ASV_00066: Cyanobacteria; Cyanobium PCC-6307
+ASV_00068	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.04 ± 0.05	0.27 ± 0.10							ASV_00068: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00068	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.04 ± 0.05		0.26 ± 0.06						ASV_00068: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00068	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.13 ± 0.10		0.28 ± 0.05						ASV_00068: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00071	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.29 ± 0.08	0.11 ± 0.04							ASV_00071: Bacteroidia; NS9 marine group
+ASV_00071	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.29 ± 0.08		0.19 ± 0.04						ASV_00071: Bacteroidia; NS9 marine group
+ASV_00071	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.11 ± 0.04	0.19 ± 0.04						ASV_00071: Bacteroidia; NS9 marine group
+ASV_00071	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.37 ± 0.15	0.13 ± 0.04							ASV_00071: Bacteroidia; NS9 marine group
+ASV_00071	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.37 ± 0.15		0.16 ± 0.04						ASV_00071: Bacteroidia; NS9 marine group
+ASV_00072	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.02	0.28 ± 0.09							ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00072	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.02		0.19 ± 0.05						ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00072	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.28 ± 0.09	0.19 ± 0.05						ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00072	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.07 ± 0.07	0.34 ± 0.10							ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00072	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.07 ± 0.07		0.28 ± 0.06						ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00073	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.53 ± 0.31	0.06 ± 0.04							ASV_00073: Bacteroidia; NS4 marine group
+ASV_00073	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.53 ± 0.31		0.09 ± 0.03						ASV_00073: Bacteroidia; NS4 marine group
+ASV_00073	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.39 ± 0.24	0.07 ± 0.04							ASV_00073: Bacteroidia; NS4 marine group
+ASV_00073	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.39 ± 0.24		0.07 ± 0.02						ASV_00073: Bacteroidia; NS4 marine group
+ASV_00074	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.31 ± 0.13	0.12 ± 0.06							ASV_00074: Bacteroidia; Cryomorphaceae
+ASV_00074	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.31 ± 0.13		0.20 ± 0.04						ASV_00074: Bacteroidia; Cryomorphaceae
+ASV_00074	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.12 ± 0.06	0.20 ± 0.04						ASV_00074: Bacteroidia; Cryomorphaceae
+ASV_00074	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.24 ± 0.15		0.15 ± 0.03						ASV_00074: Bacteroidia; Cryomorphaceae
+ASV_00083	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.03	0.25 ± 0.06							ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00083	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.03		0.18 ± 0.05						ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00083	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.25 ± 0.06	0.18 ± 0.05						ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00083	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.08 ± 0.07	0.26 ± 0.10							ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00083	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.08 ± 0.07		0.23 ± 0.05						ASV_00083: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00087	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.29 ± 0.09	0.11 ± 0.06							ASV_00087: Alphaproteobacteria; Stappiaceae
+ASV_00087	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.29 ± 0.09		0.13 ± 0.04						ASV_00087: Alphaproteobacteria; Stappiaceae
+ASV_00087	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.22 ± 0.14	0.13 ± 0.04							ASV_00087: Alphaproteobacteria; Stappiaceae
+ASV_00087	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.22 ± 0.14		0.13 ± 0.05						ASV_00087: Alphaproteobacteria; Stappiaceae
+ASV_00093	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.05 ± 0.03	0.20 ± 0.04							ASV_00093: Alphaproteobacteria; Defluviicoccales
+ASV_00093	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.05 ± 0.03		0.18 ± 0.02						ASV_00093: Alphaproteobacteria; Defluviicoccales
+ASV_00093	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.09 ± 0.04	0.22 ± 0.06							ASV_00093: Alphaproteobacteria; Defluviicoccales
+ASV_00093	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.09 ± 0.04		0.20 ± 0.04						ASV_00093: Alphaproteobacteria; Defluviicoccales
+ASV_00095	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.55 ± 0.49	0.02 ± 0.01							ASV_00095: Bacteroidia; Flavobacteriaceae
+ASV_00095	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.55 ± 0.49		0.04 ± 0.02						ASV_00095: Bacteroidia; Flavobacteriaceae
+ASV_00095	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.34 ± 0.27	0.01 ± 0.01							ASV_00095: Bacteroidia; Flavobacteriaceae
+ASV_00095	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.34 ± 0.27		0.02 ± 0.01						ASV_00095: Bacteroidia; Flavobacteriaceae
+ASV_00096	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.07 ± 0.03	0.15 ± 0.06							ASV_00096: Gammaproteobacteria; KI89A clade
+ASV_00096	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.07 ± 0.03		0.17 ± 0.04						ASV_00096: Gammaproteobacteria; KI89A clade
+ASV_00096	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.09 ± 0.06	0.21 ± 0.06							ASV_00096: Gammaproteobacteria; KI89A clade
+ASV_00096	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.09 ± 0.06		0.19 ± 0.04						ASV_00096: Gammaproteobacteria; KI89A clade
+ASV_00097	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.33 ± 0.11	0.09 ± 0.06							ASV_00097: Bacteroidia; Tenacibaculum
+ASV_00097	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.33 ± 0.11		0.09 ± 0.02						ASV_00097: Bacteroidia; Tenacibaculum
+ASV_00097	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.21 ± 0.11	0.08 ± 0.04							ASV_00097: Bacteroidia; Tenacibaculum
+ASV_00097	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.21 ± 0.11		0.08 ± 0.02						ASV_00097: Bacteroidia; Tenacibaculum
+ASV_00098	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.03	0.21 ± 0.05							ASV_00098: Thermoplasmata; Marine Group II
+ASV_00098	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.03		0.17 ± 0.08						ASV_00098: Thermoplasmata; Marine Group II
+ASV_00098	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.06 ± 0.05	0.21 ± 0.09							ASV_00098: Thermoplasmata; Marine Group II
+ASV_00098	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.05		0.20 ± 0.08						ASV_00098: Thermoplasmata; Marine Group II
+ASV_00101	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.32 ± 0.13	0.08 ± 0.06							ASV_00101: Bacteroidia; NS5 marine group
+ASV_00101	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.32 ± 0.13		0.11 ± 0.03						ASV_00101: Bacteroidia; NS5 marine group
+ASV_00101	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.08 ± 0.06	0.11 ± 0.03						ASV_00101: Bacteroidia; NS5 marine group
+ASV_00101	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.25 ± 0.10	0.05 ± 0.03							ASV_00101: Bacteroidia; NS5 marine group
+ASV_00101	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.25 ± 0.10		0.07 ± 0.01						ASV_00101: Bacteroidia; NS5 marine group
+ASV_00103	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.07 ± 0.04	0.15 ± 0.03							ASV_00103: Alphaproteobacteria; PS1 clade
+ASV_00103	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.07 ± 0.04		0.17 ± 0.03						ASV_00103: Alphaproteobacteria; PS1 clade
+ASV_00103	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.10 ± 0.06	0.18 ± 0.04							ASV_00103: Alphaproteobacteria; PS1 clade
+ASV_00103	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.10 ± 0.06		0.18 ± 0.03						ASV_00103: Alphaproteobacteria; PS1 clade
+ASV_00104	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.20 ± 0.06	0.10 ± 0.04							ASV_00104: Bacteroidia; NS9 marine group
+ASV_00104	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.20 ± 0.06		0.12 ± 0.01						ASV_00104: Bacteroidia; NS9 marine group
+ASV_00104	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.20 ± 0.05	0.12 ± 0.10							ASV_00104: Bacteroidia; NS9 marine group
+ASV_00104	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.20 ± 0.05		0.11 ± 0.03						ASV_00104: Bacteroidia; NS9 marine group
+ASV_00105	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.34 ± 0.33	0.00 ± 0.00							ASV_00105: Gammaproteobacteria; Marinobacterium
+ASV_00105	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.34 ± 0.33		0.02 ± 0.01						ASV_00105: Gammaproteobacteria; Marinobacterium
+ASV_00105	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.41 ± 0.45		0.00 ± 0.01						ASV_00105: Gammaproteobacteria; Marinobacterium
+ASV_00111	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.34 ± 0.37	0.01 ± 0.01							ASV_00111: Gammaproteobacteria; Pseudomonadales
+ASV_00111	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.34 ± 0.37		0.03 ± 0.01						ASV_00111: Gammaproteobacteria; Pseudomonadales
+ASV_00111	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.01 ± 0.01	0.03 ± 0.01						ASV_00111: Gammaproteobacteria; Pseudomonadales
+ASV_00111	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.39 ± 0.29	0.00 ± 0.00							ASV_00111: Gammaproteobacteria; Pseudomonadales
+ASV_00111	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.39 ± 0.29		0.01 ± 0.01						ASV_00111: Gammaproteobacteria; Pseudomonadales
+ASV_00115	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.14 ± 0.07	0.09 ± 0.04							ASV_00115: Cyanobacteria; Synechococcus CC9902
+ASV_00122	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.25 ± 0.06	0.07 ± 0.03							ASV_00122: Bacteroidia; Flavobacteriaceae
+ASV_00122	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.25 ± 0.06		0.10 ± 0.03						ASV_00122: Bacteroidia; Flavobacteriaceae
+ASV_00122	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.17 ± 0.06	0.07 ± 0.04							ASV_00122: Bacteroidia; Flavobacteriaceae
+ASV_00122	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.17 ± 0.06		0.07 ± 0.02						ASV_00122: Bacteroidia; Flavobacteriaceae
+ASV_00123	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.00 ± 0.01	0.19 ± 0.09							ASV_00123: Gammaproteobacteria; SAR86 clade
+ASV_00123	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.00 ± 0.01		0.10 ± 0.05						ASV_00123: Gammaproteobacteria; SAR86 clade
+ASV_00123	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.19 ± 0.09	0.10 ± 0.05						ASV_00123: Gammaproteobacteria; SAR86 clade
+ASV_00123	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.04 ± 0.05	0.22 ± 0.13							ASV_00123: Gammaproteobacteria; SAR86 clade
+ASV_00123	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.04 ± 0.05		0.15 ± 0.05						ASV_00123: Gammaproteobacteria; SAR86 clade
+ASV_00124	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.33 ± 0.18	0.02 ± 0.02							ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00124	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.33 ± 0.18		0.06 ± 0.02						ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00124	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.02 ± 0.02	0.06 ± 0.02						ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00124	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.25 ± 0.10	0.02 ± 0.02							ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00124	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.25 ± 0.10		0.03 ± 0.01						ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00129	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.02	0.16 ± 0.06							ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00129	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.02		0.10 ± 0.03						ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00129	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.16 ± 0.06	0.10 ± 0.03						ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00129	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.04 ± 0.04	0.20 ± 0.08							ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00129	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.04 ± 0.04		0.16 ± 0.03						ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00131	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.29 ± 0.19	0.03 ± 0.02							ASV_00131: Alphaproteobacteria; Thalassobius
+ASV_00131	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.29 ± 0.19		0.05 ± 0.02						ASV_00131: Alphaproteobacteria; Thalassobius
+ASV_00131	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.23 ± 0.20	0.02 ± 0.02							ASV_00131: Alphaproteobacteria; Thalassobius
+ASV_00131	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.23 ± 0.20		0.03 ± 0.02						ASV_00131: Alphaproteobacteria; Thalassobius
+ASV_00086	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.06 ± 0.06	0.19 ± 0.08							ASV_00086: Thermoplasmata; Marine Group II
+ASV_00086	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.06 ± 0.06		0.18 ± 0.08						ASV_00086: Thermoplasmata; Marine Group II
+ASV_00088	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.06 ± 0.05	0.17 ± 0.05							ASV_00088: Alphaproteobacteria; SAR116 clade
+ASV_00119	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.07 ± 0.03	0.16 ± 0.06							ASV_00119: Gammaproteobacteria; SAR92 clade
+ASV_00119	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.07 ± 0.03		0.15 ± 0.04						ASV_00119: Gammaproteobacteria; SAR92 clade
+ASV_00120	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.04 ± 0.04	0.15 ± 0.07							ASV_00120: Alphaproteobacteria; PS1 clade
+ASV_00120	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.04 ± 0.04		0.15 ± 0.04						ASV_00120: Alphaproteobacteria; PS1 clade
+ASV_00125	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.04 ± 0.03	0.15 ± 0.06							ASV_00125: Alphaproteobacteria; SAR11 Clade III
+ASV_00125	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.04 ± 0.03		0.12 ± 0.03						ASV_00125: Alphaproteobacteria; SAR11 Clade III
+ASV_00128	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.00 ± 0.01	0.17 ± 0.15							ASV_00128: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00128	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.00 ± 0.01		0.11 ± 0.04						ASV_00128: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00128	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.04 ± 0.05		0.17 ± 0.04						ASV_00128: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00130	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.04 ± 0.02	0.14 ± 0.05							ASV_00130: Gammaproteobacteria; OM182 clade
+ASV_00130	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.04 ± 0.02		0.13 ± 0.05						ASV_00130: Gammaproteobacteria; OM182 clade
+ASV_00130	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.07 ± 0.06		0.13 ± 0.04						ASV_00130: Gammaproteobacteria; OM182 clade
+ASV_00138	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.03	0.16 ± 0.12							ASV_00138: Gammaproteobacteria; BD1-7 clade
+ASV_00138	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.03		0.12 ± 0.10						ASV_00138: Gammaproteobacteria; BD1-7 clade
+ASV_00138	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.05 ± 0.05	0.14 ± 0.10							ASV_00138: Gammaproteobacteria; BD1-7 clade
+ASV_00138	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.05		0.13 ± 0.09						ASV_00138: Gammaproteobacteria; BD1-7 clade
+ASV_00141	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.01	0.15 ± 0.08							ASV_00141: Gammaproteobacteria; SAR86 clade
+ASV_00141	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.01		0.09 ± 0.05						ASV_00141: Gammaproteobacteria; SAR86 clade
+ASV_00141	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.02 ± 0.04		0.14 ± 0.03						ASV_00141: Gammaproteobacteria; SAR86 clade
+ASV_00145	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.03	0.14 ± 0.04							ASV_00145: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00145	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.03		0.10 ± 0.04						ASV_00145: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00145	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.05		0.13 ± 0.04						ASV_00145: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00150	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.03	0.11 ± 0.05							ASV_00150: Verrucomicrobiae; MB11C04 marine group
+ASV_00150	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.03		0.09 ± 0.04						ASV_00150: Verrucomicrobiae; MB11C04 marine group
+ASV_00150	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.06 ± 0.06	0.12 ± 0.04							ASV_00150: Verrucomicrobiae; MB11C04 marine group
+ASV_00150	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.06		0.13 ± 0.06						ASV_00150: Verrucomicrobiae; MB11C04 marine group
+ASV_00153	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.03 ± 0.03	0.13 ± 0.05							ASV_00153: Gammaproteobacteria; Pseudohongiella
+ASV_00153	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.03 ± 0.03		0.10 ± 0.04						ASV_00153: Gammaproteobacteria; Pseudohongiella
+ASV_00153	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.06		0.11 ± 0.04						ASV_00153: Gammaproteobacteria; Pseudohongiella
+ASV_00154	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.14 ± 0.05	0.06 ± 0.04							ASV_00154: Bacteroidia; NS5 marine group
+ASV_00154	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.14 ± 0.05		0.07 ± 0.02						ASV_00154: Bacteroidia; NS5 marine group
+ASV_00154	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.13 ± 0.08	0.08 ± 0.05							ASV_00154: Bacteroidia; NS5 marine group
+ASV_00154	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.13 ± 0.08		0.06 ± 0.02						ASV_00154: Bacteroidia; NS5 marine group
+ASV_00155	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.02	0.13 ± 0.04							ASV_00155: Bacteria; SAR324 clade(Marine group B)
+ASV_00155	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.02		0.09 ± 0.04						ASV_00155: Bacteria; SAR324 clade(Marine group B)
+ASV_00161	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.03 ± 0.02	0.11 ± 0.06							ASV_00161: Alphaproteobacteria; S25-593
+ASV_00161	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.03		0.12 ± 0.03						ASV_00161: Alphaproteobacteria; S25-593
+ASV_00165	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.23 ± 0.14	0.01 ± 0.02							ASV_00165: Bacteroidia; NS4 marine group
+ASV_00165	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.23 ± 0.14		0.05 ± 0.02						ASV_00165: Bacteroidia; NS4 marine group
+ASV_00165	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.15 ± 0.13	0.01 ± 0.02							ASV_00165: Bacteroidia; NS4 marine group
+ASV_00165	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.15 ± 0.13		0.03 ± 0.02						ASV_00165: Bacteroidia; NS4 marine group
+ASV_00167	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.02	0.09 ± 0.05							ASV_00167: Alphaproteobacteria; S25-593
+ASV_00167	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.02		0.08 ± 0.02						ASV_00167: Alphaproteobacteria; S25-593
+ASV_00167	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.04 ± 0.03	0.13 ± 0.04							ASV_00167: Alphaproteobacteria; S25-593
+ASV_00167	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.04 ± 0.03		0.10 ± 0.03						ASV_00167: Alphaproteobacteria; S25-593
+ASV_00177	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.03	0.18 ± 0.22							ASV_00177: Gammaproteobacteria; Pseudoalteromonas
+ASV_00178	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.02	0.08 ± 0.03							ASV_00178: Gammaproteobacteria; SAR86 clade
+ASV_00178	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.02		0.07 ± 0.02						ASV_00178: Gammaproteobacteria; SAR86 clade
+ASV_00178	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.05 ± 0.02	0.09 ± 0.04							ASV_00178: Gammaproteobacteria; SAR86 clade
+ASV_00178	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.02		0.10 ± 0.02						ASV_00178: Gammaproteobacteria; SAR86 clade
+ASV_00180	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.02	0.08 ± 0.04							ASV_00180: Gammaproteobacteria; SAR86 clade
+ASV_00180	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.04 ± 0.04		0.10 ± 0.03						ASV_00180: Gammaproteobacteria; SAR86 clade
+ASV_00182	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.13 ± 0.05	0.02 ± 0.03							ASV_00182: Bacteroidia; NS9 marine group
+ASV_00182	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.13 ± 0.05		0.06 ± 0.03						ASV_00182: Bacteroidia; NS9 marine group
+ASV_00185	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.01	0.08 ± 0.04							ASV_00185: Verrucomicrobiae; MB11C04 marine group
+ASV_00185	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.01		0.07 ± 0.02						ASV_00185: Verrucomicrobiae; MB11C04 marine group
+ASV_00185	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.03 ± 0.03		0.09 ± 0.02						ASV_00185: Verrucomicrobiae; MB11C04 marine group
+ASV_00187	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.13 ± 0.06	0.03 ± 0.02							ASV_00187: Bacteroidia; Cryomorphaceae
+ASV_00187	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.13 ± 0.06		0.05 ± 0.01						ASV_00187: Bacteroidia; Cryomorphaceae
+ASV_00187	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.03 ± 0.02	0.05 ± 0.01						ASV_00187: Bacteroidia; Cryomorphaceae
+ASV_00187	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.09 ± 0.05	0.04 ± 0.02							ASV_00187: Bacteroidia; Cryomorphaceae
+ASV_00187	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.09 ± 0.05		0.05 ± 0.02						ASV_00187: Bacteroidia; Cryomorphaceae
+ASV_00199	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.08 ± 0.03	0.04 ± 0.08							ASV_00199: Bacteroidia; NS9 marine group
+ASV_00199	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.08 ± 0.03		0.04 ± 0.01						ASV_00199: Bacteroidia; NS9 marine group
+ASV_00199	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.12 ± 0.08	0.02 ± 0.02							ASV_00199: Bacteroidia; NS9 marine group
+ASV_00199	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.12 ± 0.08		0.03 ± 0.01						ASV_00199: Bacteroidia; NS9 marine group
+ASV_00210	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.00 ± 0.00	0.07 ± 0.04							ASV_00210: Alphaproteobacteria; SAR116 clade
+ASV_00210	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.00 ± 0.00		0.05 ± 0.03						ASV_00210: Alphaproteobacteria; SAR116 clade
+ASV_00210	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.02 ± 0.02	0.08 ± 0.05							ASV_00210: Alphaproteobacteria; SAR116 clade
+ASV_00215	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.12 ± 0.06	0.01 ± 0.02							ASV_00215: Bacteroidia; Saprospiraceae
+ASV_00215	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.12 ± 0.06		0.04 ± 0.03						ASV_00215: Bacteroidia; Saprospiraceae
+ASV_00222	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.10 ± 0.03	0.02 ± 0.02							ASV_00222: Bacteroidia; Saprospiraceae
+ASV_00222	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.10 ± 0.03		0.03 ± 0.01						ASV_00222: Bacteroidia; Saprospiraceae
+ASV_00222	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.07 ± 0.04		0.03 ± 0.01						ASV_00222: Bacteroidia; Saprospiraceae
+ASV_00243	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.13 ± 0.05	0.01 ± 0.01							ASV_00243: Bacteroidia; Winogradskyella
+ASV_00243	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.13 ± 0.05		0.01 ± 0.01						ASV_00243: Bacteroidia; Winogradskyella
+ASV_00243	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.09 ± 0.08		0.01 ± 0.01						ASV_00243: Bacteroidia; Winogradskyella
+ASV_00216	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.01	0.05 ± 0.04							ASV_00216: Gammaproteobacteria; SAR86 clade
+ASV_00216	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.01		0.05 ± 0.02						ASV_00216: Gammaproteobacteria; SAR86 clade
+ASV_00217	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.01	0.05 ± 0.02							ASV_00217: Gammaproteobacteria; Coxiella
+ASV_00217	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.01		0.05 ± 0.01						ASV_00217: Gammaproteobacteria; Coxiella
+ASV_00217	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.01 ± 0.02	0.08 ± 0.04							ASV_00217: Gammaproteobacteria; Coxiella
+ASV_00217	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.01 ± 0.02		0.07 ± 0.02						ASV_00217: Gammaproteobacteria; Coxiella
+ASV_00227	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.09 ± 0.05	0.01 ± 0.02							ASV_00227: Gammaproteobacteria; Photobacterium
+ASV_00227	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.09 ± 0.05		0.02 ± 0.02						ASV_00227: Gammaproteobacteria; Photobacterium
+ASV_00227	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.09 ± 0.09	0.03 ± 0.02							ASV_00227: Gammaproteobacteria; Photobacterium
+ASV_00233	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.00 ± 0.01	0.06 ± 0.03							ASV_00233: Alphaproteobacteria; SAR116 clade
+ASV_00233	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.00 ± 0.01		0.04 ± 0.02						ASV_00233: Alphaproteobacteria; SAR116 clade
+ASV_00233	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.01 ± 0.01	0.07 ± 0.04							ASV_00233: Alphaproteobacteria; SAR116 clade
+ASV_00233	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.01 ± 0.01		0.05 ± 0.02						ASV_00233: Alphaproteobacteria; SAR116 clade
+ASV_00236	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.01	0.05 ± 0.02							ASV_00236: Gammaproteobacteria; Thiotrichaceae
+ASV_00236	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.01		0.04 ± 0.01						ASV_00236: Gammaproteobacteria; Thiotrichaceae
+ASV_00236	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.02 ± 0.01	0.07 ± 0.02							ASV_00236: Gammaproteobacteria; Thiotrichaceae
+ASV_00236	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.02 ± 0.01		0.06 ± 0.01						ASV_00236: Gammaproteobacteria; Thiotrichaceae
+ASV_00251	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.12 ± 0.12	0.00 ± 0.00							ASV_00251: Gammaproteobacteria; Alteromonadaceae
+ASV_00251	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.12 ± 0.12		0.00 ± 0.01						ASV_00251: Gammaproteobacteria; Alteromonadaceae
+ASV_00251	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.10 ± 0.10		0.00 ± 0.00						ASV_00251: Gammaproteobacteria; Alteromonadaceae
+ASV_00255	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.01	0.05 ± 0.03							ASV_00255: Verrucomicrobiae; MB11C04 marine group
+ASV_00255	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.02 ± 0.02		0.05 ± 0.02						ASV_00255: Verrucomicrobiae; MB11C04 marine group
+ASV_00260	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.07 ± 0.03	0.02 ± 0.01							ASV_00260: Bacteroidia; Flavobacteriales
+ASV_00260	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.07 ± 0.03		0.03 ± 0.01						ASV_00260: Bacteroidia; Flavobacteriales
+ASV_00260	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.06 ± 0.04	0.02 ± 0.02							ASV_00260: Bacteroidia; Flavobacteriales
+ASV_00260	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.04		0.02 ± 0.01						ASV_00260: Bacteroidia; Flavobacteriales
+ASV_00271	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.10 ± 0.03	0.01 ± 0.01							ASV_00271: Gammaproteobacteria; Luminiphilus
+ASV_00271	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.10 ± 0.03		0.02 ± 0.01						ASV_00271: Gammaproteobacteria; Luminiphilus
+ASV_00271	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.06 ± 0.04	0.01 ± 0.01							ASV_00271: Gammaproteobacteria; Luminiphilus
+ASV_00271	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.04		0.01 ± 0.01						ASV_00271: Gammaproteobacteria; Luminiphilus
+ASV_00274	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.05 ± 0.07	0.00 ± 0.00							ASV_00274: Gammaproteobacteria; Pseudomonadales
+ASV_00274	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.05 ± 0.07		0.00 ± 0.00						ASV_00274: Gammaproteobacteria; Pseudomonadales
+ASV_00274	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.12 ± 0.13		0.00 ± 0.00						ASV_00274: Gammaproteobacteria; Pseudomonadales
+ASV_00277	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.04 ± 0.02	0.02 ± 0.01							ASV_00277: Planctomycetes; Rubripirellula
+ASV_00279	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.05 ± 0.02	0.02 ± 0.02							ASV_00279: Bacteroidia; NS5 marine group
+ASV_00279	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.05 ± 0.02		0.03 ± 0.01						ASV_00279: Bacteroidia; NS5 marine group
+ASV_00282	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.11 ± 0.07	0.00 ± 0.00							ASV_00282: Desulfobulbia; Desulfocapsaceae
+ASV_00282	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.11 ± 0.07		0.01 ± 0.01						ASV_00282: Desulfobulbia; Desulfocapsaceae
+ASV_00282	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.08 ± 0.07	0.00 ± 0.00							ASV_00282: Desulfobulbia; Desulfocapsaceae
+ASV_00282	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.08 ± 0.07		0.00 ± 0.01						ASV_00282: Desulfobulbia; Desulfocapsaceae
+ASV_00321	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.05 ± 0.05	0.00 ± 0.01							ASV_00321: Bacteroidia; Aureicoccus
+ASV_00321	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.05 ± 0.05		0.01 ± 0.01						ASV_00321: Bacteroidia; Aureicoccus
+ASV_00321	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.05 ± 0.07	0.00 ± 0.00							ASV_00321: Bacteroidia; Aureicoccus
+ASV_00321	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.07		0.01 ± 0.01						ASV_00321: Bacteroidia; Aureicoccus
+ASV_00337	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.01	0.00 ± 0.00							ASV_00337: Desulfuromonadia; Bradymonadales
+ASV_00361	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.00 ± 0.00	0.02 ± 0.02							ASV_00361: Proteobacteria; Gammaproteobacteria
+ASV_00361	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.00 ± 0.00		0.02 ± 0.01						ASV_00361: Proteobacteria; Gammaproteobacteria
+ASV_00361	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.01 ± 0.00	0.02 ± 0.02							ASV_00361: Proteobacteria; Gammaproteobacteria
+ASV_00361	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.01 ± 0.00		0.02 ± 0.02						ASV_00361: Proteobacteria; Gammaproteobacteria
+ASV_00392	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.00 ± 0.00	0.02 ± 0.01							ASV_00392: Oligoflexia; Oligoflexaceae
+ASV_00392	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.00 ± 0.00		0.01 ± 0.01						ASV_00392: Oligoflexia; Oligoflexaceae
+ASV_00448	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.03 ± 0.03	0.00 ± 0.00							ASV_00448: Gammaproteobacteria; Coxiella
+ASV_00448	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.03 ± 0.03		0.00 ± 0.00						ASV_00448: Gammaproteobacteria; Coxiella
+ASV_00512	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.02	0.00 ± 0.00							ASV_00512: Bacteroidia; Crocinitomix
+ASV_00644	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.02 ± 0.01	0.00 ± 0.00							ASV_00644: Alphaproteobacteria; Hirschia
+ASV_00661	dawn (Tektite - LB_seagrass)	dawn	LBseagrass	Tektite	0.01 ± 0.01	0.00 ± 0.00							ASV_00661: Kiritimatiellae; WCHB1-41
+ASV_00015	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.70 ± 0.32		1.52 ± 0.49						ASV_00015: Alphaproteobacteria; SAR116 clade
+ASV_00041	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.29 ± 0.11		0.59 ± 0.17						ASV_00041: Gammaproteobacteria; OM60(NOR5) clade
+ASV_00060	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	1.00 ± 1.06		0.02 ± 0.02						ASV_00060: Alphaproteobacteria; Litorimicrobium
+ASV_00052	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.18 ± 0.11		0.39 ± 0.10						ASV_00052: Alphaproteobacteria; SAR116 clade
+ASV_00069	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.53 ± 0.24		0.16 ± 0.07						ASV_00069: Bacteroidia; Cryomorphaceae
+ASV_00069	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.44 ± 0.17		0.09 ± 0.07						ASV_00069: Bacteroidia; Cryomorphaceae
+ASV_00070	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.05		0.24 ± 0.04						ASV_00070: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00070	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.10 ± 0.09	0.31 ± 0.05							ASV_00070: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00070	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.10 ± 0.09		0.28 ± 0.06						ASV_00070: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00075	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.24 ± 0.12		0.20 ± 0.05						ASV_00075: Bacteroidia; NS2b marine group
+ASV_00107	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.18 ± 0.08		0.16 ± 0.05						ASV_00107: Bacteroidia; NS5 marine group
+ASV_00107	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.18 ± 0.04	0.09 ± 0.07							ASV_00107: Bacteroidia; NS5 marine group
+ASV_00107	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.18 ± 0.04		0.11 ± 0.03						ASV_00107: Bacteroidia; NS5 marine group
+ASV_00112	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.59 ± 0.73		0.02 ± 0.03						ASV_00112: Bacteroidia; Cryomorphaceae
+ASV_00116	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.06 ± 0.04		0.15 ± 0.05						ASV_00116: Alphaproteobacteria; SAR116 clade
+ASV_00118	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.17 ± 0.11		0.14 ± 0.04						ASV_00118: Bacteroidia; NS2b marine group
+ASV_00121	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.15 ± 0.10		0.11 ± 0.04						ASV_00121: Cyanobacteria; Synechococcus CC9902
+ASV_00121	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.15 ± 0.09		0.11 ± 0.04						ASV_00121: Cyanobacteria; Synechococcus CC9902
+ASV_00134	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.03 ± 0.04		0.13 ± 0.02						ASV_00134: Acidimicrobia; Candidatus Actinomarina
+ASV_00134	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.05		0.14 ± 0.03						ASV_00134: Acidimicrobia; Candidatus Actinomarina
+ASV_00147	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.16 ± 0.07		0.06 ± 0.05						ASV_00147: Gammaproteobacteria; Vibrio
+ASV_00158	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.12 ± 0.06		0.09 ± 0.03						ASV_00158: Bacteroidia; NS9 marine group
+ASV_00158	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.15 ± 0.09	0.06 ± 0.03							ASV_00158: Bacteroidia; NS9 marine group
+ASV_00164	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.19 ± 0.06		0.06 ± 0.04						ASV_00164: Bacteroidia; Chitinophagales
+ASV_00221	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.11 ± 0.12		0.00 ± 0.01						ASV_00221: Alphaproteobacteria; Rhodobacteraceae
+ASV_00252	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.15 ± 0.19		0.00 ± 0.00						ASV_00252: Bacteroidia; Flavobacteriaceae
+ASV_00283	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.13 ± 0.14		0.00 ± 0.01						ASV_00283: Gammaproteobacteria; Photobacterium
+ASV_00192	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.03 ± 0.05		0.07 ± 0.01						ASV_00192: Bacteroidia; NS9 marine group
+ASV_00192	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.03 ± 0.01	0.08 ± 0.04							ASV_00192: Bacteroidia; NS9 marine group
+ASV_00192	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.03 ± 0.01		0.07 ± 0.02						ASV_00192: Bacteroidia; NS9 marine group
+ASV_00240	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.05 ± 0.03		0.04 ± 0.01						ASV_00240: Bdellovibrionia; OM27 clade
+ASV_00300	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.10 ± 0.11		0.00 ± 0.00						ASV_00300: Actinobacteria; Candidatus Aquiluna
+ASV_00300	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.07 ± 0.08		0.00 ± 0.00						ASV_00300: Actinobacteria; Candidatus Aquiluna
+ASV_00360	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.03 ± 0.02		0.01 ± 0.01						ASV_00360: Bacteroidia; Fabibacter
+ASV_00360	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.02 ± 0.01	0.01 ± 0.01							ASV_00360: Bacteroidia; Fabibacter
+ASV_00389	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.04 ± 0.04		0.00 ± 0.00						ASV_00389: Alphaproteobacteria; Holosporaceae
+ASV_00423	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.01		0.01 ± 0.01						ASV_00423: Bacteroidia; Saprospiraceae
+ASV_00440	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.01		0.00 ± 0.00						ASV_00440: Bacteroidia; Saprospiraceae
+ASV_00451	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.02		0.01 ± 0.01						ASV_00451: Bdellovibrionia; Bacteriovoracaceae
+ASV_00495	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.02		0.00 ± 0.00						ASV_00495: Bacteroidia; Crocinitomix
+ASV_00543	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.01		0.00 ± 0.00						ASV_00543: Bacteroidia; Saprospiraceae
+ASV_00570	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.02		0.00 ± 0.00						ASV_00570: Alphaproteobacteria; Ponticaulis
+ASV_00600	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.02 ± 0.01		0.00 ± 0.00						ASV_00600: Bacteroidia; Bacteroidales
+ASV_00600	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.01 ± 0.01	0.00 ± 0.00							ASV_00600: Bacteroidia; Bacteroidales
+ASV_00600	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.01 ± 0.01		0.00 ± 0.00						ASV_00600: Bacteroidia; Bacteroidales
+ASV_00630	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.03 ± 0.04		0.00 ± 0.00						ASV_00630: Clostridia; Clostridium sensu stricto 1
+ASV_01107	dawn (Yawzi - LB_seagrass)	dawn	LBseagrass	Yawzi	0.01 ± 0.01		0.00 ± 0.00						ASV_01107: Bacteroidia; Muribaculaceae
+ASV_00140	dawn (Yawzi - Tektite)	dawn	Tektite	Yawzi		0.08 ± 0.05	0.10 ± 0.03						ASV_00140: Bacteroidia; NS9 marine group
+ASV_00140	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.11 ± 0.06		0.10 ± 0.02						ASV_00140: Bacteroidia; NS9 marine group
+ASV_00053	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.24 ± 0.06	0.39 ± 0.06							ASV_00053: Phycisphaerae; Urania-1B-19 marine sediment group
+ASV_00053	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.24 ± 0.06		0.40 ± 0.06						ASV_00053: Phycisphaerae; Urania-1B-19 marine sediment group
+ASV_00079	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.14 ± 0.09	0.26 ± 0.05							ASV_00079: Alphaproteobacteria; SAR116 clade
+ASV_00084	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.21 ± 0.12	0.13 ± 0.04							ASV_00084: Bacteroidia; Marinoscillum
+ASV_00146	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.06 ± 0.02	0.14 ± 0.06							ASV_00146: Gammaproteobacteria; MWH-UniP1 aquatic group
+ASV_00146	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.02		0.12 ± 0.02						ASV_00146: Gammaproteobacteria; MWH-UniP1 aquatic group
+ASV_00202	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.08 ± 0.03	0.03 ± 0.03							ASV_00202: Bacteroidia; NS4 marine group
+ASV_00228	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.02 ± 0.05	0.07 ± 0.02							ASV_00228: Bacteroidia; NS2b marine group
+ASV_00235	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.01 ± 0.01	0.09 ± 0.04							ASV_00235: Gammaproteobacteria; SAR86 clade
+ASV_00421	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.00 ± 0.00	0.01 ± 0.01							ASV_00421: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00421	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.00 ± 0.00		0.01 ± 0.01						ASV_00421: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00429	peak_photo (Tektite - LB_seagrass)	peak_photo	LBseagrass	Tektite	0.00 ± 0.00	0.02 ± 0.02							ASV_00429: Thermoplasmata; Marine Group III
+ASV_00067	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.10 ± 0.10		0.31 ± 0.06						ASV_00067: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00077	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.08 ± 0.08		0.26 ± 0.07						ASV_00077: Alphaproteobacteria; SAR116 clade
+ASV_00085	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.08		0.24 ± 0.05						ASV_00085: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00094	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.19 ± 0.13		0.14 ± 0.04						ASV_00094: Cyanobacteria; Cyanobiaceae
+ASV_00100	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.05		0.20 ± 0.05						ASV_00100: Acidimicrobia; Candidatus Actinomarina
+ASV_00113	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.05 ± 0.06		0.19 ± 0.04						ASV_00113: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00109	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.03 ± 0.06		0.18 ± 0.04						ASV_00109: Bacteroidia; NS4 marine group
+ASV_00110	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.07		0.18 ± 0.03						ASV_00110: Alphaproteobacteria; SAR11 Clade II
+ASV_00132	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.07 ± 0.04		0.12 ± 0.04						ASV_00132: Bacteroidia; NS9 marine group
+ASV_00136	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.03 ± 0.05		0.16 ± 0.04						ASV_00136: Bacteria; Marinimicrobia (SAR406 clade)
+ASV_00211	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.02 ± 0.03		0.06 ± 0.02						ASV_00211: Bacteroidia; NS4 marine group
+ASV_00218	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.01 ± 0.02		0.06 ± 0.02						ASV_00218: Bacteroidia; NS4 marine group
+ASV_00229	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.06 ± 0.05		0.03 ± 0.01						ASV_00229: Bacteroidia; Cyclobacteriaceae
+ASV_00259	peak_photo (Yawzi - LB_seagrass)	peak_photo	LBseagrass	Yawzi	0.01 ± 0.01		0.05 ± 0.01						ASV_00259: Alphaproteobacteria; Defluviicoccales
+ASV_00002	LB_seagrass (peak_photo - dawn)							LB_seagrass	dawn	peakphoto	1.29 ± 0.93	3.30 ± 2.62	ASV_00002: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00005	LB_seagrass (peak_photo - dawn)							LB_seagrass	dawn	peakphoto	0.70 ± 0.45	1.77 ± 1.09	ASV_00005: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00010	LB_seagrass (peak_photo - dawn)							LB_seagrass	dawn	peakphoto	0.46 ± 0.21	0.92 ± 0.54	ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00010	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	1.85 ± 0.36	2.41 ± 0.34	ASV_00010: Alphaproteobacteria; SAR11 Clade Ia
+ASV_00012	LB_seagrass (peak_photo - dawn)							LB_seagrass	dawn	peakphoto	0.54 ± 0.21	1.08 ± 0.46	ASV_00012: Alphaproteobacteria; SAR11 Clade II
+ASV_00023	LB_seagrass (peak_photo - dawn)							LB_seagrass	dawn	peakphoto	0.24 ± 0.12	0.52 ± 0.30	ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00023	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.98 ± 0.19	1.23 ± 0.12	ASV_00023: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00003	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	2.25 ± 0.42	1.47 ± 0.46	ASV_00003: Alphaproteobacteria; HIMB11
+ASV_00009	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	1.38 ± 0.35	1.03 ± 0.24	ASV_00009: Bacteroidia; Flavobacteriaceae
+ASV_00024	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.70 ± 0.11	0.45 ± 0.12	ASV_00024: Alphaproteobacteria; Rhodobacteraceae
+ASV_00026	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.78 ± 0.23	1.10 ± 0.24	ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group
+ASV_00027	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.74 ± 0.12	0.55 ± 0.11	ASV_00027: Bacteroidia; NS5 marine group
+ASV_00032	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.50 ± 0.11	0.35 ± 0.08	ASV_00032: Bacteroidia; NS5 marine group
+ASV_00035	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.55 ± 0.14	0.80 ± 0.13	ASV_00035: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00038	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.34 ± 0.09	0.23 ± 0.07	ASV_00038: Bacteroidia; Formosa
+ASV_00043	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.42 ± 0.08	0.33 ± 0.07	ASV_00043: Bacteroidia; NS5 marine group
+ASV_00045	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.28 ± 0.06	0.18 ± 0.03	ASV_00045: Bacteroidia; NS7 marine group
+ASV_00046	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.39 ± 0.14	0.56 ± 0.16	ASV_00046: Gammaproteobacteria; SAR86 clade
+ASV_00048	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.30 ± 0.06	0.21 ± 0.06	ASV_00048: Bacteroidia; NS5 marine group
+ASV_00049	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.36 ± 0.10	0.51 ± 0.12	ASV_00049: Gammaproteobacteria; SAR86 clade
+ASV_00055	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.31 ± 0.09	0.43 ± 0.13	ASV_00055: Gammaproteobacteria; SAR86 clade
+ASV_00072	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.19 ± 0.05	0.28 ± 0.06	ASV_00072: Alphaproteobacteria; SAR11 Clade IV
+ASV_00074	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.20 ± 0.04	0.15 ± 0.03	ASV_00074: Bacteroidia; Cryomorphaceae
+ASV_00095	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.04 ± 0.02	0.02 ± 0.01	ASV_00095: Bacteroidia; Flavobacteriaceae
+ASV_00101	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.11 ± 0.03	0.07 ± 0.01	ASV_00101: Bacteroidia; NS5 marine group
+ASV_00111	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.03 ± 0.01	0.01 ± 0.01	ASV_00111: Gammaproteobacteria; Pseudomonadales
+ASV_00122	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.10 ± 0.03	0.07 ± 0.02	ASV_00122: Bacteroidia; Flavobacteriaceae
+ASV_00124	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.06 ± 0.02	0.03 ± 0.01	ASV_00124: Bacteroidia; NS11-12 marine group
+ASV_00129	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.10 ± 0.03	0.16 ± 0.03	ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae
+ASV_00178	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.07 ± 0.02	0.10 ± 0.02	ASV_00178: Gammaproteobacteria; SAR86 clade
+ASV_00107	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.16 ± 0.05	0.11 ± 0.03	ASV_00107: Bacteroidia; NS5 marine group
+ASV_00085	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.16 ± 0.04	0.24 ± 0.05	ASV_00085: Alphaproteobacteria; SAR11 Clade Ib
+ASV_00100	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.16 ± 0.03	0.20 ± 0.05	ASV_00100: Acidimicrobia; Candidatus Actinomarina
+ASV_00313	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.03 ± 0.02	0.01 ± 0.01	ASV_00313: Planctomycetes; Pirellulaceae
+ASV_00575	Yawzi (peak_photo - dawn)							Yawzi	dawn	peakphoto	0.02 ± 0.01	0.00 ± 0.00	ASV_00575: Bacteroidia; Bacteroidales
