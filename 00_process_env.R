@@ -224,6 +224,9 @@ g1 <- (
   + facet_wrap(.~site, labeller = labeller(site = site_lookup))
   + scale_fill_manual(values = site_colors)
   + theme(axis.text.x = element_text(angle = 90))
+  + scale_y_continuous(name = "Height differential (m)")
+  + theme_bw()
+  + scale_x_datetime(name = "Date (2021)")
 )
 if(interactive()){
   print(g1)
@@ -250,11 +253,15 @@ g2 <- (
   ggplot(data = hobo_filtered_df %>%
            dplyr::filter(grepl("LB", site)),
          aes(x = date_ast, y = temp, fill = site))
-  + geom_point(shape = 21)
+  + geom_point(shape = 21, show.legend = FALSE)
   + geom_line(show.legend = FALSE)
   + facet_wrap(.~site, labeller = labeller(site = site_lookup))
   + scale_fill_manual(values = site_colors)
   + theme(axis.text.x = element_text(angle = 90))
+  + scale_y_continuous(name = "Temperature (˚C)")
+  + theme_bw()
+  + scale_x_datetime(name = "Date (2021)")
+  
 )
 if(interactive()){
   print(g2)
@@ -302,6 +309,9 @@ g3a <- (
   + facet_wrap(.~site, labeller = labeller(site = site_lookup))
   + scale_color_manual(values = site_colors)
   + theme(axis.text.x = element_text(angle = 90))
+  + scale_y_continuous(name = "Temperature (˚C)")
+  + theme_bw()
+  + scale_x_datetime(name = "Time interval")
 )
 g3b <- (
   ggplot(data = hobo_filtered_delta_df %>%
@@ -310,6 +320,9 @@ g3b <- (
   + facet_wrap(.~site, labeller = labeller(site = site_lookup))
   + scale_fill_manual(values = site_colors)
   + theme(axis.text.x = element_text(angle = 90))
+  + scale_y_continuous(name = "Difference in temperature (˚C)")
+  + theme_bw()
+  + scale_x_datetime(name = "Time interval")
 )
 
 g3c <- (
@@ -320,6 +333,9 @@ g3c <- (
   + facet_wrap(.~site, labeller = labeller(site = site_lookup))
   + scale_fill_manual(values = site_colors)
   + theme(axis.text.x = element_text(angle = 90))
+  + scale_y_continuous(name = "Difference in light (lumens)")
+  + theme_bw()
+  + scale_x_datetime(name = "Time interval")
 )
 
 if(interactive()){
