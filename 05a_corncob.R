@@ -1155,6 +1155,15 @@ if(!any(grepl(Sys.Date(), list.files(projectpath, pattern = "$cc_dt_usvi_summary
                      delim = "\t", col_names = TRUE)
 }
 
+#to check the numbers of ASVs identified as SDA in corncob:
+#in the spreadsheet, where the columsn look like:
+#contrast	hold	variable	asv_id	p_val	p_fdr	test	q_cutoff	p_adj	taxon_resolution
+#dawn (Tektite - LB_seagrass)	dawn	Tektite - LB_seagrass	ASV_00644	0.010849634	0.045206808	cc_da	1.12E-14	NA	asv
+#
+#sort first by p_fdr =< 0.05 to get 810 observations
+#then distinct the ASVs to get 207 unique ASVs
+
+
 
 # Summarise SDA taxa ------------------------------------------------------
 

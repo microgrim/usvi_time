@@ -2011,7 +2011,17 @@ g4 <- print(
 # )
 
 
+usvi_deseq_asvs_filtered_res.df %>% dplyr::filter(!is.na(padj_qcutoff)) %>% droplevels %>% ungroup %>% dplyr::summarise(max = max(pvalue, na.rm = TRUE))
+# # A tibble: 1 × 1
+#      max
+#    <dbl>
+# 1 0.0497
 
+usvi_deseq_asvs_filtered_res.df %>% dplyr::filter(!is.na(padj_qcutoff)) %>% droplevels %>% ungroup %>% dplyr::summarise(max = max(padj, na.rm = TRUE))
+# # A tibble: 1 × 1
+#     max
+#   <dbl>
+# 1 0.877
 
 if(!any(grepl("asvs_intrasite_temporal_sda", list.files(projectpath, pattern = "usvi_deseq_.*.png")))){
   ggsave(paste0(projectpath, "/", "usvi_deseq_asvs_intrasite_temporal_sda-", Sys.Date(), ".png"),
