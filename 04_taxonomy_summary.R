@@ -2577,11 +2577,108 @@ if(any(grepl("asv_relabund_summary", list.files(projectpath, pattern = "usvi_asv
     dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
     droplevels
   
+  #individual samples... sigh
+  
+  usvi_filtered_taxonomy_relabund_woD1.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::right_join(., metadata %>%
+                        dplyr::select(sample_id, site, sampling_day, sampling_time, sample_order) %>%
+                        dplyr::distinct(sample_id, site, sampling_day, sampling_time, .keep_all = TRUE) %>%
+                        dplyr::filter(!grepl("Day1", sampling_day)) %>%
+                        droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time,sampling_day, sample_order, sample_id))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time,sampling_day, sample_order, sample_id)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time) %>%
+    # dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    droplevels %>%
+    dplyr::ungroup(.) %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order,sampling_day,sample_order, sample_id, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::mutate(sample_order = (sample_order - 3)) %>%
+    dplyr::arrange(sampling_time, sample_order) %>%
+    dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    dplyr::mutate(sample_label = paste0(sample_label, ":", sample_order)) %>%
+    dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+    droplevels
+  
+  usvi_filtered_taxonomy_relabund_woD1.df <- usvi_filtered_taxonomy_relabund_woD1.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_woD1.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time,sample_id, sample_order, sampling_day, sample_label)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    droplevels
+  
+  usvi_filtered_taxonomy_relabund_woD1_wo73.df <- metadata %>%
+    dplyr::filter(sample_type == "seawater") %>%
+    dplyr::select(sample_id) %>%
+    dplyr::left_join(., usvi_prok_asvs.df, by = join_by("sample_id" == "sample_ID")) %>%
+    droplevels %>%
+    dplyr::mutate(across(c(sample_id, asv_id), ~factor(.x))) %>%
+    dplyr::filter(sum(counts) > 0, .by = "asv_id") %>%
+    dplyr::right_join(., metadata %>%
+                        dplyr::select(sample_id, site, sampling_day, sampling_time, sample_order) %>%
+                        dplyr::distinct(sample_id, site, sampling_day, sampling_time, .keep_all = TRUE) %>%
+                        dplyr::filter(!grepl("Day1", sampling_day)) %>%
+                        droplevels, by = join_by(sample_id)) %>%
+    dplyr::mutate(site = factor(site, levels = names(site_lookup)),
+                  sampling_day = factor(sampling_day, levels = names(sampling_day_lookup)),
+                  sampling_time = factor(sampling_time, levels = names(sampling_time_lookup))) %>%
+    dplyr::filter(!grepl("Metab_280", sample_id)) %>% #corresponding microbiome sample to CINAR_BC_73
+    droplevels %>%
+    dplyr::arrange(site, sampling_day, sampling_time) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::summarise(rel_abund = sum(counts, na.rm= TRUE), .by = c(asv_id, site, sampling_time,sampling_day, sample_order, sample_id))  %>%
+    dplyr::mutate(rel_abund = relabund(rel_abund), .by = c(site, sampling_time,sampling_day, sample_order, sample_id)) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::arrange(site, sampling_time) %>%
+    # dplyr::mutate(sample_order = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    droplevels %>%
+    dplyr::ungroup(.) %>%
+    dplyr::filter(asv_id %in% temp_idx) %>%
+    dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+    dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_id, sampling_day, sample_order, taxonomy)) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::mutate(sample_order = (sample_order - 3)) %>%
+    # dplyr::arrange(sample_order) %>%
+    dplyr::arrange(sampling_time, sample_order) %>%
+    dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup)) %>%
+    dplyr::mutate(sample_label = paste0(sample_label, ":", sample_order)) %>%
+    dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+    # dplyr::arrange(sample_order) %>%
+    # dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  
+  usvi_filtered_taxonomy_relabund_woD1_wo73.df <- usvi_filtered_taxonomy_relabund_woD1_wo73.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_woD1_wo73.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time,sample_id, sample_order, sampling_day, sample_label)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    droplevels
+  
   save(list = c("usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df", 
                 "usvi_filtered_taxonomy_relabund_simple_summary_woD1.df",
                 "usvi_filtered_taxonomy_relabund_simple_summary_wo73.df", 
                 "usvi_filtered_taxonomy_relabund_simple_summary.df",
                 "usvi_filtered_taxonomy_relabund_summary.df",
+                "usvi_filtered_taxonomy_relabund_woD1_wo73.df",
+                "usvi_filtered_taxonomy_relabund_woD1.df",
                 "usvi_asv_relabund_simple_summary_wo73.df",
                 "usvi_asv_relabund_simple_summary.df",
                 "usvi_asv_relabund_summary_wo73.df",
@@ -2628,10 +2725,18 @@ g2_sum_oneperc_simple_woD1 <- P_filtered_summary_bar(dataset = usvi_filtered_tax
 g2_sum_oneperc_simple_woD1_wo73 <- P_filtered_summary_bar(dataset = usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df, x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site")
 
 
+g2_oneperc_woD1 <- P_filtered_summary_bar(dataset = (usvi_filtered_taxonomy_relabund_woD1.df), x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site") & theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g2_oneperc_woD1
+g2_oneperc_woD1_wo73 <- P_filtered_summary_bar(dataset = (usvi_filtered_taxonomy_relabund_woD1_wo73.df), x = sample_label, y = rel_abund, z = taxonomy, facet_form = ".~site") & theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
 gpatch1 <- (g2_sum_oneperc_simple + ggtitle("Summed by sampling time")) + (g2_sum_oneperc_simple_woD1 + ggtitle("Summed by sampling time, without Day 1")) + patchwork::plot_layout(guides = "collect")
 gpatch2 <- (g2_sum_oneperc_simple_wo73 + ggtitle("Summed by sampling time, without Metab_280")) + (g2_sum_oneperc_simple_woD1_wo73 + ggtitle("Summed by sampling time, without Day 1, without Metab_280")) + patchwork::plot_layout(guides = "collect")
 gpatch3 <- (g2_sum_oneperc + ggtitle("Summed by sampling day and time")) + (g2_sum_oneperc_woD1 + ggtitle("Summed by sampling day and time, without Day 1")) + patchwork::plot_layout(guides = "collect")
 gpatch4 <- (g2_sum_oneperc_wo73 + ggtitle("Summed by sampling day and time, without Metab_280")) + (g2_sum_oneperc_woD1_wo73 + ggtitle("Summed by sampling day and time, without Day 1, without Metab_280")) + patchwork::plot_layout(guides = "collect")
+
+gpatch5 <- (g2_oneperc_woD1 +  ggtitle("Individual samples, without Day 1")) + patchwork::plot_layout(guides = "collect")
+gpatch6 <- (g2_oneperc_woD1_wo73  + ggtitle("Individual samples, without Day 1, without Metab_280")) + patchwork::plot_layout(guides = "collect")
 
 
 if(!any(grepl("sum_oneperc_", list.files(projectpath, pattern = "usvi_barchart_filtered_genus.*.png")))){
@@ -2646,6 +2751,12 @@ if(!any(grepl("sum_oneperc_", list.files(projectpath, pattern = "usvi_barchart_f
          width = 16, height = 10, units = "in")
   ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","sum_oneperc_days_wo73", "-", Sys.Date(), ".png"),
          gpatch4,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","oneperc_ind", "-", Sys.Date(), ".png"),
+         gpatch5,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","oneperc_ind_wo73", "-", Sys.Date(), ".png"),
+         gpatch6,
          width = 16, height = 10, units = "in")
 }
 
@@ -2662,6 +2773,12 @@ if(!any(grepl("sum_oneperc_", list.files(projectpath, pattern = "usvi_barchart_f
   #        width = 16, height = 10, units = "in")
   ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","sum_oneperc_days_wo73", "-", Sys.Date(), ".svg"),
          gpatch4,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","oneperc_ind", "-", Sys.Date(), ".svg"),
+         gpatch5,
+         width = 16, height = 10, units = "in")
+  ggsave(paste0(projectpath, "/", "usvi_barchart_filtered_genus_","oneperc_ind_wo73", "-", Sys.Date(), ".svg"),
+         gpatch6,
          width = 16, height = 10, units = "in")
 }
 
