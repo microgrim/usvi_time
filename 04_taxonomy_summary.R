@@ -515,10 +515,11 @@ if(!any(grepl("seqcount", list.files(projectpath, pattern = "usvi_.*.png")))){
 
 
 # Broadly summarize at phylum, class, order levels ------------------------
-
+keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
 if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))){
-  usvi_taxonomy_filtered_list <- readr::read_rds(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
-  list2env(usvi_taxonomy_filtered_list, envir = .GlobalEnv)
+  temp_list <- readr::read_rds(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
+  list2env(temp_list, envir = .GlobalEnv)
+  rm(temp_list)
 } else {
   #make relative abundance tables at specific taxonomic levels
   keep <- c("Phylum", "Class", "Order", "Family", "Genus")
@@ -549,11 +550,7 @@ if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds")))
   
   
   
-  
-  
   #now work backwards to keep the class, order, family related to the top5 genera
-  keep_tax <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus")
-  
   #look at the genera that constitute 10% or more across all biological samples
   usvi_genus_over10.df <- usvi_genus.df %>%
     dplyr::semi_join(., usvi_seq_summary.df %>% #use only biological samples to filter taxonomic levels
@@ -590,6 +587,7 @@ if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds")))
   
   #use the top genera 10% or more of all sequences to further filter.
   usvi_filtered_genus.df <- usvi_genus_over10.df
+  
   
   keep_tax2 <- rev(rev(keep_tax)[-1])
   usvi_family_filtered.df <- usvi_filtered_genus.df %>%
@@ -738,6 +736,7 @@ if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds")))
     dplyr::slice(which(rowSums(.) >= 5)) %>%
     # droplevels
     t()
+  
   usvi_phylum_filtered.df <- usvi_phylum_filtered.df %>%
     # tibble::as_tibble(rownames = "sample_id") %>% #in case you don't want the "Other taxa" to confuse
     bind_cols("sample_id" = rownames(usvi_phylum_filtered.df),
@@ -758,11 +757,399 @@ if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds")))
   # #10 phyla in 2 domains
   # #93.9% to 100% of sequences in environmental samples are represented in these 13 phyla
   
-  usvi_taxonomy_filtered_list <- list(usvi_phylum_filtered.df, usvi_class_filtered.df, usvi_order_filtered.df, usvi_family_filtered.df, usvi_filtered_genus.df) %>%
+  #update taxonomy:
+  update_taxonomy.df <- readr::read_delim("~/projects/silva/update_taxonomy_sorted.tsv", comment = "#",
+                                          delim = "\t", col_names = TRUE, show_col_types = FALSE) %>%
+    # dplyr::select(-c(level)) %>%
+    tidyr::separate_wider_delim(original, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+    droplevels
+  update_taxonomy.lookup <- update_taxonomy.df %>%
+    dplyr::select(original, new) %>%
+    # dplyr::select(new, original) %>%
+    tibble::deframe(.)
+  
+  
+  if(any(grepl("Proteobacteria", usvi_filtered_genus.df[["Phylum"]], ignore.case = TRUE))){
+    temp_df <- usvi_filtered_genus.df %>%
+      dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+      tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                              grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                              .default = Phylum)) %>%
+      # dplyr::rename(original = "taxonomy") %>%
+      dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+      dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+      dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+      dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+      dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+      tidyr::pivot_longer(., cols = c(all_of(keep_tax)),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+                                             .default = value)) %>%
+      dplyr::rename(original = "value") %>%
+      droplevels
+    
+    temp_df2 <- temp_df %>%
+      dplyr::left_join(., update_taxonomy.df %>%
+                         dplyr::select(level, original, new) %>%
+                         droplevels) %>%
+      tidyr::drop_na(new) %>%
+      dplyr::select(taxonomy, new) %>%
+      tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      tidyr::pivot_longer(., cols = all_of(keep_tax),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      tidyr::drop_na(value) %>%
+      droplevels 
+    
+    temp_df3 <- temp_df %>%
+      dplyr::select(taxonomy, level) %>%
+      dplyr::left_join(., temp_df2) %>%
+      dplyr::select(-new) %>%
+      dplyr::mutate(level = stringr::str_to_sentence(level)) %>%
+      tidyr::pivot_wider(., id_cols = "taxonomy",
+                         names_from = "level",
+                         values_from = "value") %>%
+      dplyr::right_join(., (usvi_filtered_genus.df %>%
+                              dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+                              tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+                              dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      .default = Phylum)) %>%
+                              droplevels),
+                        by = join_by("taxonomy"), relationship = "many-to-many", multiple = "all") %>%
+      dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+                                                    .default = new_taxonomy)) %>%
+      droplevels   
+    
+    usvi_filtered_genus_renamed.df <- usvi_filtered_genus.df %>%
+      dplyr::select(sample_id, taxonomy, relabund) %>%
+      dplyr::left_join(., temp_df3) %>%
+      dplyr::select(-taxonomy) %>%
+      dplyr::rename(taxonomy = "new_taxonomy") %>%
+      dplyr::select(all_of(colnames(usvi_filtered_genus.df))) %>%
+      droplevels
+    # usvi_filtered_genus.df <- usvi_filtered_genus_renamed.df
+  }
+  
+  if(any(grepl("Proteobacteria", usvi_class_filtered.df[["Phylum"]], ignore.case = TRUE))){
+    temp_df <- usvi_class_filtered.df %>%
+      dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+      tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                              grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                              .default = Phylum)) %>%
+      # dplyr::rename(original = "taxonomy") %>%
+      dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+      dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+      dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+      dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+      dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+      tidyr::pivot_longer(., cols = c(all_of(keep_tax)),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+                                             .default = value)) %>%
+      dplyr::rename(original = "value") %>%
+      droplevels
+    
+    temp_df2 <- temp_df %>%
+      dplyr::left_join(., update_taxonomy.df %>%
+                         dplyr::select(level, original, new) %>%
+                         droplevels) %>%
+      tidyr::drop_na(new) %>%
+      dplyr::select(taxonomy, new) %>%
+      tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      tidyr::pivot_longer(., cols = all_of(keep_tax),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      tidyr::drop_na(value) %>%
+      droplevels 
+    
+    temp_df3 <- temp_df %>%
+      dplyr::select(taxonomy, level) %>%
+      dplyr::left_join(., temp_df2) %>%
+      dplyr::select(-new) %>%
+      dplyr::mutate(level = stringr::str_to_sentence(level)) %>%
+      tidyr::pivot_wider(., id_cols = "taxonomy",
+                         names_from = "level",
+                         values_from = "value") %>%
+      dplyr::right_join(., (usvi_class_filtered.df %>%
+                              dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+                              tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+                              dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      .default = Phylum)) %>%
+                              droplevels),
+                        by = join_by("taxonomy"), relationship = "many-to-many", multiple = "all") %>%
+      dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+                                                    .default = new_taxonomy)) %>%
+      droplevels   
+    
+    usvi_class_filtered_renamed.df <- usvi_class_filtered.df %>%
+      dplyr::select(sample_id, taxonomy, relabund) %>%
+      dplyr::left_join(., temp_df3) %>%
+      dplyr::select(-taxonomy) %>%
+      dplyr::rename(taxonomy = "new_taxonomy") %>%
+      dplyr::select(all_of(colnames(usvi_class_filtered.df))) %>%
+      droplevels
+    # usvi_class_filtered.df <- usvi_class_filtered_renamed.df
+  }
+  
+  if(any(grepl("Proteobacteria", usvi_order_filtered.df[["Phylum"]], ignore.case = TRUE))){
+    temp_df <- usvi_order_filtered.df %>%
+      dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+      tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                              grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                              .default = Phylum)) %>%
+      # dplyr::rename(original = "taxonomy") %>%
+      dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+      dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+      dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+      dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+      dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+      tidyr::pivot_longer(., cols = c(all_of(keep_tax)),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+                                             .default = value)) %>%
+      dplyr::rename(original = "value") %>%
+      droplevels
+    
+    temp_df2 <- temp_df %>%
+      dplyr::left_join(., update_taxonomy.df %>%
+                         dplyr::select(level, original, new) %>%
+                         droplevels) %>%
+      tidyr::drop_na(new) %>%
+      dplyr::select(taxonomy, new) %>%
+      tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      tidyr::pivot_longer(., cols = all_of(keep_tax),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      tidyr::drop_na(value) %>%
+      droplevels 
+    
+    temp_df3 <- temp_df %>%
+      dplyr::select(taxonomy, level) %>%
+      dplyr::left_join(., temp_df2) %>%
+      dplyr::select(-new) %>%
+      dplyr::mutate(level = stringr::str_to_sentence(level)) %>%
+      tidyr::pivot_wider(., id_cols = "taxonomy",
+                         names_from = "level",
+                         values_from = "value") %>%
+      dplyr::right_join(., (usvi_order_filtered.df %>%
+                              dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+                              tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+                              dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      .default = Phylum)) %>%
+                              droplevels),
+                        by = join_by("taxonomy"), relationship = "many-to-many", multiple = "all") %>%
+      dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+                                                    .default = new_taxonomy)) %>%
+      droplevels   
+    
+    usvi_order_filtered_renamed.df <- usvi_order_filtered.df %>%
+      dplyr::select(sample_id, taxonomy, relabund) %>%
+      dplyr::left_join(., temp_df3) %>%
+      dplyr::select(-taxonomy) %>%
+      dplyr::rename(taxonomy = "new_taxonomy") %>%
+      dplyr::select(all_of(colnames(usvi_order_filtered.df))) %>%
+      droplevels
+    # usvi_order_filtered.df <- usvi_order_filtered_renamed.df
+  }
+  if(any(grepl("Proteobacteria", usvi_family_filtered.df[["Phylum"]], ignore.case = TRUE))){
+    temp_df <- usvi_family_filtered.df %>%
+      dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+      tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                              grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                              .default = Phylum)) %>%
+      # dplyr::rename(original = "taxonomy") %>%
+      dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+      dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+      dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+      dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+      dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+      tidyr::pivot_longer(., cols = c(all_of(keep_tax)),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+                                             .default = value)) %>%
+      dplyr::rename(original = "value") %>%
+      droplevels
+    
+    temp_df2 <- temp_df %>%
+      dplyr::left_join(., update_taxonomy.df %>%
+                         dplyr::select(level, original, new) %>%
+                         droplevels) %>%
+      tidyr::drop_na(new) %>%
+      dplyr::select(taxonomy, new) %>%
+      tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      tidyr::pivot_longer(., cols = all_of(keep_tax),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      tidyr::drop_na(value) %>%
+      droplevels 
+    
+    temp_df3 <- temp_df %>%
+      dplyr::select(taxonomy, level) %>%
+      dplyr::left_join(., temp_df2) %>%
+      dplyr::select(-new) %>%
+      dplyr::mutate(level = stringr::str_to_sentence(level)) %>%
+      tidyr::pivot_wider(., id_cols = "taxonomy",
+                         names_from = "level",
+                         values_from = "value") %>%
+      dplyr::right_join(., (usvi_family_filtered.df %>%
+                              dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+                              tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+                              dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      .default = Phylum)) %>%
+                              droplevels),
+                        by = join_by("taxonomy"), relationship = "many-to-many", multiple = "all") %>%
+      dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+                                                    .default = new_taxonomy)) %>%
+      droplevels   
+    
+    usvi_family_filtered_renamed.df <- usvi_family_filtered.df %>%
+      dplyr::select(sample_id, taxonomy, relabund) %>%
+      dplyr::left_join(., temp_df3) %>%
+      dplyr::select(-taxonomy) %>%
+      dplyr::rename(taxonomy = "new_taxonomy") %>%
+      dplyr::select(all_of(colnames(usvi_family_filtered.df))) %>%
+      droplevels
+    
+  }
+  if(any(grepl("Proteobacteria", usvi_phylum_filtered.df[["Phylum"]], ignore.case = TRUE))){
+    temp_df <- usvi_phylum_filtered.df %>%
+      dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+      tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                              grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                              .default = Phylum)) %>%
+      # dplyr::rename(original = "taxonomy") %>%
+      dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+      dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+      dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+      dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+      dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+      tidyr::pivot_longer(., cols = c(all_of(keep_tax)),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+                                             .default = value)) %>%
+      dplyr::rename(original = "value") %>%
+      droplevels
+    
+    temp_df2 <- temp_df %>%
+      dplyr::left_join(., update_taxonomy.df %>%
+                         dplyr::select(level, original, new) %>%
+                         droplevels) %>%
+      tidyr::drop_na(new) %>%
+      dplyr::select(taxonomy, new) %>%
+      tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      tidyr::pivot_longer(., cols = all_of(keep_tax),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      tidyr::drop_na(value) %>%
+      droplevels 
+    
+    temp_df3 <- temp_df %>%
+      dplyr::select(taxonomy, level) %>%
+      dplyr::left_join(., temp_df2) %>%
+      dplyr::select(-new) %>%
+      dplyr::mutate(level = stringr::str_to_sentence(level)) %>%
+      tidyr::pivot_wider(., id_cols = "taxonomy",
+                         names_from = "level",
+                         values_from = "value") %>%
+      dplyr::right_join(., (usvi_phylum_filtered.df %>%
+                              dplyr::distinct(taxonomy, .keep_all = FALSE) %>% 
+                              tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+                              dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                                                      .default = Phylum)) %>%
+                              droplevels),
+                        by = join_by("taxonomy"), relationship = "many-to-many", multiple = "all") %>%
+      dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+                                                    .default = new_taxonomy)) %>%
+      droplevels   
+    
+    usvi_phylum_filtered_renamed.df <- usvi_phylum_filtered.df %>%
+      dplyr::select(sample_id, taxonomy, relabund) %>%
+      dplyr::left_join(., temp_df3) %>%
+      dplyr::select(-taxonomy) %>%
+      dplyr::rename(taxonomy = "new_taxonomy") %>%
+      dplyr::select(all_of(colnames(usvi_phylum_filtered.df))) %>%
+      droplevels
+    
+    }
+  
+  usvi_taxonomy_filtered_renamed_list <- list(usvi_phylum_filtered_renamed.df, usvi_class_filtered_renamed.df, usvi_order_filtered_renamed.df, usvi_family_filtered_renamed.df, usvi_filtered_genus_renamed.df) %>%
     setNames(., c("usvi_phylum_filtered.df", "usvi_class_filtered.df", "usvi_order_filtered.df", "usvi_family_filtered.df", "usvi_filtered_genus.df"))
   
-  readr::write_rds(usvi_taxonomy_filtered_list, 
-                   paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
+  usvi_phylum_filtered.df <- usvi_phylum_filtered_renamed.df
+  usvi_class_filtered.df <- usvi_class_filtered_renamed.df
+  usvi_order_filtered.df <- usvi_order_filtered_renamed.df
+  usvi_family_filtered.df <- usvi_family_filtered_renamed.df
+  usvi_filtered_genus.df <- usvi_filtered_genus_renamed.df
+  
+  # readr::write_rds(usvi_taxonomy_filtered_list, 
+  #                  paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds"))
+  readr::write_rds(usvi_taxonomy_filtered_renamed_list, 
+                   paste0(projectpath, "/", "usvi_taxonomy_filtered_renamed_list", ".rds"))
 }
 
 
@@ -770,16 +1157,115 @@ if(file.exists(paste0(projectpath, "/", "usvi_taxonomy_filtered_list", ".rds")))
 if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
   if(file.exists(paste0(projectpath, "/", "annotation_taxa_colors_list.rds"))){
     annotation_taxa_colors_list <- readr::read_rds(paste0(projectpath, "/", "annotation_taxa_colors_list.rds"))
+    annotation_taxa_colors_list_v2 <- readr::read_rds(paste0(projectpath, "/", "annotation_taxa_colors_list_v2.rds"))
+    
   } else {
     #make colors list for plotting taxonomy of bins
     #don't use the filled-in taxonomy tble for this!
-    usvi_prok_asvs.taxa.mod.df <- usvi_prok_asvs.taxa %>%
-      dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
-                                              grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
-                                              .default = Phylum)) %>%
-      dplyr::select(asv_id, Domain, Phylum, Class, Order, Family, Genus, Species) %>%
+    if(any(grepl("Proteobacteria", usvi_prok_asvs.taxa[["Phylum"]], ignore.case = TRUE))){
+    temp_df <- usvi_prok_asvs.taxa %>%
+      dplyr::select(-sequence) %>%
+      # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+      #                                         grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                                              # .default = Phylum)) %>%
+      tidyr::unite("taxonomy", c(all_of(keep_tax), "Species"), sep = ";", remove = FALSE) %>%
+      # dplyr::rename(original = "taxonomy") %>%
+      dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+      dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+      dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+      dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+      dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+      tidyr::pivot_longer(., cols = c(all_of(keep_tax), "Species"),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+                                             .default = value)) %>%
+      dplyr::rename(original = "value") %>%
       droplevels
     
+    temp_df2 <- temp_df %>%
+      dplyr::left_join(., update_taxonomy.df %>%
+                         dplyr::select(level, original, new) %>%
+                         droplevels) %>%
+      tidyr::drop_na(new) %>%
+      # dplyr::mutate(`value` = `new`) %>%
+      dplyr::select(taxonomy, new) %>%
+      tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+      tidyr::pivot_longer(., cols = all_of(keep_tax),
+                          names_to = "level",
+                          values_to = "value") %>%
+      dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+      tidyr::drop_na(value) %>%
+      droplevels 
+    
+    temp_df3 <- temp_df %>%
+      dplyr::distinct(taxonomy, asv_id, level) %>%
+      droplevels %>%
+      dplyr::left_join(., temp_df2 %>%
+                         dplyr::distinct(taxonomy, level, value) %>%
+                         droplevels,
+                       relationship = "many-to-many", multiple = "all") %>%
+      # dplyr::select(-new) %>%
+      dplyr::mutate(`level` = stringr::str_to_sentence(`level`)) %>%
+      tidyr::pivot_wider(., id_cols = c("asv_id", "taxonomy"),
+                         names_from = "level",
+                         values_from = "value") %>%
+      droplevels %>%
+      dplyr::select(asv_id, taxonomy, all_of(keep_tax), Species) %>%
+      # # # dplyr::select(-level) %>%
+      dplyr::right_join(., (usvi_prok_asvs.taxa %>%
+                              dplyr::select(-sequence) %>%
+                              # tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+                              # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+                              #                                         grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+                              #                                         .default = Phylum)) %>%
+                              tidyr::unite("taxonomy", c(all_of(keep_tax), "Species"), sep = ";", remove = FALSE) %>%
+                              # dplyr::distinct(taxonomy,asv_id, .keep_all = FALSE) %>%
+                              droplevels),
+                        by = join_by("taxonomy", "asv_id"), relationship = "many-to-many", multiple = "all") %>%
+      dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::mutate(Species = across(starts_with("Species")) %>% purrr::reduce(coalesce)) %>%
+      dplyr::select(-ends_with(c(".x", ".y"))) %>%
+      tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+      dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+                                                    .default = new_taxonomy)) %>%
+      droplevels   
+    
+    usvi_prok_asvs_renamed.taxa <- usvi_prok_asvs.taxa %>%
+      dplyr::select(asv_id, sequence) %>%
+      dplyr::left_join(., temp_df3) %>%
+      dplyr::select(-taxonomy) %>%
+      dplyr::rename(taxonomy = "new_taxonomy") %>%
+      dplyr::select(all_of(colnames(usvi_prok_asvs.taxa))) %>%
+      droplevels
+    
+    usvi_prok_filled.taxa.df <- usvi_prok_asvs_renamed.taxa %>%
+      dplyr::mutate(Phylum = coalesce(Phylum, Domain)) %>%
+      dplyr::mutate(Class = coalesce(Class, Phylum)) %>%
+      dplyr::mutate(Order = coalesce(Order, Class)) %>%
+      dplyr::mutate(Family = coalesce(Family, Order)) %>%
+      dplyr::mutate(Genus = coalesce(Genus, Family)) %>%
+      dplyr::mutate(Species = coalesce(Species, Genus)) %>%
+      dplyr::mutate(across(everything(), ~factor(.x))) %>%
+      dplyr::relocate(asv_id) %>%
+      droplevels
+    
+    usvi_prok_asvs.taxa <- usvi_prok_asvs_renamed.taxa
+    
+  }
+    usvi_prok_asvs.taxa.mod.df <- usvi_prok_asvs_renamed.taxa %>%
+    # usvi_prok_asvs.taxa.mod.df <- usvi_prok_asvs.taxa %>%
+    # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+    #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+    #                                         .default = Phylum)) %>%
+      dplyr::select(asv_id, Domain, Phylum, Class, Order, Family, Genus, Species) %>%
+      droplevels
     usvi_genus_taxonomy.df <- phyloseq::transform_sample_counts(ps_usvi, function(x) x/sum(x)*100) %>%
         phyloseq::subset_samples(., sample_type == "seawater") %>%
         phyloseq::filter_taxa(., function(x) sum(x) > 0, TRUE) %>%
@@ -796,7 +1282,7 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
                             cols = !c(1:all_of("Genus")),
                             names_to = "sample_id",
                             values_to = "relabund") %>%
-        tidyr::unite("taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+        tidyr::unite("taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE, na.rm = TRUE) %>%
       dplyr::relocate(taxonomy) %>%
       droplevels
     
@@ -858,6 +1344,15 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
                   droplevels %>%
                   tibble::deframe(.)))
     
+    #which ones are former Proteobacteria;Gammaproteobacteria and Alphaproteobacteria?
+    {
+      # temp_idx <- annotation_bacteria_list %>% 
+      #   purrr::map_depth(., 1, 
+      #                    # ~purrr::keep(.x[["Class"]], \(x) !is.null(unlist(x)))
+      #                    ~purrr::keep(.x[["Class"]], \(x) grepl("proteobacteria", x, ignore.case = TRUE))
+      #                    )
+      }
+    
     annotation_bacteria_colors_list <- NULL
     for(i in names(annotation_bacteria_list)){
       # { i <- names(annotation_bacteria_list)[11]
@@ -872,7 +1367,7 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
     }
     
     bacteria_options <- c(brewer.blues, brewer.gnbu,  brewer.oranges, brewer.purples,  ocean.solar, 
-                          ocean.haline, ocean.ice, ocean.oxy, brewer.greens, ocean.deep, ocean.dense, 
+                          ocean.haline, ocean.ice, brewer.greens, ocean.oxy,  ocean.deep, ocean.dense, 
                           ocean.algae, ocean.matter, ocean.turbid, ocean.speed, ocean.amp, 
                           brewer.purd, 
                           brewer.bugn, brewer.bupu, brewer.rdpu, brewer.reds, brewer.ylgn,
@@ -969,10 +1464,10 @@ if(!exists("annotation_taxa_colors_list", envir = .GlobalEnv)){
       map(., ~c(.x, "#FFFFFF") %>%
             setNames(., c(names(.x), "NA")))
     temp_list[["Domain"]] <- temp_list[["Domain"]][1:2]
-    annotation_taxa_colors_list <- temp_list
+    annotation_taxa_colors_list_v2 <- temp_list
     
-    readr::write_rds(annotation_taxa_colors_list, 
-                     paste0(projectpath, "/", "annotation_taxa_colors_list.rds"))
+    readr::write_rds(annotation_taxa_colors_list_v2, 
+                     paste0(projectpath, "/", "annotation_taxa_colors_list_v2.rds"))
     
     rm(list = (apropos("^temp_list*", mode = "list")))
     rm(list = (apropos("^annotation_.*_colors$", mode = "any")))
@@ -1046,24 +1541,149 @@ ASV_env_phylum_summary.tbl <- usvi_phylum_filtered.df %>%
 
 # grep("Candidatus Nitro", names(annotation_taxa_colors_list[["Genus"]]), value = TRUE)
 
-phylum_colors <- dplyr::left_join(annotation_taxa_colors_list[["Genus"]] %>%
-                                    tibble::enframe(., name = "Genus", value = "color"), 
-                                  usvi_filtered_genus.df %>%
-                                    # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
-                                    #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
-                                    #                                         .default = Phylum)) %>%
-                                    dplyr::select(Genus, Domain, Phylum) %>%
-                                    dplyr::distinct(Genus, Domain, Phylum, .keep_all = FALSE) %>%
-                                    dplyr::mutate(Phylum = dplyr::case_when(is.na(Phylum) ~ "NA",
-                                                                            .default = Phylum)),
-                                  by = join_by(Genus)) %>%
-  tidyr::unite("taxonomy", c(Domain, Phylum), sep = ";", remove = TRUE, na.rm = TRUE) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
-  dplyr::select(taxonomy, color) %>%
-  tibble::deframe(.)
 
-# pal.bands(phylum_colors)
+# temp_df <- annotation_taxa_colors  %>%
+#   dplyr::select(-sequence) %>%
+#   dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+#                                           grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+#                                           .default = Phylum)) %>%
+#   tidyr::unite("taxonomy", c(all_of(keep_tax), "Species"), sep = ";", remove = FALSE) %>%
+#   # dplyr::rename(original = "taxonomy") %>%
+#   dplyr::mutate(Phylum = paste(Domain, Phylum, sep = ";")) %>%
+#   dplyr::mutate(Class = paste(Phylum, Class, sep = ";")) %>%
+#   dplyr::mutate(Order = paste(Class, Order, sep = ";")) %>%
+#   dplyr::mutate(Family = paste(Order, Family, sep = ";")) %>%
+#   dplyr::mutate(Genus = paste(Family, Genus, sep = ";")) %>%
+#   tidyr::pivot_longer(., cols = c(all_of(keep_tax), "Species"),
+#                       names_to = "level",
+#                       values_to = "value") %>%
+#   dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+#   dplyr::mutate(value = dplyr::case_when(grepl("Synechococcus", value) ~ stringr::str_remove_all(value, " .*$"),
+#                                          .default = value)) %>%
+#   dplyr::rename(original = "value") %>%
+#   droplevels
+# 
+# temp_df2 <- temp_df %>%
+#   dplyr::left_join(., update_taxonomy.df %>%
+#                      dplyr::select(level, original, new) %>%
+#                      droplevels) %>%
+#   tidyr::drop_na(new) %>%
+#   # dplyr::mutate(`value` = `new`) %>%
+#   dplyr::select(taxonomy, new) %>%
+#   tidyr::separate_wider_delim(new, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+#   tidyr::pivot_longer(., cols = all_of(keep_tax),
+#                       names_to = "level",
+#                       values_to = "value") %>%
+#   dplyr::mutate(level = stringr::str_to_lower(level)) %>%
+#   tidyr::drop_na(value) %>%
+#   droplevels 
+# 
+# temp_df3 <- temp_df %>%
+#   dplyr::distinct(taxonomy, asv_id, level) %>%
+#   droplevels %>%
+#   dplyr::left_join(., temp_df2 %>%
+#                      dplyr::distinct(taxonomy, level, value) %>%
+#                      droplevels,
+#                    relationship = "many-to-many", multiple = "all") %>%
+#   # dplyr::select(-new) %>%
+#   dplyr::mutate(`level` = stringr::str_to_sentence(`level`)) %>%
+#   tidyr::pivot_wider(., id_cols = c("asv_id", "taxonomy"),
+#                      names_from = "level",
+#                      values_from = "value") %>%
+#   droplevels %>%
+#   dplyr::select(asv_id, taxonomy, all_of(keep_tax), Species) %>%
+#   # # # dplyr::select(-level) %>%
+#   dplyr::right_join(., (usvi_prok_asvs.taxa %>%
+#                           dplyr::select(-sequence) %>%
+#                           # tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+#                           # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Proteobacteria",
+#                           #                                         grepl("Alphaproteobacteria", Class) ~ "Proteobacteria",
+#                           #                                         .default = Phylum)) %>%
+#                           tidyr::unite("taxonomy", c(all_of(keep_tax), "Species"), sep = ";", remove = FALSE) %>%
+#                           # dplyr::distinct(taxonomy,asv_id, .keep_all = FALSE) %>%
+#                           droplevels),
+#                     by = join_by("taxonomy", "asv_id"), relationship = "many-to-many", multiple = "all") %>%
+#   dplyr::mutate(Domain = across(starts_with("Domain")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::mutate(Phylum = across(starts_with("Phylum")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::mutate(Class = across(starts_with("Class")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::mutate(Order = across(starts_with("Order")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::mutate(Family = across(starts_with("Family")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::mutate(Genus = across(starts_with("Genus")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::mutate(Species = across(starts_with("Species")) %>% purrr::reduce(coalesce)) %>%
+#   dplyr::select(-ends_with(c(".x", ".y"))) %>%
+#   tidyr::unite("new_taxonomy", c(all_of(keep_tax)), sep = ";", remove = FALSE) %>%
+#   dplyr::mutate(new_taxonomy = dplyr::case_when(grepl(";NA", new_taxonomy) ~ stringr::str_remove_all(new_taxonomy, ";NA"),
+#                                                 .default = new_taxonomy)) %>%
+#   droplevels   
+
+#if we haven't adopted Pseudomonadota as the Phylum for Gammaproteobacteria and Alphaproteobacteria:
+if(any(grepl("Proteobacteria", annotation_taxa_colors_list[["taxonomy"]][["Phylum"]], ignore.case = TRUE))){
+  if(purrr::pluck_exists(annotation_taxa_colors_list, "taxonomy") & purrr::pluck_exists(annotation_taxa_colors_list_v2, "Genus")){
+    temp_df <- annotation_taxa_colors_list  %>%
+      purrr::map_depth(., 2, ~.x %>%
+                         tibble::enframe(name = "taxonomy", value = "value")) %>%
+      purrr::map(., ~.x %>% dplyr::bind_rows(., .id = "level")) %>%
+      purrr::modify_at("color", ~.x %>%
+                         dplyr::rename(color = "value"))
+    
+    temp_df <- temp_df[["taxonomy"]] %>%
+      dplyr::left_join(., temp_df[["color"]]) %>%
+      dplyr::mutate(`level` = factor(`level`, levels = keep_tax)) %>%
+      dplyr::arrange(taxonomy, rev(level)) %>%
+      droplevels
+    
+    temp_df2 <- annotation_taxa_colors_list_v2  %>%
+      purrr::map(., ~.x %>%
+                   tibble::enframe(name = "value", value = "color")) %>%
+      dplyr::bind_rows(., .id = "level")
+    temp_df3 <- temp_df %>%
+      dplyr::select(-color) %>%
+      dplyr::left_join(., temp_df2 %>%
+                         # dplyr::select(level, taxonomy) %>%
+                         droplevels) %>%
+      droplevels
+    
+    phylum_colors <- temp_df3 %>%
+      dplyr::filter(grepl(paste0(keep, collapse = "|"), taxonomy)) %>%
+      dplyr::filter(grepl("Phylum", level)) %>%
+      dplyr::arrange(value) %>%
+      droplevels   %>%
+      dplyr::select(taxonomy, color) %>%
+      # droplevels
+      dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
+      tibble::deframe(.)
+    pal.bands(phylum_colors)
+  }
+  
+} else {
+  phylum_colors <- annotation_taxa_colors_list[["Genus"]] %>%
+    tibble::enframe(., name = "Genus", value = "color") %>%
+    dplyr::left_join(.,
+                     usvi_filtered_genus_renamed.df %>%
+                       # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+                       #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+                       #                                         .default = Phylum)) %>%
+                       dplyr::select(Genus, Domain, Phylum, taxonomy) %>%
+                       dplyr::distinct(Genus, Domain, Phylum, taxonomy, .keep_all = FALSE) %>%
+                       dplyr::mutate(Phylum = dplyr::case_when(is.na(Phylum) ~ "NA",
+                                                               .default = Phylum)) %>%
+                       dplyr::mutate(Genus = stringr::str_remove_all(Genus, " .*$")) %>%
+                       # dplyr::select(-taxonomy) %>%
+                       droplevels,
+                     # by = join_by(Genus),
+                     # by = join_by(taxonomy),
+                     relationship = "many-to-many", multiple = "all") %>%
+    dplyr::select(-taxonomy) %>%
+    tidyr::unite("taxonomy", c(Domain, Phylum), sep = ";", remove = TRUE, na.rm = TRUE) %>%
+    dplyr::ungroup(.) %>%
+    dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
+    # droplevels
+    dplyr::select(taxonomy, color) %>%
+    tibble::deframe(.)
+  
+  pal.bands(phylum_colors)
+}
+
 
 # if(!any(grepl("phylum", list.files(projectpath, pattern = "usvi_.*_abundance_stats.*.png")))){
 #   
@@ -1126,28 +1746,129 @@ phylum_colors <- dplyr::left_join(annotation_taxa_colors_list[["Genus"]] %>%
 #Thermoplasmota
 #Actinobacteria
 
-keep <- c("Cyanobacteria", "Alphaproteobacteria", "Bacteroidota",
+keep <- c("Cyanobacteria", "Bacteroidota",
           # "Proteobacteria",
-          "Gammaproteobacteria", "Actinobacteriota",
+          "Alphaproteobacteria", "Gammaproteobacteria",
+          "Pseudomonadota",
+          "Actinobacteriota",
           "SAR406", "Verrucomicrobiota", "Thermoplasmatota")
 drop <- c("Rhodothermia")
+{
+  # phylum_colors <- annotation_taxa_colors_list[["taxonomy"]][["Phylum"]] %>%
+  #   tibble::enframe(., name = "taxonomy", value = "Phylum") %>%
+  #   dplyr::left_join(., (annotation_taxa_colors_list[["color"]][["Phylum"]] %>%
+  #                          tibble::enframe(., name = "taxonomy", value = "color"))) %>%
+  #   droplevels %>%
+  #   # dplyr::select(-taxonomy) %>%
+  #   dplyr::left_join(.,
+  #                                   usvi_filtered_genus_renamed.df %>%
+  #                                     # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+  #                                     #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+  #                                     #                                         .default = Phylum)) %>%
+  #                      dplyr::filter(if_any(c(Phylum, Class), ~grepl(paste0(keep, collapse = "|"), .x))) %>%
+  #                                     dplyr::select(Genus, Domain, Phylum, taxonomy) %>%
+  #                                     dplyr::distinct(Genus, Domain, Phylum, taxonomy, .keep_all = FALSE) %>%
+  #                      
+  #                                     dplyr::mutate(Phylum = dplyr::case_when(is.na(Phylum) ~ "NA",
+  #                                                                             .default = Phylum)),
+  #                                   # by = join_by(Genus),
+  # # by = join_by(taxonomy),
+  # relationship = "many-to-many", multiple = "all") %>%
+  #   # dplyr::select(-taxonomy) %>%
+  #   # tidyr::unite("taxonomy", c(Domain, Phylum), sep = ";", remove = FALSE, na.rm = TRUE) %>%
+  #   # droplevels
+  #   dplyr::ungroup(.) %>%
+  #   dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
+  #   dplyr::select(taxonomy, color) %>%
+  #   tibble::deframe(.)
 
-annotation_taxa_colors <- annotation_taxa_colors_list %>%
+  
+  # phylum_colors <- usvi_filtered_genus_renamed.df %>%
+  #   # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+  #   #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+  #   #                                         .default = Phylum)) %>%
+  #   dplyr::select(Genus, Domain, Phylum, taxonomy) %>%
+  #   dplyr::distinct(Genus, Domain, Phylum, taxonomy, .keep_all = FALSE) %>%
+  #   dplyr::mutate(Phylum = dplyr::case_when(is.na(Phylum) ~ "NA",
+  #                                           .default = Phylum)) %>%
+  #   dplyr::mutate(Genus = stringr::str_remove_all(Genus, " .*$")) %>%
+  #   dplyr::select(-taxonomy) %>%
+  #   dplyr::left_join(., 
+  #                    (annotation_taxa_colors_list[["Genus"]] %>%
+  #                       tibble::enframe(., name = "taxonomy", value = "color") %>%
+  #                       tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+  #                       droplevels),
+  #                    relationship = "many-to-many", multiple = "all") %>%
+  #   droplevels
+  
+  # phylum_colors <- annotation_taxa_colors_list[["color"]][["Genus"]] %>%
+  #   tibble::enframe(., name = "taxonomy", value = "color") %>%
+  #   tidyr::separate_wider_delim(taxonomy, names = keep_tax, delim = ";", too_few = "align_start", too_many = "drop", cols_remove = FALSE) %>%
+  #   # dplyr::left_join(., (annotation_taxa_colors_list[["taxonomy"]][["Genus"]] %>%
+  #   #                        tibble::enframe(., name = "taxonomy", value = "Genus"))) %>%
+  #   droplevels %>%
+  #   # phylum_colors <- (annotation_taxa_colors_list[["color"]][["Genus"]] %>%
+  #   #                     tibble::enframe(., name = "taxonomy", value = "color")) %>%
+  # phylum_colors <- annotation_taxa_colors_list[["Genus"]] %>%
+  #   tibble::enframe(., name = "Genus", value = "color") %>%
+  #   dplyr::left_join(., 
+  #                    # usvi_filtered_genus.df %>%
+  #                    usvi_filtered_genus_renamed.df %>%
+  #                      # dplyr::mutate(Phylum = dplyr::case_when(grepl("Gammaproteobacteria", Class) ~ "Gammaproteobacteria",
+  #                      #                                         grepl("Alphaproteobacteria", Class) ~ "Alphaproteobacteria",
+  #                      #                                         .default = Phylum)) %>%
+  #                      dplyr::select(Genus, Domain, Phylum, taxonomy) %>%
+  #                      dplyr::distinct(Genus, Domain, Phylum, taxonomy, .keep_all = FALSE) %>%
+  #                      dplyr::mutate(Phylum = dplyr::case_when(is.na(Phylum) ~ "NA",
+  #                                                              .default = Phylum)) %>%
+  #                      dplyr::mutate(Genus = stringr::str_remove_all(Genus, " .*$")) %>%
+  #                      # dplyr::select(-taxonomy) %>%
+  #                      droplevels,
+  #                    # by = join_by(Genus),
+  #                    # by = join_by(taxonomy),
+  #                    relationship = "many-to-many", multiple = "all") %>%
+  #   # droplevels
+  #   dplyr::select(-taxonomy) %>%
+  #   tidyr::unite("taxonomy", c(Domain, Phylum), sep = ";", remove = TRUE, na.rm = TRUE) %>%
+  #   dplyr::ungroup(.) %>%
+  #   dplyr::distinct(taxonomy, .keep_all = TRUE) %>% 
+  #   # droplevels
+  #   dplyr::select(taxonomy, color) %>%
+  #   tibble::deframe(.)
+  # pal.bands(phylum_colors)
+}
+annotation_taxa_colors <- annotation_taxa_colors_list_v2 %>%
+# annotation_taxa_colors <- annotation_taxa_colors_list[["color"]] %>%
   bind_rows(., .id = "spec") %>%
   tidyr::pivot_longer(., cols = !c("spec"),
                       names_to = "taxonomy",
                       values_to = "color") %>%
+  dplyr::mutate(spec = factor(spec, levels = {keep_tax})) %>%
   droplevels %>%
+  split(., f = .$taxonomy) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::arrange(taxonomy, spec) %>%
+        tidyr::fill(color, .by = "taxonomy", .direction = "down") %>%
+        tidyr::fill(color, .by = "taxonomy", .direction = "up") %>%
+        droplevels) %>%
+  bind_rows(.) %>%
   tidyr::drop_na(.) %>%
-  dplyr::mutate(spec = factor(spec, levels = c("Domain", "Phylum", "Class", "Order", "Family", "Genus"))) %>%
+  # dplyr::mutate(spec = factor(spec, levels = c("Domain", "Phylum", "Class", "Order", "Family", "Genus"))) %>%
   dplyr::arrange(spec) %>%
+  dplyr::filter(grepl("Genus", spec)) %>%
   dplyr::distinct(taxonomy, color, .keep_all = TRUE) %>%
   droplevels
+annotation_taxa_colors %>%
+  # dplyr::filter(grepl("Alphaproteobacteria|Gammaproteobacteria", taxonomy)) %>%
+  dplyr::select(taxonomy, color) %>%
+  tibble::deframe(.) %>%
+  pal.bands(.)
 
 taxonomy_colors.df <- dplyr::inner_join(annotation_taxa_colors %>%
                                           tidyr::drop_na(color) %>%
                                           droplevels, 
-                                        usvi_filtered_genus.df %>%
+                                        usvi_filtered_genus_renamed.df %>%
                                           dplyr::select(Genus, Domain, Phylum, Class, Order, Family) %>%
                                           dplyr::distinct(Genus, Domain, Phylum, Class, Order, Family, .keep_all = FALSE) %>%
                                           dplyr::mutate(across(c(Class, Order, Genus), ~ dplyr::case_when(is.na(.x) ~ "NA",
@@ -1186,15 +1907,16 @@ taxonomy_colors <- taxonomy_colors.df %>%
   dplyr::select(taxonomy, color) %>%
   tibble::deframe(.)
 
+#what does it look like?
+taxonomy_colors.df %>%
+  dplyr::filter(grepl("class", taxonomic_level)) %>%
+  dplyr::select(taxonomy, color) %>%
+  tibble::deframe(.) %>%
+  pal.bands(.)
 
-# annotation_taxa_colors %>%
-#   dplyr::filter(grepl("Phylum", spec)) %>%
-#   dplyr::select(taxonomy, color) %>%
-#   droplevels %>%
-#   dplyr::distinct(taxonomy, .keep_all = TRUE) %>%
-#   tibble::deframe(.) %>%
-#   pal.bands
+
 if(!exists("usvi_relabund_taxonomy_list", envir = .GlobalEnv)){
+  
   temp_df1 <- usvi_class_filtered.df %>%
     dplyr::filter(Phylum %in% grep(paste0(keep, collapse = "|"), unique(usvi_class_filtered.df[["Phylum"]]), value = TRUE)) %>%
     dplyr::filter(!(Class %in% grep(paste0(drop, collapse = "|"), unique(usvi_class_filtered.df[["Class"]]), value = TRUE))) %>%
@@ -1212,6 +1934,10 @@ if(!exists("usvi_relabund_taxonomy_list", envir = .GlobalEnv)){
     dplyr::distinct(sample_id, taxonomy, .keep_all = TRUE) %>%
     # dplyr::mutate(taxonomy = factor(taxonomy, levels = unique(.[["taxonomy"]]))) %>%
     droplevels
+  
+  unique(temp_df1[["taxonomy"]])[!(unique(temp_df1[["taxonomy"]]) %in% names(taxonomy_colors))]
+  # [1] "Bacteria;Marinimicrobia (SAR406 clade);Marinimicrobia (SAR406 clade)"
+  # [2] "Archaea;Thermoplasmatota;Thermoplasmata"  
   
   temp_df2 <- usvi_order_filtered.df %>%
     dplyr::filter(Phylum %in% grep(paste0(keep, collapse = "|"), unique(usvi_order_filtered.df[["Phylum"]]), value = TRUE)) %>%
@@ -1343,7 +2069,7 @@ taxonomy_rank_class_idx <- usvi_relabund_taxonomy_list[["Genus"]] %>% #there are
   # droplevels
 
 # taxonomy_rank_genus_idx <- usvi_filtered_genus.df %>% #56 genera
-taxonomy_rank_genus_idx <- usvi_relabund_taxonomy_list[["Genus"]] %>% #52
+taxonomy_rank_genus_idx <- usvi_relabund_taxonomy_list[["Genus"]] %>% #52+1 other
   dplyr::ungroup(.) %>%
   dplyr::distinct(Class, taxonomy) %>%
   dplyr::ungroup(.) %>%
@@ -1353,11 +2079,11 @@ taxonomy_rank_genus_idx <- usvi_relabund_taxonomy_list[["Genus"]] %>% #52
   dplyr::select(taxonomy) %>%
   droplevels %>% tibble::deframe(.)
 
-taxonomy_filt_genus_colors.df <- c(phylum_colors, "#449C81") %>%
-  setNames(., c(names(phylum_colors), "Archaea;Thermoplasmatota"))
-names(taxonomy_filt_genus_colors.df)[1] <- "Archaea;Crenarchaeota"
-taxonomy_filt_genus_colors.df <- taxonomy_filt_genus_colors.df %>%
-  tibble::enframe(name = "first_taxonomy", value = "color")
+# taxonomy_filt_genus_colors.df <- c(phylum_colors, "#449C81") %>%
+#   setNames(., c(names(phylum_colors), "Archaea;Thermoplasmatota"))
+# names(taxonomy_filt_genus_colors.df)[1] <- "Archaea;Crenarchaeota"
+# taxonomy_filt_genus_colors.df <- taxonomy_filt_genus_colors.df %>%
+#   tibble::enframe(name = "first_taxonomy", value = "color")
 
 taxonomy_filt_genus_colors <- bind_rows(usvi_relabund_taxonomy_list[["Genus"]]) %>%
   dplyr::select(sample_id, c(Domain:taxonomy), relabund) %>%
@@ -1370,8 +2096,11 @@ taxonomy_filt_genus_colors <- bind_rows(usvi_relabund_taxonomy_list[["Genus"]]) 
   dplyr::select(c(Domain:taxonomy), total_abund) %>%
   dplyr::distinct(., .keep_all = TRUE) %>%
   dplyr::mutate(first_taxonomy = paste0(Domain, ";", Phylum)) %>%
-  # dplyr::mutate(first_taxonomy = dplyr::case_when((Domain == Phylum) ~ Phylum, .default = paste0(Domain, ";", Phylum))) %>%
-  dplyr::left_join(., taxonomy_filt_genus_colors.df, by = join_by(first_taxonomy), relationship = "many-to-many", multiple = "all") %>% droplevels %>%
+  # # dplyr::mutate(first_taxonomy = dplyr::case_when((Domain == Phylum) ~ Phylum, .default = paste0(Domain, ";", Phylum))) %>%
+  dplyr::left_join(., tibble::enframe(taxonomy_colors, name = "first_taxonomy", value = "color"),
+  # dplyr::left_join(., taxonomy_filt_genus_colors.df, 
+                   by = join_by(first_taxonomy), relationship = "many-to-many", multiple = "all") %>% droplevels %>%
+  # droplevels
   split(., f = .$Phylum) %>%
   map(., ~.x %>%
         dplyr::select(taxonomy, color) %>%
@@ -1380,6 +2109,8 @@ taxonomy_filt_genus_colors <- bind_rows(usvi_relabund_taxonomy_list[["Genus"]]) 
   purrr::reduce(c)
 
 taxonomy_filt_genus_colors <- taxonomy_filt_genus_colors[match(taxonomy_rank_genus_idx, names(taxonomy_filt_genus_colors))]
+taxonomy_filt_genus_colors <- c("#FFFFFF", taxonomy_filt_genus_colors) %>%
+  setNames(., c("Other", names(taxonomy_filt_genus_colors)))
 
 taxonomy_filt_genus_colors_lookup <- data.frame(taxonomy = names(taxonomy_filt_genus_colors),
                                                 first = stringr::str_split_i(names(taxonomy_filt_genus_colors), ";", 2),
@@ -1391,6 +2122,7 @@ taxonomy_filt_genus_colors_lookup <- data.frame(taxonomy = names(taxonomy_filt_g
                                           .default = second)) %>% #replace all of the "Alphaproteobacteria;Clade " names that are supposed to be SAR11 
   tidyr::unite(label, c("first", "second"), sep = ";") %>%
   dplyr::select(label, taxonomy) %>%
+  dplyr::mutate(label = dplyr::case_when(grepl("Other", label) ~ "Other", .default = label)) %>%
   tibble::deframe(.)
 
 if(!exists("usvi_filtered_taxonomy_rank_genus_relabund.df", envir = .GlobalEnv)){
@@ -1631,17 +2363,45 @@ if(any(grepl("asv_relabund_summary", list.files(projectpath, pattern = "usvi_asv
                     paste0(., ": ", sampling_day)) %>%
     dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
     droplevels
-  # usvi_filtered_taxonomy_relabund_summary.df %>%
-  #   dplyr::group_by(site, sampling_day, sampling_time) %>%
-  #   dplyr::summarise(total_abund = sum(rel_abund))
-  # # site        sampling_day sampling_time total_abund
-  # # <chr>       <chr>        <chr>               <dbl>
-  # #   1 LB_seagrass Day1         dawn                 78.1
-  # # 2 LB_seagrass Day1         peak_photo           77.8
-  # # 3 LB_seagrass Day2         dawn                 75.6
-  # # 4 LB_seagrass Day2         peak_photo           74.5
-  # # 5 LB_seagrass Day3         dawn                 78.0
-  # # 6 LB_seagrass Day3         peak_photo           77.5
+  
+  # add the "other" taxonomy to the bar chart
+  usvi_filtered_taxonomy_relabund_summary.df <- usvi_filtered_taxonomy_relabund_summary.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_summary.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time, sampling_day, sample_order, sample_label)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+                    paste0(., ": ", sampling_day)) %>%
+    dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+    droplevels
+  
+  
+  
+  # usvi_asv_relabund_summary.df %>%
+  #   dplyr::filter(asv_id %in% temp_idx) %>%
+  #   dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  #   dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time,sampling_day, sample_order, taxonomy)) %>%
+  #   dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+  #   dplyr::arrange(sample_order) %>%
+  #   dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+  #                   paste0(., ": ", sampling_day)) %>%
+  #   dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+  #   droplevels
+  
+  usvi_filtered_taxonomy_relabund_summary.df %>%
+    dplyr::group_by(site, sampling_day, sampling_time) %>%
+    dplyr::summarise(total_abund = sum(rel_abund))
+  # ...
+  # # A tibble: 30 × 4
+  # # Groups:   site, sampling_day [15]
+  # site        sampling_day sampling_time total_abund
+  # <fct>       <fct>        <fct>               <dbl>
+  #   1 LB_seagrass Day1         dawn                  100
+  # 2 LB_seagrass Day1         peak_photo            100
+  # 3 LB_seagrass Day2         dawn                  100
   
   usvi_filtered_taxonomy_relabund_summary_wo73.df <- usvi_asv_relabund_summary_wo73.df %>%
     dplyr::filter(asv_id %in% temp_idx) %>%
@@ -1654,26 +2414,56 @@ if(any(grepl("asv_relabund_summary", list.files(projectpath, pattern = "usvi_asv
     dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
     droplevels
   
-  # usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
-  #   dplyr::group_by(site, sampling_day, sampling_time) %>%
-  #   dplyr::summarise(total_abund = sum(rel_abund))
-  # # site        sampling_day sampling_time total_abund
-  # # <chr>       <chr>        <chr>               <dbl>
-  # #   1 LB_seagrass Day1         dawn                 78.1
-  # # 2 LB_seagrass Day1         peak_photo           77.8
-  # # 3 LB_seagrass Day2         dawn                 75.6
-  # # 4 LB_seagrass Day2         peak_photo           74.5
-  # # 5 LB_seagrass Day3         dawn                 78.0
-  # # 6 LB_seagrass Day3         peak_photo           78.2
+  usvi_filtered_taxonomy_relabund_summary_wo73.df <- usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
+  dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
+                         dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time, sampling_day, sample_order, sample_label)) %>%
+                         droplevels) %>%
+                     dplyr::mutate(taxonomy = "Other") %>%
+                     droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = recode(sampling_time, !!!sampling_time_lookup) %>%
+                    paste0(., ": ", sampling_day)) %>%
+    dplyr::mutate(sample_label = factor(sample_label, levels = unique(.[["sample_label"]]))) %>%
+    droplevels
+  
+  
+  usvi_filtered_taxonomy_relabund_summary_wo73.df %>%
+    dplyr::group_by(site, sampling_day, sampling_time) %>%
+    dplyr::summarise(total_abund = sum(rel_abund))
+  # ...
+  # # A tibble: 30 × 4
+  # # Groups:   site, sampling_day [15]
+  # site        sampling_day sampling_time total_abund
+  # <fct>       <fct>        <fct>               <dbl>
+  #   1 LB_seagrass Day1         dawn                  100
+  # 2 LB_seagrass Day1         peak_photo            100
+  # 3 LB_seagrass Day2         dawn                  100
   
   usvi_filtered_taxonomy_relabund_simple_summary.df <- usvi_asv_relabund_simple_summary.df %>%
     dplyr::filter(asv_id %in% temp_idx) %>%
     dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
     dplyr::summarise(rel_abund = sum(rel_abund, na.rm = TRUE), .by = c(site, sampling_time, sample_order, taxonomy)) %>%
     dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
     dplyr::arrange(sample_order) %>%
     dplyr::mutate(sample_label = sample_order) %>%
     droplevels
+  
+  usvi_filtered_taxonomy_relabund_simple_summary.df <- usvi_filtered_taxonomy_relabund_simple_summary.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_simple_summary.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time, sample_order)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  usvi_filtered_taxonomy_relabund_simple_summary.df %>%
+    dplyr::group_by(site, sampling_time) %>%
+    dplyr::summarise(total_abund = sum(rel_abund))
+  
   usvi_filtered_taxonomy_relabund_simple_summary_wo73.df <- usvi_asv_relabund_simple_summary_wo73.df %>%
     dplyr::filter(asv_id %in% temp_idx) %>%
     dplyr::right_join(., tibble::enframe(temp_idx, value = "asv_id", name = "taxonomy"), by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
@@ -1682,6 +2472,30 @@ if(any(grepl("asv_relabund_summary", list.files(projectpath, pattern = "usvi_asv
     dplyr::arrange(sample_order) %>%
     dplyr::mutate(sample_label = sample_order) %>%
     droplevels
+  usvi_filtered_taxonomy_relabund_simple_summary_wo73.df <- usvi_filtered_taxonomy_relabund_simple_summary_wo73.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_simple_summary_wo73.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time, sample_order)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    dplyr::arrange(sample_order) %>%
+    dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  
+  usvi_filtered_taxonomy_relabund_simple_summary_wo73.df %>%
+    dplyr::group_by(site, sampling_time) %>%
+    dplyr::summarise(total_abund = sum(rel_abund))
+  # # A tibble: 6 × 3
+  # # Groups:   site [3]
+  # site        sampling_time total_abund
+  # <fct>       <fct>               <dbl>
+  #   1 LB_seagrass dawn                  100
+  # 2 LB_seagrass peak_photo            100
+  # 3 Yawzi       dawn                  100
+  # 4 Yawzi       peak_photo            100
+  # 5 Tektite     dawn                  100
+  # 6 Tektite     peak_photo            100
   
   usvi_filtered_taxonomy_relabund_simple_summary_woD1.df <- metadata %>%
     dplyr::filter(sample_type == "seawater") %>%
@@ -1745,6 +2559,22 @@ if(any(grepl("asv_relabund_summary", list.files(projectpath, pattern = "usvi_asv
     dplyr::mutate(taxonomy = factor(taxonomy, levels = names(taxonomy_filt_genus_colors))) %>%
     dplyr::arrange(sample_order) %>%
     dplyr::mutate(sample_label = sample_order) %>%
+    droplevels
+  usvi_filtered_taxonomy_relabund_simple_summary_woD1.df <- usvi_filtered_taxonomy_relabund_simple_summary_woD1.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_simple_summary_woD1.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time, sample_order, sample_label)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
+    droplevels
+  usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df <- usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df %>%
+    dplyr::bind_rows(., (usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df %>%
+                           dplyr::summarise(rel_abund = (100 - sum(rel_abund, na.rm = TRUE)), .by = c(site, sampling_time, sample_order, sample_label)) %>%
+                           droplevels) %>%
+                       dplyr::mutate(taxonomy = "Other") %>%
+                       droplevels) %>%
+    dplyr::mutate(taxonomy = factor(taxonomy, levels = c(names(taxonomy_filt_genus_colors)))) %>%
     droplevels
   
   save(list = c("usvi_filtered_taxonomy_relabund_simple_summary_woD1_wo73.df", 

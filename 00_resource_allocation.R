@@ -29,10 +29,10 @@ if(grepl("arch64", Sys.getenv("R_PLATFORM"))){
   options(future.globals.maxSize = 10e9)
 } else {
   if(grepl("x86_64", Sys.getenv("R_PLATFORM"))){
-    print("Detected Windows")
-    nthreads <- parallelly::availableCores(omit = 1) - 1
-    future::plan(sequential)
-    options(future.globals.maxSize = 10e9)
+  #   print("Detected Windows")
+  #   nthreads <- parallelly::availableCores(omit = 1) - 1
+  #   future::plan(sequential)
+  #   options(future.globals.maxSize = 10e9)
   } else {
     print("Using data.table")
     nthreads <- data.table::getDTthreads()
@@ -73,6 +73,30 @@ f_projectpath <- function() {
     } else {
       stop("Please provide a path.\n")   
     }
+  }
+}
+
+#set project paths
+#options:
+#1. locally on your laptop (try to incorporate paths to FileShare/VAST)
+#2. via interactive RStudio on server
+if(grepl("arch64", Sys.getenv("R_PLATFORM")) | grepl("Users", getwd())){
+  # #if you have FileShare set up on laptop:
+  # "/Volumes/user/sharon.grim/projects/apprill/" is equivalent to /user/sharon.grim/projects/apprill
+  # "/Volumes/omics/apprill/" is equivalent to /proj/omics/apprill 
+  projectpath <- getwd()
+  serverpath <- "/Volumes/omics/apprill/"
+  scratchpath <- ""
+} else {
+  if(any(grepl("rocker-rstudio", .libPaths()))){
+    serverpath <- "/proj/omics/apprill/"
+    projectpath <- getwd()
+    scratchpath <- "/scratch/sharon.grim/"
+  } else {
+    
+    cli::cli_alert_warning("I don't know what your working directory is. Assuming it's where you are now...'")
+    projectpath <- getwd()
+    
   }
 }
 
