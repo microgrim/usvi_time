@@ -1,0 +1,317 @@
+asv_id	NMDS1	NMDS2	taxonomy	Domain	Phylum	Class	Order	Family	Genus	color	abund_0.01_316	sda_asvs_181	sda_abund_asvs_36
+ASV_00001	0.10631087022031288	0.08832524975147761	ASV_00001: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	1	NA	NA
+ASV_00002	0.5577234744901606	0.01503848224918191	ASV_00002: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	2	1	1
+ASV_00003	-0.6902934930737782	-0.04322199648990574	ASV_00003: Alphaproteobacteria; HIMB11	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	HIMB11	#FF9660	3	2	2
+ASV_00004	-0.08263272674160746	0.0922020010186502	ASV_00004: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	4	3	3
+ASV_00005	0.5510165744128966	0.03139624520536172	ASV_00005: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	5	4	4
+ASV_00006	-0.5253678574739262	-0.00129383804045555	ASV_00006: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	6	5	5
+ASV_00007	0.6796356805480314	0.00810867716649538	ASV_00007: Cyanobacteria; Prochlorococcus MIT9313	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Prochlorococcus MIT9313	#C1FEB3	8	6	6
+ASV_00008	0.4838423124837504	0.01112362243546001	ASV_00008: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	7	7	7
+ASV_00009	-0.5178019236949954	0.01240787658714695	ASV_00009: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	9	8	8
+ASV_00010	0.5586648753877519	0.04297672722396165	ASV_00010: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	10	9	9
+ASV_00011	0.4818216525387034	0.01739009751671913	ASV_00011: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	11	10	10
+ASV_00012	0.5079396320056583	0.05140607716926608	ASV_00012: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	12	11	11
+ASV_00013	0.4115949913344637	0.06940131404063386	ASV_00013: Acidimicrobia; Candidatus Actinomarina	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina	#14C1FF	13	12	12
+ASV_00014	0.2973454730799859	0.09107887029706212	ASV_00014: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	14	13	13
+ASV_00015	0.4240329417216863	-0.03214987841243411	ASV_00015: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	15	14	32
+ASV_00016	0.4650736392825765	0.08586017097234852	ASV_00016: Acidimicrobia; Candidatus Actinomarina	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina	#14C1FF	16	15	14
+ASV_00017	0.4916056571081148	-0.0043254268341943	ASV_00017: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	17	16	15
+ASV_00018	0.5107754854173043	0.05654186292031225	ASV_00018: Verrucomicrobiae; Coraliomargarita	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	Coraliomargarita	#00A6E2	18	17	16
+ASV_00019	0.03507214367922358	0.11458815924394349	ASV_00019: Bacteroidia; NS2b marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS2b marine group	#FFB97C	24	18	17
+ASV_00020	0.46600901257314664	0.03416910078313839	ASV_00020: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	19	19	18
+ASV_00021	0.3986883036209998	0.02500710371531257	ASV_00021: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	22	20	19
+ASV_00022	-0.1732695802077973	0.14093026221355462	ASV_00022: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	25	21	20
+ASV_00023	0.5596593618271423	0.04779750778646167	ASV_00023: Alphaproteobacteria; SAR11 Clade Ib	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib	#FFDCAD	20	22	21
+ASV_00024	-0.6422821598315217	-0.02804645005749228	ASV_00024: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	21	23	22
+ASV_00025	-0.2928646377487369	0.121332603586948	ASV_00025: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	23	24	23
+ASV_00026	0.6371715175509586	0.02702861505057687	ASV_00026: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	27	25	33
+ASV_00027	-0.13689446824986592	0.09215108343537888	ASV_00027: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	28	26	24
+ASV_00028	-0.5705371518767621	0.32519608278484324	ASV_00028: Gammaproteobacteria; Stenotrophomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Xanthomonadales	Xanthomonadaceae	Stenotrophomonas	#FF9B64	26	NA	NA
+ASV_00029	0.5324967749682147	0.0253126546496849	ASV_00029: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	29	27	34
+ASV_00030	-0.03921559303773531	0.14488801967870588	ASV_00030: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	32	28	25
+ASV_00031	0.5343171746039881	0.04432267381865164	ASV_00031: Bacteria; Marinimicrobia (SAR406 clade)	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	#D27878	31	29	35
+ASV_00032	-0.4647888326249609	0.06422352215559524	ASV_00032: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	30	30	26
+ASV_00034	0.00178271017314837	0.12381954988672528	ASV_00034: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	34	31	27
+ASV_00035	0.6452351214067279	0.01070117868942954	ASV_00035: Alphaproteobacteria; SAR11 Clade Ib	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib	#FFDCAD	33	32	36
+ASV_00036	-0.16811550405939468	0.05147351456495618	ASV_00036: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	37	33	NA
+ASV_00037	0.5020695116855968	0.00104814187468356	ASV_00037: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	36	34	NA
+ASV_00038	-0.7128587926871055	0.0973502551929596	ASV_00038: Bacteroidia; Formosa	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Formosa	#FFB97C	35	35	28
+ASV_00039	0.4378330714325988	0.02296971188504395	ASV_00039: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	42	36	NA
+ASV_00040	0.05068968604735337	0.08757067328556481	ASV_00040: Gammaproteobacteria; OM60(NOR5) clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	#FF945E	40	37	NA
+ASV_00041	0.41738389066877535	0.01989210334661085	ASV_00041: Gammaproteobacteria; OM60(NOR5) clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	#FF945E	39	38	NA
+ASV_00043	-0.2699875574409951	0.05218839895792768	ASV_00043: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	38	39	29
+ASV_00044	0.4637330179136807	-0.00807580218247803	ASV_00044: Gammaproteobacteria; OM60(NOR5) clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	#FF945E	45	NA	NA
+ASV_00045	-0.7139111094539224	0.10177017834036392	ASV_00045: Bacteroidia; NS7 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS7 marine group	NS7 marine group	#FFB97C	43	40	30
+ASV_00046	0.62066179139249	0.03628532847204193	ASV_00046: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	46	41	NA
+ASV_00047	-0.8051076507951762	0.10214019723687189	ASV_00047: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	44	42	31
+ASV_00048	-0.4750873107652081	0.07423198803874462	ASV_00048: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	50	43	NA
+ASV_00049	0.5876606146046894	0.04680092015969089	ASV_00049: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	47	44	NA
+ASV_00050	0.4895449969662834	0.08582866518256628	ASV_00050: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	48	45	NA
+ASV_00051	0.26809630380144933	0.4673475720135704	ASV_00051: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	41	NA	NA
+ASV_00052	0.41727093782407454	-0.02451560364436942	ASV_00052: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	52	46	NA
+ASV_00053	0.36108572857553767	0.04690680825903735	ASV_00053: Phycisphaerae; Urania-1B-19 marine sediment group	Bacteria	Planctomycetota	Phycisphaerae	Phycisphaerales	Phycisphaeraceae	Urania-1B-19 marine sediment group	#FF2616	55	47	NA
+ASV_00054	0.38724574292131936	0.08511992837575486	ASV_00054: Gammaproteobacteria; Alteromonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Alteromonas	#FF9861	56	NA	NA
+ASV_00055	0.623359904588593	0.02575782544078484	ASV_00055: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	53	48	NA
+ASV_00057	0.4985304026787887	-0.06157819737218759	ASV_00057: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	54	49	NA
+ASV_00058	-0.355914492515056	0.15795160743094702	ASV_00058: Acidimicrobia; Sva0996 marine group	Bacteria	Actinobacteriota	Acidimicrobia	Microtrichales	Microtrichaceae	Sva0996 marine group	#0BBAFF	57	50	NA
+ASV_00059	-0.08478573898752699	0.02706973150005675	ASV_00059: Alphaproteobacteria; Ascidiaceihabitans	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Ascidiaceihabitans	#FF9660	60	51	NA
+ASV_00060	-1.881474110060313	0.02696001200761707	ASV_00060: Alphaproteobacteria; Litorimicrobium	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Litorimicrobium	#FF9660	51	52	NA
+ASV_00061	0.3465156172151802	0.24401223725774687	ASV_00061: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	49	NA	NA
+ASV_00063	0.5148659748020069	0.00973649772442159	ASV_00063: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	59	53	NA
+ASV_00064	0.02607138874730735	0.00746671825590302	ASV_00064: Alphaproteobacteria; Stappiaceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhizobiales	Stappiaceae	Stappiaceae	#FF8450	58	54	NA
+ASV_00065	0.20409014468846728	-0.13017742459805728	ASV_00065: Gammaproteobacteria; OM60(NOR5) clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	#FF945E	62	NA	NA
+ASV_00066	-0.1337664952549063	0.15091956261099063	ASV_00066: Cyanobacteria; Cyanobium PCC-6307	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Cyanobium PCC-6307	#C1FEB3	72	55	NA
+ASV_00067	0.6241270312819388	-6.985071809635129e-4	ASV_00067: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	64	56	NA
+ASV_00068	0.5590132882326029	-0.00318257602846869	ASV_00068: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	67	57	NA
+ASV_00069	-0.84254187163677	-0.07174858922958514	ASV_00069: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	61	58	NA
+ASV_00070	0.6112587793397881	0.06840218315588024	ASV_00070: Bacteria; Marinimicrobia (SAR406 clade)	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	#D27878	65	59	NA
+ASV_00071	-0.14153829714968566	0.0200195104357469	ASV_00071: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	70	60	NA
+ASV_00072	0.6302773829394612	0.0516282877203887	ASV_00072: Alphaproteobacteria; SAR11 Clade IV	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade IV	Clade IV	#FFDCAD	66	61	NA
+ASV_00073	-0.9135020997420804	0.10178590209963675	ASV_00073: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	63	62	NA
+ASV_00074	-0.1480901981216126	0.01729446499073837	ASV_00074: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	76	63	NA
+ASV_00075	0.05849493112322426	0.07183252718190831	ASV_00075: Bacteroidia; NS2b marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS2b marine group	#FFB97C	80	64	NA
+ASV_00077	0.6372991705417956	-0.00818637706965071	ASV_00077: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	75	65	NA
+ASV_00079	0.4217913000796257	-0.00320592172817414	ASV_00079: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	71	66	NA
+ASV_00080	0.35724490734130426	0.0350188530424732	ASV_00080: Rhodothermia; Balneola	Bacteria	Bacteroidota	Rhodothermia	Balneolales	Balneolaceae	Balneola	#FFB879	69	NA	NA
+ASV_00082	0.6768528065327323	0.00682021118019505	ASV_00082: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	90	NA	NA
+ASV_00083	0.6082159979934023	0.04223549961055736	ASV_00083: Alphaproteobacteria; SAR11 Clade Ib	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib	#FFDCAD	77	67	NA
+ASV_00084	-0.01673391478476696	0.14213994444023112	ASV_00084: Bacteroidia; Marinoscillum	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Marinoscillum	#FFDAB4	84	68	NA
+ASV_00085	0.670615238808195	0.00829010798844642	ASV_00085: Alphaproteobacteria; SAR11 Clade Ib	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ib	#FFDCAD	79	69	NA
+ASV_00086	0.5168375447427457	-0.08038864355502719	ASV_00086: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	81	70	NA
+ASV_00087	-0.15834963862884455	-0.00140552424325395	ASV_00087: Alphaproteobacteria; Stappiaceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhizobiales	Stappiaceae	Stappiaceae	#FF8450	83	71	NA
+ASV_00088	0.4950684556831286	-0.08756434942913144	ASV_00088: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	91	72	NA
+ASV_00089	-1.796157572978649	-0.02823033798958842	ASV_00089: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	73	NA	NA
+ASV_00091	0.7335740855650275	-0.03018031141397754	ASV_00091: Cyanobacteria; Prochlorococcus MIT9313	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Prochlorococcus MIT9313	#C1FEB3	88	NA	NA
+ASV_00092	0.1478187268811323	-0.05344524580299802	ASV_00092: Gammaproteobacteria; Acinetobacter	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Moraxellaceae	Acinetobacter	#FF945E	68	NA	NA
+ASV_00093	0.4683566339037725	0.0748313105270052	ASV_00093: Alphaproteobacteria; Defluviicoccales	Bacteria	Pseudomonadota	Alphaproteobacteria	Defluviicoccales	Defluviicoccales	Defluviicoccales	#FFF3E3	86	73	NA
+ASV_00094	-0.10378713184952816	0.10674102958303668	ASV_00094: Cyanobacteria; Cyanobiaceae	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Cyanobiaceae	#C1FEB3	95	74	NA
+ASV_00095	-1.4852240351741135	0.02364229809360281	ASV_00095: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	74	75	NA
+ASV_00096	0.48920281293220746	0.02470581240353438	ASV_00096: Gammaproteobacteria; KI89A clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	KI89A clade	KI89A clade	#FF945E	89	76	NA
+ASV_00097	-0.6203086311848358	0.13050550962299834	ASV_00097: Bacteroidia; Tenacibaculum	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Tenacibaculum	#FFB97C	101	77	NA
+ASV_00098	0.6507222979939746	0.04117651600210979	ASV_00098: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	100	78	NA
+ASV_00099	0.2787065729776672	0.11647402276806192	ASV_00099: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	96	NA	NA
+ASV_00100	0.619973862917466	0.03643752850531838	ASV_00100: Acidimicrobia; Candidatus Actinomarina	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina	#14C1FF	97	79	NA
+ASV_00101	-0.6161025922152947	0.04304589355826045	ASV_00101: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	85	80	NA
+ASV_00102	0.6076203661999144	-0.03326181425231946	ASV_00102: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	94	NA	NA
+ASV_00103	0.4374168098799247	0.00901242387308342	ASV_00103: Alphaproteobacteria; PS1 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Parvibaculales	PS1 clade	PS1 clade	#FFDAAA	92	81	NA
+ASV_00104	-0.06164746728722749	0.05921900208107006	ASV_00104: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	103	82	NA
+ASV_00105	-1.6221128420904762	-0.24886126435088407	ASV_00105: Gammaproteobacteria; Marinobacterium	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Nitrincolaceae	Marinobacterium	#FF945E	93	83	NA
+ASV_00107	-0.05608085069297273	0.06555182936245017	ASV_00107: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	87	84	NA
+ASV_00108	0.1374682515254929	0.30240844904275693	ASV_00108: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	82	NA	NA
+ASV_00109	0.565619881865631	0.05020478592269214	ASV_00109: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	105	85	NA
+ASV_00110	0.6346629102700104	-0.02299866798852686	ASV_00110: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	112	86	NA
+ASV_00111	-1.4012458970399495	-0.2730859748162647	ASV_00111: Gammaproteobacteria; Pseudomonadales	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadales	Pseudomonadales	#FF945E	99	87	NA
+ASV_00112	-1.7694818144305111	0.13580892869105918	ASV_00112: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	78	88	NA
+ASV_00113	0.6533467578731055	-0.01308673403561827	ASV_00113: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	113	89	NA
+ASV_00114	0.3423026189040695	0.09998033657333148	ASV_00114: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	104	NA	NA
+ASV_00115	-0.00796035403090969	0.11699700001934216	ASV_00115: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	115	90	NA
+ASV_00116	0.4748826496338837	-0.06323422225128893	ASV_00116: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	107	91	NA
+ASV_00117	0.25961649475446835	-0.01822926406006526	ASV_00117: Alphaproteobacteria; PS1 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Parvibaculales	PS1 clade	PS1 clade	#FFDAAA	98	NA	NA
+ASV_00118	0.09423340276699622	0.0911424696002556	ASV_00118: Bacteroidia; NS2b marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS2b marine group	#FFB97C	120	92	NA
+ASV_00119	0.44347028385738574	0.06316400875679273	ASV_00119: Gammaproteobacteria; SAR92 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Porticoccaceae	SAR92 clade	#FF945E	108	93	NA
+ASV_00120	0.47331019514464723	0.0074977746366267	ASV_00120: Alphaproteobacteria; PS1 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Parvibaculales	PS1 clade	PS1 clade	#FFDAAA	111	94	NA
+ASV_00121	-0.02690858831378404	0.10499683610030774	ASV_00121: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	119	95	NA
+ASV_00122	-0.4153627258191237	0.07628754406372076	ASV_00122: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	116	96	NA
+ASV_00123	0.698856620912283	0.03225426487344612	ASV_00123: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	109	97	NA
+ASV_00124	-0.9331225491451786	-0.02440174840262604	ASV_00124: Bacteroidia; NS11-12 marine group	Bacteria	Bacteroidota	Bacteroidia	Sphingobacteriales	NS11-12 marine group	NS11-12 marine group	#FFE4C8	102	98	NA
+ASV_00125	0.5009678996957647	0.05777371897002173	ASV_00125: Alphaproteobacteria; SAR11 Clade III	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade III	Clade III	#FFDCAD	117	99	NA
+ASV_00126	0.718651716138101	0.00777355327723078	ASV_00126: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	114	NA	NA
+ASV_00128	0.6470481932414477	0.11759237972260889	ASV_00128: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	110	100	NA
+ASV_00129	0.6460435554338411	0.07350648155288407	ASV_00129: Gammaproteobacteria; Ectothiorhodospiraceae	Bacteria	Pseudomonadota	Gammaproteobacteria	Ectothiorhodospirales	Ectothiorhodospiraceae	Ectothiorhodospiraceae	#FFD9A7	118	101	NA
+ASV_00130	0.5561533417413447	-0.01686997245576984	ASV_00130: Gammaproteobacteria; OM182 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	OM182 clade	OM182 clade	#FF945E	127	102	NA
+ASV_00131	-1.2564307887900674	0.25301779379626144	ASV_00131: Alphaproteobacteria; Thalassobius	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Thalassobius	#FF9660	122	103	NA
+ASV_00132	0.3757440290866584	0.0942642019571571	ASV_00132: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	128	104	NA
+ASV_00133	0.364955419931141	0.01115907727755158	ASV_00133: Alphaproteobacteria; S25-593	Bacteria	Pseudomonadota	Alphaproteobacteria	Rickettsiales	S25-593	S25-593	#FF633C	124	NA	NA
+ASV_00134	0.49769663636608863	0.06001483100557954	ASV_00134: Acidimicrobia; Candidatus Actinomarina	Bacteria	Actinobacteriota	Acidimicrobia	Actinomarinales	Actinomarinaceae	Candidatus Actinomarina	#14C1FF	126	105	NA
+ASV_00136	0.690620762707638	0.03500950217395659	ASV_00136: Bacteria; Marinimicrobia (SAR406 clade)	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	#D27878	121	106	NA
+ASV_00138	0.5968430159448682	0.1558083789246994	ASV_00138: Gammaproteobacteria; BD1-7 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Spongiibacteraceae	BD1-7 clade	#FF945E	148	107	NA
+ASV_00140	0.1977193471363148	0.04595212326095022	ASV_00140: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	133	108	NA
+ASV_00141	0.6528726693890758	0.0181939907885626	ASV_00141: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	130	109	NA
+ASV_00142	0.549349129156507	0.3976977375365331	ASV_00142: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	106	NA	NA
+ASV_00143	0.12309273444748052	0.06103243728511218	ASV_00143: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	132	NA	NA
+ASV_00145	0.5646923013825893	0.08001857327642346	ASV_00145: Bacteria; Marinimicrobia (SAR406 clade)	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	#D27878	131	110	NA
+ASV_00146	0.47883784565936305	0.10019741770292784	ASV_00146: Gammaproteobacteria; MWH-UniP1 aquatic group	Bacteria	Pseudomonadota	Gammaproteobacteria	Burkholderiales	MWH-UniP1 aquatic group	MWH-UniP1 aquatic group	#FF8A54	125	111	NA
+ASV_00147	-0.2237753845833948	0.155654879983933	ASV_00147: Gammaproteobacteria; Vibrio	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Vibrio	#FF9861	123	112	NA
+ASV_00149	0.4985105721290422	-0.06165664439313618	ASV_00149: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	129	NA	NA
+ASV_00150	0.5864650234692946	-0.03510898751861824	ASV_00150: Verrucomicrobiae; MB11C04 marine group	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	MB11C04 marine group	#00A6E2	135	113	NA
+ASV_00151	-0.06262874353413349	0.11054989563060082	ASV_00151: Cyanobacteria; Cyanobium PCC-6307	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Cyanobium PCC-6307	#C1FEB3	142	NA	NA
+ASV_00153	0.5752400475069296	-0.02449179738033406	ASV_00153: Gammaproteobacteria; Pseudohongiella	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudohongiellaceae	Pseudohongiella	#FF945E	139	114	NA
+ASV_00154	-0.26019204626502207	0.1204296808466386	ASV_00154: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	136	115	NA
+ASV_00155	0.6479568226287661	-0.00260085168172517	ASV_00155: Bacteria; SAR324 clade(Marine group B)	Bacteria	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	SAR324 clade(Marine group B)	#F0D2D2	138	116	NA
+ASV_00156	0.49908311627042207	0.06105462920587066	ASV_00156: Gammaproteobacteria; OM60(NOR5) clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	#FF945E	150	NA	NA
+ASV_00158	-0.02319449468760177	-0.0775277308172104	ASV_00158: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	140	117	NA
+ASV_00159	0.6822233897485029	7.029239550502855e-4	ASV_00159: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	134	NA	NA
+ASV_00161	0.5498085979225827	-0.02295646011179577	ASV_00161: Alphaproteobacteria; S25-593	Bacteria	Pseudomonadota	Alphaproteobacteria	Rickettsiales	S25-593	S25-593	#FF633C	141	118	NA
+ASV_00163	0.552179273411782	-0.00828878903023465	ASV_00163: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	146	NA	NA
+ASV_00164	-0.6425863452961743	0.155649103263628	ASV_00164: Bacteroidia; Chitinophagales	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Chitinophagales	Chitinophagales	#FFEEDC	145	119	NA
+ASV_00165	-1.1662580741646258	0.15222372842184545	ASV_00165: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	137	120	NA
+ASV_00167	0.5446937183878903	-0.00926905035128307	ASV_00167: Alphaproteobacteria; S25-593	Bacteria	Pseudomonadota	Alphaproteobacteria	Rickettsiales	S25-593	S25-593	#FF633C	143	121	NA
+ASV_00168	0.08910331297194286	-0.09418811866120096	ASV_00168: Gammaproteobacteria; Litoricola	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Litoricolaceae	Litoricola	#FF945E	144	NA	NA
+ASV_00171	0.5908411046799098	0.01409031503437675	ASV_00171: Alphaproteobacteria; Candidatus Puniceispirillum	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	Candidatus Puniceispirillum	#FF8D57	163	NA	NA
+ASV_00172	0.6892603659314896	0.00221601789659493	ASV_00172: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	149	NA	NA
+ASV_00173	0.11916570566126353	0.1269611077761382	ASV_00173: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	153	NA	NA
+ASV_00175	0.6040497111145544	-0.06136617925161507	ASV_00175: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	147	NA	NA
+ASV_00176	-0.6918710715936844	-0.15506427992101146	ASV_00176: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	162	NA	NA
+ASV_00177	0.5464057993911163	0.15860198100409748	ASV_00177: Gammaproteobacteria; Pseudoalteromonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Pseudoalteromonadaceae	Pseudoalteromonas	#FF9861	175	122	NA
+ASV_00178	0.5009552290957905	0.04586023369862732	ASV_00178: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	156	123	NA
+ASV_00180	0.5694234777153825	-0.01770024657275518	ASV_00180: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	157	124	NA
+ASV_00181	0.3446952658994498	0.08722103789557109	ASV_00181: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	154	NA	NA
+ASV_00182	-0.3286225001019558	-0.08015688366612402	ASV_00182: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	161	125	NA
+ASV_00185	0.6061160445594664	0.00697074252195684	ASV_00185: Verrucomicrobiae; MB11C04 marine group	Bacteria	Verrucomicrobiota	Verrucomicrobiae	Opitutales	Puniceicoccaceae	MB11C04 marine group	#00A6E2	167	126	NA
+ASV_00187	-0.3885560243120047	0.09268640876735522	ASV_00187: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	158	127	NA
+ASV_00188	0.4892605693695551	-0.19152627529814056	ASV_00188: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	152	NA	NA
+ASV_00190	0.11176820116150038	0.00250800710339316	ASV_00190: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	164	NA	NA
+ASV_00191	0.2529104008827394	-0.2352928642327077	ASV_00191: Proteobacteria; Alphaproteobacteria	Bacteria	Pseudomonadota	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	Alphaproteobacteria	#FFF6EA	159	NA	NA
+ASV_00192	0.5536094965674421	0.06217400033880963	ASV_00192: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	181	128	NA
+ASV_00195	0.3541078306386457	0.14885256874449687	ASV_00195: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	165	NA	NA
+ASV_00196	0.7096790358115632	-0.01964943650973455	ASV_00196: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	174	NA	NA
+ASV_00197	0.7685286491459995	-0.0372716785002617	ASV_00197: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	160	NA	NA
+ASV_00199	-0.5263778713555798	0.09239546251842684	ASV_00199: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	193	129	NA
+ASV_00200	-2.070029112521596	0.11202265320716008	ASV_00200: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	155	NA	NA
+ASV_00201	0.4753701254798356	-0.04896693115985509	ASV_00201: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	166	NA	NA
+ASV_00202	-0.24021242752406224	0.18011295802128552	ASV_00202: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	169	130	NA
+ASV_00203	0.7425240407160696	0.7128024444297522	ASV_00203: Alphaproteobacteria; Caulobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Caulobacterales	Caulobacteraceae	Caulobacteraceae	#FFD59F	291	NA	NA
+ASV_00205	0.7072556719278096	-0.02867034878448492	ASV_00205: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	186	NA	NA
+ASV_00206	0.7500978936728477	-0.01705492350778948	ASV_00206: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	171	NA	NA
+ASV_00207	0.442832944959391	0.04016450149276354	ASV_00207: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	172	NA	NA
+ASV_00208	0.5984242617868839	-0.135653599984912	ASV_00208: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	173	NA	NA
+ASV_00209	0.46159806635520634	-0.01178868871580188	ASV_00209: Kiritimatiellae; R76-B128	Bacteria	Verrucomicrobiota	Kiritimatiellae	Kiritimatiellales	Kiritimatiellaceae	R76-B128	#009ADB	170	NA	NA
+ASV_00210	0.7054854276074086	-0.01929152978017744	ASV_00210: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	182	131	NA
+ASV_00211	0.43882876615626415	0.05478180062378039	ASV_00211: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	187	132	NA
+ASV_00215	-0.9963907608889446	0.10997029840331853	ASV_00215: Bacteroidia; Saprospiraceae	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae	#FFEEDC	198	133	NA
+ASV_00216	0.6972753985232636	-0.00851941793458175	ASV_00216: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	180	134	NA
+ASV_00218	0.5410498347601861	0.0476741195223844	ASV_00218: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	184	136	NA
+ASV_00221	-1.9652347418812093	0.04217622377448052	ASV_00221: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	177	137	NA
+ASV_00222	-0.5994841630783074	0.12139763835945988	ASV_00222: Bacteroidia; Saprospiraceae	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae	#FFEEDC	194	138	NA
+ASV_00223	0.7357765605167241	0.03686916542188484	ASV_00223: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	176	NA	NA
+ASV_00224	-1.6056741354732622	-0.4070563308432787	ASV_00224: Alphaproteobacteria; HIMB11	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	HIMB11	#FF9660	192	NA	NA
+ASV_00225	0.5365259230226797	0.09029813828680872	ASV_00225: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	203	NA	NA
+ASV_00226	0.7201764195548247	-2.823579555864393e-4	ASV_00226: Gammaproteobacteria; SAR92 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Porticoccaceae	SAR92 clade	#FF945E	190	NA	NA
+ASV_00227	-0.683184164555257	0.15631313383404127	ASV_00227: Gammaproteobacteria; Photobacterium	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Photobacterium	#FF9861	185	139	NA
+ASV_00228	0.5381845210754305	0.14095437064236754	ASV_00228: Bacteroidia; NS2b marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS2b marine group	#FFB97C	196	140	NA
+ASV_00229	-0.04297418059925249	0.04414911881630463	ASV_00229: Bacteroidia; Cyclobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Cyclobacteriaceae	#FFDAB4	188	141	NA
+ASV_00231	-0.15625195319651325	0.471026510216723	ASV_00231: Gammaproteobacteria; Delftia	Bacteria	Pseudomonadota	Gammaproteobacteria	Burkholderiales	Comamonadaceae	Delftia	#FF8A54	168	NA	NA
+ASV_00232	-0.15922327907521233	-0.17110312222890958	ASV_00232: Alphaproteobacteria; Stappiaceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhizobiales	Stappiaceae	Stappiaceae	#FF8450	205	NA	NA
+ASV_00233	0.6729429522055423	-0.00514060997907451	ASV_00233: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	199	142	NA
+ASV_00235	0.6996602946616008	0.01916630811582803	ASV_00235: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	195	143	NA
+ASV_00236	0.5708034650736261	0.05407274937589879	ASV_00236: Gammaproteobacteria; Thiotrichaceae	Bacteria	Pseudomonadota	Gammaproteobacteria	Thiotrichales	Thiotrichaceae	Thiotrichaceae	#FFD49C	204	144	NA
+ASV_00238	0.17063389779038418	0.0106308926822833	ASV_00238: Bacteroidia; Chitinophagales	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Chitinophagales	Chitinophagales	#FFEEDC	206	NA	NA
+ASV_00239	0.6126103642945855	0.02097351314084529	ASV_00239: Alphaproteobacteria; AEGEAN-169 marine group	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodospirillales	AEGEAN-169 marine group	AEGEAN-169 marine group	#FFDEB2	197	NA	NA
+ASV_00240	0.03919395149866989	-0.1041819904431198	ASV_00240: Bdellovibrionia; OM27 clade	Bacteria	Bdellovibrionota	Bdellovibrionia	Bdellovibrionales	Bdellovibrionaceae	OM27 clade	#5247EB	211	145	NA
+ASV_00241	0.767285669169043	-0.04055011527515662	ASV_00241: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	213	NA	NA
+ASV_00243	-1.3667913220945624	0.17993890667240933	ASV_00243: Bacteroidia; Winogradskyella	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Winogradskyella	#FFB97C	202	146	NA
+ASV_00245	0.2897259140316614	-0.07633946195147248	ASV_00245: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	201	NA	NA
+ASV_00247	0.5506089857997974	-0.04421270503458545	ASV_00247: Bacteria; Marinimicrobia (SAR406 clade)	Bacteria	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	Marinimicrobia (SAR406 clade)	#D27878	208	NA	NA
+ASV_00248	-0.04299978270379891	0.23165866100997537	ASV_00248: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	178	NA	NA
+ASV_00251	-1.4573184697255006	-0.33438863383583367	ASV_00251: Gammaproteobacteria; Alteromonadaceae	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Alteromonadaceae	#FF9861	191	147	NA
+ASV_00252	-1.8685088032334	0.2076141876647479	ASV_00252: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	183	148	NA
+ASV_00253	0.6990446566616279	-0.01653080065637576	ASV_00253: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	218	NA	NA
+ASV_00256	0.2405722394713762	0.4008898140887761	ASV_00256: Gammaproteobacteria; Aquabacterium	Bacteria	Pseudomonadota	Gammaproteobacteria	Burkholderiales	Comamonadaceae	Aquabacterium	#FF8A54	179	NA	NA
+ASV_00258	0.6595190025624973	0.01034712222518852	ASV_00258: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	207	NA	NA
+ASV_00260	-0.4548949731488304	0.10379552379352576	ASV_00260: Bacteroidia; Flavobacteriales	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriales	Flavobacteriales	#FFB97C	215	151	NA
+ASV_00261	-0.8813406232377246	0.2977463032007366	ASV_00261: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	231	NA	NA
+ASV_00262	0.1115176996786902	-0.07203038966415241	ASV_00262: Gammaproteobacteria; Acinetobacter	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Moraxellaceae	Acinetobacter	#FF945E	189	NA	NA
+ASV_00263	0.5578119457091758	0.1793514180102427	ASV_00263: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	227	NA	NA
+ASV_00264	-0.08075223024746239	-0.02511192907984072	ASV_00264: Alphaproteobacteria; Erythrobacter	Bacteria	Pseudomonadota	Alphaproteobacteria	Sphingomonadales	Sphingomonadaceae	Erythrobacter	#FF8752	200	NA	NA
+ASV_00266	0.651338645072033	-0.00178865124357188	ASV_00266: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	212	NA	NA
+ASV_00269	0.5906348615066791	0.688094204187168	ASV_00269: Gammaproteobacteria; Enterobacterales	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Enterobacterales	Enterobacterales	#FF9861	151	NA	NA
+ASV_00271	-0.952469364432998	0.12575726289433772	ASV_00271: Gammaproteobacteria; Luminiphilus	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	Luminiphilus	#FF945E	209	152	NA
+ASV_00272	0.5823553162917395	-0.12071218021812244	ASV_00272: Alphaproteobacteria; S25-593	Bacteria	Pseudomonadota	Alphaproteobacteria	Rickettsiales	S25-593	S25-593	#FF633C	229	NA	NA
+ASV_00274	-1.5461867685891038	-0.14564354427257656	ASV_00274: Gammaproteobacteria; Pseudomonadales	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadales	Pseudomonadales	#FF945E	221	153	NA
+ASV_00280	0.7686374833003363	0.00417637125531632	ASV_00280: Gammaproteobacteria; SAR86 clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	SAR86 clade	SAR86 clade	#FF945E	210	NA	NA
+ASV_00281	0.49259565294108504	-0.05168581515919904	ASV_00281: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	220	NA	NA
+ASV_00282	-1.494730478529792	0.12618448071504404	ASV_00282: Desulfobulbia; Desulfocapsaceae	Bacteria	Desulfobacterota	Desulfobulbia	Desulfobulbales	Desulfocapsaceae	Desulfocapsaceae	#007D45	216	156	NA
+ASV_00283	-1.7786391984745498	0.1413871313904553	ASV_00283: Gammaproteobacteria; Photobacterium	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Photobacterium	#FF9861	214	157	NA
+ASV_00289	-0.8249626885957401	-0.19398378726286392	ASV_00289: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	217	NA	NA
+ASV_00291	0.6651759288563	-0.04331508069638062	ASV_00291: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	223	NA	NA
+ASV_00292	0.265647350170619	-0.23555558061352197	ASV_00292: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	224	NA	NA
+ASV_00294	-0.31023047417805794	0.11372275220802278	ASV_00294: Rhodothermia; Balneola	Bacteria	Bacteroidota	Rhodothermia	Balneolales	Balneolaceae	Balneola	#FFB879	233	NA	NA
+ASV_00295	-1.201087080488935	0.2987163400222003	ASV_00295: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	222	NA	NA
+ASV_00298	0.7566737203260229	-0.00190126192070851	ASV_00298: Alphaproteobacteria; SAR11 Clade IV	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade IV	Clade IV	#FFDCAD	226	NA	NA
+ASV_00300	-1.9454658129443403	0.2047490395865171	ASV_00300: Actinobacteria; Candidatus Aquiluna	Bacteria	Actinobacteriota	Actinobacteria	Micrococcales	Microbacteriaceae	Candidatus Aquiluna	#00ACF9	219	158	NA
+ASV_00302	0.506872695257758	0.0863477962427019	ASV_00302: Alphaproteobacteria; SAR11 Clade III	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade III	Clade III	#FFDCAD	230	NA	NA
+ASV_00311	0.5337343542900447	-0.312983191153412	ASV_00311: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	236	NA	NA
+ASV_00313	-0.17005029640416774	0.09783193669768946	ASV_00313: Planctomycetes; Pirellulaceae	Bacteria	Planctomycetota	Planctomycetes	Pirellulales	Pirellulaceae	Pirellulaceae	#FF7F5D	245	159	NA
+ASV_00314	0.21865814280504509	-0.01600634641265104	ASV_00314: Bacteria; Proteobacteria	Bacteria	Proteobacteria	Proteobacteria	Proteobacteria	Proteobacteria	Proteobacteria	#FFFFCC	240	NA	NA
+ASV_00315	0.5000548722139605	-0.16573982668488407	ASV_00315: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	248	NA	NA
+ASV_00316	-2.0531707962076746	0.15652604413821303	ASV_00316: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	232	NA	NA
+ASV_00321	-1.189986671012997	0.3264799696228858	ASV_00321: Bacteroidia; Aureicoccus	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Aureicoccus	#FFB97C	234	160	NA
+ASV_00322	-0.3977997545150894	-0.139944663382671	ASV_00322: Gammaproteobacteria; Vibrio	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Vibrio	#FF9861	235	NA	NA
+ASV_00323	-0.3989817991097738	0.3583395299772874	ASV_00323: Alphaproteobacteria; Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhizobiales	Rhizobiaceae	Allorhizobium-Neorhizobium-Pararhizobium-Rhizobium	#FF8450	228	NA	NA
+ASV_00339	-1.8354470239231504	-0.18278205774142428	ASV_00339: Gammaproteobacteria; Aestuariibacter	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Aestuariibacter	#FF9861	243	NA	NA
+ASV_00341	-1.929219752276938	0.18495492305047745	ASV_00341: Bacteroidia; Bacteroides	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidaceae	Bacteroides	#FFDBB6	225	NA	NA
+ASV_00343	0.8022099624629184	-0.01731953933571828	ASV_00343: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	244	NA	NA
+ASV_00345	-0.17297453936725565	0.0876226053220486	ASV_00345: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	254	NA	NA
+ASV_00348	-2.029793914947186	-0.02120797048158255	ASV_00348: Alphaproteobacteria; Aestuariicoccus	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Aestuariicoccus	#FF9660	237	NA	NA
+ASV_00349	0.35592199028486615	0.17485890994787523	ASV_00349: Fusobacteria; Propionigenium	Bacteria	Fusobacteriota	Fusobacteria	Fusobacteriales	Fusobacteriaceae	Propionigenium	#F367E7	251	NA	NA
+ASV_00351	0.05446680678392716	-0.4651963537199789	ASV_00351: Bacteroidia; NS9 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS9 marine group	NS9 marine group	#FFB97C	265	NA	NA
+ASV_00352	0.0999817077160292	0.2235719542117136	ASV_00352: Bacteroidia; Cyclobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Cyclobacteriaceae	#FFDAB4	246	NA	NA
+ASV_00357	-2.0262548454375757	-0.05134213939079318	ASV_00357: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	238	NA	NA
+ASV_00359	0.6756167327725142	-0.02403728997108218	ASV_00359: Myxococcia; P3OB-42	Bacteria	Myxococcota	Myxococcia	Myxococcales	Myxococcaceae	P3OB-42	#A400B0	250	NA	NA
+ASV_00362	0.4570206635859837	0.09131534822758414	ASV_00362: Gammaproteobacteria; Rheinheimera	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Alteromonadaceae	Rheinheimera	#FF9861	241	NA	NA
+ASV_00365	-2.184625701780634	0.14187360138594934	ASV_00365: Bacteroidia; NS4 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS4 marine group	#FFB97C	247	NA	NA
+ASV_00368	0.8445725047947821	-0.04003467361138196	ASV_00368: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	255	NA	NA
+ASV_00369	-1.7826604537881294	0.34246507099654055	ASV_00369: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	253	NA	NA
+ASV_00372	-1.6776766961805365	-0.01905890091807441	ASV_00372: Bacteroidia; Mesoflavibacter	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Mesoflavibacter	#FFB97C	239	NA	NA
+ASV_00373	0.3817312021996668	0.2677116457801465	ASV_00373: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	242	NA	NA
+ASV_00376	-0.4893823621046445	0.25014796818140156	ASV_00376: Gammaproteobacteria; OM60(NOR5) clade	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Halieaceae	OM60(NOR5) clade	#FF945E	252	NA	NA
+ASV_00382	-0.37336654092302135	0.2728164194241211	ASV_00382: Alphaproteobacteria; Sphingobium	Bacteria	Pseudomonadota	Alphaproteobacteria	Sphingomonadales	Sphingomonadaceae	Sphingobium	#FF8752	270	NA	NA
+ASV_00388	0.6285517503558661	0.4361937849220612	ASV_00388: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	249	NA	NA
+ASV_00389	-1.6994038969218042	0.22543113060948575	ASV_00389: Alphaproteobacteria; Holosporaceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Holosporales	Holosporaceae	Holosporaceae	#FFD199	258	164	NA
+ASV_00391	0.932001229351594	-0.0772443256558044	ASV_00391: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	276	NA	NA
+ASV_00395	0.03641036289349415	0.24212730690624856	ASV_00395: Alphaproteobacteria; Ascidiaceihabitans	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Ascidiaceihabitans	#FF9660	262	NA	NA
+ASV_00396	0.9365173962797696	-0.06066896605056484	ASV_00396: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	259	NA	NA
+ASV_00398	-1.9989153395574473	0.264870889385675	ASV_00398: Alphaproteobacteria; Stappiaceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhizobiales	Stappiaceae	Stappiaceae	#FF8450	256	NA	NA
+ASV_00399	-1.8696027448029304	0.15147003570591674	ASV_00399: Alphaproteobacteria; Celeribacter	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Celeribacter	#FF9660	260	NA	NA
+ASV_00400	-1.3808929021684109	-0.5278850224371299	ASV_00400: Gammaproteobacteria; Thiomicrorhabdus	Bacteria	Pseudomonadota	Gammaproteobacteria	Thiomicrospirales	Thiomicrospiraceae	Thiomicrorhabdus	#FF7E4D	267	NA	NA
+ASV_00401	0.857210169979048	-0.3399533242506983	ASV_00401: Alphaproteobacteria; SAR11 Clade II	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade II	Clade II	#FFDCAD	288	NA	NA
+ASV_00404	0.3223872280538026	0.08457986757423516	ASV_00404: Gammaproteobacteria; Endozoicomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Endozoicomonadaceae	Endozoicomonas	#FF945E	257	NA	NA
+ASV_00418	0.861749288004972	0.03986377292416444	ASV_00418: Bacteroidia; Marinoscillum	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Marinoscillum	#FFDAB4	264	NA	NA
+ASV_00432	0.6254538959234054	-0.14353619392256184	ASV_00432: Gammaproteobacteria; Marinobacter	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Marinobacteraceae	Marinobacter	#FF945E	263	NA	NA
+ASV_00438	0.16049201970658902	0.11946397652531134	ASV_00438: Thermoplasmata; Marine Group II	Archaea	Thermoplasmatota	Thermoplasmata	Marine Group II	Marine Group II	Marine Group II	#0CD497	261	NA	NA
+ASV_00442	-1.049238447983447	0.11619778937148864	ASV_00442: Bacteroidia; Saprospiraceae	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae	#FFEEDC	268	NA	NA
+ASV_00444	-1.80788640730082	-0.542458876598827	ASV_00444: Gammaproteobacteria; Thiomicrorhabdus	Bacteria	Pseudomonadota	Gammaproteobacteria	Thiomicrospirales	Thiomicrospiraceae	Thiomicrorhabdus	#FF7E4D	273	NA	NA
+ASV_00445	-1.9414214666080505	0.2900975605448249	ASV_00445: Cyanobacteria; Oscillatoriaceae	Bacteria	Cyanobacteria	Cyanobacteria	Cyanobacteriales	Oscillatoriaceae	Oscillatoriaceae	#BCFEAD	274	NA	NA
+ASV_00455	-2.095256743819638	-1.707419963629199	ASV_00455: Bacteroidia; Cryomorphaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Cryomorphaceae	Cryomorphaceae	#FFB97C	284	NA	NA
+ASV_00464	0.1539363812441589	-0.08739782991881773	ASV_00464: Bacteroidia; Leeuwenhoekiella	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Leeuwenhoekiella	#FFB97C	266	NA	NA
+ASV_00474	-1.9851403408627892	-0.0720729375847154	ASV_00474: Actinobacteria; Microbacteriaceae	Bacteria	Actinobacteriota	Actinobacteria	Micrococcales	Microbacteriaceae	Microbacteriaceae	#00ACF9	269	NA	NA
+ASV_00512	-1.720563135482356	-0.15454033880921297	ASV_00512: Bacteroidia; Crocinitomix	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Crocinitomicaceae	Crocinitomix	#FFB97C	279	173	NA
+ASV_00515	-2.2984146658325826	-0.09764709593910484	ASV_00515: Cyanobacteria; Synechococcus CC9902	Bacteria	Cyanobacteria	Cyanobacteria	Synechococcales	Cyanobiaceae	Synechococcus CC9902	#C1FEB3	277	NA	NA
+ASV_00520	0.4593677400461311	0.32386332925611333	ASV_00520: Gammaproteobacteria; Photobacterium	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Vibrionaceae	Photobacterium	#FF9861	271	NA	NA
+ASV_00525	-1.8430612240523652	0.7631658554125563	ASV_00525: Bacteroidia; Flavicella	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavicella	#FFB97C	281	NA	NA
+ASV_00527	-1.9366066065475676	0.2842970782243166	ASV_00527: Alphaproteobacteria; Leisingera	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Leisingera	#FF9660	272	NA	NA
+ASV_00536	0.7600594833116733	-0.2546350984459582	ASV_00536: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	278	NA	NA
+ASV_00551	0.961624639076474	-0.03935898464174847	ASV_00551: Alphaproteobacteria; Candidatus Puniceispirillum	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	Candidatus Puniceispirillum	#FF8D57	280	NA	NA
+ASV_00554	-2.229155654106015	0.494026948925772	ASV_00554: Alphaproteobacteria; Rhodobacteraceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Rhodobacterales	Rhodobacteraceae	Rhodobacteraceae	#FF9660	275	NA	NA
+ASV_00580	-1.5152046499994511	0.07589588107056469	ASV_00580: Alphaproteobacteria; Holosporaceae	Bacteria	Pseudomonadota	Alphaproteobacteria	Holosporales	Holosporaceae	Holosporaceae	#FFD199	286	NA	NA
+ASV_00589	0.4675475733209398	-0.3595855171259498	ASV_00589: Alphaproteobacteria; PS1 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Parvibaculales	PS1 clade	PS1 clade	#FFDAAA	282	NA	NA
+ASV_00630	-1.7825422510650146	0.4845262287019612	ASV_00630: Clostridia; Clostridium sensu stricto 1	Bacteria	Firmicutes	Clostridia	Clostridiales	Clostridiaceae	Clostridium sensu stricto 1	#FF4209	283	178	NA
+ASV_00648	-2.3493690928189657	-0.3016711341952849	ASV_00648: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	287	NA	NA
+ASV_00660	0.6865805298182425	0.4060364851393702	ASV_00660: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	290	NA	NA
+ASV_00687	0.8181679963093362	0.26984972571813165	ASV_00687: Fusobacteria; Propionigenium	Bacteria	Fusobacteriota	Fusobacteria	Fusobacteriales	Fusobacteriaceae	Propionigenium	#F367E7	285	NA	NA
+ASV_00692	-2.1519176687219637	1.2750895427672717	ASV_00692: Bacteroidia; Bacteroides	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidaceae	Bacteroides	#FFDBB6	289	NA	NA
+ASV_00721	-1.177685482649441	1.75464787078839	ASV_00721: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	293	NA	NA
+ASV_00726	0.7528242420359317	0.2490257784936609	ASV_00726: Gammaproteobacteria; Pseudomonas	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadaceae	Pseudomonas	#FF945E	292	NA	NA
+ASV_00783	-2.139130015452561	0.07537607350880517	ASV_00783: Bacteroidia; Muribaculaceae	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Muribaculaceae	Muribaculaceae	#FFDBB6	294	NA	NA
+ASV_00795	-1.086775329784548	1.1975790694758086	ASV_00795: Bacteria	Bacteria	Bacteria	Bacteria	Bacteria	Bacteria	Bacteria	NA	295	NA	NA
+ASV_00813	-1.2389540798459855	1.8187161021815863	ASV_00813: Proteobacteria; Gammaproteobacteria	Bacteria	Pseudomonadota	Gammaproteobacteria	Gammaproteobacteria	Gammaproteobacteria	Gammaproteobacteria	#FFF6E9	296	NA	NA
+ASV_00864	-1.4529863909872949	1.2989540499469647	ASV_00864: Bacteroidia; Bacteroides	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Bacteroidaceae	Bacteroides	#FFDBB6	302	NA	NA
+ASV_00898	-1.2389540798459855	1.8187161021815863	ASV_00898: Bacteroidia; Flavobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Flavobacteriaceae	#FFB97C	298	NA	NA
+ASV_00899	-1.2389540798459855	1.8187161021815863	ASV_00899: Alphaproteobacteria; MD3-55	Bacteria	Pseudomonadota	Alphaproteobacteria	Rickettsiales	Fokiniaceae	MD3-55	#FF633C	299	NA	NA
+ASV_00911	-1.2389540798459855	1.8187161021815863	ASV_00911: Gammaproteobacteria; Enterobacterales	Bacteria	Pseudomonadota	Gammaproteobacteria	Enterobacterales	Enterobacterales	Enterobacterales	#FF9861	305	NA	NA
+ASV_00917	-0.9986776850497684	1.578186330608616	ASV_00917: Bacteroidia; Amoebophilaceae	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Amoebophilaceae	Amoebophilaceae	#FFDAB4	301	NA	NA
+ASV_00921	0.9461532287636438	0.14116183913089927	ASV_00921: Bacteroidia; NS5 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	NS5 marine group	#FFB97C	306	NA	NA
+ASV_00924	-1.2389540798459855	1.8187161021815863	ASV_00924: Clostridia; Defluviitaleaceae UCG-011	Bacteria	Firmicutes	Clostridia	Lachnospirales	Defluviitaleaceae	Defluviitaleaceae UCG-011	#CD0300	300	NA	NA
+ASV_00936	-1.2389540798459855	1.8187161021815863	ASV_00936: Campylobacteria; Arcobacteraceae	Bacteria	Campylobacterota	Campylobacteria	Campylobacterales	Arcobacteraceae	Arcobacteraceae	#0DE788	303	NA	NA
+ASV_00942	-1.8045617495810833	0.7922623198296213	ASV_00942: Bacteroidia; Muribaculaceae	Bacteria	Bacteroidota	Bacteroidia	Bacteroidales	Muribaculaceae	Muribaculaceae	#FFDBB6	297	NA	NA
+ASV_00970	-1.4153985016930422	1.636899790134684	ASV_00970: Alphaproteobacteria; Filomicrobium	Bacteria	Pseudomonadota	Alphaproteobacteria	Hyphomicrobiales	Hyphomicrobiaceae	Filomicrobium	#FF6A40	304	NA	NA
+ASV_01026	-1.95032749581429	1.7280969646695332	ASV_01026: Bacteroidia; NS7 marine group	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	NS7 marine group	NS7 marine group	#FFB97C	307	NA	NA
+ASV_01044	-1.2389540798459855	1.8187161021815863	ASV_01044: Gammaproteobacteria; HOC36	Bacteria	Pseudomonadota	Gammaproteobacteria	HOC36	HOC36	HOC36	#FFEED6	310	NA	NA
+ASV_01082	-1.95032749581429	1.7280969646695332	ASV_01082: Bacteroidia; Saprospiraceae	Bacteria	Bacteroidota	Bacteroidia	Chitinophagales	Saprospiraceae	Saprospiraceae	#FFEEDC	308	NA	NA
+ASV_01098	0.9461532287636438	0.14116183913089927	ASV_01098: Alphaproteobacteria; SAR116 clade	Bacteria	Pseudomonadota	Alphaproteobacteria	Puniceispirillales	SAR116 clade	SAR116 clade	#FF8D57	313	NA	NA
+ASV_01139	0.949093058508602	-0.13034016311774071	ASV_01139: Alphaproteobacteria; SAR11 Clade Ia	Bacteria	Pseudomonadota	Alphaproteobacteria	SAR11 clade	Clade I	Clade Ia	#FFDCAD	315	NA	NA
+ASV_01156	-1.95032749581429	1.7280969646695332	ASV_01156: Campylobacteria; Halarcobacter	Bacteria	Campylobacterota	Campylobacteria	Campylobacterales	Arcobacteraceae	Halarcobacter	#0DE788	316	NA	NA
+ASV_01168	-1.95032749581429	1.7280969646695332	ASV_01168: Bacteroidia; Tenacibaculum	Bacteria	Bacteroidota	Bacteroidia	Flavobacteriales	Flavobacteriaceae	Tenacibaculum	#FFB97C	311	NA	NA
+ASV_01169	-1.2389540798459855	1.8187161021815863	ASV_01169: Gammaproteobacteria; Pseudomonadales	Bacteria	Pseudomonadota	Gammaproteobacteria	Pseudomonadales	Pseudomonadales	Pseudomonadales	#FF945E	314	NA	NA
+ASV_01175	-1.95032749581429	1.7280969646695332	ASV_01175: Clostridia; Eubacterium	Bacteria	Firmicutes	Clostridia	Eubacteriales	Eubacteriaceae	Eubacterium	#CF0600	312	NA	NA
+ASV_02877	0.7425240407160696	0.7128024444297522	ASV_02877: Bacteroidia; Cyclobacteriaceae	Bacteria	Bacteroidota	Bacteroidia	Cytophagales	Cyclobacteriaceae	Cyclobacteriaceae	#FFDAB4	309	NA	NA

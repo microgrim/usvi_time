@@ -85,7 +85,7 @@ otu_to_taxonomy <- function(dataset, taxonomy, level){
   tax_levels <- tax_levels[1:grep( {level}, tax_levels, ignore.case = TRUE)]
   
   sum_dataset <- taxonomy %>%
-    dplyr::select(1, all_of(tax_levels)) %>%
+    dplyr::select(asv_id, all_of(tax_levels)) %>%
     dplyr::left_join(., dataset, by = "asv_id") %>%
     tidyr::pivot_longer(., cols = !c("asv_id", all_of(tax_levels)),
                         names_to = "sample_id",
