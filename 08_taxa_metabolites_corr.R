@@ -3247,6 +3247,21 @@ spearman.test.site.filtered.df %>%
 # 3 Tektite             442
 
 #sig corrs: 980 Lameshur, 442 Tektite, 373 Yawzi
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass          28
+# 2 Tektite              23
+# 3 Yawzi                49
+
 spearman_site_summary.df <- spearman.test.site.filtered.df %>%
   dplyr::ungroup(.) %>%
   dplyr::distinct(asv_id, test_type, simpleName, site, sig, .keep_all = TRUE) %>%

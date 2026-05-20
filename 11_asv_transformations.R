@@ -2217,8 +2217,12 @@ if(!exists("spearman.test.site.time.rclr.filtered.df", envir = .GlobalEnv)){
             dplyr::select(p_value) %>%
             tibble::deframe(.) %>% na.omit(.) %>%
             unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
-            quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
-            setNames(., c("q_01", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+            # quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
+            # as.double(., length = 12) %>%
+            # setNames(., c("q_01", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+            quantile(., probs = c(0.01, 0.012, 0.015, 0.025, 0.05, 0.1), digits = 20, na.rm = TRUE, names = FALSE,type = 7) %>%
+            as.double(., length = 12) %>%
+            setNames(., c("q_01", "q_012", "q_015", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
     
     spearman.test.site.rclr.df <- spearman.test.site.rclr.full.df %>%
       tidyr::drop_na(p_value) %>%
@@ -2260,7 +2264,6 @@ if(!exists("spearman.test.site.time.rclr.filtered.df", envir = .GlobalEnv)){
              dplyr::mutate(site = stringr::str_split_i(grouping, "\\.", 1),
                            sampling_time = stringr::str_split_i(grouping, "\\.", 2)) %>%
              droplevels) %>%
-      # setNames(., names(spearman.test.site.df)) %>%
       bind_rows(.)
     
     #Now site- and time-specific
@@ -2386,6 +2389,7 @@ if(!exists("padj_cutoff_list", envir = .GlobalEnv)){
     unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
     quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
     setNames(., c("q_01", "q_025", "q_05", "q_10")) #get the possible p-adj cutoffs for different q-values
+  
   temp_df <- spearman.test.site.rclr.full.df %>%
     split(., f = .$grouping) %>%
     map(., ~.x %>%
@@ -2393,8 +2397,10 @@ if(!exists("padj_cutoff_list", envir = .GlobalEnv)){
           dplyr::select(p_value) %>%
           tibble::deframe(.) %>% na.omit(.) %>%
           unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
-          quantile(., probs = c(0.01, 0.025, 0.05, 0.1), na.rm = TRUE, names = FALSE,type = 7) %>%
-          setNames(., c("q_01", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+          quantile(., probs = c(0.01, 0.012, 0.015, 0.025, 0.05, 0.1), digits = 20, na.rm = TRUE, names = FALSE,type = 7) %>%
+          as.double(., length = 12) %>%
+          setNames(., c("q_01", "q_012", "q_015", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+  
   temp_df2 <- spearman.test.site.time.rclr.full.df %>%
     split(., f = .$grouping) %>%
     map(., ~.x %>%
@@ -2628,6 +2634,10 @@ for(df in c("spearman.test.site.time.filtered.df",
   rm(temp_df)
   rm(namevar)
 }
+if(any(grepl("usvi_spearman_full", list.files(projectpath, pattern = "usvi_.*.RData")))){
+  load(list.files(projectpath, "usvi_spearman_full-.*.RData")[1])
+}
+# paste0(projectpath, "/", "usvi_spearman_full-", Sys.Date(), ".RData"))
 
 
 corr_fdr01_MH_site_sig <- spearman.test.site.filtered.df %>%
@@ -3536,6 +3546,909 @@ corr_fdr01_rCLR_site_sig_freq_unique_df %>%
 # 2 ASV_01074:pantothenic acid       2
 # 3 ASV_01210:pantothenic acid       2
 #none of these correlations between ASV-metabolite are in more than 2 of 3 sites
+
+
+
+# Comparing stringency and FDR filtering ----------------------------------
+
+
+
+spearman.test.site.rclr.filtered.df %>%
+  tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(grepl("sig_q01|maybe", sig)) %>% #kept 9042 "maybe" from LB seagrass
+  # tidyr::drop_na(padj_01) %>% #no LB seagrass retained...
+  droplevels %>%
+  # dplyr::group_by(grouping, sig) %>%
+  dplyr::group_by(grouping) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 4 × 3
+# # Groups:   grouping [3]
+# grouping    sig     num_results
+# <fct>       <fct>         <int>
+#   1 LB_seagrass maybe          9042
+# 2 Tektite     sig_q01         893
+# 3 Yawzi       maybe          8016
+# 4 Yawzi       sig_q01        1066
+
+# # A tibble: 3 × 2
+# grouping    num_results
+# <fct>             <int>
+#   1 LB_seagrass        9042
+# 2 Tektite             893
+# 3 Yawzi              9082
+
+
+#in comparison to Spearman on relative abundance,  we used padj_01:
+#sig corrs: 980 Lameshur, 442 Tektite, 373 Yawzi
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  tidyr::drop_na(padj_01) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass         455
+# 2 Tektite             176
+# 3 Yawzi               104
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.7) %>%
+  # dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass         144
+# 2 Tektite              79
+# 3 Yawzi                57
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  # dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass          28
+# 2 Tektite              23
+# 3 Yawzi                49
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.9) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass           2
+# 2 Tektite               1
+# 3 Yawzi                16
+
+#what was the minimum adjusted p-value for FDR 1% and rho > 0.5?
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  # dplyr::group_by(site, sig) %>%
+  dplyr::summarise(min_padj_bh = min(padj_bh, na.rm = TRUE),
+                   max_padj_bh = max(padj_bh, na.rm = TRUE),
+                   min_p = min(p_value, na.rm = TRUE),
+                   max_p = max(p_value, na.rm = TRUE),
+                   num_results = length(estimate)) %>%
+  droplevels
+# # A tibble: 13 × 7
+# # Groups:   site [3]
+# site        sig      min_padj_bh max_padj_bh        min_p     max_p num_results
+# <chr>       <chr>          <dbl>       <dbl>        <dbl>     <dbl>       <int>
+#   1 LB_seagrass maybe      0.767          0.767  0.0687       0.0835             46
+# 2 LB_seagrass sig_q01    0.0503         0.767  0.0000291    0.0104            942
+# 3 LB_seagrass sig_q025   0.767          0.767  0.0104       0.0389            436
+# 4 LB_seagrass sig_q05    0.767          0.767  0.0390       0.0682            142
+# 5 LB_seagrass vsig       0.0000401      0.0450 0.0000000198 0.0000259          38
+# 6 Tektite     maybe      0.767          0.767  0.0724       0.0876             35
+# 7 Tektite     sig_q01    0.0540         0.767  0.0000314    0.0190            442
+# 8 Tektite     sig_q025   0.767          0.767  0.0193       0.0458            153
+# 9 Tektite     sig_q05    0.767          0.767  0.0465       0.0710             74
+# 10 Yawzi       maybe      0.767          0.767  0.0710       0.0856             55
+# 11 Yawzi       sig_q01    0.0887         0.767  0.0000556    0.0194            373
+# 12 Yawzi       sig_q025   0.767          0.767  0.0201       0.0427            162
+# 13 Yawzi       sig_q05    0.767          0.767  0.0446       0.0678             80
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(site, sig) %>%
+  dplyr::summarise(min_padj_bh = min(padj_bh, na.rm = TRUE),
+                   max_padj_bh = max(padj_bh, na.rm = TRUE))
+# # A tibble: 4 × 4
+# # Groups:   site [3]
+# site        sig     min_padj_bh max_padj_bh
+# <chr>       <chr>         <dbl>       <dbl>
+#   1 LB_seagrass sig_q01   0.209         0.767  
+# 2 LB_seagrass vsig      0.0000401     0.00740
+# 3 Tektite     sig_q01   0.0906        0.767  
+# 4 Yawzi       sig_q01   0.314         0.767  
+
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("optA", test_type)) %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  # dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  tidyr::drop_na(padj_bh_05) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::summarise(num_results = length(estimate))
+# # A tibble: 1 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass          38
+
+
+#how do the rCLR numbers look?
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  tidyr::drop_na(padj_01) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  dplyr::summarise(num_results = length(estimate))
+# # A tibble: 2 × 2
+# grouping num_results
+# <fct>          <int>
+#   1 Tektite          893
+# 2 Yawzi           1066
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  dplyr::distinct(asv_id, simpleName, grouping, .keep_all = TRUE) %>%
+  dplyr::summarise(num_results = length(estimate))
+# # A tibble: 3 × 2
+# grouping    num_results
+# <fct>             <int>
+#   1 LB_seagrass       12802
+# 2 Tektite            4125
+# 3 Yawzi             11811
+
+#for rCLR data, note that LB seagrass had 2492 correlations where p = 0
+#these correspond to abs(estimate) = 1
+#LB seagrass had 35975 correlations where p > 0 and 1 > abs(estimate) >= 0.5
+#in relative abundance data, LB seagrass had 430 correlations where p = 0, corresponding to abs(estimate) = 1
+#and 6814 correlations where 1 > abs(estimate) >= 0.5 and p > 0
+{
+  padj_cutoff <- spearman.test.site.rclr.full.df %>%
+    split(., f = .$grouping) %>%
+    map(., ~.x %>%
+          droplevels %>%
+          dplyr::select(p_value) %>%
+          tibble::deframe(.) %>% na.omit(.) %>%
+          unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
+          quantile(., probs = c(0.01, 0.012, 0.015, 0.025, 0.05, 0.1), digits = 20, na.rm = TRUE, names = FALSE,type = 7) %>%
+          as.double(., length = 12) %>%
+          setNames(., c("q_01", "q_012", "q_015", "q_025", "q_05", "q_10"))) #get the possible p-adj cutoffs for different q-values
+  padj_cutoff[["LB_seagrass"]][["q_025"]]
+  # [1] 2.700246e-05
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    droplevels %>%
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_025"]]) %>% 
+    droplevels %>%
+    nrow(.)
+  # [1] 3314
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_015"]]) %>% 
+    dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    nrow(.)
+  # [1] 2733
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_012"]]) %>% 
+    dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    nrow(.)
+  # [1] 2532
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_01"]]) %>% 
+    dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    nrow(.)
+  # [1] 2492
+  #for any p-value < 2.5% FDR, the 80th percentile is p = 0.00000166
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    # dplyr::filter(p_value < 1) %>% 
+    dplyr::filter(abs(estimate) < 1) %>%
+    dplyr::filter(p_value > 0) %>%
+    dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    nrow(.)
+  # [1] 35975
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value < 1) %>% 
+    # dplyr::filter(p_value > 0) %>%
+    # dplyr::filter(abs(estimate) >= 0.5) %>%
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_01"]]) %>%
+    droplevels %>%
+    nrow(.)
+  # [1] 2492
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_025"]]) %>%
+    # dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    dplyr::reframe(quantile(p_value, na.rm = TRUE, probs = seq(0, 1, 0.2), type = 7, names = FALSE))
+  # # A tibble: 6 × 1
+  # `quantile(...)`
+  # <dbl>
+  #   1      0         
+  # 2      0         
+  # 3      0         
+  # 4      0         
+  # 5      0.00000166
+  # 6      0.0000270 
+  
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_01"]]) %>%
+    # dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    dplyr::reframe(quantile(p_value, na.rm = TRUE, probs = seq(0, 1, 0.2), type = 7, names = FALSE))
+  
+  
+  #the 1.5% FDR: 3.134283e-06
+  #the 1.2% FDR: 5.359301e-08
+  # spearman.test.site.rclr.full.df %>% 
+  #   dplyr::filter(grepl("seagrass", grouping)) %>% 
+  #   # dplyr::filter(p_value < padj_cutoff[["LB_seagrass"]][["q_025"]]) %>%
+  #   droplevels %>%
+  #   dplyr::select(p_value) %>%
+  #   tibble::deframe(.) %>% na.omit(.) %>%
+  #   unlist %>% ashr::qval.from.lfdr(.) %>% as.matrix(.) %>%
+  # #   quantile(., probs = c(0, 0.4, 1), na.rm = TRUE, names = FALSE,type = 7, digits = 20)
+  # # # [1] 0.00000e+00 0.00000e+00 2.97641e-06
+  #   quantile(., probs = c(0.01, 0.012, 0.015, 0.025), na.rm = TRUE, names = FALSE,type = 7, digits = 20)
+  # # [1] 0.000000e+00 5.359301e-08 3.134283e-06 2.700246e-05
+  spearman.test.site.rclr.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_01"]]) %>% 
+    dplyr::filter(abs(estimate) >= 0.5) %>%
+    droplevels %>%
+    nrow(.)
+  # [1] 2532
+  
+  #what about the relative abundance data?
+  spearman.test.site.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value > 0) %>%
+    dplyr::filter(abs(estimate) < 1) %>% # 442358
+    dplyr::filter(abs(estimate) >= 0.5) %>% #6814
+    droplevels %>%
+    nrow(.)
+  # [1] 6814
+  spearman.test.site.full.df %>% 
+    dplyr::filter(grepl("seagrass", grouping)) %>% 
+    dplyr::filter(p_value == 0) %>%
+    dplyr::filter(abs(estimate) >= 0.5) %>% #430
+    # dplyr::filter(abs(estimate) < 1) %>% #0
+    droplevels %>%
+    nrow(.)
+  # [1] 430
+}
+
+#what is the set of correlations that have padj < 0.05 but not q_01?
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  # tidyr::drop_na(padj_01) %>%
+  dplyr::filter(is.na(padj_01)) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  # dplyr::group_by(grouping, sig) %>%
+  dplyr::summarise(num_results = length(estimate))
+
+#BH < 0.05
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  # dplyr::group_by(grouping, sig) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# grouping    num_results
+# <fct>             <int>
+#   1 LB_seagrass       12802
+# 2 Tektite            3674
+# 3 Yawzi             11811
+
+#FDR = 1%
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  tidyr::drop_na(padj_01) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  # dplyr::group_by(grouping, sig) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# grouping    num_results
+# <fct>             <int>
+#   1 LB_seagrass        9042
+# 2 Tektite             3115
+# 3 Yawzi              9082
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.7) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  # dplyr::group_by(grouping, sig) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 3 × 2
+# grouping    num_results
+# <fct>             <int>
+#   1 LB_seagrass        2850
+# 2 Tektite            1425
+# 3 Yawzi              1066
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  droplevels %>%
+  dplyr::group_by(grouping) %>%
+  # dplyr::group_by(grouping, sig) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 2 × 2
+# grouping    num_results
+# <fct>             <int>
+#   1 LB_seagrass         624
+# 2 Tektite             437
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(grepl("Yawzi", site)) %>%
+  # dplyr::filter(abs(estimate) >= 0.8) %>%
+  dplyr::group_by(grouping, sig) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# A tibble: 4 × 3
+# # Groups:   grouping [1]
+# grouping sig      num_results
+# <fct>    <fct>          <int>
+#   1 Yawzi    sig_q05          673
+# 2 Yawzi    sig_q025        2056
+# 3 Yawzi    maybe           8016
+# 4 Yawzi    sig_q01         1066
+
+spearman.test.site.rclr.full.df %>%
+  # dplyr::filter(abs(estimate) >= 0.5) %>%
+  
+  # dplyr::filter(abs(estimate) == 1) %>% #Seagrass: 2492, Yawzi: 22
+  dplyr::filter(abs(estimate) < 1) %>% dplyr::filter(p_value <= padj_cutoff[["LB_seagrass"]][["q_012"]]) %>% #40 LB seagrass correlations were below the 1.2% FDR
+  dplyr::group_by(grouping) %>%
+  dplyr::summarise(
+    # min_padj_bh = min(padj_bh, na.rm = TRUE),
+                   max_padj_bh = max(padj_bh, na.rm = TRUE),
+                   # min_p_q01 = min(padj_01, na.rm = TRUE),
+                   # max_p_q01 = max(padj_01, na.rm = TRUE),
+                   # min_p = min(p_value, na.rm = TRUE),
+                   max_p = max(p_value, na.rm = TRUE),
+                   num_results = length(estimate)) %>%
+  # tidyr::expand(site, sig) %>%
+  droplevels
+# # A tibble: 1 × 4
+# grouping    max_padj_bh        max_p num_results
+# <chr>             <dbl>        <dbl>       <int>
+#   1 LB_seagrass   0.0000117 0.0000000489          40
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  # droplevels %>%
+  dplyr::group_by(site, sig) %>%
+  # dplyr::group_by(site) %>%
+  dplyr::summarise(min_padj_bh = min(padj_bh, na.rm = TRUE),
+                   max_padj_bh = max(padj_bh, na.rm = TRUE),
+                   min_p = min(p_value, na.rm = TRUE),
+                   max_p = max(p_value, na.rm = TRUE),
+                   num_results = length(estimate)) %>%
+  # tidyr::expand(site, sig) %>%
+  droplevels
+# # A tibble: 11 × 7
+# # Groups:   site [3]
+# site        sig      min_padj_bh max_padj_bh         min_p     max_p num_results
+# <fct>       <fct>          <dbl>       <dbl>         <dbl>     <dbl>       <int>
+#   1 LB_seagrass sig_q05  0.00499         0.0121  0.0000280     0.000197         2938
+# 2 LB_seagrass sig_q025 0.000000586     0.00491 0.00000000241 0.0000270         822
+# 3 LB_seagrass maybe    0.0123          0.0283  0.000203      0.00126          9042
+# 4 Yawzi       sig_q05  0.0107          0.0193  0.000161      0.000419          673
+# 5 Yawzi       sig_q025 0.00570         0.0105  0.0000522     0.000156         2056
+# 6 Yawzi       maybe    0.0194          0.0339  0.000429      0.00173          8016
+# 7 Yawzi       sig_q01  0.00277         0.00567 0.0000137     0.0000506        1066
+# 8 Tektite     sig_q05  0.0376          0.0632  0.00205       0.00416          1926
+# 9 Tektite     sig_q025 0.0250          0.0369  0.00102       0.00201          2229
+# 10 Tektite     maybe    0.0632          0.100   0.00421       0.00962          5507
+# 11 Tektite     sig_q01  0.00137         0.0248  0.00000620    0.00100           893
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.8) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  # droplevels %>%
+  dplyr::group_by(site, sig) %>%
+  dplyr::summarise(min_padj_bh = min(padj_bh, na.rm = TRUE),
+                   max_padj_bh = max(padj_bh, na.rm = TRUE),
+                   min_p = min(p_value, na.rm = TRUE),
+                   max_p = max(p_value, na.rm = TRUE),
+                   num_results = length(estimate)) %>%
+  # tidyr::expand(site, sig) %>%
+  droplevels
+# # A tibble: 4 × 7
+# # Groups:   site [2]
+# site        sig      min_padj_bh max_padj_bh         min_p      max_p num_results
+# <fct>       <fct>          <dbl>       <dbl>         <dbl>      <dbl>       <int>
+#   1 LB_seagrass sig_q05  0.0104          0.0121  0.000153      0.000195           146
+# 2 LB_seagrass sig_q025 0.000000586     0.00100 0.00000000241 0.00000452         249
+# 3 LB_seagrass maybe    0.0127          0.0163  0.000219      0.000307           624
+# 4 Tektite     maybe    0.0659          0.0659  0.00480       0.00480            437
+
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.7) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  # tidyr::drop_na(padj_01) %>%
+  # droplevels %>%
+  dplyr::group_by(site, sig) %>%
+  dplyr::summarise(min_padj_bh = min(padj_bh, na.rm = TRUE),
+                   max_padj_bh = max(padj_bh, na.rm = TRUE),
+                   min_p = min(p_value, na.rm = TRUE),
+                   max_p = max(p_value, na.rm = TRUE),
+                   num_results = length(estimate)) %>%
+  # tidyr::expand(site, sig) %>%
+  droplevels
+# # A tibble: 8 × 7
+# # Groups:   site [3]
+# site        sig      min_padj_bh max_padj_bh         min_p     max_p num_results
+# <fct>       <fct>          <dbl>       <dbl>         <dbl>     <dbl>       <int>
+#   1 LB_seagrass sig_q05  0.00499         0.0121  0.0000280     0.000197         2938
+# 2 LB_seagrass sig_q025 0.000000586     0.00491 0.00000000241 0.0000270         822
+# 3 LB_seagrass maybe    0.0126          0.0271  0.000209      0.00118          2850
+# 4 Yawzi       sig_q025 0.00570         0.00973 0.0000522     0.000140         2018
+# 5 Yawzi       sig_q01  0.00277         0.00567 0.0000137     0.0000506        1066
+# 6 Tektite     sig_q025 0.0251          0.0276  0.00104       0.00120           305
+# 7 Tektite     maybe    0.0659          0.0979  0.00480       0.00922          1191
+# 8 Tektite     sig_q01  0.00137         0.0247  0.00000620    0.000987          234
+
+
+#for relative abundance data
+# Min BH-adj p-value passing FDR 1%:
+# rho >= 0.5 0.8
+#Lameshur 0.0503  0.209
+#Tektite  0.0540  0.0906
+#Yawzi  0.0887  0.314
+
+
+
+#for rCLR data:
+# Min BH-adj p-value  (maybe):
+# rho >= 0.5  0.8
+#Lameshur 0.0123  0.0127
+#Tektite   0.0632 0.0659 
+#Yawzi  0.0194  NA 
+
+# Max BH-adj p-value (maybe):
+# rho >= 0.5  0.8
+#Lameshur 0.0283  0.0163
+#Tektite   0.100  0.0659
+#Yawzi  0.0339  NA
+
+# Max p-value passing FDR 1% (sig_q01):
+# rho >= 0.5  0.7  0.8
+#Lameshur NA  NA
+#Tektite  0.00100 0.000987
+#Yawzi  0.0000506 0.0000506
+
+
+
+rho.rclr.filtered.df <- spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  # dplyr::filter(grepl("sig_q01|maybe", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  droplevels %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::select(abs_estimate) %>%
+        unlist %>% as.matrix(.) %>%
+        quantile(., probs = c(0, 0.5, 1), na.rm = TRUE, names = FALSE, type = 7) %>%
+        setNames(., c("min", "median", "max"))) %>%
+  imap(., ~.x %>%
+         t() %>%
+         tibble::as_tibble(.) %>%
+         dplyr::mutate(site = .y)) %>%
+  dplyr::bind_rows(.)
+
+rho.rclr.filtered.df
+# # A tibble: 3 × 4
+# min median   max site       
+# <dbl>  <dbl> <dbl> <chr>      
+#   1 0.630  0.707 0.907 LB_seagrass
+# 2 0.581  0.676 0.783 Tektite    
+# 3 0.605  0.650 0.764 Yawzi 
+
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::reframe(quantile(abs_estimate, probs = seq(0.8, 1, 0.05), na.rm = TRUE, names = FALSE, type = 7))
+# # A tibble: 15 × 2
+# site        `quantile(...)`
+# <chr>                 <dbl>
+#   1 LB_seagrass           0.674
+# 2 LB_seagrass           0.698
+# 3 LB_seagrass           0.728
+# 4 LB_seagrass           0.769
+# 5 LB_seagrass           0.943
+# 6 Tektite               0.684
+# 7 Tektite               0.715
+# 8 Tektite               0.747
+# 9 Tektite               0.806
+# 10 Tektite               0.986
+# 11 Yawzi                 0.640
+# 12 Yawzi                 0.715
+# 13 Yawzi                 0.828
+# 14 Yawzi                 0.876
+# 15 Yawzi                 0.975
+        
+rho.filtered.df <- spearman.test.site.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  droplevels %>%
+  split(., f = .$grouping) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::select(abs_estimate) %>%
+        unlist %>% as.matrix(.) %>%
+        quantile(., probs = c(0, 0.5, 1), na.rm = TRUE, names = FALSE, type = 7) %>%
+        setNames(., c("min", "median", "max"))) %>%
+  imap(., ~.x %>%
+         t() %>%
+         tibble::as_tibble(.) %>%
+         dplyr::mutate(site = .y)) %>%
+  dplyr::bind_rows(.)
+# # A tibble: 3 × 4
+# min median   max site       
+# <dbl>  <dbl> <dbl> <chr>      
+#   1 0.524  0.593 0.943 LB_seagrass
+# 2 0.500  0.578 0.986 Tektite    
+# 3 0.500  0.549 0.975 Yawzi  
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::left_join(., rho.rclr.filtered.df) %>%
+  dplyr::mutate(quantile = dplyr::case_when(abs_estimate <= median ~ "Q1",
+                                            (median < abs_estimate) & (abs_estimate <= max) ~ "Q2",
+                                            .default = NA)) %>%
+  dplyr::group_by(site, quantile) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 6 × 3
+# # Groups:   site [3]
+# site        quantile num_results
+# <chr>       <chr>          <int>
+#   1 LB_seagrass Q1              6412
+# 2 LB_seagrass Q2              6390
+# 3 Tektite     Q1              2071
+# 4 Tektite     Q2              2054
+# 5 Yawzi       Q1              6152
+# 6 Yawzi       Q2              5659
+
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(filtered_estimate) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::left_join(., rho.filtered.df) %>%
+  dplyr::mutate(quantile = dplyr::case_when(abs_estimate <= median ~ "Q1",
+                                            (median < abs_estimate) & (abs_estimate <= max) ~ "Q2",
+                                            .default = NA)) %>%
+  dplyr::group_by(site, quantile) %>%
+  dplyr::summarise(num_results = length(filtered_estimate))
+# # A tibble: 6 × 3
+# # Groups:   site [3]
+# site        quantile num_results
+# <chr>       <chr>          <int>
+#   1 LB_seagrass Q1               490
+# 2 LB_seagrass Q2               490
+# 3 Tektite     Q1               222
+# 4 Tektite     Q2               220
+# 5 Yawzi       Q1               187
+# 6 Yawzi       Q2               186
+
+
+#Spearman on rlabund : retained 3-13% of correlations when considering abs(rho) > 0.8
+#to get a similar retention of rCLR Spearman, which abs(rho) to use?
+
+spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  # dplyr::filter(abs(estimate) >= 0.75) %>%
+  # tidyr::drop_na(padj_bh_05) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  droplevels %>%
+  dplyr::group_by(site) %>%
+  dplyr::reframe(quantile(abs_estimate, probs = seq(0.8, 1, 0.05), na.rm = TRUE, names = FALSE, type = 7))
+# # A tibble: 15 × 2
+# site        `quantile(...)`
+# <fct>                 <dbl>
+#   1 LB_seagrass           0.789
+# 2 LB_seagrass           0.793
+# 3 LB_seagrass           0.8  
+# 4 LB_seagrass           0.811
+# 5 LB_seagrass           0.907
+# 6 Yawzi                 0.715
+# 7 Yawzi                 0.716
+# 8 Yawzi                 0.728
+# 9 Yawzi                 0.735
+# 10 Yawzi                 0.764
+# 11 Tektite               0.695
+# 12 Tektite               0.699
+# 13 Tektite               0.705
+# 14 Tektite               0.713
+# 15 Tektite               0.783
+
+#using the same rho pecentiles as for relative abundance:
+# Lameshur: 95th: 0.811
+# Tektite: 90th: 0.705
+# Yawzi: 85th: 0.715
+
+#let's make sure we aren't missing results that are biased positive or negative by binning all rho into abs(rho)
+#in rCLR data, the median rho of negative correlations are -0.762 (L), -0.643 (Y), -0.618 (T)
+#median rho for positive correlations are 0.678 (L), 0.658 (Y), 0.686 (T)
+temp_df1 <- spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  tidyr::drop_na(padj_bh_05) %>%
+  dplyr::select(asv_id, simpleName, site, estimate) %>%
+  tidyr::drop_na(estimate) %>%
+  dplyr::mutate(directionality = dplyr::case_when((estimate < 0) ~ "neg",
+                                                  (estimate > 0) ~ "pos",
+                                                  .default = NA) ) %>%
+  droplevels
+temp_df1 %>%
+  dplyr::group_by(site, directionality) %>%
+  dplyr::reframe(quantile(estimate, probs = c(0.5), na.rm = TRUE, names = FALSE, type = 7))
+# # A tibble: 6 × 3
+# site        directionality `quantile(...)`
+# <fct>       <chr>                    <dbl>
+#   1 LB_seagrass neg                     -0.762
+# 2 LB_seagrass pos                      0.678
+# 3 Yawzi       neg                     -0.643
+# 4 Yawzi       pos                      0.658
+# 5 Tektite     neg                     -0.618
+# 6 Tektite     pos                      0.686
+
+#histogram
+temp_g <- (ggplot(data =temp_df1,
+       aes(x = estimate, fill = site))
+  + theme_bw()
+  + geom_histogram(color = "black", 
+                   breaks = seq(-1, 1, 0.1),
+                   # breaks = seq(-0.95, 0.95, 0.05),
+                   # breaks = seq(-0.95, 0.95, 0.1),
+                   pad = FALSE, center = 0.25,
+                   # closed = "right",
+                   # binwidth = 0.025,
+                   closed = "left",
+                   show.legend = FALSE)
+  + facet_grid(rows = vars(site), scales = "free",
+               labeller = global_labeller, drop = TRUE,
+               cols = NULL)
+  + scale_y_continuous(name= "Number of significant correlations",  
+                       transform = "log10")
+  # + scale_x_binned(name = paste0("Spearman correlation coefficient ", "\u03c1"))
+  + scale_x_continuous(name = paste0("Spearman correlation coefficient ", "\u03c1"),
+                       breaks = seq(-0.9, 0.9, 0.1),
+                       # breaks = seq(-1, 1, 0.1),
+                       limits = c(-0.95, 0.95))
+  + ggtitle("Significant correlations obtained with rCLR transformed microbiome data")
+)
+print(temp_g)
+ggsave(paste0(projectpath, "/", "spearman_rclr_sig_corr_hist-", Sys.Date(), ".png"),
+       temp_g,
+       width = 8, height = 6, units = "in")
+
+#in relabund data, the median rho of negative correlations are -0.586 (L), -0.548 (Y), -0.571 (T)
+#median rho for positive correlations are 0.597 (L), 0.555 (Y), 0.590 (T)
+temp_df2 <- spearman.test.site.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  tidyr::drop_na(p_value) %>%
+  dplyr::select(asv_id, simpleName, site, estimate) %>%
+  tidyr::drop_na(estimate) %>%
+  dplyr::mutate(directionality = dplyr::case_when((estimate < 0) ~ "neg",
+                                                  (estimate > 0) ~ "pos",
+                                                  .default = NA) ) %>%
+  droplevels
+
+temp_df2 %>%
+  dplyr::group_by(site, directionality) %>%
+  dplyr::reframe(quantile(estimate, probs = c(0.5), na.rm = TRUE, names = FALSE, type = 7))
+# # A tibble: 6 × 3
+# site        directionality `quantile(...)`
+# <chr>       <chr>                    <dbl>
+#   1 LB_seagrass neg                     -0.586
+# 2 LB_seagrass pos                      0.597
+# 3 Tektite     neg                     -0.571
+# 4 Tektite     pos                      0.590
+# 5 Yawzi       neg                     -0.548
+# 6 Yawzi       pos                      0.555
+
+#histogram
+temp_g2 <- (ggplot(data =temp_df2,
+                  aes(x = estimate, fill = site))
+           + theme_bw()
+           + geom_histogram(color = "black", 
+                            breaks = seq(-1, 1, 0.1),
+                            # breaks = seq(-0.95, 0.95, 0.05),
+                            # breaks = seq(-0.95, 0.95, 0.1),
+                            pad = FALSE, center = 0.25,
+                            # closed = "right",
+                            # binwidth = 0.025,
+                            closed = "left",
+                            show.legend = FALSE)
+           + facet_grid(rows = vars(site), scales = "free",
+                        labeller = global_labeller, drop = TRUE,
+                        cols = NULL)
+           + scale_y_continuous(name= "Number of significant correlations",  
+                                transform = "log10")
+           # + scale_x_binned(name = paste0("Spearman correlation coefficient ", "\u03c1"))
+           + scale_x_continuous(name = paste0("Spearman correlation coefficient ", "\u03c1"),
+                                breaks = seq(-0.9, 0.9, 0.1),
+                                # breaks = seq(-1, 1, 0.1),
+                                limits = c(-0.95, 0.95))
+           + ggtitle("Significant correlations obtained with relative abundance microbiome data")
+)
+print(temp_g2)
+ggsave(paste0(projectpath, "/", "spearman_relabund_sig_corr_hist-", Sys.Date(), ".png"),
+       temp_g2,
+       width = 8, height = 6, units = "in")
+
+
+
+
+spearman.test.site.rclr.rho_quantiled.tbl <- spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+   dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  droplevels %>%
+  split(., f = .$site) %>%
+  map(., ~.x %>%
+        droplevels %>%
+        dplyr::summarise(q_85 = quantile(abs_estimate, probs = c(0.85), na.rm = TRUE, names = FALSE, type = 7),
+                         q_90 = quantile(abs_estimate, probs = c(0.9), na.rm = TRUE, names = FALSE, type = 7),
+                         q_95 = quantile(abs_estimate, probs = c(0.95), na.rm = TRUE, names = FALSE, type = 7),
+                         q_99 = quantile(abs_estimate, probs = c(0.99), na.rm = TRUE, names = FALSE, type = 7)) %>%
+        droplevels) %>%
+  imap(., ~.x %>%
+         dplyr::mutate(site = .y)) %>%
+  dplyr::bind_rows(.) %>%
+  # tidyr::pivot_longer(., cols = !c("site"),
+  #                     names_to = "quantile",
+  #                     values_to = "value") %>%
+  # dplyr::mutate(rho_cutoff = dplyr::case_when(grepl("LB", site) ~ "q_95",
+  #                                             # grepl("Yawzi", site) ~ "q_85", #2141 results
+  #                                             # grepl("Yawzi", site) ~ "q_90", #1391
+  #                                             grepl("Yawzi", site) ~ "q_95",  #763 results
+  #                                             grepl("Tektite", site) ~ "q_90",
+  #                                             .default = NA)) %>%
+  # dplyr::filter(quantile == rho_cutoff) %>%
+  # dplyr::select(site, rho_cutoff, value) %>%
+  droplevels
+temp_df2 <- spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::select(asv_id, simpleName, site, padj_bh_05, sig,  contains("estimate")) %>%
+  dplyr::left_join(., spearman.test.site.rclr.rho_quantiled.tbl %>%
+  #                    dplyr::mutate(rho_cutoff = dplyr::case_when(grepl("LB", site) ~ "q_95",
+  #                                                                # grepl("Yawzi", site) ~ "q_85", #2141 results
+  #                                                                # grepl("Yawzi", site) ~ "q_90", #1391
+  #                                                                grepl("Yawzi", site) ~ "q_95",  #763 results
+  #                                                                grepl("Tektite", site) ~ "q_90",
+  #                                                                .default = NA)) %>%
+  #                    dplyr::filter(quantile == rho_cutoff) %>%
+  #                    dplyr::select(site, rho_cutoff, value) %>%
+                     droplevels,
+  relationship = "many-to-many", multiple = "all") %>%
+  # dplyr::group_by(site) %>%
+  # dplyr::mutate(filtered_rho = dplyr::case_when(abs_estimate >= value ~ abs_estimate,
+  #                                               .default = NA)) %>%
+  # tidyr::drop_na(filtered_rho) %>%
+  # dplyr::group_by(site) %>%
+  # dplyr::summarise(num_results = length(filtered_rho)) %>%
+  droplevels
+temp_df2 %>%
+  dplyr::rowwise(.) %>%
+  dplyr::mutate(q_85 = dplyr::case_when(abs_estimate >= q_85 ~ 1,
+                                                .default = NA),
+                q_90 = dplyr::case_when(abs_estimate >= q_90 ~ 1,
+                                        .default = NA),
+                q_95 = dplyr::case_when(abs_estimate >= q_95 ~ 1,
+                                        .default = NA),
+                q_99 = dplyr::case_when(abs_estimate >= q_99 ~ 1,
+                                        .default = NA)) %>%
+  tidyr::drop_na(q_85) %>%
+  dplyr::group_by(site) %>%
+  dplyr::reframe(num_q_85 = sum(q_85, na.rm = TRUE),
+                 num_q_90 = sum(q_90, na.rm = TRUE),
+                 num_q_95 = sum(q_95, na.rm = TRUE),
+                 num_q_99 = sum(q_99, na.rm = TRUE)) %>%
+  droplevels
+# # A tibble: 3 × 5
+# site        num_q_85 num_q_90 num_q_95 num_q_99
+# <chr>          <dbl>    <dbl>    <dbl>    <dbl>
+#   1 LB_seagrass     2198     1722      648      130
+# 2 Tektite          634      432      220      145
+# 3 Yawzi           2141     1391      763      763
+
+
+
 
 
 # Repeat Spearman with taxglom --------------------------------------------
@@ -4949,6 +5862,48 @@ spearman.test.rclr.rho.dist.df %>%
   # dplyr::distinct(simpleName) %>% # [1] 10
   nrow(.)
 
+#use the 95th quantile of abs(rho) to filter rCLR ASV correlations
+#keep num_q_95 of rCLR data
+
+keep_quant <- "q_95"
+quant_var <- rlang::parse_expr(keep_quant)
+spearman.test.site.rclr.rho_quantiled.df <- spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::select(asv_id, simpleName, site, padj_bh_05, sig,  contains("estimate")) %>%
+  dplyr::left_join(., spearman.test.site.rclr.rho_quantiled.tbl %>%
+                     dplyr::select(site, all_of(keep_quant)) %>%
+                     droplevels,
+                   by = join_by(site),
+                   relationship = "many-to-many", multiple = "all") %>%
+  dplyr::group_by(site) %>%
+  dplyr::mutate(filtered_rho = dplyr::case_when(abs_estimate >= {{ quant_var }} ~ 1,
+  # dplyr::mutate(filtered_rho = dplyr::case_when(abs_estimate >= deparse(keep_quant) ~ 1,
+                                                .default = NA)) %>%
+  tidyr::drop_na(filtered_rho) %>%
+  # dplyr::group_by(site) %>% dplyr::summarise(num_results = length(estimate)) %>%
+  droplevels
+
+spearman.test.site.rclr.rho_quantiled.df %>%
+  dplyr::group_by(site) %>% dplyr::summarise(num_results = length(estimate)) %>%
+  droplevels
+#for 95th:
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass         648
+# 2 Tektite             220
+# 3 Yawzi               763
+
+#for 85th:
+# # A tibble: 3 × 2
+# site        num_results
+# <chr>             <int>
+#   1 LB_seagrass        2198
+# 2 Tektite             634
+# 3 Yawzi              2141
+
 spearman.test.site.filtered.df %>%
   dplyr::filter(!(sig %in% c("maybe"))) %>%
   dplyr::ungroup(.) %>%
@@ -4960,16 +5915,28 @@ spearman.test.site.filtered.df %>%
   dplyr::distinct(simpleName) %>% # [1] 10
   nrow(.)
 
+
 #instead of filtering by strength of correlation, what about looking at taxonomy of ASVs with strong correlations in rCLR-Spearman analysis?
 #a majority of correlations are with Bacteria;Pseudomonadota, Bacteria;Bacteroidota, and Bacteria;Verrucomicrobia
-#filter by abs(rho) >= 0.8
-spearman.test.rclr.asv.taxonomy.df <- spearman.test.rclr.rho.dist.df %>%
-  dplyr::filter(!(site == "all") & !(sampling_time == "all")) %>%
-  dplyr::ungroup(.) %>%
-  dplyr::mutate(abs_estimate = abs(estimate)) %>%
-  dplyr::filter(abs_estimate >= 0.8) %>% 
-  droplevels %>%
-  # dplyr::summarize(obs_asv = length(estimate), .by = "asv_id") %>%
+# #filter by abs(rho) >= 0.8
+# spearman.test.rclr.asv.taxonomy.df <- spearman.test.rclr.rho.dist.df %>%
+#   dplyr::filter(!(site == "all") & !(sampling_time == "all")) %>%
+#   dplyr::ungroup(.) %>%
+#   dplyr::mutate(abs_estimate = abs(estimate)) %>%
+#   dplyr::filter(abs_estimate >= 0.8) %>% 
+#   droplevels %>%
+#   # dplyr::summarize(obs_asv = length(estimate), .by = "asv_id") %>%
+#   dplyr::left_join(., usvi_prok_filled.taxa.df %>%
+#                      dplyr::select(all_of(keep_tax), "asv_id") %>%
+#                      droplevels,
+#                    by = join_by(asv_id)) %>%
+#   # otu_to_taxonomy(., usvi_prok_asvs.taxa, level = "Genus") %>%
+#   # dplyr::filter(obs_asv > 0) %>%
+#   dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy_string")) %>%
+#   dplyr::mutate(taxonomy_string = stringr::str_remove_all(taxonomy_string, "^ASV_(.....): ")) %>%
+#   droplevels
+
+spearman.test.rclr.asv.taxonomy.df <- spearman.test.site.rclr.rho_quantiled.df %>%
   dplyr::left_join(., usvi_prok_filled.taxa.df %>%
                      dplyr::select(all_of(keep_tax), "asv_id") %>%
                      droplevels,
@@ -5029,29 +5996,122 @@ spearman.test.rclr.asv.taxonomy.df <- spearman.test.rclr.rho.dist.df %>%
 #now examine the number of genus-metabolite strong correlations
 #too many Archaea are represented here, when before we had no correlations with Archaea
 # 
-# spearman.test.rclr.asv.taxonomy.df %>%
-#   dplyr::group_by(taxonomy_string, simpleName) %>%
-#   dplyr::summarise(num_corr = length(estimate)) %>%
-#   dplyr::arrange(desc(num_corr))
-# # # A tibble: 4,812 × 3
-# # # Groups:   taxonomy_string [790]
-# # taxonomy_string                     simpleName              num_corr
-# # <chr>                               <fct>                      <int>
-# #   1 Nanoarchaeia; Woesearchaeales       sn-glycerol 3-phosphate      686
-# # 2 Nanoarchaeia; Woesearchaeales       arginine                     414
-# # 3 Bacteria                            sn-glycerol 3-phosphate      379
-# # 4 Nanoarchaeia; Woesearchaeales       homoserine betaine           277
-# # 5 Proteobacteria; Gammaproteobacteria sn-glycerol 3-phosphate      265
-# # 6 Proteobacteria; Alphaproteobacteria sn-glycerol 3-phosphate      221
-# # 7 Bacteria                            arginine                     217
-# # 8 Nanoarchaeia; Woesearchaeales       5'UMP                        210
-# #  9 Nanoarchaeia; Woesearchaeales       taurine                      210
-# # 10 Bacteria                            homoserine betaine           160
-# # # ℹ 4,802 more rows
+spearman.test.rclr.asv.taxonomy.df %>%
+  dplyr::group_by(taxonomy_string, simpleName) %>%
+  dplyr::summarise(num_corr = length(estimate)) %>%
+  dplyr::arrange(desc(num_corr))
+#for 85th percentile of abs(rho):
+# # A tibble: 1,503 × 3
+# # Groups:   taxonomy_string [606]
+# taxonomy_string                     simpleName         num_corr
+# <chr>                               <fct>                 <int>
+#   1 Nanoarchaeia; Woesearchaeales       homoserine betaine      202
+# 2 Nanoarchaeia; Woesearchaeales       sarcosine               182
+# 3 Nanoarchaeia; Woesearchaeales       arginine                129
+# 4 Bacteria                            homoserine betaine      113
+# 5 Proteobacteria; Gammaproteobacteria homoserine betaine       94
+# 6 Nanoarchaeia; Woesearchaeales       putrescine 2             93
+# 7 Proteobacteria; Alphaproteobacteria homoserine betaine       88
+# 8 Bacteria                            sarcosine                77
+# 9 Bacteria                            arginine                 55
+# 10 Proteobacteria; Gammaproteobacteria sarcosine                55
+# # ℹ 1,493 more rows
+
+#for 95th:
+# # A tibble: 743 × 3
+# # Groups:   taxonomy_string [409]
+# taxonomy_string                     simpleName         num_corr
+# <chr>                               <fct>                 <int>
+#   1 Nanoarchaeia; Woesearchaeales       sarcosine               112
+# 2 Bacteria                            sarcosine                50
+# 3 Nanoarchaeia; Woesearchaeales       homoserine betaine       44
+# 4 Proteobacteria; Gammaproteobacteria sarcosine                30
+# 5 Nanoarchaeia; Woesearchaeales       putrescine 2             29
+# 6 Proteobacteria; Gammaproteobacteria homoserine betaine       29
+# 7 Proteobacteria; Alphaproteobacteria sarcosine                21
+# 8 Proteobacteria; Alphaproteobacteria homoserine betaine       19
+# 9 Bacteria                            homoserine betaine       18
+# 10 Nanoarchaeia; Woesearchaeales       pantothenic acid         16
+# # ℹ 733 more rows
+# # ℹ Use `print(n = ...)` to see more rows
+
+length(grep("archae", unique(spearman.test.rclr.asv.taxonomy.df$taxonomy_string), ignore.case = TRUE))
+# 10
+(grep("archae", unique(spearman.test.rclr.asv.taxonomy.df$taxonomy_string), ignore.case = TRUE, value = TRUE))
+# [1] "Nanoarchaeia; Woesearchaeales"                       
+# [2] "Nanoarchaeia; SCGC AAA286-E23"                       
+# [3] "Nanoarchaeia; SCGC AAA011-D5"                        
+# [4] "Aenigmarchaeia; Aenigmarchaeales"                    
+# [5] "Crenarchaeota; Bathyarchaeia"                        
+# [6] "Nanoarchaeia; AR15"                                  
+# [7] "Aenigmarchaeota; Deep Sea Euryarchaeotic Group(DSEG)"
+# [8] "Nanoarchaeia; GW2011_GWC1_47_15"                     
+# [9] "Archaea"                                             
+# [10] "Micrarchaeia; CG1-02-32-21"  
+
+spearman.test.rclr.asv.taxonomy.df %>%
+  dplyr::ungroup(.) %>%
+  dplyr::filter(grepl("archae", taxonomy_string)) %>%
+  dplyr::select(asv_id, taxonomy_string) %>%
+  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+  nrow(.)
+# droplevels
+# [1] 219
+
+spearman.test.rclr.asv.taxonomy.df %>%
+  dplyr::filter(grepl("archae", taxonomy_string)) %>%
+dplyr::group_by(taxonomy_string, simpleName) %>%
+  dplyr::summarise(num_corr = length(estimate)) %>%
+  dplyr::arrange(desc(num_corr))
+  # dplyr::arrange(desc(num_corr)) %>% dplyr::filter(simpleName == "arginine")
+# # A tibble: 24 × 3
+# # Groups:   taxonomy_string [9]
+# taxonomy_string                  simpleName         num_corr
+# <chr>                            <fct>                 <int>
+#   1 Nanoarchaeia; Woesearchaeales    sarcosine               112
+# 2 Nanoarchaeia; Woesearchaeales    homoserine betaine       44
+# 3 Nanoarchaeia; Woesearchaeales    putrescine 2             29
+# 4 Nanoarchaeia; Woesearchaeales    pantothenic acid         16
+# 5 Nanoarchaeia; SCGC AAA011-D5     sarcosine                13
+# 6 Nanoarchaeia; SCGC AAA011-D5     homoserine betaine        8
+# 7 Nanoarchaeia; GW2011_GWC1_47_15  sarcosine                 6
+# 8 Nanoarchaeia; SCGC AAA011-D5     putrescine 2              4
+# 9 Aenigmarchaeia; Aenigmarchaeales sarcosine                 3
+# 10 Crenarchaeota; Bathyarchaeia     sarcosine                 3
+# # ℹ 14 more rows
 
 #what did it look like before??
+
+spearman.test.site.asv.taxonomy.df <- spearman.test.site.filtered.df %>%
+  # dplyr::filter(!(sig %in% c("maybe"))) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::ungroup(.) %>%
+  # dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  # dplyr::filter(abs_estimate >= 0.8) %>%
+  dplyr::left_join(., usvi_prok_filled.taxa.df %>%
+                     dplyr::select(all_of(keep_tax), "asv_id") %>%
+                     droplevels,
+                   by = join_by(asv_id)) %>%
+  dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy_string")) %>%
+  dplyr::mutate(taxonomy_string = stringr::str_remove_all(taxonomy_string, "^ASV_(.....): ")) %>%
+  droplevels  
+
+length(grep("archae", unique(spearman.test.site.asv.taxonomy.df$taxonomy_string), ignore.case = TRUE))
+# 1
+(grep("archae", unique(spearman.test.site.asv.taxonomy.df$taxonomy_string), ignore.case = TRUE, value = TRUE))
+# [1] "Nanoarchaeia; Woesearchaeales"
+
+spearman.test.site.asv.taxonomy.df %>%
+  dplyr::ungroup(.) %>%
+  dplyr::filter(grepl("archae", taxonomy_string)) %>%
+  dplyr::select(asv_id, taxonomy_string) %>%
+  dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+  nrow(.)
+# [1] 4
+
 spearman.test.relabund.asv.taxonomy.df <- spearman.test.site.filtered.df %>%
-  dplyr::filter(!(sig %in% c("maybe"))) %>%
+  # dplyr::filter(!(sig %in% c("maybe"))) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
   dplyr::ungroup(.) %>%
   dplyr::mutate(abs_estimate = abs(estimate)) %>%
   dplyr::filter(abs_estimate >= 0.8) %>%
@@ -5069,19 +6129,150 @@ spearman.test.relabund.asv.taxonomy.df %>%
   dplyr::group_by(taxonomy_string, simpleName) %>%
   dplyr::summarise(num_corr = length(estimate)) %>%
   dplyr::arrange(desc(num_corr))
-# # A tibble: 183 × 3
-# # Groups:   taxonomy_string [93]
-# taxonomy_string                         simpleName         num_corr
-# <chr>                                   <chr>                 <int>
-#   1 Alphaproteobacteria; SAR116 clade       GABA                      6
-# 2 Alphaproteobacteria; SAR11 Clade II     3'AMP                     5
-#  3 Bacteroidia; Cryomorphaceae             3'AMP                     5
-# 4 Bacteroidia; NS5 marine group           3'AMP                     5
-#  5 Bacteria; Marinimicrobia (SAR406 clade) GABA                      4
-#  6 Bdellovibrionia; OM27 clade             5'AMP                     4
-# 7 Gammaproteobacteria; Vibrio             GABA                      4
-# 8 Alphaproteobacteria; Rhodobacteraceae   ciliatine                 3
+# # A tibble: 86 × 3
+# # Groups:   taxonomy_string [54]
+# taxonomy_string                        simpleName         num_corr
+# <chr>                                  <chr>                 <int>
+#   1 Bdellovibrionia; OM27 clade            5'AMP                     4
+#  2 Alphaproteobacteria; Rhodobacteraceae  ciliatine                 3
+#  3 Bacteroidia; NS9 marine group          homoserine betaine        3
+#  4 Acidimicrobia; Candidatus Actinomarina 5'AMP                     2
+# 5 Alphaproteobacteria; SAR11 Clade II    5'AMP                     2
+#  6 Bacteroidia; Cryomorphaceae            guanosine                 2
+#  7 Bacteroidia; Flavobacteriaceae         ciliatine                 2
+#  8 Bacteroidia; NS5 marine group          5'AMP                     2
+# 9 Bacteroidia; NS5 marine group          guanosine                 2
+# 10 Cyanobacteria; Synechococcus CC9902    methionine                2
+# # ℹ 76 more rows
 
+length(unique(spearman.test.relabund.asv.taxonomy.df$taxonomy_string))
+# [1] 54
+length(unique(spearman.test.relabund.asv.taxonomy.df$asv_id))
+# [1] 88
+length(unique(spearman.test.relabund.asv.taxonomy.df$simpleName))
+# [1] 14
+
+spearman.test.site.filtered.df %>%
+  # dplyr::filter(!(sig %in% c("maybe"))) %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::filter(abs_estimate >= 0.5) %>%
+  dplyr::distinct(simpleName, .keep_all = TRUE) %>%
+  nrow(.)
+# [1] 42
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::filter(abs_estimate >= 0.5) %>%
+  dplyr::select(asv_id, simpleName, site, estimate) %>%
+  dplyr::filter(grepl("betaine", simpleName)) %>%
+  dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+  dplyr::count(simpleName, name = "num_correlations", sort = TRUE) %>%   # Count occurrences
+  # nrow(.)
+# [1] 96
+  droplevels %>% print(., n = 50)
+# # A tibble: 42 × 2
+# simpleName              num_correlations
+# <chr>                              <int>
+#   1 pantothenic acid                     216
+# 2 ciliatine                            141
+# 3 cysteate                             100
+# 4 homoserine betaine                    96
+# 5 kynurenine                            81
+# 6 GABA                                  80
+# 7 glycine                               75
+# 8 arginine                              63
+# 9 taurine                               63
+# 10 putrescine 2                          51
+# 11 sn-glycerol 3-phosphate               45
+# 12 cysteine 2                            41
+# 13 isethionate                           39
+# 14 phenylalanine                         37
+# 15 asparagine                            31
+# 16 tryptophan                            31
+# 17 uridine                               30
+# 18 glutathione 2                         29
+# 19 guanosine                             28
+# 20 lysine 2                              28
+# 21 5'AMP                                 27
+# 22 alanine                               27
+# 23 5'UMP                                 26
+# 24 threonine                             25
+# 25 serine                                23
+# 26 histidine                             22
+# 27 valine                                21
+# 28 aspartate                             20
+# 29 spermidine 3                          20
+# 30 sarcosine                             19
+# 31 leucine                               18
+# 32 DHPS                                  17
+# 33 ornithine 2                           17
+# 34 proline                               17
+# 35 3'AMP                                 15
+# 36 isoleucine                            15
+# 37 malic acid                            15
+# 38 glutamic acid                         13
+# 39 citrulline                            12
+# 40 methionine                            11
+# 41 glutamine                             10
+# 42 tryptamine                             9
+
+spearman.test.site.filtered.df %>%
+  dplyr::filter(grepl("sig_q01|vsig", sig)) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::filter(abs_estimate >= 0.5) %>%
+  dplyr::select(asv_id, simpleName, site, estimate) %>%
+  dplyr::left_join(., tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy_string")) %>%
+  dplyr::mutate(taxonomy_string = stringr::str_remove_all(taxonomy_string, "^ASV_(.....): ")) %>%
+dplyr::filter(grepl("Cyanobacteria", taxonomy_string))   %>%
+  # dplyr::filter(grepl("betaine", simpleName)) %>%
+  dplyr::distinct(asv_id, simpleName, .keep_all = TRUE) %>%
+  # dplyr::count(asv_id,taxonomy_string, name = "num_correlations", sort = TRUE) %>%   # Count occurrences
+  dplyr::count(taxonomy_string, name = "num_correlations", sort = TRUE) %>%   # Count occurrences
+  # nrow(.)
+  # [1] 96
+  droplevels %>% print(., n = 50)
+# Joining with `by = join_by(asv_id)`
+# # A tibble: 22 × 2
+# simpleName         num_correlations
+# <chr>                         <int>
+#   1 glutathione 2                     8
+# 2 isethionate                       6
+# 3 3'AMP                             5
+#  4 uridine                           4
+#  5 homoserine betaine                3
+#  6 GABA                              2
+#  7 asparagine                        2
+#  8 cysteine 2                        2
+#  9 methionine                        2
+# 10 pantothenic acid                  2
+# 11 taurine                           2
+
+#which cyanobacteria had correlations?
+#15 cyanobacterial ASVs had 49 correlations, with 22 different exometabolites
+# Joining with `by = join_by(asv_id)`
+# # A tibble: 15 × 3
+# asv_id    taxonomy_string                        num_correlations
+# <chr>     <chr>                                             <int>
+#   1 ASV_00030 Cyanobacteria; Synechococcus CC9902                   8
+# 2 ASV_00099 Cyanobacteria; Synechococcus CC9902                   7
+# 3 ASV_00066 Cyanobacteria; Cyanobium PCC-6307                     5
+# 4 ASV_00022 Cyanobacteria; Synechococcus CC9902                   4
+# 5 ASV_00115 Cyanobacteria; Synechococcus CC9902                   4
+# 6 ASV_00151 Cyanobacteria; Cyanobium PCC-6307                     4
+# 7 ASV_00445 Cyanobacteria; Oscillatoriaceae                       4
+# 8 ASV_00094 Cyanobacteria; Cyanobiaceae                           3
+# 9 ASV_00001 Cyanobacteria; Synechococcus CC9902                   2
+# 10 ASV_00034 Cyanobacteria; Synechococcus CC9902                   2
+# 11 ASV_00173 Cyanobacteria; Synechococcus CC9902                   2
+# 12 ASV_00007 Cyanobacteria; Prochlorococcus MIT9313                1
+# 13 ASV_00091 Cyanobacteria; Prochlorococcus MIT9313                1
+# 14 ASV_00121 Cyanobacteria; Synechococcus CC9902                   1
+# 15 ASV_02020 Cyanobacteria; Cyanobacteria                          1
 
 #with rCLR transformation,the distribution of rare ASVs is not dissimilar to the abundant ASVs.
 #0.00123 : the 50% of those observations for all ASVs Archaea;Nanoarchaeota;Nanoarchaeia;Woesearchaeales 
@@ -5092,7 +6283,7 @@ spearman.test.relabund.asv.taxonomy.df %>%
 #   
 # temp_df <- usvi_prok_filled.taxa.df %>%
 #   dplyr::select(all_of(keep_tax), "asv_id") %>%
-#   # dplyr::filter(grepl("Woese", Order)) %>% 
+#   # dplyr::filter(grepl("Woese", Order)) %>%
 #   droplevels %>%
 #   dplyr::left_join(., usvi_asv_rclr.tbl %>%
 #                      tibble::as_tibble(rownames = "sample_id") %>%
@@ -5110,26 +6301,78 @@ spearman.test.relabund.asv.taxonomy.df %>%
 # # # A tibble: 20 × 2
 # # Order                    rclr_options
 # # <fct>                           <dbl>
-# #   1 SAR11 clade                 -3.23    
-# # 2 SAR11 clade                 -0.0261  
-# # 3 SAR11 clade                  0.00421 
-# # 4 SAR11 clade                  0.0944  
-# # 5 SAR11 clade                  1.99    
-# # 6 Pseudomonadales             -6.29    
-# # 7 Pseudomonadales             -0.0271  
+# #   1 SAR11 clade                 -3.23
+# # 2 SAR11 clade                 -0.0261
+# # 3 SAR11 clade                  0.00421
+# # 4 SAR11 clade                  0.0944
+# # 5 SAR11 clade                  1.99
+# # 6 Pseudomonadales             -6.29
+# # 7 Pseudomonadales             -0.0271
 # # 8 Pseudomonadales             -0.000162
-# # 9 Pseudomonadales              0.0315  
-# # 10 Pseudomonadales              5.77    
-# # 11 Woesearchaeales             -0.676   
-# # 12 Woesearchaeales             -0.0341  
-# # 13 Woesearchaeales              0.00123 
-# # 14 Woesearchaeales              0.0365  
-# # 15 Woesearchaeales              0.643   
-# # 16 Candidatus Woesebacteria    -0.216   
-# # 17 Candidatus Woesebacteria    -0.0490  
-# # 18 Candidatus Woesebacteria     0.00209 
-# # 19 Candidatus Woesebacteria     0.0753  
-# # 20 Candidatus Woesebacteria     0.169  
+# # 9 Pseudomonadales              0.0315
+# # 10 Pseudomonadales              5.77
+# # 11 Woesearchaeales             -0.676
+# # 12 Woesearchaeales             -0.0341
+# # 13 Woesearchaeales              0.00123
+# # 14 Woesearchaeales              0.0365
+# # 15 Woesearchaeales              0.643
+# # 16 Candidatus Woesebacteria    -0.216
+# # 17 Candidatus Woesebacteria    -0.0490
+# # 18 Candidatus Woesebacteria     0.00209
+# # 19 Candidatus Woesebacteria     0.0753
+# # 20 Candidatus Woesebacteria     0.169
+# temp_df %>%
+#   dplyr::filter(grepl("Woese|SAR11|Pseudomonadales", Order)) %>%
+#   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+#   dplyr::reframe(length(asv_id), .by = c("Order", "Genus")) %>%
+#   dplyr::filter(grepl("Woesearchaeales|SAR11", Order)) %>%
+#   print(., n = 20)
+# # # A tibble: 13 × 3
+# # Order           Genus             `length(asv_id)`
+# # <fct>           <fct>                        <int>
+# #   1 SAR11 clade     Clade Ia                        34
+# # 2 SAR11 clade     Clade II                        44
+# # 3 SAR11 clade     Clade Ib                        24
+# # 4 SAR11 clade     Clade IV                         3
+# # 5 SAR11 clade     Clade III                        8
+# # 6 Woesearchaeales Woesearchaeales               1287
+# # 7 Woesearchaeales SCGC AAA011-D5                 191
+# # 8 SAR11 clade     Clade I                          3
+# # 9 Woesearchaeales GW2011_GWC1_47_15               79
+# # 10 Woesearchaeales SCGC AAA286-E23                 66
+# # 11 Woesearchaeales AR15                             8
+# # 12 Woesearchaeales CG1-02-57-44                     1
+# # 13 SAR11 clade     SAR11 clade                      3
+# 
+# temp_df %>%
+#   dplyr::filter(grepl("SAR11|Pseudomonadales", Order)) %>%
+#   # dplyr::reframe(rclr_options = quantile(rclr_trans, probs = seq(0, 1, 0.25), na.rm = TRUE, names = TRUE), .by = "Order") %>%
+#   dplyr::reframe(rclr_options = quantile(rclr_trans, probs = c(0.5), na.rm = TRUE, names = TRUE), .by = c("Order", "Genus")) %>%
+#   droplevels %>%
+#   print(n = 20)
+# # # A tibble: 69 × 3
+# # Order           Genus            rclr_options
+# # <fct>           <fct>                   <dbl>
+# #   1 SAR11 clade     Clade Ia             0.0140  
+# # 2 Pseudomonadales SAR86 clade          0.0187  
+# # 3 SAR11 clade     Clade II             0.00447 
+# # 4 SAR11 clade     Clade Ib             0.00176 
+# # 5 Pseudomonadales OM60(NOR5) clade     0.000898
+# # 6 Pseudomonadales Pseudomonas         -0.00412 
+# # 7 SAR11 clade     Clade IV             0.146   
+# # 8 Pseudomonadales Acinetobacter       -0.00810 
+# # 9 Pseudomonadales KI89A clade          0.000570
+# # 10 Pseudomonadales Marinobacterium     -0.00892 
+# # 11 Pseudomonadales Pseudomonadales     -0.00344 
+# # 12 Pseudomonadales SAR92 clade          0.000770
+# # 13 SAR11 clade     Clade III            0.00637 
+# # 14 Pseudomonadales OM182 clade         -0.00291 
+# # 15 Pseudomonadales BD1-7 clade         -0.00246 
+# # 16 Pseudomonadales Pseudohongiella      0.00920 
+# # 17 Pseudomonadales Litoricola          -0.00180 
+# # 18 Pseudomonadales Luminiphilus        -0.00249 
+# # 19 Pseudomonadales Alcanivorax         -0.000472
+# # 20 Pseudomonadales Endozoicomonas      -0.00174 
 # 
 # temp_df2 <- usvi_prok_filled.taxa.df %>%
 #   dplyr::select(all_of(keep_tax), "asv_id") %>%
@@ -5142,37 +6385,139 @@ spearman.test.relabund.asv.taxonomy.df %>%
 #                      tibble::as_tibble(rownames = "sample_id") %>%
 #                      tidyr::pivot_longer(., cols = !c("sample_id"),
 #                                          names_to = "asv_id",
-#                                          values_to = "rclr_trans"),
+#                                          values_to = "relabund"),
 #                    by = join_by("asv_id")) %>%
 #   droplevels
-#   
+# 
 # temp_df2 %>%
+#   # dplyr::filter(relabund > 0) %>%
 #   dplyr::filter(grepl("Woese|SAR11|Pseudomonadales", Order)) %>%
-#   dplyr::reframe(rclr_options = quantile(rclr_trans, probs = seq(0, 1, 0.25), na.rm = TRUE, names = TRUE), .by = "Order") %>%
+#   dplyr::reframe(relabund_options = quantile(relabund, probs = seq(0, 1, 0.25), na.rm = TRUE, names = TRUE), .by = "Order") %>%
 #   droplevels
 # # # A tibble: 20 × 2
 # # Order                    rclr_options
 # # <fct>                           <dbl>
-# #   1 SAR11 clade                   0      
-# # 2 SAR11 clade                   0      
-# # 3 SAR11 clade                   0      
-# # 4 SAR11 clade                   0.0519 
-# # 5 SAR11 clade                   9.68   
-# # 6 Pseudomonadales               0      
-# # 7 Pseudomonadales               0      
-# # 8 Pseudomonadales               0      
-# # 9 Pseudomonadales               0      
-# # 10 Pseudomonadales              11.8    
-# # 11 Woesearchaeales               0      
-# # 12 Woesearchaeales               0      
-# # 13 Woesearchaeales               0      
-# # 14 Woesearchaeales               0      
-# # 15 Woesearchaeales               0.0950 
-# # 16 Candidatus Woesebacteria      0      
-# # 17 Candidatus Woesebacteria      0      
-# # 18 Candidatus Woesebacteria      0      
-# # 19 Candidatus Woesebacteria      0      
+# #   1 SAR11 clade                   0
+# # 2 SAR11 clade                   0
+# # 3 SAR11 clade                   0
+# # 4 SAR11 clade                   0.0519
+# # 5 SAR11 clade                   9.68
+# # 6 Pseudomonadales               0
+# # 7 Pseudomonadales               0
+# # 8 Pseudomonadales               0
+# # 9 Pseudomonadales               0
+# # 10 Pseudomonadales              11.8
+# # 11 Woesearchaeales               0
+# # 12 Woesearchaeales               0
+# # 13 Woesearchaeales               0
+# # 14 Woesearchaeales               0
+# # 15 Woesearchaeales               0.0950
+# # 16 Candidatus Woesebacteria      0
+# # 17 Candidatus Woesebacteria      0
+# # 18 Candidatus Woesebacteria      0
+# # 19 Candidatus Woesebacteria      0
 # # 20 Candidatus Woesebacteria      0.00285
+# 
+# #but when you drop zeros:
+# temp_df2 %>%
+#   dplyr::filter(relabund > 0) %>%
+#   dplyr::filter(grepl("Woese|SAR11|Pseudomonadales", Order)) %>%
+#   dplyr::filter(grepl("Woesearchaeales|SAR11", Order)) %>%
+#   dplyr::reframe(relabund_options = quantile(relabund, probs = seq(0.5), na.rm = TRUE, names = TRUE), .by = c("Order", "Genus")) %>%
+#   droplevels
+# # # A tibble: 13 × 3
+# # Order           Genus             relabund_options
+# # <fct>           <fct>                        <dbl>
+# #   1 SAR11 clade     Clade Ia                   9.68   
+# # 2 SAR11 clade     Clade II                   3.26   
+# # 3 SAR11 clade     Clade Ib                   2.23   
+# # 4 SAR11 clade     Clade IV                   0.550  
+# # 5 SAR11 clade     Clade III                  0.245  
+# # 6 Woesearchaeales Woesearchaeales            0.0950 
+# # 7 Woesearchaeales SCGC AAA011-D5             0.0756 
+# # 8 Woesearchaeales GW2011_GWC1_47_15          0.0159 
+# # 9 Woesearchaeales SCGC AAA286-E23            0.0171 
+# # 10 Woesearchaeales AR15                       0.00932
+# # 11 Woesearchaeales CG1-02-57-44               0.00329
+# # 12 SAR11 clade     SAR11 clade                0.00368
+# # 13 SAR11 clade     Clade I                    0.00180
+# 
+# temp_df2 %>%
+#   dplyr::filter(grepl("SAR11|Pseudomonadales", Order)) %>%
+#   dplyr::distinct(asv_id, .keep_all = TRUE) %>%
+#   dplyr::reframe(length(asv_id), .by = c("Order", "Genus"))
+# # # A tibble: 69 × 3
+# # Order           Genus            `length(asv_id)`
+# # <fct>           <fct>                       <int>
+# #   1 SAR11 clade     Clade Ia                       34
+# # 2 Pseudomonadales SAR86 clade                    49
+# # 3 SAR11 clade     Clade II                       44
+# # 4 SAR11 clade     Clade Ib                       24
+# # 5 Pseudomonadales OM60(NOR5) clade               20
+# # 6 Pseudomonadales Pseudomonas                    14
+# # 7 SAR11 clade     Clade IV                        3
+# # 8 Pseudomonadales Acinetobacter                   8
+# # 9 Pseudomonadales KI89A clade                    12
+# # 10 Pseudomonadales Marinobacterium                 6
+# # # ℹ 59 more rows
+# temp_df2 %>%
+#   dplyr::filter(relabund > 0) %>%
+#   dplyr::filter(grepl("SAR11|Pseudomonadales", Order)) %>%
+#   dplyr::reframe(relabund_options = quantile(relabund, probs = c(0.5), na.rm = TRUE, names = TRUE), .by = c("Order", "Genus")) %>%
+#   droplevels %>%
+#   print(n = 20)
+# # # A tibble: 67 × 3
+# # Order           Genus            relabund_options
+# # <fct>           <fct>                       <dbl>
+# #   1 SAR11 clade     Clade Ia                  0.307  
+# # 2 Pseudomonadales SAR86 clade               0.138  
+# # 3 SAR11 clade     Clade II                  0.0723 
+# # 4 SAR11 clade     Clade Ib                  0.293  
+# # 5 Pseudomonadales OM60(NOR5) clade          0.256  
+# # 6 Pseudomonadales Pseudomonas               0.0912 
+# # 7 SAR11 clade     Clade IV                  0.195  
+# # 8 Pseudomonadales Acinetobacter             0.0729 
+# # 9 Pseudomonadales KI89A clade               0.0662 
+# # 10 Pseudomonadales Marinobacterium           0.0351 
+# # 11 Pseudomonadales Pseudomonadales           0.00992
+# # 12 Pseudomonadales SAR92 clade               0.0794 
+# # 13 SAR11 clade     Clade III                 0.0644 
+# # 14 Pseudomonadales OM182 clade               0.0797 
+# # 15 Pseudomonadales BD1-7 clade               0.0529 
+# # 16 Pseudomonadales Pseudohongiella           0.0865 
+# # 17 Pseudomonadales Litoricola                0.0759 
+# # 18 Pseudomonadales Luminiphilus              0.0248 
+# # 19 Pseudomonadales Alcanivorax               0.0191 
+# # 20 Pseudomonadales Endozoicomonas            0.0196 
+# # # ℹ 47 more rows
+# 
+# temp_df2 %>%
+#   dplyr::filter(relabund == 0) %>%
+#   # dplyr::filter(relabund > 0) %>%
+#   # dplyr::filter(grepl("Woesearchaeales|SAR11", Order)) %>%
+#   dplyr::filter(grepl("Woesearchaeales", Order) | grepl("Clade Ia", Genus)) %>% #keep only Pelagibacter, agglomerate all Woesearchaeales ASVs into Order level
+#   dplyr::distinct(asv_id,sample_id, .keep_all = TRUE) %>%
+#   droplevels %>%
+#   dplyr::reframe(zero_occurrences = length(asv_id), .by = c("Order", "sample_id")) %>%
+#   # dplyr::reframe(relabund_options = quantile(zero_occurrences, probs = c(0.5), na.rm = TRUE, names = TRUE), .by = c("Order", "Genus")) %>%
+#   dplyr::reframe(relabund_options = mean(zero_occurrences, na.rm = TRUE), .by = c("Order")) %>%
+#   # dplyr::reframe(zero_occurrences = length(asv_id), .by = c("Order", "Genus", "sample_id")) %>%
+#   # # dplyr::reframe(relabund_options = quantile(zero_occurrences, probs = c(0.5), na.rm = TRUE, names = TRUE), .by = c("Order", "Genus")) %>%
+#   # dplyr::reframe(relabund_options = mean(zero_occurrences, na.rm = TRUE), .by = c("Order", "Genus")) %>%
+#   print(., n = 20)
+# #average representation of nonzero ASVs belonging to Clade Ia (Pelagibacter) and Woesearchaeales
+# # # A tibble: 2 × 2
+# # Order           relabund_options
+# # <fct>                      <dbl>
+# #   1 SAR11 clade                 6.87
+# # 2 Woesearchaeales            20.5 
+# # #average rep of these ASVs when they are 0:
+# # # A tibble: 2 × 2
+# # Order           relabund_options
+# # <fct>                      <dbl>
+# #   1 SAR11 clade                 9.13
+# # 2 Woesearchaeales          1332.  
+
 }
 
 #for the correlations with rCLR data:
@@ -5221,37 +6566,217 @@ usvi_abund_asvs_idx <- usvi_asv.tbl %>%
   dplyr::distinct(asv_id) %>%
   tibble::deframe(.)
   nrow(.)
+  
+  spearman.test.rclr.asv.relabund.df <- usvi_asv.tbl %>%
+    # usvi_asv.tbl %>%
+    dplyr::slice(which(rowSums(.) > 0)) %>%
+    dplyr::select(rownames(usvi_metab.tbl)) %>%
+    apply(., 2, relabund) %>%
+    # tibble::as_tibble(.) %>%
+    tibble::as_tibble(., rownames = "asv_id") %>%
+    dplyr::filter(asv_id %in% unique(spearman.test.rclr.asv.taxonomy.df$asv_id)) %>%
+    tidyr::pivot_longer(., cols = starts_with("Metab_"),
+                        names_to = "sample_id",
+                        values_to = "relabund") %>%
+    dplyr::left_join(., (metabolomics_sample_metadata %>%
+                           dplyr::filter(grepl("seawater", sample_type)) %>%
+                           dplyr::select(sample_id, site) %>%
+                           droplevels),
+                     by = join_by(sample_id),
+                     relationship = "many-to-many", multiple = "all") %>%
+    droplevels
 
-
-
+  spearman.test.rclr.asv.relabund.df %>%
+    dplyr::right_join(., (spearman.test.rclr.asv.taxonomy.df %>%
+                            dplyr::ungroup(.) %>%
+                            dplyr::filter(grepl("archae", taxonomy_string)) %>%
+                            dplyr::select(asv_id, taxonomy_string) %>%
+                            dplyr::distinct(asv_id,taxonomy_string, .keep_all = TRUE) %>%
+                            droplevels),
+                      by = join_by(asv_id), relationship = "many-to-many", multiple = "all")  %>%
+    droplevels %>%
+    dplyr::group_by(asv_id, taxonomy_string) %>%
+    dplyr::reframe(mean_relabund = mean(relabund, na.rm = TRUE),
+                   max_relabund = max(relabund, na.rm = TRUE)) %>%
+    dplyr::arrange(desc(mean_relabund)) %>%
+    # droplevels
+    # dplyr::select(max_relabund) %>%
+    dplyr::select(mean_relabund) %>%
+    unlist(.) %>% range(.)
+  # [1] 0.001790414 0.015118464
+  
+    # dplyr::reframe(quantile(relabund, probs = c(0, 0.5, 1), type = 7, na.rm = TRUE))
+  # # A tibble: 219 × 4
+  # asv_id    taxonomy_string                 mean_relabund max_relabund
+  # <chr>     <chr>                                   <dbl>        <dbl>
+  #   1 ASV_03312 Nanoarchaeia; SCGC AAA011-D5         0.000358      0.00780
+  # 2 ASV_02855 Nanoarchaeia; Woesearchaeales        0.000251      0.00878
+  # 3 ASV_05481 Nanoarchaeia; Woesearchaeales        0.000237      0.00530
+  # 4 ASV_06110 Nanoarchaeia; Woesearchaeales        0.000235      0.00666
+  # 5 ASV_02946 Nanoarchaeia; GW2011_GWC1_47_15      0.000218      0.0151 
+  # 6 ASV_07111 Nanoarchaeia; Woesearchaeales        0.000196      0.00555
+  # 7 ASV_03325 Nanoarchaeia; Woesearchaeales        0.000195      0.0119 
+  # 8 ASV_04177 Nanoarchaeia; Woesearchaeales        0.000150      0.00638
+  # 9 ASV_04165 Nanoarchaeia; Woesearchaeales        0.000137      0.0116 
+  # 10 ASV_05060 Nanoarchaeia; Woesearchaeales        0.000134      0.0114 
+  # 
+  
+  spearman.test.rclr.asv.relabund.df %>%
+    dplyr::right_join(., (spearman.test.rclr.asv.taxonomy.df %>%
+                            dplyr::ungroup(.) %>%
+                            dplyr::filter(grepl("archae", taxonomy_string)) %>%
+                            dplyr::select(asv_id, taxonomy_string) %>%
+                            dplyr::distinct(asv_id,taxonomy_string, .keep_all = TRUE) %>%
+                            droplevels),
+                      by = join_by(asv_id), relationship = "many-to-many", multiple = "all")  %>%
+    droplevels %>%
+    dplyr::filter(relabund == 0) %>%
+    droplevels %>%
+    dplyr::distinct(asv_id, sample_id, .keep_all = TRUE) %>%
+    dplyr::group_by(sample_id) %>%
+    dplyr::reframe(num_zero_obs = length(relabund)) %>%
+    dplyr::reframe(min(num_zero_obs, na.rm = TRUE),
+                   max(num_zero_obs, na.rm = TRUE))
+  # # A tibble: 1 × 2
+  # `min(num_zero_obs, na.rm = TRUE)` `max(num_zero_obs, na.rm = TRUE)`
+  # <int>                             <int>
+  #   1                               157                               219
+  
+  tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy_string") %>%
+    dplyr::filter(grepl("archae", taxonomy_string)) %>%
+    nrow(.)
+  # [1] 1695
+  
 spearman.test.rclr.abund.asv.taxonomy.df <- spearman.test.rclr.asv.taxonomy.df %>% 
   dplyr::filter(asv_id %in% usvi_abund_asvs_idx) %>%
   droplevels
+
+length(unique(spearman.test.rclr.asv.taxonomy.df$asv_id))
+length(unique(spearman.test.rclr.asv.taxonomy.df$simpleName))
+length(unique(spearman.test.rclr.asv.taxonomy.df$taxonomy_string))
+length(unique(spearman.test.rclr.abund.asv.taxonomy.df$asv_id))
+length(unique(spearman.test.rclr.abund.asv.taxonomy.df$simpleName))
+length(unique(spearman.test.rclr.abund.asv.taxonomy.df$taxonomy_string))
+#85th percentile abs(rho):
+#3596 ASVs
+#5 metabolites :(
+
+#all ASVs ith 95th percentile abs(rho) correlations:
+#1414 correlations between ASVs and metabolites:
+#409 distinct taxonomic lineages, of which 39 represent ASVs that are 0.1% or more in any sample
+# 60 unique and abundant ASVs, 5 metabolites 
+length(unique(spearman.test.rclr.asv.taxonomy.df$asv_id))
+length(unique(spearman.test.rclr.asv.taxonomy.df$simpleName))
+# [1] pantothenic acid   homoserine betaine putrescine 2       sarcosine         
+# [5] arginine      
+
+
+
 #when using only ASVs that are ever >1% in any the 71 samples,
 # 57 ASVs remain with significant and strong (abs(rho) >= 0.8 ) correlations
 #when using only ASVs that are ever >= 0.1% in any of the 71 samples,
 # 316 ASVs remain with 189 significant and strong (abs(rho) >= 0.8 ) correlations
+# 3596 ASVs remain with 85th percentile abs(rho) correlations
+# 1414 ASVs observed with 95th percentile abs(rho) correlations, with 71 abundant
 
+readr::write_delim(spearman.test.rclr.abund.asv.taxonomy.df,
+                   paste0(projectpath, "/", "spearman.test.rclr.abund.asv.taxonomy.df-", Sys.Date(), ".tsv"),
+                   delim = "\t", col_names = TRUE)
+
+#what about q_85?
+temp_df <- spearman.test.site.rclr.filtered.df %>%
+  dplyr::filter(abs(estimate) >= 0.5) %>%
+  dplyr::filter(padj_bh_05 < 0.05) %>%
+  dplyr::mutate(abs_estimate = abs(estimate)) %>%
+  dplyr::select(asv_id, simpleName, site, padj_bh_05, sig,  contains("estimate")) %>%
+  dplyr::left_join(., spearman.test.site.rclr.rho_quantiled.tbl %>%
+                     dplyr::select(site, q_85) %>%
+                     droplevels,
+                   by = join_by(site),
+                   relationship = "many-to-many", multiple = "all") %>%
+  dplyr::group_by(site) %>%
+  dplyr::mutate(filtered_rho = dplyr::case_when(abs_estimate >= q_85 ~ 1,
+                                                # dplyr::mutate(filtered_rho = dplyr::case_when(abs_estimate >= deparse(keep_quant) ~ 1,
+                                                .default = NA)) %>%
+  tidyr::drop_na(filtered_rho) %>%
+  dplyr::left_join(., (tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy_string") %>% 
+                     dplyr::mutate(taxonomy_string = stringr::str_remove_all(taxonomy_string, "^ASV_(.....): ")) %>%
+                     droplevels),
+                    by = join_by(asv_id), relationship = "many-to-many", multiple = "all")  %>%
+  droplevels
+temp_df %>%
+  # dplyr::filter(asv_id %in% usvi_abund_asvs_idx) %>%
+  dplyr::ungroup(.) %>%
+  dplyr::distinct(simpleName) %>%
+  droplevels
+# # A tibble: 5 × 1
+# simpleName        
+# <fct>             
+#   1 pantothenic acid  
+# 2 homoserine betaine
+# 3 putrescine 2      
+# 4 arginine          
+# 5 sarcosine  
+
+temp_df %>%
+  # dplyr::filter(asv_id %in% usvi_abund_asvs_idx) %>%
+  dplyr::group_by(taxonomy_string, simpleName) %>%
+  dplyr::summarise(num_corr = length(estimate)) %>%
+  dplyr::arrange(desc(num_corr))   %>%
+  droplevels
+##only abundant ASVS:
+# # ## A tibble: 49 × 3
+# # # Groups:   taxonomy_string [46]
+# # taxonomy_string                       simpleName       num_corr
+# # <chr>                                 <fct>               <int>
+# #   1 Bacteroidia; NS5 marine group         pantothenic acid        6
+# # 2 Bacteroidia; NS4 marine group         pantothenic acid        5
+# # 3 Bacteroidia; Flavobacteriaceae        pantothenic acid        4
+# # 4 Bacteroidia; Cryomorphaceae           pantothenic acid        3
+# # 5 Bacteroidia; Saprospiraceae           pantothenic acid        3
+# # 6 Alphaproteobacteria; Rhodobacteraceae pantothenic acid        2
+# # 7 Bacteroidia; NS2b marine group        pantothenic acid        2
+# # 8 Cyanobacteria; Synechococcus CC9902   pantothenic acid        2
+# # 9 Gammaproteobacteria; Acinetobacter    pantothenic acid        2
+# # 10 Gammaproteobacteria; Photobacterium   pantothenic acid        2
+# # # ℹ 39 more rows
+# # A tibble: 1,503 × 3
+# # Groups:   taxonomy_string [606]
+# taxonomy_string                     simpleName         num_corr
+# <chr>                               <fct>                 <int>
+#   1 Nanoarchaeia; Woesearchaeales       homoserine betaine      202
+# 2 Nanoarchaeia; Woesearchaeales       sarcosine               182
+# 3 Nanoarchaeia; Woesearchaeales       arginine                129
+# 4 Bacteria                            homoserine betaine      113
+# 5 Proteobacteria; Gammaproteobacteria homoserine betaine       94
+# 6 Nanoarchaeia; Woesearchaeales       putrescine 2             93
+# 7 Proteobacteria; Alphaproteobacteria homoserine betaine       88
+# 8 Bacteria                            sarcosine                77
+# 9 Bacteria                            arginine                 55
+# 10 Proteobacteria; Gammaproteobacteria sarcosine                55
+# # ℹ 1,493 more rows
 
 spearman.test.rclr.abund.asv.taxonomy.df %>%
   dplyr::group_by(taxonomy_string, simpleName) %>%
   dplyr::summarise(num_corr = length(estimate)) %>%
   dplyr::arrange(desc(num_corr))  
-# # A tibble: 150 × 3
-# # Groups:   taxonomy_string [68]
-# taxonomy_string                       simpleName              num_corr
-# <chr>                                 <fct>                      <int>
-#   1 Bacteroidia; NS9 marine group         homoserine betaine             6
-# 2 Alphaproteobacteria; SAR116 clade     taurine                        4
-# 3 Alphaproteobacteria; SAR116 clade     kynurenine                     4
-# 4 Bacteroidia; NS5 marine group         kynurenine                     4
-# 5 Cyanobacteria; Synechococcus CC9902   kynurenine                     4
-# 6 Alphaproteobacteria; SAR116 clade     arginine                       3
-# 7 Bacteroidia; Cyclobacteriaceae        sn-glycerol 3-phosphate        3
-# 8 Bacteroidia; NS4 marine group         kynurenine                     3
-# 9 Gammaproteobacteria; OM60(NOR5) clade sn-glycerol 3-phosphate        3
-# 10 Thermoplasmata; Marine Group II       sn-glycerol 3-phosphate        3
-# # ℹ 140 more rows
+
+# q_95:
+# # A tibble: 40 × 3
+# # Groups:   taxonomy_string [39]
+# taxonomy_string                       simpleName       num_corr
+# <chr>                                 <fct>               <int>
+#   1 Bacteroidia; NS4 marine group         pantothenic acid        5
+# 2 Bacteroidia; Flavobacteriaceae        pantothenic acid        4
+# 3 Bacteroidia; NS5 marine group         pantothenic acid        4
+# 4 Bacteroidia; Cryomorphaceae           pantothenic acid        3
+# 5 Alphaproteobacteria; Rhodobacteraceae pantothenic acid        2
+# 6 Bacteroidia; NS2b marine group        pantothenic acid        2
+# 7 Bacteroidia; Saprospiraceae           pantothenic acid        2
+# 8 Cyanobacteria; Synechococcus CC9902   pantothenic acid        2
+# 9 Gammaproteobacteria; Acinetobacter    pantothenic acid        2
+# 10 Gammaproteobacteria; Photobacterium   pantothenic acid        2
+# # ℹ 30 more rows
 
 #there are still 4 ASVs with Archaeal lineages retained in this correlation analyses 
 #Yawzi: ASV_00098 and ASV_00311
@@ -5264,20 +6789,25 @@ spearman.test.rclr.abund.asv.taxonomy.df %>%
 #of these 310 ASVs with 202 strong sig relations, 
 #76 ASVs had 2 or more correlations with metabolites
 #8 ASVs had 5 or more correlations with metabolites
+#with 85th percentile abs(rho) correlations, only 1 ASV had 2 or more correlations with mtabolites
+#with 95th percentile, no ASV correlated with more than 1 metabolite
+
 spearman.test.rclr.abund.asv.taxonomy.df %>%
   count(asv_id, name = "num_correlations") %>%   # Count occurrences
   arrange(desc(num_correlations))%>% 
   distinct()%>%
-  dplyr::filter(num_correlations >= 5) %>%
+  dplyr::filter(num_correlations >= 2) %>%
   nrow(.)
 
 #in comparison, before filtering for the more abundant ASVs with strong correlations:
-#1597 ASVs had 5 or more correlations with metabolites
+#1597 ASVs had 5 or more abs(rho) > 0.8 correlations with metabolites
+#858 ASVs had 2 or more 85th percentile abs(rho) correlations with metabolites
+#16 ASVs had 2 or more 95th percentile abs(rho) correlations with metabolites
 spearman.test.rclr.asv.taxonomy.df %>%
   count(asv_id, name = "num_correlations") %>%   # Count occurrences
   arrange(desc(num_correlations))%>% 
   distinct()%>%
-  dplyr::filter(num_correlations >= 5) %>%
+  dplyr::filter(num_correlations >= 2) %>%
   nrow(.)
 
 #in comparison, when using the relative abundance of ASVs for correlation input:
@@ -5288,7 +6818,7 @@ spearman.test.relabund.asv.taxonomy.df %>%
   count(simpleName, name = "num_correlations") %>%   # Count occurrences
   arrange(desc(num_correlations))%>% 
   distinct()%>%
-  dplyr::filter(num_correlations >= 2) %>%
+  dplyr::filter(num_correlations >= 2) %>% 
   nrow(.)
 
 # # A tibble: 12 × 2
@@ -5307,13 +6837,67 @@ spearman.test.relabund.asv.taxonomy.df %>%
 # 11 pantothenic acid                  2
 # 12 tryptamine                        2
 
+spearman.test.relabund.asv.taxonomy.df %>%
+  count(taxonomy_string, name = "num_correlations", sort = TRUE) %>%   # Count occurrences
+  # arrange(desc(num_correlations))%>% 
+  distinct()%>%
+  dplyr::filter(num_correlations >= 2) %>% 
+  droplevels %>% print(., n = 30)
+# # A tibble: 19 × 2
+# taxonomy_string                         num_correlations
+# <chr>                                              <int>
+#   1 Alphaproteobacteria; Rhodobacteraceae                  8
+# 2 Bacteroidia; NS5 marine group                          7
+# 3 Bacteroidia; Cryomorphaceae                            6
+# 4 Bacteroidia; NS9 marine group                          4
+# 5 Bdellovibrionia; OM27 clade                            4
+# 6 Acidimicrobia; Candidatus Actinomarina                 3
+# 7 Alphaproteobacteria; PS1 clade                         3
+# 8 Alphaproteobacteria; SAR11 Clade II                    3
+# 9 Alphaproteobacteria; SAR11 Clade III                   3
+# 10 Bacteria; Marinimicrobia (SAR406 clade)                3
+# 11 Bacteroidia; Flavobacteriaceae                         3
+# 12 Proteobacteria; Alphaproteobacteria                    3
+# 13 Thermoplasmata; Marine Group II                        3
+# 14 Bacteroidia; NS4 marine group                          2
+# 15 Cyanobacteria; Synechococcus CC9902                    2
+# 16 Gammaproteobacteria; OM60(NOR5) clade                  2
+# 17 Gammaproteobacteria; Photobacterium                    2
+# 18 Gammaproteobacteria; Vibrio                            2
+# 19 Rhodothermia; Balneola                                 2
+
+spearman.test.relabund.asv.taxonomy.df %>%
+  dplyr::count(simpleName, taxonomy_string, name = "num_correlations") %>%   # Count occurrences
+  dplyr::arrange(desc(num_correlations))%>% 
+  # dplyr::distinct()%>%
+  dplyr::filter(num_correlations >= 2) %>%
+  # nrow(.)
+  droplevels %>% print(., n = 30)
+# # A tibble: 10 × 3
+# taxonomy_string                        simpleName         num_correlations
+# <chr>                                  <chr>                         <int>
+#   1 Bdellovibrionia; OM27 clade            5'AMP                             4
+#  2 Alphaproteobacteria; Rhodobacteraceae  ciliatine                         3
+#  3 Bacteroidia; NS9 marine group          homoserine betaine                3
+#  4 Acidimicrobia; Candidatus Actinomarina 5'AMP                             2
+# 5 Alphaproteobacteria; SAR11 Clade II    5'AMP                             2
+#  6 Bacteroidia; Cryomorphaceae            guanosine                         2
+#  7 Bacteroidia; Flavobacteriaceae         ciliatine                         2
+#  8 Bacteroidia; NS5 marine group          5'AMP                             2
+# 9 Bacteroidia; NS5 marine group          guanosine                         2
+# 10 Cyanobacteria; Synechococcus CC9902    methionine                        2
+
+
+
 spearman.test.rclr.abund.asv.taxonomy.df %>%
   dplyr::count(taxonomy_string, simpleName, name = "num_correlations") %>%   # Count occurrences
   dplyr::arrange(desc(num_correlations))%>% 
   dplyr::distinct()%>%
-  dplyr::filter(num_correlations >= 2) %>%
+  dplyr::filter(num_correlations >= 5) %>%
   # nrow(.)
-  droplevels
+  droplevels 
+
+#with abs(rho) > 0.8:
 # # A tibble: 22 × 3
 # taxonomy_string                       simpleName              num_correlations
 # <chr>                                 <fct>                              <int>
@@ -5329,6 +6913,20 @@ spearman.test.rclr.abund.asv.taxonomy.df %>%
 # 10 Thermoplasmata; Marine Group II       sn-glycerol 3-phosphate                3
 # # ℹ 12 more rows
 
+#with abs(rho) in 85th percentile of correlations:
+# # A tibble: 2 × 4
+# # Groups:   site [1]
+# site        taxonomy_string               simpleName       num_correlations
+# <chr>       <chr>                         <fct>                       <int>
+#   1 LB_seagrass Bacteroidia; NS5 marine group pantothenic acid                6
+# 2 LB_seagrass Bacteroidia; NS4 marine group pantothenic acid                5
+
+# 95th percentile abs(rho):
+# # A tibble: 1 × 4
+# # Groups:   site [1]
+# site        taxonomy_string               simpleName       num_correlations
+# <chr>       <chr>                         <fct>                       <int>
+#   1 LB_seagrass Bacteroidia; NS4 marine group pantothenic acid                5
 
 spearman.test.rclr.abund.asv.taxonomy.df %>%
   dplyr::count(taxonomy_string, simpleName, site, name = "num_correlations") %>%   # Count occurrences
@@ -5337,6 +6935,7 @@ spearman.test.rclr.abund.asv.taxonomy.df %>%
   dplyr::filter(num_correlations >= 2) %>%
   # nrow(.)
   droplevels
+#with abs(rho) > 0.8:
 # # A tibble: 16 × 4
 # taxonomy_string                       simpleName              site    num_correlations
 # <chr>                                 <fct>                   <fct>              <int>
@@ -5357,6 +6956,42 @@ spearman.test.rclr.abund.asv.taxonomy.df %>%
 # 15 Gammaproteobacteria; SAR86 clade      sn-glycerol 3-phosphate Yawzi                  2
 # 16 Thermoplasmata; Marine Group II       sn-glycerol 3-phosphate Yawzi                  2
 
+#with abs(rho) in 85th percentile of correlations:
+# # A tibble: 12 × 4
+# # Groups:   site [1]
+# site        taxonomy_string                       simpleName       num_correlations
+# <chr>       <chr>                                 <fct>                       <int>
+#   1 LB_seagrass Bacteroidia; NS5 marine group         pantothenic acid                6
+# 2 LB_seagrass Bacteroidia; NS4 marine group         pantothenic acid                5
+# 3 LB_seagrass Bacteroidia; Flavobacteriaceae        pantothenic acid                4
+# 4 LB_seagrass Bacteroidia; Cryomorphaceae           pantothenic acid                3
+# 5 LB_seagrass Bacteroidia; Saprospiraceae           pantothenic acid                3
+# 6 LB_seagrass Alphaproteobacteria; Rhodobacteraceae pantothenic acid                2
+# 7 LB_seagrass Bacteroidia; NS2b marine group        pantothenic acid                2
+# 8 LB_seagrass Cyanobacteria; Synechococcus CC9902   pantothenic acid                2
+# 9 LB_seagrass Gammaproteobacteria; Acinetobacter    pantothenic acid                2
+# 10 LB_seagrass Gammaproteobacteria; Photobacterium   pantothenic acid                2
+# 11 LB_seagrass Gammaproteobacteria; Pseudomonadales  pantothenic acid                2
+# 12 LB_seagrass Gammaproteobacteria; Vibrio           pantothenic acid                2
+
+#95th percentile abs(rho):
+# # A tibble: 12 × 4
+# # Groups:   site [1]
+# site        taxonomy_string                       simpleName       num_correlations
+# <chr>       <chr>                                 <fct>                       <int>
+#   1 LB_seagrass Bacteroidia; NS4 marine group         pantothenic acid                5
+# 2 LB_seagrass Bacteroidia; Flavobacteriaceae        pantothenic acid                4
+# 3 LB_seagrass Bacteroidia; NS5 marine group         pantothenic acid                4
+# 4 LB_seagrass Bacteroidia; Cryomorphaceae           pantothenic acid                3
+# 5 LB_seagrass Alphaproteobacteria; Rhodobacteraceae pantothenic acid                2
+# 6 LB_seagrass Bacteroidia; NS2b marine group        pantothenic acid                2
+# 7 LB_seagrass Bacteroidia; Saprospiraceae           pantothenic acid                2
+# 8 LB_seagrass Cyanobacteria; Synechococcus CC9902   pantothenic acid                2
+# 9 LB_seagrass Gammaproteobacteria; Acinetobacter    pantothenic acid                2
+# 10 LB_seagrass Gammaproteobacteria; Photobacterium   pantothenic acid                2
+# 11 LB_seagrass Gammaproteobacteria; Pseudomonadales  pantothenic acid                2
+# 12 LB_seagrass Gammaproteobacteria; Vibrio           pantothenic acid                2
+
 spearman.test.rclr.abund.asv.taxonomy.df %>%
   # count(asv_id, name = "num_correlations") %>%   # Count occurrences
   count(simpleName, name = "num_correlations") %>%   # Count occurrences
@@ -5365,6 +7000,8 @@ spearman.test.rclr.abund.asv.taxonomy.df %>%
   #dplyr::filter(num_correlations >= 1) %>% droplevels %>% dplyr::summarise(sum(num_correlations)) #189
   dplyr::filter(num_correlations >= 2) %>% droplevels
   # nrow(.)
+
+#with abs(rho) > 0.8:
 # # A tibble: 12 × 2
 # simpleName              num_correlations
 # <fct>                              <int>
@@ -5380,6 +7017,213 @@ spearman.test.rclr.abund.asv.taxonomy.df %>%
 # 10 aspartate                              4
 # 11 tryptophan                             2
 # 12 3'AMP                                  2
+
+#with abs(rho) in 85th percentile of correlations:
+# # A tibble: 4 × 3
+# # Groups:   site [2]
+# site        simpleName         num_correlations
+# <chr>       <fct>                         <int>
+#   1 LB_seagrass pantothenic acid                 63
+# 2 LB_seagrass homoserine betaine                4
+# 3 Yawzi       sarcosine                         3
+# 4 Yawzi       arginine                          2
+
+#abs(rho) in 95th percentile:
+# # A tibble: 1 × 3
+# # Groups:   site [1]
+# site        simpleName       num_correlations
+# <chr>       <fct>                       <int>
+#   1 LB_seagrass pantothenic acid               59
+
+
+#decide to keep relabund-based Spearman correlations
+#look at the most frequently lineages observed in the most abundant significantly-correlated ASVs:
+spearman.test.relabund.asv.top_corr.df <- spearman.test.relabund.asv.taxonomy.df %>%
+  dplyr::right_join(., (spearman.test.relabund.asv.taxonomy.df %>%
+                          count(taxonomy_string, name = "num_correlations", sort = TRUE) %>%   # Count occurrences
+                          # arrange(desc(num_correlations))%>% 
+                          distinct()%>%
+                          dplyr::filter(num_correlations >= 4) %>% 
+                          dplyr::distinct(taxonomy_string) %>%
+                          droplevels),
+                    relationship = "many-to-many", multiple = "all") %>%
+  dplyr::select(asv_id, simpleName, site, estimate, taxonomy_string, all_of(keep_tax)) %>%
+  dplyr::arrange(taxonomy_string, simpleName, site, asv_id) %>%
+  droplevels
+
+
+spearman.test.relabund.asv.top_taxonomy.df <- spearman.test.relabund.asv.top_corr.df %>%
+  dplyr::distinct(asv_id, taxonomy_string) %>%
+  dplyr::left_join(., (usvi_asv.tbl %>%
+                         dplyr::slice(which(rowSums(.) > 0)) %>%
+                         dplyr::select(rownames(usvi_metab.tbl)) %>%
+                         apply(., 2, relabund) %>%
+                         # tibble::as_tibble(.) %>%
+                         tibble::as_tibble(., rownames = "asv_id") %>%
+                         tidyr::pivot_longer(., cols = starts_with("Metab_"),
+                                             names_to = "sample_id",
+                                             values_to = "relabund") %>%
+                         dplyr::filter(asv_id %in% unique(spearman.test.relabund.asv.taxonomy.df[["asv_id"]])) %>%
+                         dplyr::left_join(., (metabolomics_sample_metadata %>%
+                                                dplyr::filter(grepl("seawater", sample_type)) %>%
+                                                dplyr::select(sample_id, site) %>%
+                                                droplevels),
+                                          by = join_by(sample_id),
+                                          relationship = "many-to-many", multiple = "all") %>%
+                         droplevels),
+                   by = join_by(asv_id), 
+                   # by = join_by(site, asv_id), 
+                   relationship = "many-to-many", multiple = "all") %>%
+  dplyr::distinct(asv_id, sample_id, .keep_all = TRUE) %>%
+  droplevels
+
+spearman.test.relabund.asv.top_taxonomy.df %>%
+  dplyr::filter(asv_id %in% unique(spearman.test.relabund.asv.top_corr.df[["asv_id"]])) %>%
+  dplyr::filter(relabund > 0) %>%
+  dplyr::reframe(mean_abund = mean(relabund, na.rm = TRUE), .by = c(taxonomy_string, "asv_id", site)) %>%
+  tidyr::pivot_wider(., id_cols = c(taxonomy_string, asv_id), names_from = "site", values_from = "mean_abund", values_fill = 0) %>%
+  dplyr::left_join(., spearman.test.relabund.asv.top_corr.df %>%
+                     dplyr::select(asv_id, taxonomy_string, site, simpleName, estimate) %>%
+                     droplevels,
+                   by = join_by(asv_id, taxonomy_string), unmatched = "drop",
+                   relationship = "many-to-many", multiple = "all") %>%
+  print(., n = 30)
+# # A tibble: 29 × 8
+# taxonomy_string                       asv_id    LB_seagrass   Yawzi Tektite site        simpleName         estimate
+# <chr>                                 <chr>           <dbl>   <dbl>   <dbl> <chr>       <chr>                 <dbl>
+#   1 Alphaproteobacteria; Rhodobacteraceae ASV_00050   0.147     0.448   0.509   Yawzi       5'AMP                 0.952
+#  2 Alphaproteobacteria; Rhodobacteraceae ASV_00050   0.147     0.448   0.509   LB_seagrass ciliatine            -0.825
+#  3 Alphaproteobacteria; Rhodobacteraceae ASV_00050   0.147     0.448   0.509   LB_seagrass pantothenic acid     -0.860
+#  4 Alphaproteobacteria; Rhodobacteraceae ASV_00200   0.202     0       0       LB_seagrass ciliatine             0.836
+#  5 Alphaproteobacteria; Rhodobacteraceae ASV_00221   0.161     0       0       LB_seagrass ciliatine             0.808
+#  6 Alphaproteobacteria; Rhodobacteraceae ASV_00221   0.161     0       0       LB_seagrass cysteate              0.803
+#  7 Alphaproteobacteria; Rhodobacteraceae ASV_00024   2.07      0.559   0.297   Yawzi       guanosine             0.905
+#  8 Alphaproteobacteria; Rhodobacteraceae ASV_00114   0.0784    0.153   0.161   LB_seagrass methionine           -0.867
+#  9 Bacteroidia; Cryomorphaceae           ASV_00112   0.524     0.00677 0       LB_seagrass ciliatine             0.881
+# 10 Bacteroidia; Cryomorphaceae           ASV_00006   5.37      1.63    1.01    Yawzi       guanosine             0.881
+# 11 Bacteroidia; Cryomorphaceae           ASV_00069   0.554     0.134   0.0181  Yawzi       guanosine             0.952
+# 12 Bacteroidia; Cryomorphaceae           ASV_00089   0.590     0       0       LB_seagrass histidine            -0.943
+# 13 Bacteroidia; Cryomorphaceae           ASV_00190   0.0633    0.0598  0.0539  Tektite     methionine           -0.886
+# 14 Bacteroidia; Cryomorphaceae           ASV_00190   0.0633    0.0598  0.0539  Tektite     spermidine 3         -0.851
+# 15 Bacteroidia; NS5 marine group         ASV_00032   1.21      0.437   0.318   Yawzi       5'AMP                -0.810
+# 16 Bacteroidia; NS5 marine group         ASV_00107   0.191     0.144   0.120   Yawzi       5'AMP                -0.952
+# 17 Bacteroidia; NS5 marine group         ASV_00048   0.647     0.257   0.186   LB_seagrass ciliatine             0.853
+# 18 Bacteroidia; NS5 marine group         ASV_00195   0.0363    0.0600  0.0791  Tektite     guanosine            -0.833
+# 19 Bacteroidia; NS5 marine group         ASV_00043   0.785     0.398   0.297   Yawzi       guanosine             0.905
+# 20 Bacteroidia; NS5 marine group         ASV_00101   0.315     0.0909  0.0642  Tektite     homoserine betaine   -0.837
+# 21 Bacteroidia; NS5 marine group         ASV_00471   0.00400   0.0118  0.0105  Tektite     methionine           -0.886
+# 22 Bacteroidia; NS9 marine group         ASV_00071   0.290     0.168   0.123   Tektite     guanosine            -0.833
+# 23 Bacteroidia; NS9 marine group         ASV_00199   0.0869    0.0303  0.0185  Tektite     homoserine betaine   -0.856
+# 24 Bacteroidia; NS9 marine group         ASV_00199   0.0869    0.0303  0.0185  Yawzi       homoserine betaine   -0.857
+# 25 Bacteroidia; NS9 marine group         ASV_00104   0.188     0.115   0.0974  Yawzi       homoserine betaine   -0.833
+# 26 Bdellovibrionia; OM27 clade           ASV_00938   0.0000979 0.00143 0.00148 Tektite     5'AMP                -0.813
+# 27 Bdellovibrionia; OM27 clade           ASV_00240   0.0468    0.0384  0.0247  Yawzi       5'AMP                -0.952
+# 28 Bdellovibrionia; OM27 clade           ASV_00386   0.0123    0.0148  0.0119  Yawzi       5'AMP                -0.874
+# 29 Bdellovibrionia; OM27 clade           ASV_00514   0.00333   0.00854 0.00762 Yawzi       5'AMP                -0.878
+
+#what about all correlated taxa?
+
+spearman.test.relabund.asv.df <- spearman.test.relabund.asv.taxonomy.df %>%
+  dplyr::distinct(asv_id, taxonomy_string) %>%
+  dplyr::left_join(., (usvi_asv.tbl %>%
+                         dplyr::slice(which(rowSums(.) > 0)) %>%
+                         dplyr::select(rownames(usvi_metab.tbl)) %>%
+                         apply(., 2, relabund) %>%
+                         # tibble::as_tibble(.) %>%
+                         tibble::as_tibble(., rownames = "asv_id") %>%
+                         tidyr::pivot_longer(., cols = starts_with("Metab_"),
+                                             names_to = "sample_id",
+                                             values_to = "relabund") %>%
+                         dplyr::filter(asv_id %in% unique(spearman.test.relabund.asv.taxonomy.df[["asv_id"]])) %>%
+                         dplyr::left_join(., (metabolomics_sample_metadata %>%
+                                                dplyr::filter(grepl("seawater", sample_type)) %>%
+                                                dplyr::select(sample_id, site) %>%
+                                                droplevels),
+                                          by = join_by(sample_id),
+                                          relationship = "many-to-many", multiple = "all") %>%
+                         droplevels),
+                   by = join_by(asv_id), 
+                   # by = join_by(site, asv_id), 
+                   relationship = "many-to-many", multiple = "all") %>%
+  dplyr::distinct(asv_id, sample_id, .keep_all = TRUE) %>%
+  droplevels
+
+spearman.test.relabund.asv.summary.tbl <- spearman.test.relabund.asv.df %>%
+  dplyr::filter(relabund > 0) %>%
+  dplyr::reframe(mean_nonzero_abund = mean(relabund, na.rm = TRUE), .by = c(taxonomy_string, "asv_id", site)) %>%
+  tidyr::pivot_wider(., id_cols = c(taxonomy_string, asv_id), names_from = "site", values_from = "mean_nonzero_abund", values_fill = 0) %>%
+  dplyr::left_join(., (spearman.test.relabund.asv.df %>%
+                         # dplyr::filter(relabund > 0) %>%
+                         dplyr::reframe(mean_abund = mean(relabund, na.rm = TRUE), .by = c(taxonomy_string, "asv_id", site)) %>%
+                         tidyr::pivot_wider(., id_cols = c(taxonomy_string, asv_id), names_from = "site", values_from = "mean_abund", values_fill = 0) %>%
+                         droplevels),
+                   by = join_by(taxonomy_string, asv_id), relationship = "many-to-many", multiple = "all", suffix = c(".mean_nonzero", ".mean")) %>%
+  dplyr::left_join(., spearman.test.relabund.asv.taxonomy.df %>%
+                     dplyr::select(asv_id, taxonomy_string, site, simpleName, estimate) %>%
+                     droplevels,
+                   by = join_by(asv_id, taxonomy_string), unmatched = "drop",
+                   relationship = "many-to-many", multiple = "all") %>%
+  droplevels
+  # droplevels(.) %>% print(., n = 30)
+
+
+spearman.test.site.filtered.df %>%
+  dplyr::left_join(., (tibble::enframe(usvi_genera_relabel, name = "asv_id", value = "taxonomy_string") %>% 
+                         dplyr::mutate(taxonomy_string = stringr::str_remove_all(taxonomy_string, "^ASV_(.....): ")) %>%
+                         droplevels),
+                   by = join_by(asv_id), relationship = "many-to-many", multiple = "all") %>%
+  # dplyr::filter(grepl("Clade Ia", taxonomy_string)) %>%
+  dplyr::filter(grepl("Clade Ia|Prochlorococcus|NS9", taxonomy_string)) %>%
+  dplyr::distinct(asv_id, taxonomy_string) %>%
+  dplyr::left_join(., (usvi_asv.tbl %>%
+                         dplyr::slice(which(rowSums(.) > 0)) %>%
+                         dplyr::select(rownames(usvi_metab.tbl)) %>%
+                         apply(., 2, relabund) %>%
+                         # tibble::as_tibble(.) %>%
+                         tibble::as_tibble(., rownames = "asv_id") %>%
+                         tidyr::pivot_longer(., cols = starts_with("Metab_"),
+                                             names_to = "sample_id",
+                                             values_to = "relabund") %>%
+                         # dplyr::filter(asv_id %in% unique(spearman.test.relabund.asv.taxonomy.df[["asv_id"]])) %>%
+                         dplyr::left_join(., (metabolomics_sample_metadata %>%
+                                                dplyr::filter(grepl("seawater", sample_type)) %>%
+                                                dplyr::select(sample_id, site, sampling_time, sampling_day) %>%
+                                                droplevels),
+                                          by = join_by(sample_id),
+                                          relationship = "many-to-many", multiple = "all") %>%
+                         droplevels),
+                   by = join_by(asv_id), 
+                   # by = join_by(site, asv_id), 
+                   relationship = "many-to-many", multiple = "all") %>%
+  dplyr::distinct(asv_id, sample_id, .keep_all = TRUE) %>%
+  dplyr::filter(grepl("ASV_00068", asv_id)) %>%
+  # dplyr::filter(grepl("Yawzi|Tektite", site)) %>%
+  dplyr::filter(grepl("Yawzi", site)) %>%
+  # dplyr::filter(relabund > 0) %>%
+  dplyr::reframe(mean_nonzero_abund = mean(relabund, na.rm = TRUE), .by = c(taxonomy_string, site, sampling_time, sampling_day)) %>%
+  dplyr::arrange(taxonomy_string, site, sampling_time, sampling_day) %>%
+  droplevels
+# # A tibble: 18 × 4
+# taxonomy_string                        site        sampling_time mean_nonzero_abund
+# <chr>                                  <chr>       <chr>                      <dbl>
+#   1 Alphaproteobacteria; SAR11 Clade Ia    LB_seagrass dawn                      0.272 
+# 2 Alphaproteobacteria; SAR11 Clade Ia    LB_seagrass peak_photo                0.710 
+# 3 Alphaproteobacteria; SAR11 Clade Ia    Tektite     dawn                      1.65  
+# 4 Alphaproteobacteria; SAR11 Clade Ia    Tektite     peak_photo                1.69  
+# 5 Alphaproteobacteria; SAR11 Clade Ia    Yawzi       dawn                      1.38  
+# 6 Alphaproteobacteria; SAR11 Clade Ia    Yawzi       peak_photo                1.63  
+# 7 Bacteroidia; NS9 marine group          LB_seagrass dawn                      0.167 
+# 8 Bacteroidia; NS9 marine group          LB_seagrass peak_photo                0.173 
+# 9 Bacteroidia; NS9 marine group          Tektite     dawn                      0.0862
+# 10 Bacteroidia; NS9 marine group          Tektite     peak_photo                0.0877
+# 11 Bacteroidia; NS9 marine group          Yawzi       dawn                      0.115 
+# 12 Bacteroidia; NS9 marine group          Yawzi       peak_photo                0.0990
+# 13 Cyanobacteria; Prochlorococcus MIT9313 LB_seagrass dawn                      0.113 
+# 14 Cyanobacteria; Prochlorococcus MIT9313 LB_seagrass peak_photo                0.371 
+# 15 Cyanobacteria; Prochlorococcus MIT9313 Tektite     dawn                      1.84  
+# 16 Cyanobacteria; Prochlorococcus MIT9313 Tektite     peak_photo                1.76  
+# 17 Cyanobacteria; Prochlorococcus MIT9313 Yawzi       dawn                      1.23  
+# 18 Cyanobacteria; Prochlorococcus MIT9313 Yawzi       peak_photo                1.34  
 
 
 # Keep relative abundance + MH for NMDS -----------------------------------
